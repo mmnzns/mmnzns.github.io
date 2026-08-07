@@ -1,0 +1,90 @@
+---
+import { SITE, NAV_LINKS, SOCIAL_LINKS } from '../config';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE.description } = Astro.props;
+
+const pageTitle = title ? `${title} ${SITE.titleSeparator} ${SITE.title}` : SITE.title;
+const origin = Astro.site ?? new URL(SITE.url);
+const canonical = new URL(Astro.url.pathname, origin);
+const ogImage = SITE.ogImage ? new URL(SITE.ogImage, origin) : null;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <nav class="wrap" aria-label="Primary">
+        <a class="brand" href="/">{SITE.title}</a>
+        <ul class="nav-links">
+          {
+            NAV_LINKS.map((link) => (
+              <li>
+                <a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>&copy; {new Date().getFullYear()} {SITE.author}</p>
+        {
+          SOCIAL_LINKS.length > 0 && (
+            <ul class="social-links">
+              {SOCIAL_LINKS.map((link) => (
+                <li>
+                  <a href={link.href} rel="me noopener">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </footer>
+  </body>
+</html>
