@@ -9,11 +9,16 @@
 export const SITE = {
   /** Absolute origin the site is served from. No trailing slash. */
   url: 'https://mmnzns.github.io',
-  title: 'Miguel Monzones',
-  /** Shown after the page title in the browser tab: "Projects · Miguel Monzones" */
+  title: 'Miguel N. Monzones',
+  /** Shown after the page title in the browser tab: "The Work · Miguel N. Monzones" */
   titleSeparator: '·',
-  description: 'Portfolio, projects and writing by Miguel Monzones.',
-  author: 'Miguel Monzones',
+  role: 'Lifecycle & GTM Strategist',
+  description:
+    "Senior lifecycle and GTM strategist with 11 years in fintech, SaaS, and ecommerce. I read what's actually wrong, decide what should exist, then build it.",
+  author: 'Miguel N. Monzones',
+  location: 'Vancouver, BC',
+  /** Rendered as the availability pill in the header and hero. Set to null to hide. */
+  availability: 'Open to senior lifecycle, GTM & automation roles',
   /** BCP 47 language tag, used for <html lang>. */
   lang: 'en',
   /**
@@ -25,16 +30,22 @@ export const SITE = {
   ogImage: null as string | null,
 } as const;
 
+export const CONTACT = {
+  email: 'miguel@mnmonzones.com',
+  phone: '+1 778 829 6453',
+  linkedin: 'https://www.linkedin.com/in/mmonzones/',
+  entity: 'MNM Alaminos Consulting Ltd.',
+} as const;
+
 /** Primary navigation. Order here is the order rendered in the header. */
 export const NAV_LINKS = [
-  { label: 'Home', href: '/' },
-  { label: 'Projects', href: '/projects/' },
+  { label: 'The Work', href: '/work/' },
+  { label: 'The Thinking', href: '/thinking/' },
   { label: 'About', href: '/about/' },
 ] as const;
 
-/** Profile links rendered in the footer. Add or remove freely. */
+/** Profile links rendered in the footer. */
 export const SOCIAL_LINKS = [
-  { label: 'GitHub', href: 'https://github.com/mmnzns' },
-  // { label: 'LinkedIn', href: 'https://www.linkedin.com/in/…' },
-  // { label: 'Email', href: 'mailto:…' },
+  { label: 'LinkedIn', href: CONTACT.linkedin },
+  { label: 'Email', href: `mailto:${CONTACT.email}` },
 ] as const;

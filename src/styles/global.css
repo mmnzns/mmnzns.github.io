@@ -1,39 +1,82 @@
 /*
- * Minimal, unopinionated baseline. The intent is that whatever design we build
- * next replaces the look here without having to fight existing styles.
+ * Design system — "The read"
  *
- * Colors are declared as tokens on :root (light) and overridden under
- * prefers-color-scheme: dark, so the site follows the visitor's OS setting.
+ * Editorial rather than promotional: warm paper, high-contrast serif display,
+ * hairline rules instead of cards-on-grey. One accent colour, reserved almost
+ * exclusively for metric movement, so the eye learns that accent = proof.
+ *
+ * Motion is CSS-only — native cross-document view transitions and scroll-driven
+ * animations. No client JS ships for any of it.
  */
 
+@import '@fontsource-variable/newsreader';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
 :root {
-  --bg: #ffffff;
-  --surface: #f6f7f9;
-  --text: #16181d;
-  --text-muted: #5b6270;
-  --border: #e3e6ea;
-  --accent: #2b5cff;
+  /* Paper & ink — warm, never pure white or blue-black */
+  --paper: #fbf9f5;
+  --paper-2: #f4f0e7;
+  --ink: #17140f;
+  --ink-2: #5d5449;
+  --ink-3: #8b8175;
+  --rule: #e4ddd0;
+  --rule-strong: #cdc3b1;
 
-  --measure: 68ch;
-  --wrap: 64rem;
-  --space: 1rem;
+  /* The one accent. Metrics, links, focus. Scarcity is what makes it signal. */
+  --accent: #b0442a;
+  --accent-ink: #8f3520;
+  --accent-wash: rgb(176 68 42 / 7%);
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-display: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+
+  /* Fluid type scale, ~1.25 ratio at small / ~1.333 at large */
+  --step--1: clamp(0.83rem, 0.79rem + 0.18vw, 0.94rem);
+  --step-0: clamp(1rem, 0.95rem + 0.24vw, 1.13rem);
+  --step-1: clamp(1.2rem, 1.11rem + 0.44vw, 1.5rem);
+  --step-2: clamp(1.44rem, 1.29rem + 0.75vw, 2rem);
+  --step-3: clamp(1.73rem, 1.49rem + 1.2vw, 2.66rem);
+  --step-4: clamp(2.07rem, 1.7rem + 1.85vw, 3.55rem);
+  --step-5: clamp(2.49rem, 1.93rem + 2.8vw, 4.74rem);
+  --step-6: clamp(2.99rem, 2.15rem + 4.18vw, 6.31rem);
+
+  --wrap: 74rem;
+  --wrap-prose: 40rem;
+  --gutter: clamp(1.25rem, 0.9rem + 1.7vw, 2.5rem);
+  --section-gap: clamp(4.5rem, 3rem + 7vw, 9rem);
+
+  /* Motion. One easing curve everywhere — consistency reads as intent. */
+  --ease: cubic-bezier(0.22, 0.75, 0.24, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 180ms;
+  --dur: 380ms;
+  --dur-slow: 720ms;
 
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1115;
-    --surface: #171a21;
-    --text: #e7e9ee;
-    --text-muted: #9aa2b1;
-    --border: #262b35;
-    --accent: #7f9cff;
+    --paper: #12100c;
+    --paper-2: #1a1712;
+    --ink: #f0ebe1;
+    --ink-2: #a09686;
+    --ink-3: #7b7264;
+    --rule: #2b2620;
+    --rule-strong: #443d33;
+
+    --accent: #e07a54;
+    --accent-ink: #ef9877;
+    --accent-wash: rgb(224 122 84 / 12%);
   }
+}
+
+/* Native cross-document page transitions. Zero JS — the browser morphs
+   between documents on navigation. Unsupported browsers simply navigate. */
+@view-transition {
+  navigation: auto;
 }
 
 *,
@@ -42,41 +85,44 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--step-0);
+  line-height: 1.65;
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1,
 h2,
-h3 {
-  line-height: 1.2;
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
   text-wrap: balance;
-  margin: 0 0 0.5em;
+  margin: 0;
 }
 
-p,
-li {
-  max-width: var(--measure);
+p {
+  margin: 0;
+  text-wrap: pretty;
 }
 
 a {
-  color: var(--accent);
-}
-
-a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+  color: inherit;
 }
 
 img {
@@ -84,97 +130,108 @@ img {
   height: auto;
 }
 
-code,
-pre {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
+::selection {
+  background: var(--accent);
+  color: var(--paper);
 }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* ---------- layout primitives ---------- */
 
 .wrap {
   width: 100%;
   max-width: var(--wrap);
   margin-inline: auto;
-  padding-inline: calc(var(--space) * 1.5);
+  padding-inline: var(--gutter);
 }
 
-main.wrap {
-  flex: 1;
-  padding-block: calc(var(--space) * 3);
+.prose {
+  max-width: var(--wrap-prose);
 }
 
-/* Visible only once focused — lets keyboard users jump past the nav. */
+.section {
+  padding-block: var(--section-gap);
+  border-top: 1px solid var(--rule);
+}
+
+/* Mono eyebrow label — his own {01} device, kept because it's his */
+.marker {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- motion primitives ---------- */
+
+/* Scroll-driven reveal. Pure CSS: no observer, no JS, no layout thrash.
+   Guarded by @supports so unsupported browsers just render content visible. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Staggered entry for above-the-fold content, which scroll timelines can't
+   drive because it's already in view on load. */
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation: reveal-in var(--dur-slow) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ---------- skip link ---------- */
+
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  color: #fff;
-  z-index: 10;
+  z-index: 20;
+  padding: 0.75rem 1.25rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--step--1);
 }
 
 .skip-link:focus {
-  left: 0;
-}
-
-.site-header {
-  border-bottom: 1px solid var(--border);
-}
-
-.site-header nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space);
-  padding-block: var(--space);
-}
-
-.brand {
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-}
-
-.nav-links,
-.social-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--space) * 1.25);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-}
-
-.nav-links a:hover,
-.nav-links a[aria-current='page'] {
-  color: var(--text);
-}
-
-.site-footer {
-  border-top: 1px solid var(--border);
-  padding-block: calc(var(--space) * 1.5);
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.site-footer .wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space);
-}
-
-.site-footer p {
-  margin: 0;
-}
-
-.site-footer a {
-  color: var(--text-muted);
+  left: var(--gutter);
 }

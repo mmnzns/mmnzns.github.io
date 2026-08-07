@@ -1,0 +1,155 @@
+---
+/**
+ * The site's signature element.
+ *
+ * Miguel's numbers are almost always *transitions* — 24% → 38%, sender score
+ * 20s → 90+ — so the movement is the thing worth drawing, not the value. The
+ * connecting rule draws itself as the metric scrolls into view.
+ *
+ * Also handles single values (~54K conversions) via `value`.
+ */
+
+interface Props {
+  /** Starting value, e.g. "24%". Omit for a single-value metric. */
+  from?: string;
+  /** Resolved value, e.g. "38%". */
+  to?: string;
+  /** Single value, when there's no before/after. */
+  value?: string;
+  label: string;
+  /** `lg` for hero and case-study proof rows, `sm` inside cards. */
+  size?: 'sm' | 'lg';
+}
+
+const { from, to, value, label, size = 'sm' } = Astro.props;
+const isDelta = Boolean(from && to);
+---
+
+<div class:list={['metric', `metric--${size}`, isDelta && 'metric--delta']}>
+  <div class="metric__values">
+    {isDelta && <span class="metric__from">{from}</span>}
+    {isDelta && <span class="metric__rule" aria-hidden="true"></span>}
+    <span class="metric__to">{isDelta ? to : value}</span>
+  </div>
+  <span class="metric__label">{label}</span>
+</div>
+
+<style>
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+  }
+
+  .metric__values {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .metric--sm .metric__values {
+    font-size: var(--step-2);
+  }
+
+  .metric--lg .metric__values {
+    font-size: var(--step-4);
+  }
+
+  .metric__from {
+    color: var(--ink-3);
+    /* The "before" state is deliberately quiet — it's the thing being left behind */
+    font-size: 0.62em;
+  }
+
+  .metric__to {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* The connecting rule: an arrow that draws itself */
+  .metric__rule {
+    position: relative;
+    flex: 0 0 auto;
+    width: var(--rule-w, 2.1em);
+    height: 1px;
+    background: currentcolor;
+    color: var(--accent);
+    align-self: center;
+    transform-origin: left center;
+    transition:
+      width var(--dur) var(--ease),
+      opacity var(--dur) var(--ease);
+  }
+
+  /* Arrowhead */
+  .metric__rule::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 0.36em;
+    height: 0.36em;
+    border-top: 1px solid currentcolor;
+    border-right: 1px solid currentcolor;
+    transform: translate(1px, -50%) rotate(45deg);
+  }
+
+  .metric--sm .metric__rule {
+    font-size: var(--step-2);
+  }
+
+  .metric--lg .metric__rule {
+    font-size: var(--step-4);
+  }
+
+  .metric__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    text-wrap: balance;
+  }
+
+  /* Draw the rule as it enters the viewport. Pure CSS scroll timeline. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .metric__rule {
+        animation: draw-rule linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 65%;
+      }
+
+      .metric__to {
+        animation: settle linear both;
+        animation-timeline: view();
+        animation-range: entry 15% entry 70%;
+      }
+    }
+  }
+
+  @keyframes draw-rule {
+    from {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+      transform: translateX(-0.35em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

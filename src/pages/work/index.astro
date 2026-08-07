@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseCard from '../../components/CaseCard.astro';
+import { PROJECTS, CATEGORY_ORDER } from '../../data/site';
+
+const grouped = CATEGORY_ORDER.map((category) => ({
+  category,
+  projects: PROJECTS.filter((p) => p.category === category),
+})).filter((g) => g.projects.length > 0);
+---
+
+<BaseLayout
+  title="The Work"
+  description="Systems Miguel N. Monzones diagnosed, decided on, and built — lifecycle, AI automation, web operations and leadership, each with the metric that proved it."
+>
+  <section class="wrap head">
+    <p class="marker enter" style="--i:0">{PROJECTS.length} projects</p>
+    <h1 class="head__title enter" style="--i:1">The work</h1>
+    <p class="head__lede enter" style="--i:2">
+      Systems I diagnosed, decided on, and built. Each project follows the same arc: read what is
+      actually wrong, decide what should exist, choose the metric, build it, prove it.
+    </p>
+  </section>
+
+  {
+    grouped.map(({ category, projects }) => (
+      <section class="wrap section">
+        <header class="group__head reveal">
+          <h2 class="group__title">{category}</h2>
+          <span class="group__count">
+            {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+          </span>
+        </header>
+
+        <div class="group__items">
+          {projects.map((p) => (
+            <div class="reveal">
+              <CaseCard title={p.title} problem={p.problem} tags={p.tags} metrics={p.metrics} />
+            </div>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .head {
+    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+  }
+
+  .head__title {
+    font-size: var(--step-6);
+    margin-block: 1.25rem 0;
+  }
+
+  .head__lede {
+    margin-top: 1.5rem;
+    max-width: 54ch;
+    font-size: var(--step-1);
+    color: var(--ink-2);
+  }
+
+  .group__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .group__title {
+    font-size: var(--step-3);
+  }
+
+  .group__count {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .group__items {
+    border-bottom: 1px solid var(--rule);
+  }
+</style>

@@ -1,0 +1,138 @@
+---
+import MetricDelta from './MetricDelta.astro';
+
+/**
+ * A single project on the work index / home page.
+ *
+ * The problem statement leads, not the title — Miguel's differentiator is the
+ * diagnosis, so the card reads as a small argument: tension, then resolution.
+ * Cards without an `href` are entries that don't have a full case study yet.
+ */
+
+export interface Metric {
+  from?: string;
+  to?: string;
+  value?: string;
+  label: string;
+}
+
+interface Props {
+  title: string;
+  problem: string;
+  tags: readonly string[];
+  metrics: readonly Metric[];
+  href?: string;
+}
+
+const { title, problem, tags, metrics, href } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag class:list={['case', href && 'case--link']} href={href}>
+  <p class="case__problem">{problem}</p>
+
+  <h3 class="case__title">
+    {title}
+    {href && <span class="case__chev" aria-hidden="true">→</span>}
+  </h3>
+
+  <p class="case__tags">{tags.join('  /  ')}</p>
+
+  <div class="case__metrics">
+    {metrics.map((m) => <MetricDelta {...m} size="sm" />)}
+  </div>
+</Tag>
+
+<style>
+  .case {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.25rem) 0;
+    border-top: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  /* A wash that bleeds past the text column on hover, so the whole row
+     lights up rather than just a boxed card. */
+  .case::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline: calc(var(--gutter) * -0.6);
+    background: var(--accent-wash);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .case__problem {
+    font-size: var(--step-0);
+    color: var(--ink-2);
+    max-width: 48ch;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .case__title {
+    font-size: var(--step-3);
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+  }
+
+  .case__chev {
+    font-family: var(--font-sans);
+    font-size: 0.42em;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-0.5em);
+    transition:
+      opacity var(--dur) var(--ease),
+      transform var(--dur) var(--ease-out);
+  }
+
+  .case__tags {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.02em;
+    color: var(--ink-3);
+  }
+
+  .case__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.5rem, 1rem + 3vw, 3.5rem);
+    margin-top: 0.5rem;
+  }
+
+  /* Hover: the row warms, the arrow arrives, the rule strengthens.
+     Three small things moving together is what reads as considered. */
+  .case--link:hover {
+    border-top-color: var(--accent);
+  }
+
+  .case--link:hover::before {
+    opacity: 1;
+  }
+
+  .case--link:hover .case__problem {
+    color: var(--ink);
+  }
+
+  .case--link:hover .case__chev {
+    opacity: 1;
+    transform: none;
+  }
+
+  .case--link:hover :global(.metric__rule) {
+    --rule-w: 3em;
+  }
+
+  .case--link:focus-visible {
+    outline-offset: 8px;
+  }
+</style>

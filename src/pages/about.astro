@@ -1,8 +1,267 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+import { HEADLINE_STATS } from '../data/site';
+
+const EXPERIENCE = [
+  {
+    role: 'Senior Marketing Operations Manager, Lifecycle and MarTech',
+    org: 'Mogo Financial',
+    place: 'Vancouver, BC',
+    dates: 'Aug 2024 — Current',
+  },
+  {
+    role: 'Website, Email & Martech Operations Manager',
+    org: 'Pilothouse / DTC Newsletter',
+    place: 'Vancouver, BC',
+    dates: 'Apr 2021 — Aug 2024',
+  },
+  {
+    role: 'Founder & Growth Marketing Strategist',
+    org: 'CraftConcepts',
+    place: 'Vancouver, BC',
+    dates: 'May 2022 — Jan 2025',
+  },
+  {
+    role: 'Senior Marketing Projects & Operations Manager',
+    org: 'Sportserve',
+    place: 'Manila, Philippines',
+    dates: 'Mar 2014 — Feb 2021',
+  },
+  {
+    role: 'Article Editor & Contributor',
+    org: 'Rappler',
+    place: 'Manila, Philippines',
+    dates: 'Jan 2013 — Feb 2014',
+  },
+];
 ---
 
-<BaseLayout title="About" description="About Miguel Monzones.">
-  <h1>About</h1>
-  <p>Placeholder. Background, experience and how to get in touch go here.</p>
+<BaseLayout
+  title="About"
+  description="Miguel N. Monzones — 11 years across fintech, SaaS and ecommerce. From a newsroom in Manila to lifecycle and GTM systems in Vancouver."
+>
+  <section class="wrap head">
+    <p class="marker enter" style="--i:0">About</p>
+    <blockquote class="pull enter" style="--i:1">
+      <p>“He who does not know, can know by learning.”</p>
+      <cite>Akan proverb</cite>
+    </blockquote>
+    <p class="head__lede enter" style="--i:2">
+      This serves as a guiding principle in my work. I approach problems without presuming to have
+      the answer, but with confidence in my ability to find it.
+    </p>
+  </section>
+
+  <section class="wrap section">
+    <div class="intro-video reveal">
+      <VideoEmbed
+        videoId="WegUH6EIXgY"
+        title="A two-minute introduction — who I am and how I work."
+        poster="/video-poster.jpg"
+        start={78}
+      />
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="prose story reveal">
+      <p>
+        I grew up on a farm. There, you quickly learn to make do with what you have or figure out
+        how to create what you need. I picked up carpentry, learned to fix broken tools, and got
+        used to spotting problems before they happened. Thinking in systems was just part of
+        everyday life, long before I ever heard the term at work. That habit has always stayed with
+        me.
+      </p>
+      <p>
+        I started my career as an editor at Rappler in Manila, where I trained with Nobel Peace
+        Prize winner Maria Ressa in a busy digital newsroom. Working there taught me to be precise,
+        focus on facts, and dig deeper when answers weren't clear. I still use that editorial
+        discipline whenever I approach problems now.
+      </p>
+      <p>
+        My career didn't stick to a set plan. Instead, I just kept chasing the next problem. I
+        started with copywriting, which took me into email, then lifecycle marketing, and from there
+        into web, SEO, CRO, martech, and finally AI systems. I wasn't just trying to pick up new
+        skills. I simply followed each problem to its source. The work keeps changing because I
+        don't settle for surface-level fixes.
+      </p>
+      <p>
+        When I join a team, I often challenge existing workflows, not to prove a point, but because
+        I am committed to identifying gaps and opportunities for improvement.
+      </p>
+      <p class="story__kicker">
+        Every role I've had evolved into something bigger than I was hired for, because I look at
+        the whole system.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="stats reveal">
+      {
+        HEADLINE_STATS.map((s) => (
+          <div class="stat">
+            <span class="stat__value">{s.value}</span>
+            <span class="stat__label">{s.label}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <header class="section__head reveal">
+      <p class="marker">Experience</p>
+    </header>
+
+    <ol class="timeline">
+      {
+        EXPERIENCE.map((job) => (
+          <li class="job reveal">
+            <span class="job__dates">{job.dates}</span>
+            <div class="job__detail">
+              <h2 class="job__role">{job.role}</h2>
+              <p class="job__org">
+                {job.org} <span aria-hidden="true">·</span> {job.place}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
 </BaseLayout>
+
+<style>
+  .head {
+    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+  }
+
+  .pull {
+    margin: 1.5rem 0 0;
+    max-width: 20ch;
+  }
+
+  .pull p {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+
+  .pull cite {
+    display: block;
+    margin-top: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-style: normal;
+    color: var(--ink-3);
+  }
+
+  .head__lede {
+    margin-top: 2rem;
+    max-width: 52ch;
+    font-size: var(--step-1);
+    color: var(--ink-2);
+  }
+
+  .intro-video {
+    max-width: 52rem;
+  }
+
+  .story {
+    display: grid;
+    gap: 1.5rem;
+    font-size: var(--step-0);
+    line-height: 1.8;
+    color: var(--ink-2);
+  }
+
+  .story__kicker {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.35;
+    color: var(--ink);
+    margin-top: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .stats {
+    display: grid;
+    gap: clamp(1.75rem, 1rem + 3vw, 3rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .stat__value {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+
+  .stat__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    text-wrap: balance;
+  }
+
+  .section__head {
+    margin-bottom: 2rem;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .job {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+    gap: 0.5rem 2rem;
+    padding-block: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+    border-top: 1px solid var(--rule);
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .job:hover {
+    border-top-color: var(--accent);
+  }
+
+  .job__dates {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .job__role {
+    font-size: var(--step-2);
+    max-width: 30ch;
+  }
+
+  .job__org {
+    margin-top: 0.4rem;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 40rem) {
+    .job {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

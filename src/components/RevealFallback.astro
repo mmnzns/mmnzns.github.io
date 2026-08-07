@@ -1,0 +1,49 @@
+---
+/**
+ * Scroll reveals are driven by CSS `animation-timeline: view()`, which Chrome,
+ * Edge and Safari support natively at zero cost. Firefox doesn't yet — so
+ * without this, Firefox visitors would see no reveal at all.
+ *
+ * ~15 lines to cover roughly a fifth of desktop traffic. Only loads where it's
+ * actually needed.
+ */
+---
+
+<script>
+  const supportsScrollTimeline = CSS.supports('animation-timeline: view()');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!supportsScrollTimeline && !reducedMotion) {
+    document.documentElement.classList.add('js-reveal');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px' }
+    );
+
+    for (const el of document.querySelectorAll('.reveal')) observer.observe(el);
+  }
+</script>
+
+<style is:global>
+  /* Only applied when the fallback is active, so browsers with native support
+     never pay for these rules. */
+  .js-reveal .reveal {
+    opacity: 0;
+    transform: translateY(1.75rem);
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slow) var(--ease-out);
+  }
+
+  .js-reveal .reveal.is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+</style>

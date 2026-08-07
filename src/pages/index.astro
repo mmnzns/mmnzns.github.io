@@ -1,15 +1,330 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import MetricDelta from '../components/MetricDelta.astro';
+import CaseCard from '../components/CaseCard.astro';
+import { SITE } from '../config';
+import { FEATURED_WORK, CAPABILITIES, PROCESS, RECENT_THINKING, HEADLINE_STATS } from '../data/site';
 ---
 
-<BaseLayout>
-  <h1>Miguel Monzones</h1>
-  <p>
-    Placeholder home page. The scaffolding, deploy pipeline and site metadata are in place —
-    the design and real content come next.
-  </p>
-  <p>
-    Start editing at <code>src/pages/index.astro</code>, and update the name, description and
-    social links in <code>src/config.ts</code>.
-  </p>
+<BaseLayout description={SITE.description}>
+  <!-- Hero -->
+  <section class="wrap hero">
+    <p class="marker enter" style="--i:0">
+      {SITE.location} · 11 years · lifecycle, GTM & automation
+    </p>
+
+    <h1 class="hero__title enter" style="--i:1">I get handed a problem, not a spec.</h1>
+
+    <p class="hero__lede enter" style="--i:2">
+      I read what's actually wrong, decide what should exist, choose the metric that proves it,
+      and build the system that gets there.
+    </p>
+
+    <div class="hero__proof enter" style="--i:3">
+      {FEATURED_WORK.slice(0, 3).map((w) => <MetricDelta {...w.metrics[0]} size="lg" />)}
+    </div>
+  </section>
+
+  <!-- Selected work -->
+  <section class="wrap section">
+    <header class="section__head reveal">
+      <p class="marker">{'{01}'} &nbsp; Selected work</p>
+      <h2 class="section__title">Systems I diagnosed, decided on, and built.</h2>
+      <p class="section__lede">
+        Each project follows the same arc: read what is actually wrong, decide what should exist,
+        choose the metric, build it, prove it.
+      </p>
+    </header>
+
+    <div class="cases">
+      {
+        FEATURED_WORK.map((w) => (
+          <div class="reveal">
+            <CaseCard {...w} />
+          </div>
+        ))
+      }
+    </div>
+
+    <a class="more reveal" href="/work/">
+      See all thirteen projects <span aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <!-- What I do -->
+  <section class="wrap section">
+    <header class="section__head reveal">
+      <p class="marker">{'{02}'} &nbsp; What I do</p>
+      <h2 class="section__title">Three systems, run as one.</h2>
+    </header>
+
+    <div class="pillars">
+      {
+        CAPABILITIES.map((c) => (
+          <article class="pillar reveal">
+            <h3 class="pillar__title">{c.title}</h3>
+            <p class="pillar__body">{c.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="wrap section">
+    <header class="section__head reveal">
+      <p class="marker">{'{03}'} &nbsp; The process</p>
+      <h2 class="section__title">How the work actually happens.</h2>
+    </header>
+
+    <ol class="process">
+      {
+        PROCESS.map((step, i) => (
+          <li class="step reveal">
+            <span class="step__num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="step__title">{step.title}</h3>
+            <p class="step__body">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- By the numbers -->
+  <section class="wrap section">
+    <div class="stats reveal">
+      {
+        HEADLINE_STATS.map((s) => (
+          <div class="stat">
+            <span class="stat__value">{s.value}</span>
+            <span class="stat__label">{s.label}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Thinking -->
+  <section class="wrap section">
+    <header class="section__head reveal">
+      <p class="marker">{'{04}'} &nbsp; The thinking</p>
+      <h2 class="section__title">Working things out in public.</h2>
+    </header>
+
+    <ul class="posts">
+      {
+        RECENT_THINKING.map((p) => (
+          <li class="post reveal">
+            <span class="post__date">{p.date}</span>
+            <h3 class="post__title">{p.title}</h3>
+            <p class="post__excerpt">{p.excerpt}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a class="more reveal" href="/thinking/">
+      Read the thinking <span aria-hidden="true">→</span>
+    </a>
+  </section>
 </BaseLayout>
+
+<style>
+  /* ---------- hero ---------- */
+  .hero {
+    padding-block: clamp(4rem, 2rem + 9vw, 9rem) clamp(3rem, 2rem + 5vw, 6rem);
+  }
+
+  .hero__title {
+    font-size: var(--step-6);
+    margin-block: 1.5rem 0;
+    max-width: 16ch;
+  }
+
+  .hero__lede {
+    margin-top: 1.75rem;
+    max-width: 52ch;
+    font-size: var(--step-1);
+    color: var(--ink-2);
+  }
+
+  .hero__proof {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(2rem, 1rem + 5vw, 5rem);
+    margin-top: clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  /* ---------- section scaffolding ---------- */
+  .section__head {
+    max-width: 46ch;
+    margin-bottom: clamp(2.5rem, 2rem + 3vw, 4rem);
+  }
+
+  .section__title {
+    font-size: var(--step-4);
+    margin-top: 1.25rem;
+  }
+
+  .section__lede {
+    margin-top: 1.25rem;
+    color: var(--ink-2);
+  }
+
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 3rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-decoration: none;
+    color: var(--accent);
+    border-bottom: 1px solid currentcolor;
+    padding-bottom: 0.25rem;
+    transition: gap var(--dur) var(--ease);
+  }
+
+  .more:hover {
+    gap: 1.1em;
+  }
+
+  /* ---------- work ---------- */
+  .cases {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ---------- capabilities ---------- */
+  .pillars {
+    display: grid;
+    gap: clamp(2rem, 1rem + 3vw, 3rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  }
+
+  .pillar {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .pillar__title {
+    font-size: var(--step-2);
+    margin-bottom: 0.85rem;
+  }
+
+  .pillar__body {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.75;
+  }
+
+  /* ---------- process ---------- */
+  .process {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  }
+
+  .step {
+    padding: 1.5rem clamp(1rem, 0.5rem + 1.5vw, 1.75rem) 2.5rem 0;
+    border-top: 1px solid var(--rule);
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .step:hover {
+    border-top-color: var(--accent);
+  }
+
+  .step__num {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .step__title {
+    font-size: var(--step-2);
+    margin-block: 0.6rem 0.5rem;
+  }
+
+  .step__body {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.7;
+  }
+
+  /* ---------- stats ---------- */
+  .stats {
+    display: grid;
+    gap: clamp(1.75rem, 1rem + 3vw, 3rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .stat__value {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    text-wrap: balance;
+  }
+
+  /* ---------- thinking ---------- */
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .post {
+    padding-block: clamp(1.5rem, 1rem + 2vw, 2.25rem);
+    border-top: 1px solid var(--rule);
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+  }
+
+  .post__date {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    grid-row: span 2;
+  }
+
+  .post__title {
+    font-size: var(--step-2);
+    max-width: 34ch;
+  }
+
+  .post__excerpt {
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.7;
+    max-width: 62ch;
+  }
+
+  @media (max-width: 40rem) {
+    .post {
+      grid-template-columns: 1fr;
+    }
+
+    .post__date {
+      grid-row: auto;
+    }
+  }
+</style>

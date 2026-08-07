@@ -1,5 +1,6 @@
 ---
-import { SITE, NAV_LINKS, SOCIAL_LINKS } from '../config';
+import { SITE, CONTACT, NAV_LINKS, SOCIAL_LINKS } from '../config';
+import RevealFallback from '../components/RevealFallback.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -9,11 +10,12 @@ interface Props {
 
 const { title, description = SITE.description } = Astro.props;
 
-const pageTitle = title ? `${title} ${SITE.titleSeparator} ${SITE.title}` : SITE.title;
+const pageTitle = title ? `${title} ${SITE.titleSeparator} ${SITE.title}` : `${SITE.title} — ${SITE.role}`;
 const origin = Astro.site ?? new URL(SITE.url);
 const canonical = new URL(Astro.url.pathname, origin);
 const ogImage = SITE.ogImage ? new URL(SITE.ogImage, origin) : null;
 const currentPath = Astro.url.pathname;
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -48,43 +50,244 @@ const currentPath = Astro.url.pathname;
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <nav class="wrap" aria-label="Primary">
-        <a class="brand" href="/">{SITE.title}</a>
-        <ul class="nav-links">
-          {
-            NAV_LINKS.map((link) => (
-              <li>
-                <a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined}>
-                  {link.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
+      <div class="wrap site-header__inner">
+        <a class="brand" href="/">
+          <span class="brand__name">Miguel N. Monzones</span>
+          <span class="brand__role">{SITE.role}</span>
+        </a>
+
+        <nav aria-label="Primary">
+          <ul class="nav">
+            {
+              NAV_LINKS.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="nav__link"
+                    aria-current={currentPath.startsWith(link.href) ? 'page' : undefined}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
     </header>
 
-    <main id="main" class="wrap">
+    <main id="main">
       <slot />
     </main>
 
     <footer class="site-footer">
       <div class="wrap">
-        <p>&copy; {new Date().getFullYear()} {SITE.author}</p>
-        {
-          SOCIAL_LINKS.length > 0 && (
-            <ul class="social-links">
-              {SOCIAL_LINKS.map((link) => (
+        <div class="cta reveal">
+          <p class="marker">Contact</p>
+          <h2 class="cta__title">Let's build something.</h2>
+          <p class="cta__body">
+            If you're working on something meaningful and want a partner who cares just as much,
+            I'd love to connect.
+          </p>
+          {SITE.availability && <p class="cta__avail">{SITE.availability}</p>}
+
+          <ul class="cta__links">
+            {
+              SOCIAL_LINKS.map((link) => (
                 <li>
-                  <a href={link.href} rel="me noopener">
+                  <a class="cta__link" href={link.href} rel="me noopener">
                     {link.label}
+                    <span aria-hidden="true">→</span>
                   </a>
                 </li>
-              ))}
-            </ul>
-          )
-        }
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="colophon">
+          <p>{CONTACT.entity} · {SITE.location}</p>
+          <p>&copy; {year} {SITE.author}</p>
+        </div>
       </div>
     </footer>
+
+    <RevealFallback />
   </body>
 </html>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1rem;
+  }
+
+  .brand {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .brand__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
+  .brand__role {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1rem, 0.5rem + 2vw, 2.25rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__link {
+    position: relative;
+    text-decoration: none;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+    padding-block: 0.35rem;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  /* Underline that grows from the left rather than fading in — small thing,
+     but directional motion reads as deliberate where a fade reads as default. */
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .nav__link:hover,
+  .nav__link[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  .nav__link:hover::after,
+  .nav__link[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  main {
+    flex: 1;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    background: var(--paper-2);
+    padding-block: var(--section-gap) 2.5rem;
+  }
+
+  .cta__title {
+    font-size: var(--step-5);
+    margin-block: 0.5rem 1rem;
+  }
+
+  .cta__body {
+    max-width: 42ch;
+    color: var(--ink-2);
+    font-size: var(--step-1);
+  }
+
+  .cta__avail {
+    margin-top: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+
+  .cta__avail::before {
+    content: '';
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: currentcolor;
+  }
+
+  .cta__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+  }
+
+  .cta__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--rule-strong);
+    transition:
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      gap var(--dur) var(--ease);
+  }
+
+  .cta__link:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    gap: 1em;
+  }
+
+  .colophon {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: var(--section-gap);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--rule);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+
+  .colophon p {
+    margin: 0;
+  }
+
+  @media (max-width: 34rem) {
+    .site-header__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.85rem;
+    }
+  }
+</style>

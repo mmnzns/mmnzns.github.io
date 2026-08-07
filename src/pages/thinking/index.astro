@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { RECENT_THINKING } from '../../data/site';
+---
+
+<BaseLayout
+  title="The Thinking"
+  description="Lifecycle, AI, web, automation — and the occasional detour into doing the work better. Writing by Miguel N. Monzones."
+>
+  <section class="wrap head">
+    <p class="marker enter" style="--i:0">The thinking</p>
+    <h1 class="head__title enter" style="--i:1">Working things out in public.</h1>
+    <p class="head__lede enter" style="--i:2">
+      Lifecycle, AI, web, automation, and the occasional detour into doing the work better. Mostly
+      me thinking through something until it makes sense.
+    </p>
+  </section>
+
+  <section class="wrap section">
+    <ul class="posts">
+      {
+        RECENT_THINKING.map((p) => (
+          <li class="post reveal">
+            <span class="post__date">{p.date}</span>
+            <div>
+              <h2 class="post__title">{p.title}</h2>
+              <p class="post__excerpt">{p.excerpt}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .head {
+    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+  }
+
+  .head__title {
+    font-size: var(--step-5);
+    margin-block: 1.25rem 0;
+    max-width: 18ch;
+  }
+
+  .head__lede {
+    margin-top: 1.5rem;
+    max-width: 54ch;
+    font-size: var(--step-1);
+    color: var(--ink-2);
+  }
+
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .post {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    gap: 0.6rem 2rem;
+    padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-top: 1px solid var(--rule);
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  .post:hover {
+    border-top-color: var(--accent);
+  }
+
+  .post__date {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .post__title {
+    font-size: var(--step-2);
+    max-width: 36ch;
+  }
+
+  .post__excerpt {
+    margin-top: 0.75rem;
+    color: var(--ink-2);
+    font-size: var(--step--1);
+    line-height: 1.75;
+    max-width: 64ch;
+  }
+
+  @media (max-width: 40rem) {
+    .post {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
