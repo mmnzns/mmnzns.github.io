@@ -8,7 +8,7 @@
 
 export const SITE = {
   /** Absolute origin the site is served from. No trailing slash. */
-  url: 'https://mmnzns.github.io',
+  url: 'https://mnmonzones.com',
   title: 'Miguel N. Monzones',
   /** Shown after the page title in the browser tab: "The Work · Miguel N. Monzones" */
   titleSeparator: '·',
