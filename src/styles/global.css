@@ -111,6 +111,19 @@
   box-sizing: border-box;
 }
 
+/* `hidden` has to actually hide.
+ *
+ * The attribute only sets `display: none` in the browser's own stylesheet, and
+ * any rule an author writes beats that — so a panel styled `display: grid` and
+ * given `hidden` stays on screen. Every toggle on this site works by setting
+ * `hidden`, and most of what they toggle is a grid or a flex container, so
+ * without this line the tabs, the shelf and the pager all render every panel at
+ * once. `!important` is the point rather than a shortcut: it has to outrank the
+ * component rule it's correcting. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
