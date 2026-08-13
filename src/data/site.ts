@@ -49,8 +49,8 @@ export const PROJECTS: readonly Project[] = [
     slug: 'mogo-lifecycle',
     title: 'The Mogo lifecycle rebuild',
     problem:
-      'Activation was stuck and everyone blamed email. The real problem was a web and lifecycle misalignment nobody had named.',
-    tags: ['Lifecycle', 'Email', 'Activation'],
+      'Email engagement was healthy, but customers were meeting a different experience after the click. I worked with Product, Creative, and Analytics to bring lifecycle, web, and measurement into one connected journey.',
+    tags: ['Lifecycle', 'Web', 'Activation'],
     metrics: [
       { from: '24%', to: '38%', label: 'activation rate' },
       { from: '78%', to: '62%', label: '7-day drop-off' },
@@ -61,17 +61,17 @@ export const PROJECTS: readonly Project[] = [
     slug: 'winback',
     title: 'The Intelligent Investing winback and cross-sell',
     problem:
-      'About 900,000 people had gone quiet on investing or never started, and a large part of them had only ever borrowed from us.',
+      'Around 900,000 people had either gone quiet on investing or never started. Separating dormant investors from lending customers—and Manage from Self-directed—turned one broad campaign into four more relevant conversations.',
     tags: ['Lifecycle', 'Retention', 'Cross-sell'],
     metrics: [{ value: '~54K', label: 'activated or returned across two rounds' }],
     category: 'Lifecycle',
   },
   {
     slug: 'behavioral-trigger-layer',
-    title: 'Building the behavioral trigger layer',
+    title: 'Building the behavioural trigger layer',
     problem:
-      'The activation sequence fired on a schedule instead of on what people actually did, and nobody had named that as the problem.',
-    tags: ['Lifecycle', 'Behavioral', 'Activation'],
+      'The existing lifecycle responded to how many days had passed rather than what customers had done. I rebuilt the journey around meaningful actions such as connecting a bank, making a deposit, and completing a first trade.',
+    tags: ['Lifecycle', 'Behavioural', 'Activation'],
     metrics: [
       { value: '~24%', label: 'funded-idle to first trade, where there was no path before' },
     ],
@@ -79,10 +79,10 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: 'esp-migration',
-    title: 'ESP migration and deliverability rescue',
+    title: 'ESP migration and deliverability recovery',
     problem:
-      "Sender score in the low 20s, inbox placement eroding, and the cause wasn't content. It was shared IP reputation and a platform that couldn't fix it.",
-    tags: ['Infrastructure', 'Deliverability', 'Lifecycle'],
+      'Open rates were falling and inbox placement was becoming less reliable. Testing traced the issue to damaged shared-IP reputation, so I led the migration of more than 200,000 subscribers to healthier sending infrastructure.',
+    tags: ['Lifecycle', 'Deliverability', 'Infrastructure'],
     metrics: [
       { from: '20s', to: '90+', label: 'sender score' },
       { value: '200K+', label: 'subscribers migrated' },
@@ -91,10 +91,10 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: 'dafabet-sfmc',
-    title: 'Salesforce lifecycle automation — Dafabet',
+    title: 'Salesforce lifecycle automation at Dafabet',
     problem:
-      'Twelve countries, safer-gambling compliance in every market, and no system connecting user behavior to messaging.',
-    tags: ['Lifecycle', 'SFMC', 'Compliance'],
+      'Dafabet operated across twelve countries with different regulatory requirements, but no connected lifecycle system built around customer behaviour. I designed six cross-channel journeys around first bet, dormancy, trust, safer gambling, and deeper product use.',
+    tags: ['Lifecycle', 'Salesforce', 'Compliance'],
     metrics: [
       { value: '+8–15%', label: 'bet conversion' },
       { value: '+10–20%', label: '7-day reactivation' },
@@ -103,10 +103,10 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: 'agentic-ops',
-    title: 'Agentic ops infrastructure',
+    title: 'Building Mogo’s automation infrastructure',
     problem:
-      'Leadership wanted automation but had not named a platform or an owner, and what the Ops teams actually needed was to be able to build things themselves.',
-    tags: ['AI', 'Automation', 'GTM'],
+      'Leadership wanted to move towards agentic workflows, but the teams still needed a platform, practical use cases, and a way to own what was built. I worked with DevOps and the Ops leads to establish the infrastructure, ship the first workflows, and help teams maintain and extend them.',
+    tags: ['AI', 'Automation', 'Operations'],
     metrics: [
       { value: '~30%', label: 'underwriter close rate' },
       { value: '15+', label: 'workflows in production' },
@@ -117,8 +117,8 @@ export const PROJECTS: readonly Project[] = [
     slug: 'lead-enrichment',
     title: 'AI-powered lead enrichment and routing',
     problem:
-      'The CFO asked for enriched leads, when what sales needed was to know which signups were worth calling the moment they arrived.',
-    tags: ['AI', 'Automation', 'RevOps'],
+      'DTC Newsletter signups were reaching HubSpot without enough context for Sales to know which ones needed immediate attention. I built a workflow that researched each company and contact, classified and validated the information, populated the CRM, and alerted Sales when a high-value lead appeared.',
+    tags: ['AI', 'RevOps', 'Lead enrichment'],
     metrics: [{ value: '~70%', label: 'lead data pre-populated' }],
     category: 'AI Automation',
   },
@@ -126,16 +126,16 @@ export const PROJECTS: readonly Project[] = [
     slug: 'compliance-workflow',
     title: 'Email validation and compliance workflow',
     problem:
-      'The validation workflow ran fine technically and still nobody leaned on it, because it was not checking what Compliance actually checks.',
-    tags: ['AI', 'Automation', 'Compliance'],
+      'The early workflow functioned technically, but it didn’t yet reflect how Compliance evaluated content. I brought the reviewers into the design process, documented their criteria, and translated that judgement into a validation system Marketing could use while drafting.',
+    tags: ['AI', 'Quality assurance', 'Compliance'],
     metrics: [{ value: '−50%', label: 'review cycles: 4–5 rounds → 1–2' }],
     category: 'AI Automation',
   },
   {
     slug: 'mogo-web',
-    title: 'Mogo web ecosystem rebuild',
+    title: 'The Mogo web ecosystem rebuild',
     problem:
-      'Marketing needed to ship pages in hours, but the website sat with DevOps — which turned out to be the whole problem, not a detail of it.',
+      'Marketing depended on DevOps whenever it needed to launch or improve a page. I led the Webflow rebuild and moved web ownership into Marketing, giving the team a faster way to support campaigns, lifecycle journeys, and conversion work.',
     tags: ['Web', 'Webflow', 'Conversion'],
     metrics: [
       { value: '+15%', label: 'lifecycle conversion' },
@@ -147,7 +147,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'dtc-newsletter',
     title: 'DTC Newsletter web and SEO rebuild',
     problem:
-      'The newsletter had a 70% bounce rate, and the right people were arriving — they just were not being given a reason to stay.',
+      'DTC had a growing audience and strong editorial content, but the website wasn’t turning enough organic visitors into readers and subscribers. Across three major rebuilds, I reworked the CMS, information architecture, SEO, and conversion journey.',
     tags: ['Web', 'Webflow', 'SEO'],
     metrics: [
       { from: '70%', to: '38%', label: 'bounce rate' },
@@ -159,7 +159,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'analytics-rebuild',
     title: 'Analytics and tracking infrastructure rebuild',
     problem:
-      'Leadership had stopped trusting the numbers, and the cause was sitting underneath the campaigns: years of undocumented tag debt.',
+      'Years of undocumented tags and disconnected tools had made performance reporting difficult to trust. I used the Webflow rebuild as an opportunity to rebuild GA4 and GTM cleanly, map the martech ecosystem, and establish clearer ownership and governance.',
     tags: ['Analytics', 'Tracking', 'Martech'],
     metrics: [
       { from: '40%', to: '80%', label: 'data accuracy' },
@@ -169,9 +169,9 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: 'sportserve-payments-division',
-    title: 'Payments Operations Division at Sportserve',
+    title: 'Building Sportserve’s Payments Operations division',
     problem:
-      'Payment launches were fragmented across 8 departments with no single owner. I made the case for a dedicated division and built it from zero.',
+      'Payment launches crossed eight departments, twelve markets, and a growing set of regulatory and provider requirements. I built the shared operating model, clarified ownership between teams, and hired and trained a dedicated five-person division to keep the work moving.',
     tags: ['Leadership', 'Operations', 'Team building'],
     metrics: [
       { from: '0', to: '5', label: 'person team, built from scratch' },
@@ -183,8 +183,8 @@ export const PROJECTS: readonly Project[] = [
     slug: 'craftconcepts',
     title: 'Founding CraftConcepts',
     problem:
-      "Local businesses lost their digital presence after the pandemic and couldn't afford an agency to fix it. I built a collective to close that gap, and mentored early-career marketers on real client work.",
-    tags: ['Leadership', 'Founder', 'Mentorship'],
+      'Small businesses were trying to rebuild their digital presence after the pandemic, while many early-career marketers needed meaningful work to build their experience. I created a collective that brought those two groups together.',
+    tags: ['Leadership', 'Community', 'Mentorship'],
     metrics: [
       { from: '3', to: '20+', label: 'contributors at peak' },
       { value: '26', label: 'businesses served' },

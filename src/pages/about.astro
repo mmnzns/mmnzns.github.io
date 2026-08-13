@@ -7,6 +7,8 @@ import {
   INTRO,
   WHAT_I_DO,
   SCOPE_PROOF,
+  SCOPE_QUOTE,
+  SCOPE_INTRO,
   TOTALS,
   BELIEFS,
   OUTSIDE_WORK,
@@ -54,9 +56,9 @@ import {
   {/* ------------------------------------------------------ scope band -- */}
   <section class="band about-band">
     <div class="wrap">
-      <blockquote class="about-band__quote">
-        Every role I’ve had turned into something bigger than what I was hired for.
-      </blockquote>
+      <blockquote class="about-band__quote">{SCOPE_QUOTE}</blockquote>
+
+      <p class="about-band__intro">{SCOPE_INTRO}</p>
 
       <div class="about-band__proof">
         {SCOPE_PROOF.map((para) => <p>{para}</p>)}
@@ -88,7 +90,7 @@ import {
     <div class="split">
       <div>
         <p class="eyebrow split__eyebrow">What I believe</p>
-        <h2 class="split__title">A few things I’m fairly settled on.</h2>
+        <h2 class="split__title">A few principles I’ve picked up—and held onto—along the way.</h2>
       </div>
       <div class="beliefs" data-reveal-group>
         {
@@ -117,7 +119,7 @@ import {
     <div class="split">
       <div>
         <p class="eyebrow split__eyebrow">Outside work</p>
-        <h2 class="split__title">Food, fiction, and a fat cat.</h2>
+        <h2 class="split__title">Food, stories, music, and one very opinionated cat.</h2>
       </div>
       <div class="prose-block" data-reveal-group>
         {OUTSIDE_WORK.map((para) => <p>{para}</p>)}
@@ -129,7 +131,7 @@ import {
   <section class="section wrap">
     <div class="split">
       <div>
-        <p class="eyebrow split__eyebrow">Where</p>
+        <p class="eyebrow split__eyebrow">Career</p>
         <h2 class="split__title">Where I’ve worked.</h2>
       </div>
 
@@ -164,8 +166,8 @@ import {
 
   <ContactSection
     title="Get in touch."
-    intro="Want to work together, chat about something you’re stuck on, or just say hey? Reach out here."
-    aside="If you’re ever in town, coffee’s on me. I’d rather hear the problem out loud anyway."
+    intro="Want to work together, talk through something you’re building, or simply say hello? I’d be happy to hear from you."
+    aside="If you’re ever in Vancouver, coffee’s on me. I’d rather hear it out loud anyway."
   />
 </BaseLayout>
 
@@ -339,6 +341,14 @@ import {
     line-height: 1.12;
     color: var(--sun);
     text-wrap: balance;
+  }
+
+  .about-band__intro {
+    margin-top: 26px;
+    max-width: 680px;
+    font-size: 18px;
+    line-height: 1.66;
+    color: var(--on-dark-2);
   }
 
   .about-band__proof {

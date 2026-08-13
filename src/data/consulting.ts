@@ -24,53 +24,54 @@ export const PRACTICES: readonly Practice[] = [
     name: 'Lifecycle & retention',
     accent: 'var(--coral)',
     blurb:
-      'Onboarding, activation, winback and the flows in between — triggered on what people do, not how many days have passed.',
+      'Onboarding, activation, retention, and winback—designed around what customers actually do and what helps them keep moving.',
     detail:
-      'Most lifecycle programs are a set of campaigns that were never designed as a system. I read the whole path — product events, onboarding, web, the ESP — find where the promise and the experience come apart, and rebuild the triggers around real behaviour.',
+      'Lifecycle works best when messaging, product, web, and customer behaviour are treated as one connected journey. I look across that full experience to understand where people are hesitating, dropping off, or losing confidence. Then I help your team build journeys that respond to meaningful actions—not simply the number of days that have passed.',
     items: [
       'Lifecycle and CRM audit',
-      'Onboarding and activation rebuild',
-      'Winback and cross-sell programs',
-      'Braze, Klaviyo and ESP implementation',
-      'Deliverability and sending infrastructure',
+      'Onboarding and activation journeys',
+      'Retention and habit-building programs',
+      'Winback and cross-sell strategy',
       'Segmentation and event architecture',
+      'Deliverability and sending infrastructure',
     ],
-    tools: 'Braze · Klaviyo · Iterable · Segment · Amplitude',
+    tools: 'Braze · Klaviyo · HubSpot · Salesforce Marketing Cloud · Iterable · Segment',
   },
   {
     key: 'web',
     name: 'Conversion & web',
     accent: 'var(--sky)',
-    blurb: 'The page the lifecycle sends people to. Usually where the drop-off actually is.',
+    blurb:
+      'Making sure the experience after the click supports the promise that brought someone there.',
     detail:
-      'Lifecycle work keeps ending at a page that undoes it. This is the read on the journey from the click to the completed action — what the page promises, what it asks for and when, and who owns it internally, which is often the real problem.',
+      'A strong campaign can only do so much if the next step feels disconnected, unclear, or difficult to trust. I review the journey from the first click through the completed action, looking at the message, page, tracking, and handoffs between teams. The goal is a web experience that supports the customer journey and gives Marketing room to keep improving it.',
     items: [
-      'Conversion and journey teardown',
-      'Website rebuild and IA',
-      'Landing page and funnel systems',
-      'Martech stack and tracking setup',
-      'SEO and AI search visibility (GEO)',
-      'Ownership model between marketing and engineering',
+      'Customer journey and conversion teardown',
+      'Website rebuild and information architecture',
+      'Landing-page and funnel systems',
+      'Analytics and tracking implementation',
+      'SEO and AI-search visibility',
+      'Web ownership and governance',
     ],
-    tools: 'Webflow · WordPress · GA4 · GTM · Ahrefs · Hotjar',
+    tools: 'Webflow · WordPress · GA4 · Google Tag Manager · Ahrefs · Hotjar',
   },
   {
     key: 'ai',
     name: 'AI & automation',
     accent: 'var(--moss)',
     blurb:
-      'Infrastructure your ops team can run themselves, instead of another dependency on engineering.',
+      'Practical automation that removes repetitive work, improves decision-making, and remains reliable when your team takes it over.',
     detail:
-      'The mandate is usually "go use AI" with no platform, owner or roadmap behind it. The work is deciding what should be automated and what should stay human, building the connective tissue, then training the people who own the process to maintain it without me.',
+      'I start with the workflow, not the AI tool. Together, we identify where work is slowing down, which decisions can be supported safely, and where human judgement still matters. I then design the integrations, AI steps, validation, and error handling needed to make the system dependable under real operating conditions—and document it so your team can own it.',
     items: [
-      'Automation audit and opportunity map',
-      'Self-hosted n8n and Zapier architecture',
-      'Routing, scoring and triage workflows',
-      'Content and QA workflows with compliance',
-      'Internal AI tooling and prompt systems',
-      'Training ops leads to build their own',
+      'Automation audit and opportunity roadmap',
+      'Lead enrichment, scoring, and real-time routing',
+      'CRM and lifecycle workflow integration',
+      'AI-assisted content, QA, and compliance validation',
+      'Structured outputs, safeguards, and error handling',
+      'Team training, documentation, and handoff',
     ],
-    tools: 'n8n · Zapier · AWS · OpenAI and Anthropic APIs · Make',
+    tools: 'n8n · Zapier · LindyAI · Clay · HubSpot · OpenAI API',
   },
 ];
 
@@ -93,78 +94,78 @@ export const ENGAGEMENTS: readonly Engagement[] = [
     name: 'Teardown',
     length: '1 week',
     fits: ['lifecycle', 'web', 'ai'],
-    body: 'One narrow question, one fast read. I go through the system myself, then write up what I found and what I’d change, in order.',
-    leave: 'Written findings, no slides.',
+    body: 'A focused look at one clearly defined question. I review the relevant journey, data, and systems, then bring the findings together in order of importance.',
+    leave: 'A concise written assessment and a clear set of next steps.',
   },
   {
     name: 'Full audit',
     length: '2–3 weeks',
     fits: ['lifecycle', 'web', 'ai'],
-    body: 'The whole system — data, triggers, journeys, tooling, and the ownership between teams. Includes talking to the people who run it, because the org chart is usually part of the diagnosis.',
-    leave: 'Prioritised plan with an owner and a metric per item.',
+    body: 'A wider look across the customer journey, data, triggers, tools, and the way work moves between teams. I also speak with the people who operate the system so the recommendations reflect how the work happens in practice.',
+    leave: 'A prioritised plan with a recommended owner, success measure, and next action for each item.',
   },
   {
     name: 'Build',
     length: '6–12 weeks',
     fits: ['lifecycle', 'web', 'ai'],
-    body: 'I do the work. Rebuild the flows, the site or the automation infrastructure, alongside your team, and leave it documented enough that they can keep going.',
-    leave: 'Shipped, handed over, measured.',
+    body: 'I work alongside your team to build or rebuild the lifecycle journeys, website, or automation system we’ve agreed on. The work includes testing, documentation, and a proper handoff—not just getting it live.',
+    leave: 'A working system your team understands, can measure, and can continue improving.',
   },
   {
     name: 'Advisory retainer',
     length: 'Monthly',
     fits: ['lifecycle', 'ai'],
-    body: 'A standing second read for a team that already has hands. Strategy, prioritisation, reviewing what your people build. No execution from me.',
-    leave: 'You get a standing second opinion.',
+    body: 'Ongoing strategic support for a team that already has people to execute. I help with priorities, review plans and work in progress, and provide a second perspective when the path forward isn’t obvious.',
+    leave: 'A consistent strategic partner your team can call on as decisions arise.',
   },
   {
     name: 'Fractional',
     length: '1–2 days a week',
     fits: ['lifecycle', 'ai'],
-    body: 'Inside the team, owning the function — running the roadmap, making the calls, hiring the person who eventually replaces me.',
-    leave: 'You get someone accountable for the function, not just advice.',
+    body: 'I work inside the team and take responsibility for the function: setting the roadmap, making decisions, coordinating the work, and helping build the internal capability to own it long term.',
+    leave: 'Clear ownership of the function while you develop or hire the right permanent team.',
   },
   {
     name: 'Something else',
     length: 'Depends',
     fits: ['lifecycle', 'web', 'ai'],
     other: true,
-    body: 'Advisory, a one-off build, an interim stretch while you hire, a second opinion on someone else’s plan. Tell me the shape and I’ll tell you honestly whether I’m the right person.',
-    leave: 'An honest answer either way.',
+    body: 'A one-off build, an interim stretch while you hire, a second opinion on an existing plan, or something that doesn’t fit neatly into the options above. Tell me what you need, and I’ll let you know whether I can genuinely help.',
+    leave: 'A clear and honest recommendation, whether or not that means working together.',
   },
 ];
 
 export const FIT_YES = [
-  'You have a number that’s moving the wrong way and you’re not sure why.',
-  'There’s a team who can execute, but nobody owning the thread between marketing, product and engineering.',
-  'You want someone to tell you what’s actually wrong, including when it isn’t the thing you asked about.',
-  'Fintech, SaaS or ecommerce with real volume and real data behind the question.',
-  'You’d rather have a plan your team can run than a dependency on me.',
+  'An important customer or business metric is moving in the wrong direction, and the reason isn’t yet clear.',
+  'The problem crosses lifecycle, product, web, data, or engineering, but nobody currently owns the full journey between them.',
+  'You want someone who will listen to the people closest to the work, test the assumptions, and give you a clear recommendation.',
+  'You’re working in fintech, SaaS, ecommerce, or another business with enough customer activity and data to learn from.',
+  'You want to leave the engagement with a system and plan your team can continue running—not a permanent dependency on me.',
 ] as const;
 
 export const FIT_NO = [
-  'You need extra hands to ship a campaign calendar someone else already decided on.',
-  'You have already settled on the diagnosis and you would like someone to agree with it.',
-  'You need a whole team. I’m one person, and I’d rather say that now than three weeks in.',
-  'Pre-product or pre-traffic. There isn’t enough signal yet for this to be worth your money.',
-  'You need the answer next week. The read usually takes longer than that, and rushing it defeats the point of it.',
+  'You primarily need additional production support for a campaign plan that has already been decided.',
+  'The scope and solution are already fixed, with little room to revisit the underlying problem if the evidence points somewhere else.',
+  'You need a full-service agency or several specialists working in parallel. I’m an independent consultant and stay directly involved in the work myself.',
+  'The product is still too early to provide meaningful customer behaviour, traffic, or performance data.',
+  'The timeline doesn’t leave enough room to understand the problem properly. I can work quickly, but I won’t pretend a rushed answer is a reliable one.',
 ] as const;
 
 export const START_STEPS = [
   {
     num: '01',
-    name: 'Email me',
-    body: 'The number, the theory, and what you’ve already tried. Two paragraphs is plenty.',
+    name: 'Send me a note',
+    body: 'Tell me what’s happening, which result you’re watching, and what you’ve already tried. A couple of paragraphs is plenty to get us started.',
   },
   {
     num: '02',
-    name: 'A 30-minute intro call',
-    body: 'Free, and the point of it is working out whether this is something I can actually help with — not advice on the call itself. Sometimes it ends with me pointing you somewhere else.',
+    name: 'A 30-minute conversation',
+    body: 'We’ll talk through the problem, the context around it, and what kind of help would be useful. The goal is to understand whether I’m the right person for the work. If I’m not, I’ll be honest about that and point you in a more useful direction when I can.',
   },
   {
     num: '03',
-    name: 'A written scope',
-    body: 'What I’d do, what it costs as a fixed number, when it’s done, and the metric we’ll judge it on. Nothing starts before you’ve seen that.',
+    name: 'A written proposal',
+    body: 'If there’s a fit, I’ll send a clear scope covering what I recommend, what you’ll receive, the fixed cost, the timing, and how we’ll measure success. Nothing begins until you’ve reviewed and approved it.',
   },
 ] as const;
 
@@ -175,39 +176,39 @@ export const PROOF = [
     client: 'Mogo',
     accent: 'var(--coral)',
     title: 'Rebuilding lifecycle',
-    line: 'Hired to fix the email. The email was fine — the product was contradicting it.',
+    line: 'Email engagement was healthy, but customers were meeting a different experience after the click. We brought lifecycle, web, product, and measurement into one connected journey.',
   },
   {
     slug: 'winback',
     client: 'Mogo',
     accent: 'var(--sun)',
     title: 'The Intelligent Investing winback and cross-sell',
-    line: 'About 900,000 quiet customers who turned out to be two audiences and four different conversations.',
+    line: 'Around 900,000 people had gone quiet or never started investing. Understanding the different audiences and products turned one broad campaign into four more relevant conversations.',
   },
   {
-    slug: 'agentic-ops',
-    client: 'Mogo',
+    slug: 'lead-enrichment',
+    client: 'DTC Newsletter / Pilothouse',
     accent: 'var(--moss)',
-    title: 'Automation infrastructure',
-    line: 'A hybrid n8n and Zapier setup the ops teams now build on themselves.',
+    title: 'AI-powered lead enrichment and routing',
+    line: 'A newsletter signup became a sales-ready HubSpot record, with company research, AI classification, validation, and real-time routing working together behind it.',
   },
 ] as const;
 
 /** Headline numbers on the consulting page's dark band. */
 export const CONSULTING_NUMBERS = [
-  { value: '24% → 38%', label: 'Activation, two months into the Mogo lifecycle rebuild' },
-  { value: '35% → 23%', label: 'First-year churn, after the longer-term flows went in' },
-  { value: '~54K', label: 'Dormant customers activated or returned across two rounds' },
-  { value: '15+', label: 'Automations in production, run by the Ops teams themselves' },
+  { value: '24% → 38%', label: 'Activation within two months of the Mogo lifecycle rebuild' },
+  { value: '35% → 23%', label: 'First-year churn after the longer-term retention journeys launched' },
+  { value: '~54K', label: 'People activated or returned across two Intelligent Investing rounds' },
+  { value: '~70%', label: 'Of lead data populated before Sales touched the record' },
 ] as const;
 
 export const WORTH_KNOWING = [
   {
     accent: 'var(--coral)',
-    text: 'It’s me doing the work — no agency, no team behind me, nobody managing the account.',
+    text: 'You’ll work directly with me from the first conversation through the final handoff. I’m an independent consultant—not an agency—and I stay close to both the thinking and the work.',
   },
   {
     accent: 'var(--moss)',
-    text: 'Vancouver, BC. Remote across North America and Europe; I’ve worked in 14 markets.',
+    text: 'Based in Vancouver and working remotely across North America and Europe. My experience spans 14 markets.',
   },
 ] as const;

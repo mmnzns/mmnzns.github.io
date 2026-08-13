@@ -20,24 +20,31 @@ import {
   <section class="section--first wrap" id="top">
     <p class="eyebrow consult-hero__eyebrow">Consulting</p>
     <h1 class="page-title consult-hero__title">
-      Help with lifecycle, conversion, and the automation underneath.
+      Help with lifecycle, conversion, and the systems behind them.
     </h1>
 
     <div class="consult-hero">
       <div class="consult-hero__copy" data-reveal-group>
         <p>
-          Hi — I’m Miguel. Eleven years on lifecycle, web and marketing operations, mostly fintech
-          with some SaaS and ecommerce. Consulting runs through MNM Alaminos Consulting Ltd.
+          Hi! I’m Miguel. I’ve spent eleven years working across lifecycle, web, and marketing
+          operations, mostly in fintech, with some SaaS and ecommerce along the way. My consulting
+          work runs through MNM Alaminos Consulting Ltd.
         </p>
         <p>
-          Most people come to me with a number that’s moving the wrong way and a theory about why.
-          The first thing I do is check the theory, because it’s usually not the thing everyone’s
-          looking at. Activation that looks like an email problem turns out to be a promise the
-          product isn’t keeping. Falling opens turn out to be a shared IP with a damaged reputation.
+          Teams usually reach out when an important number is moving in the wrong direction, a
+          customer journey isn’t working as expected, or a process has become too difficult to hold
+          together.
         </p>
         <p>
-          Then I decide what actually needs to change, pick the number that will tell us whether I
-          read it right, and build it — or hand you a plan precise enough that your team can.
+          My first step is to understand the situation from the people closest to it. I look at the
+          customer journey, the data, the tools, and how work moves between teams. Sometimes the
+          first theory is right. Other times, the issue sits somewhere less obvious—after the click,
+          between two systems, or in a part of the experience nobody fully owns.
+        </p>
+        <p>
+          From there, we agree on what needs to change and which result will tell us whether it
+          worked. Depending on what you need, I can build it alongside your team or leave you with a
+          practical plan they can carry forward.
         </p>
       </div>
 
@@ -53,7 +60,7 @@ import {
             ))
           }
         </ul>
-        <a class="btn consult-hero__cta" href="#contact">Tell me what’s stuck</a>
+        <a class="btn consult-hero__cta" href="#contact">Tell me what you’re working through</a>
       </aside>
     </div>
   </section>
@@ -62,9 +69,12 @@ import {
   <section class="section wrap" id="practices">
     <p class="eyebrow practices__eyebrow">What I work on</p>
     <h2 class="section-title--sm practices__title">
-      Three areas — though the problem usually sits between two of them.
+      Three connected areas, with most problems sitting somewhere between them.
     </h2>
-    <p class="lede practices__sub">Have a look at whichever one sounds like your problem.</p>
+    <p class="lede practices__sub">
+      Three areas that often overlap. Start with the one that feels closest to your problem, and we
+      can follow the thread from there.
+    </p>
 
     <div class="practices" role="tablist" aria-label="Practice areas">
       {
@@ -127,12 +137,11 @@ import {
     <div class="engage__head">
       <div>
         <p class="eyebrow engage__eyebrow">How it’s scoped</p>
-        <h2 class="section-title--sm">
-          Ways to work together, from a one-week teardown to a day a week.
-        </h2>
+        <h2 class="section-title--sm">From a focused review to ongoing support.</h2>
         <p class="lede engage__sub">
-          Showing what’s available for <strong data-practice-name>{PRACTICES[0].name.toLowerCase()}</strong>.
-          Not everything fits every area, and I’d rather say so than sell you the bigger one.
+          There are a few ways we can work together, from a focused one-week review to ongoing
+          support inside your team. Showing what fits
+          <strong data-practice-name>{PRACTICES[0].name.toLowerCase()}</strong>.
         </p>
       </div>
       <p class="meta" data-engage-count aria-live="polite">
@@ -174,8 +183,8 @@ import {
     </div>
 
     <p class="engage__pricing">
-      Fixed fee, quoted with the proposal before anything starts. No hourly billing after the intro
-      call.
+      Project work is quoted as a fixed fee in the proposal, so the scope and cost are clear before
+      anything begins. There is no hourly billing after the introductory call.
     </p>
   </section>
 
@@ -184,8 +193,9 @@ import {
     <div class="wrap">
       <p class="eyebrow consult-numbers__eyebrow">Receipts</p>
       <h2 class="consult-numbers__title">
-        These are all from in-house work rather than client engagements, which I’d rather you knew
-        up front.
+        These results come from roles where I worked inside the business, alongside the teams
+        responsible for carrying the work forward. I’d rather be clear about that than present them
+        as consulting-client results.
       </h2>
 
       <div class="stat-row consult-numbers__grid">
@@ -219,7 +229,10 @@ import {
   {/* -------------------------------------------------------------- fit -- */}
   <section class="section wrap" id="fit">
     <p class="eyebrow fit__eyebrow">Fit</p>
-    <h2 class="section-title--sm fit__title">Who this works for, and who it doesn’t.</h2>
+    <h2 class="section-title--sm fit__title">
+      The work tends to go well when there’s a meaningful problem to understand, enough signal to
+      learn from, and a team willing to look across the full system.
+    </h2>
 
     <div class="fit">
       <div class="card card--raised fit__col">
@@ -228,7 +241,7 @@ import {
       </div>
 
       <div class="fit__col fit__col--muted">
-        <p class="eyebrow fit__label">Not a fit</p>
+        <p class="eyebrow fit__label">Probably not the right fit</p>
         <ul class="fit__list fit__list--muted">{FIT_NO.map((item) => <li>{item}</li>)}</ul>
       </div>
     </div>
@@ -237,7 +250,10 @@ import {
   {/* ------------------------------------------------------------ start -- */}
   <section class="section wrap" id="start">
     <p class="eyebrow start__eyebrow">How it starts</p>
-    <h2 class="section-title--sm start__title">Three steps, and you can stop after any of them.</h2>
+    <h2 class="section-title--sm start__title">
+      Three straightforward steps, with a chance to decide whether it makes sense to continue at
+      each one.
+    </h2>
 
     <ol class="start">
       {
@@ -253,9 +269,8 @@ import {
   </section>
 
   <ContactSection
-    title="Tell me what’s stuck."
-    intro="Booking is by email for now. Send me the number that’s moving the wrong way and what you think is causing it — I’ll tell you whether I agree, and whether I’m the right person."
-    messageLabel="What are you trying to move?"
+    title="Let’s talk."
+    intro="Tell me what you’re working through, what you’re seeing, and what you think may be getting in the way. I’ll take a look and let you know whether it sounds like something I can help with."
   />
 </BaseLayout>
 

@@ -72,6 +72,8 @@
   --sun: #f5b841;
   --sky: #3e8fd8;
   --moss: #3fa981;
+  /* Moss darkened enough to carry small text on paper without going grey. */
+  --moss-deep: #2e8567;
   /* The interaction accent: links, focus, selection, active indicators. */
   --accent: var(--coral);
 

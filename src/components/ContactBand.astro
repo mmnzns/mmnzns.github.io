@@ -1,19 +1,26 @@
 ---
-import { SITE, CONTACT } from '../config';
+import { CONTACT } from '../config';
 ---
 
 <section class="section wrap" id="contact">
   <div class="band-panel">
     <div>
-      <h2 class="band-panel__title">Let’s build something.</h2>
+      <h2 class="band-panel__title">Tell me what you’re working on.</h2>
       <p class="band-panel__body">
-        If you’re working on something meaningful and want a partner who cares just as much, I’d
-        like to hear about it.
+        If you’re working through a customer journey, system, or operational problem and think my
+        experience might help, I’d like to hear about it.
       </p>
     </div>
 
     <div class="band-panel__actions">
-      {SITE.availability && <p class="band-panel__avail">{SITE.availability}.</p>}
+      {/*
+        This band states availability as a sentence rather than reusing
+        SITE.availability, which is the short status-line form used beside the
+        green dot on the contact panels.
+      */}
+      <p class="band-panel__avail">
+        Consulting on lifecycle, conversion, and automation—and open to the right senior role.
+      </p>
       <div class="band-panel__buttons">
         <a class="btn btn--on-dark" href={CONTACT.linkedin} target="_blank" rel="noopener">
           LinkedIn

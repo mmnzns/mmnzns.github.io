@@ -21,7 +21,7 @@ const CAPTIONS: Record<string, string> = {
   'mogo-lifecycle': 'From calendar time to what people actually did.',
   winback: 'Two audiences, two products, four different pitches.',
   'sportserve-payments-division': 'Eight departments, before and after.',
-  'agentic-ops': 'Ops teams building their own.',
+  'lead-enrichment': 'Signup to sales-ready lead, with validation in the middle.',
 };
 ---
 
@@ -175,39 +175,65 @@ const CAPTIONS: Record<string, string> = {
   }
 
   {
-    slug === 'agentic-ops' && (
-      <svg viewBox="0 0 320 200" aria-hidden="true" class="diagram__wide">
+    slug === 'lead-enrichment' && (
+      <svg viewBox="0 0 340 200" aria-hidden="true" class="diagram__wide">
         <g class="ink-line">
-          <rect x="8" y="34" width="62" height="22" rx="5" />
-          <rect x="8" y="70" width="62" height="22" rx="5" />
-          <rect x="8" y="106" width="62" height="22" rx="5" />
-          <rect x="108" y="40" width="124" height="30" rx="6" transform="rotate(-.8 170 55)" />
-          <rect x="108" y="96" width="124" height="34" rx="6" transform="rotate(.7 170 113)" />
-          <path d="M72 46 C90 48, 94 54, 107 55" />
-          <path d="M72 82 C88 80, 94 60, 107 57" />
-          <path d="M72 118 C88 118, 94 114, 107 112" />
-          <rect x="246" y="66" width="66" height="24" rx="5" />
-          <path d="M234 56 C240 60, 242 68, 245 74" />
-          <path d="M234 112 C240 104, 242 92, 245 84" />
-        </g>
-        <g>
-          <text x="18" y="49">sources</text>
-          <text x="18" y="85">CRM</text>
-          <text x="18" y="121">forms</text>
-          <text x="116" y="59">Zapier — integrations</text>
-          <text x="116" y="110">self-hosted n8n</text>
-          <text x="116" y="124">on AWS — high volume</text>
-          <text x="279" y="82" text-anchor="middle" class="sm">
-            Ops teams
-          </text>
+          <rect x="4" y="14" width="100" height="70" rx="5" />
+          <rect x="120" y="14" width="100" height="70" rx="5" />
+          <rect x="236" y="14" width="100" height="70" rx="5" />
+          <rect x="120" y="120" width="100" height="70" rx="5" />
+          <path d="M106 49 L117 49 M113 45.5 L117.5 49 L113 52.5" />
+          <path d="M222 49 L233 49 M229 45.5 L233.5 49 L229 52.5" />
+          <path d="M286 86 C286 98, 286 104, 286 116 M282 111.5 L286 116.5 L290 111.5" />
+          <path d="M234 155 L223 155 M227 151.5 L222.5 155 L227 158.5" />
         </g>
         <g class="moss-line">
-          <path d="M278 96 C276 140, 210 152, 168 140" />
-          <path d="M176 137 L167 140 L174 146" />
-          <path d="M280 60 C278 22, 212 14, 170 30" />
-          <path d="M178 27 L169 30 L176 36" />
+          <rect x="236" y="120" width="100" height="70" rx="5" />
+          <rect x="4" y="120" width="100" height="70" rx="5" />
+          <path d="M118 155 L107 155 M111 151.5 L106.5 155 L111 158.5" />
         </g>
-        <text x="196" y="170" class="moss-label">they build their own</text>
+        <path class="moss-rule" d="M244 170.5 L328 170.5" />
+        <g class="stage">
+          <text x="14" y="41">SIGNUP</text>
+          <text x="130" y="41">FILTER</text>
+          <text x="246" y="41">ENRICH</text>
+          <text x="246" y="138" class="stage--moss">
+            CLASSIFY +
+          </text>
+          <text x="246" y="149" class="stage--moss">
+            VALIDATE
+          </text>
+          <text x="130" y="147">CRM</text>
+          <text x="14" y="147" class="stage--moss">
+            ROUTE
+          </text>
+        </g>
+        <g class="sm">
+          <text x="14" y="57">DTC Newsletter</text>
+          <text x="14" y="70" class="faint">
+            ~300/day
+          </text>
+          <text x="130" y="57">Remove generic</text>
+          <text x="130" y="70" class="faint">
+            email addresses
+          </text>
+          <text x="246" y="57">StoreLeads · Clay</text>
+          <text x="246" y="70" class="faint">
+            LinkedIn · LindyAI
+          </text>
+          <text x="246" y="162">ChatGPT API</text>
+          <text x="246" y="183" class="faint">
+            Fit · persona · QA
+          </text>
+          <text x="130" y="163">HubSpot</text>
+          <text x="130" y="176" class="faint">
+            ~70% pre-filled
+          </text>
+          <text x="14" y="163">Slack → Sales</text>
+          <text x="14" y="176" class="faint">
+            high value, real time
+          </text>
+        </g>
       </svg>
     )
   }
@@ -302,6 +328,33 @@ const CAPTIONS: Record<string, string> = {
   svg :global(.moss-label) {
     fill: var(--moss);
     font-weight: 600;
+  }
+
+  /* Stage names in the lead-enrichment flow: the pipeline steps, in caps. */
+  svg :global(.stage) text {
+    font-size: 9px;
+    font-weight: 600;
+    fill: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  /* The AI-owned steps, set apart from the ones that were already there. */
+  svg text:global(.stage--moss) {
+    fill: var(--moss-deep);
+  }
+
+  /* `.faint` is a stroke colour on paths; on a label it has to be a fill. */
+  svg text:global(.faint) {
+    stroke: none;
+    fill: var(--ink-3);
+  }
+
+  svg :global(.moss-rule) {
+    fill: none;
+    stroke: var(--moss);
+    stroke-opacity: 0.4;
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
   }
 
   /* The winback drawing is a layout, not a path — boxes on a grid, tilted a

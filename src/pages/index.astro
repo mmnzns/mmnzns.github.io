@@ -21,7 +21,12 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   <section class="section--first wrap" id="top">
     <div class="hero">
       <div>
+        <p class="eyebrow hero__place">Vancouver, BC</p>
         <h1 class="display">Hi, I’m Miguel.</h1>
+        <p class="hero__tagline">
+          I work across lifecycle, GTM, and automation—usually where the real problem is a little
+          upstream from the obvious one.
+        </p>
 
         <div class="hero__id">
           {/*
@@ -40,43 +45,46 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
             loading="eager"
             fetchpriority="high"
           />
-          <p class="hero__where">
-            Vancouver, BC<br />Consulting, and open to the right senior role
-          </p>
+          <p class="hero__where">Consulting and open to the right senior role</p>
         </div>
       </div>
 
       <div class="hero__intro" data-reveal-group>
         <p>
-          I’ve spent about eleven years on lifecycle and GTM — mostly in fintech, with some SaaS and
-          ecommerce along the way. These days I’m consulting on lifecycle, conversion and
-          automation, and I’m open to the right senior role if one comes along.
+          I’ve spent the last eleven years helping teams understand why customers stall, drop off,
+          or walk away—and building the systems that help them move forward.
         </p>
         <p>
-          Most of what I do happens before anything gets built. Someone hands me a number that’s
-          heading the wrong way, and my first job is figuring out what’s really behind it — which,
-          more often than not, isn’t the thing everyone’s been staring at.
+          Most of my work starts before anything gets built. A number is heading the wrong way, a
+          customer journey feels off, or a team is spending too much time holding a process
+          together. I talk to the people closest to it, follow the experience from end to end, and
+          work out what’s actually getting in the way.
         </p>
         <p>
-          Lately a lot of that has turned into automation: rebuilding the lifecycle system so it
-          keeps running, and keeps getting better, without anyone having to babysit it.
+          Sometimes the answer is in the message. Often it’s in what happens after the click, the
+          data behind the journey, or the way the systems connect.
+        </p>
+        <p>
+          Lately, much of that work has involved automation: building lifecycle systems that respond
+          to what people actually do, stay reliable under real conditions, and are straightforward
+          for teams to own.
         </p>
       </div>
     </div>
 
     {/* ------------------------------------------------ the symptom card -- */}
     <div class="symptom">
-      <p class="symptom__rail eyebrow">Here’s what I mean</p>
+      <p class="symptom__rail eyebrow">What that looks like in practice</p>
 
       <div class="card card--raised symptom__card" data-symptom>
         <div class="symptom__body">
-          <p class="eyebrow" data-symptom-label>The ask</p>
+          <p class="eyebrow" data-symptom-label>What we were seeing</p>
           <p class="symptom__text" data-symptom-text>{SYMPTOMS[0].ask}</p>
         </div>
 
         <div class="symptom__controls">
           <button type="button" class="btn" data-symptom-flip aria-pressed="false">
-            What I found
+            Look underneath
           </button>
           <button type="button" class="btn btn--ghost" data-symptom-next>Show me another</button>
           <p class="symptom__count" data-symptom-count>1 of {SYMPTOMS.length}</p>
@@ -103,9 +111,9 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
       function render() {
         const item = SYMPTOMS[index];
-        label.textContent = flipped ? 'What I found' : 'The ask';
+        label.textContent = flipped ? 'What was happening underneath' : 'What we were seeing';
         text.textContent = flipped ? item.found : item.ask;
-        flip.textContent = flipped ? '← Back to the ask' : 'What I found';
+        flip.textContent = flipped ? '← Back to the starting point' : 'Look underneath';
         flip.setAttribute('aria-pressed', String(flipped));
         count.textContent = `${index + 1} of ${SYMPTOMS.length}`;
       }
@@ -130,10 +138,11 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     <div class="wrap work__head">
       <div>
         <p class="eyebrow">Work</p>
-        <h2 class="section-title">A few things I’ve built.</h2>
+        <h2 class="section-title">A few things I’ve helped build.</h2>
         <p class="lede work__sub">
-          The ask is what I was handed. What I found is usually somewhere else, so I’ve put both
-          next to each other.
+          Each one started with a real business problem. The useful part was understanding what sat
+          underneath it—and working with the people closest to the problem to build something
+          better.
         </p>
       </div>
 
@@ -168,17 +177,19 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
               <div class="segmented" role="group" aria-label="Which part of the story">
                 <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
-                  The ask
+                  The starting point
                 </button>
                 <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
-                  What I found
+                  What we learned
                 </button>
               </div>
 
-              <p class="shelf__copy" data-copy="ask">{item.ask}</p>
-              <p class="shelf__copy" data-copy="found" hidden>
-                {item.found}
-              </p>
+              <div class="shelf__copy" data-copy="ask">
+                {item.brief.map((para) => <p>{para}</p>)}
+              </div>
+              <div class="shelf__copy" data-copy="found" hidden>
+                {item.read.map((para) => <p>{para}</p>)}
+              </div>
 
               <p class="shelf__metric">
                 <span class="shelf__metric-value">{item.metric}</span>
@@ -223,17 +234,19 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
             <div class="segmented" role="group" aria-label="Which part of the story">
               <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
-                The ask
+                The starting point
               </button>
               <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
-                What I found
+                What we learned
               </button>
             </div>
 
-            <p class="grid-view__copy" data-copy="ask">{item.ask}</p>
-            <p class="grid-view__copy" data-copy="found" hidden>
-              {item.found}
-            </p>
+            <div class="grid-view__copy" data-copy="ask">
+              {item.brief.map((para) => <p>{para}</p>)}
+            </div>
+            <div class="grid-view__copy" data-copy="found" hidden>
+              {item.read.map((para) => <p>{para}</p>)}
+            </div>
 
             <p class="shelf__metric">
               <span class="grid-view__metric-value">{item.metric}</span>
@@ -250,9 +263,11 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     <div class="method">
       <div class="method__intro">
         <p class="eyebrow">How I work</p>
-        <h2 class="section-title">Read, decide, pick the metric, build, check.</h2>
+        <h2 class="section-title">Understand first. Then build.</h2>
         <p class="method__sub">
-          Same five steps most of the time. Here’s what each one looked like on one project.
+          The problems change, but the rhythm is usually the same: listen to the people closest to
+          the work, trace what’s happening, agree on what success looks like, build, and learn from
+          the result.
         </p>
       </div>
 
@@ -308,7 +323,10 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
       <div class="receipts__head">
         <div>
           <p class="eyebrow">Numbers</p>
-          <h2 class="section-title">Some numbers, and what was behind them.</h2>
+          <h2 class="section-title">A few numbers—and the work behind them.</h2>
+          <p class="lede receipts__sub">
+            The result matters. So does the context that explains why it moved.
+          </p>
         </div>
 
         <div class="receipts__tabs" role="tablist" aria-label="Numbers">
@@ -396,7 +414,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
         <h2 class="section-title--sm writing__title">Things I’ve written.</h2>
         <p class="writing__sub">
           Mostly lifecycle, AI, and how search is changing. I write to work out what I actually
-          think.
+          think—and to share what I’ve learned while doing the work.
         </p>
 
         <div class="writing__chips" role="group" aria-label="Filter writing by topic">
@@ -458,8 +476,8 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   </section>
 
   <ContactSection
-    title="Get in touch."
-    intro="If you’ve got something you’re trying to figure out, or a role you think might fit, I’d like to hear about it."
+    title="Let’s talk."
+    intro="If you’re working through a difficult customer journey, building something new, or hiring for a role you think might fit, I’d love to hear about it."
   />
 </BaseLayout>
 
@@ -703,6 +721,18 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     align-items: start;
   }
 
+  .hero__place {
+    margin-bottom: 22px;
+  }
+
+  .hero__tagline {
+    margin-top: 26px;
+    max-width: 520px;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
   .hero__id {
     margin-top: 40px;
     display: flex;
@@ -874,6 +904,12 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     font-size: 17px;
     line-height: 1.68;
     color: var(--ink-2);
+  }
+
+  /* Both panels hold several paragraphs now, so they space themselves. */
+  .shelf__copy p + p,
+  .grid-view__copy p + p {
+    margin-top: 0.85em;
   }
 
   .shelf__metric {
@@ -1086,6 +1122,12 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
   .receipts__head .eyebrow {
     margin-bottom: 20px;
+  }
+
+  .receipts__sub {
+    margin-top: 18px;
+    max-width: 520px;
+    color: var(--on-dark-2);
   }
 
   .receipts__tabs {

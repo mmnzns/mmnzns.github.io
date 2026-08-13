@@ -1,7 +1,10 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { CONTACT } from '../config';
 import { PROJECTS } from '../data/site';
+
+const POST_COUNT = (await getCollection('thinking', ({ data }) => !data.draft)).length;
 
 /*
  * Counts are read from the data rather than typed, so a page that says
@@ -19,17 +22,17 @@ const destinations = [
   {
     href: '/consulting/',
     title: 'Consulting',
-    body: 'What I take on, how it gets scoped, and who it’s not for.',
+    body: 'What I take on, how it gets scoped, and who it is not for.',
   },
   {
     href: '/thinking/',
     title: 'Writing',
-    body: 'Lifecycle, AI and how search is changing.',
+    body: `Lifecycle, AI and how search is changing. ${spell(POST_COUNT).replace(/^./, (c) => c.toUpperCase())} pieces so far.`,
   },
   {
     href: '/about/',
     title: 'About',
-    body: 'Where I came from, how I work, and what I’m like to work with.',
+    body: 'Where I came from, how I work, and what I am like to work with.',
   },
 ];
 ---
@@ -39,7 +42,7 @@ const destinations = [
     <p class="eyebrow notfound__eyebrow">404</p>
     <h1 class="page-title">This page is not here.</h1>
     <p class="lede notfound__lede">
-      Either it moved or the link was wrong, and neither of those is your fault. Here’s where most
+      Either it moved or the link was wrong, and neither of those is your fault. Here is where most
       people are heading anyway.
     </p>
 
