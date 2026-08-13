@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { CONTACT } from '../../config';
-import { TAGS, PENDING, tagAccent } from '../../data/writing';
+import { TAGS, tagAccent } from '../../data/writing';
 import { formatDate, readingTime } from '../../utils/format';
 
 const all = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
@@ -143,7 +143,7 @@ const meta = (post: (typeof all)[number]) =>
   </section>
 
   {
-    (archive.length > 0 || PENDING.length > 0) && (
+    archive.length > 0 && (
       <section class="section--tight wrap" data-archive-section>
         <p class="eyebrow rule-heading">Earlier writing</p>
 
@@ -160,22 +160,6 @@ const meta = (post: (typeof all)[number]) =>
               <span class="archive__tag">{post.data.tag}</span>
               <span class="archive__year">{post.data.date.getUTCFullYear()}</span>
             </a>
-          ))}
-
-          {PENDING.map((item) => (
-            <div
-              class="archive__row archive__row--pending"
-              data-post
-              data-tag-value={item.tag}
-              data-text={`${item.title} ${item.tag}`.toLowerCase()}
-            >
-              <span class="archive__title">
-                {item.title}
-                <span class="archive__flag">Not posted yet</span>
-              </span>
-              <span class="archive__tag">{item.tag}</span>
-              <span class="archive__year">{item.year}</span>
-            </div>
           ))}
         </div>
       </section>
@@ -488,26 +472,6 @@ const meta = (post: (typeof all)[number]) =>
   .archive__row:hover {
     background: var(--paper);
     color: var(--ink);
-  }
-
-  /* A div rather than a link, because there's nothing to link to yet. It stays
-     in the list so the archive reflects what's written, not just what's up. */
-  .archive__row--pending {
-    color: var(--ink-3);
-  }
-
-  .archive__row--pending:hover {
-    background: transparent;
-    color: var(--ink-3);
-  }
-
-  .archive__flag {
-    margin-left: 10px;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    white-space: nowrap;
   }
 
   .archive__title {
