@@ -47,7 +47,7 @@ export interface CaseStudy {
 
 export const CASES: Record<string, CaseStudy> = {
   'mogo-lifecycle': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'The Mogo lifecycle rebuild',
     deck: 'Activation was stuck, and lifecycle email was the natural first place to look. Following the customer path showed the web experience and the lifecycle running on separate tracks.',
     sections: [
@@ -94,7 +94,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'winback': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'The Intelligent Investing winback and cross-sell',
     deck: 'About 900,000 people had either gone quiet on investing or never started. It was not one audience, and it was never going to be one campaign.',
     sections: [
@@ -143,7 +143,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'behavioral-trigger-layer': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Building the behavioural trigger layer',
     deck: 'Funded accounts weren’t turning into first trades, and the activation sequence was firing on a schedule rather than on what people had just done.',
     sections: [
@@ -287,7 +287,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'agentic-ops': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Agentic ops infrastructure',
     deck: 'Leadership wanted automation before a platform or an owner had been named, and what the Ops teams needed most was the ability to build things themselves.',
     sections: [
@@ -383,7 +383,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'compliance-workflow': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Email validation and compliance workflow',
     deck: 'The first validation workflow ran fine technically and still nobody leaned on it, because it wasn’t checking what Compliance actually reviews.',
     sections: [
@@ -431,7 +431,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'mogo-web': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Mogo web ecosystem rebuild',
     deck: 'Marketing needed to ship pages in hours while the website sat with DevOps, and that ownership question turned out to be central rather than incidental.',
     sections: [
@@ -533,7 +533,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'analytics-rebuild': {
-    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Analytics and tracking infrastructure rebuild',
     deck: 'Leadership had stopped trusting the numbers, and the cause sat underneath the campaigns: years of undocumented tag debt.',
     sections: [
@@ -632,7 +632,7 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
   'craftconcepts': {
-    meta: 'CraftConcepts · Founder, Growth Marketing Strategist · May 2022 – Jan 2025',
+    meta: 'CraftConcepts · Founder and Growth Strategist · May 2022 – Jan 2025',
     title: 'Founding and scaling CraftConcepts',
     deck: 'Local businesses lost their digital presence after the pandemic and couldn’t afford an agency to fix it. I built a collective to close that gap, and used it to mentor early-career marketers on real client work.',
     sections: [

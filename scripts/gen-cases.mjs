@@ -46,6 +46,26 @@ const ORDER = [
   'craftconcepts',
 ];
 
+/*
+ * The design export disagrees with itself on two job titles: its About page
+ * and its Case pages give different ones for the same employer. Professional
+ * History is the record both should match, so its wording wins here and the
+ * about page keeps the same strings. Remove an entry once the design agrees.
+ */
+const TITLE_FIXES = [
+  [
+    'Senior Marketing Operations & Lifecycle Manager (MarTech)',
+    'Senior Marketing Operations Manager (Lifecycle and MarTech)',
+  ],
+  ['Founder, Growth Marketing Strategist', 'Founder and Growth Strategist'],
+];
+
+for (const c of cases) {
+  for (const [wrong, right] of TITLE_FIXES) {
+    if (c.meta.includes(wrong)) c.meta = c.meta.replace(wrong, right);
+  }
+}
+
 const bySlug = new Map(cases.map((c) => [c.slug, c]));
 const missing = ORDER.filter((s) => !bySlug.has(s));
 const extra = cases.map((c) => c.slug).filter((s) => !ORDER.includes(s));
