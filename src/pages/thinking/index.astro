@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { CONTACT } from '../../config';
 import { TAGS, tagAccent } from '../../data/writing';
 import { formatDate, readingTime } from '../../utils/format';
 
@@ -166,23 +165,6 @@ const meta = (post: (typeof all)[number]) =>
     )
   }
 
-  <section class="section--tight wrap">
-    <div class="follow">
-      <div>
-        <h2 class="follow__title">New piece every few weeks.</h2>
-        <p class="follow__body">
-          No schedule, no newsletter template. It goes out when I’ve finished thinking about
-          something.
-        </p>
-      </div>
-      <div class="follow__actions">
-        <a class="btn btn--on-dark" href={CONTACT.linkedin} target="_blank" rel="noopener">
-          Follow on LinkedIn
-        </a>
-        <a class="btn btn--outline-dark" href="/rss.xml">RSS</a>
-      </div>
-    </div>
-  </section>
 </BaseLayout>
 
 <script>
@@ -493,38 +475,6 @@ const meta = (post: (typeof all)[number]) =>
     color: var(--ink-3);
     text-align: right;
     min-width: 38px;
-  }
-
-  /* ----------------------------------------------------------- follow -- */
-  .follow {
-    background: var(--dark);
-    color: var(--on-dark);
-    border-radius: var(--radius);
-    padding: clamp(36px, 5vw, 56px);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
-    align-items: center;
-  }
-
-  .follow__title {
-    font-size: clamp(26px, 3vw, 38px);
-    line-height: 1.08;
-    letter-spacing: -0.014em;
-  }
-
-  .follow__body {
-    margin-top: 16px;
-    font-size: 16px;
-    line-height: 1.65;
-    color: var(--on-dark-2);
-    max-width: 420px;
-  }
-
-  .follow__actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
   }
 
   @media (min-width: 720px) {

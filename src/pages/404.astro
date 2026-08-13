@@ -1,6 +1,37 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { NAV_LINKS, CONTACT } from '../config';
+import { CONTACT } from '../config';
+import { PROJECTS } from '../data/site';
+
+/*
+ * Counts are read from the data rather than typed, so a page that says
+ * "thirteen write-ups" can't drift out of date the next time one is added.
+ */
+const spell = (n: number) =>
+  ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen'][n] ?? String(n);
+
+const destinations = [
+  {
+    href: '/work/',
+    title: 'The work',
+    body: `${spell(PROJECTS.length).replace(/^./, (c) => c.toUpperCase())} write-ups: what I was handed, what I found, and what moved.`,
+  },
+  {
+    href: '/consulting/',
+    title: 'Consulting',
+    body: 'What I take on, how it gets scoped, and who it’s not for.',
+  },
+  {
+    href: '/thinking/',
+    title: 'Writing',
+    body: 'Lifecycle, AI and how search is changing.',
+  },
+  {
+    href: '/about/',
+    title: 'About',
+    body: 'Where I came from, how I work, and what I’m like to work with.',
+  },
+];
 ---
 
 <BaseLayout title="Page not found" description="That page doesn't exist.">
@@ -13,7 +44,14 @@ import { NAV_LINKS, CONTACT } from '../config';
     </p>
 
     <nav class="notfound__links" aria-label="Site sections">
-      {NAV_LINKS.map((link) => <a class="chip chip--pill" href={link.href}>{link.label}</a>)}
+      {
+        destinations.map((item) => (
+          <a class="card card--interactive notfound__card" href={item.href}>
+            <span class="notfound__card-title">{item.title}</span>
+            <span class="notfound__card-body">{item.body}</span>
+          </a>
+        ))
+      }
     </nav>
 
     <p class="notfound__report">
@@ -50,9 +88,35 @@ import { NAV_LINKS, CONTACT } from '../config';
   }
 
   .notfound__links {
-    margin-top: 40px;
+    margin-top: 52px;
+    max-width: 820px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .notfound__card {
+    padding: 30px 32px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
+  }
+
+  .notfound__card-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  .notfound__card-body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  @media (min-width: 760px) {
+    .notfound__links {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>

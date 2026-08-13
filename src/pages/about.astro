@@ -6,10 +6,9 @@ import poster from '../assets/about-poster.png';
 import {
   INTRO,
   WHAT_I_DO,
-  HOW_I_GOT_HERE,
   SCOPE_PROOF,
   TOTALS,
-  BELIEF,
+  BELIEFS,
   OUTSIDE_WORK,
   TO_WORK_WITH,
   ROLES,
@@ -52,18 +51,6 @@ import {
   </section>
 
   {/* --------------------------------------------------- how I got here -- */}
-  <section class="section wrap">
-    <div class="split">
-      <div>
-        <p class="eyebrow split__eyebrow">How I got here</p>
-        <h2 class="split__title">Canada, then a farm, then newsrooms.</h2>
-      </div>
-      <div class="prose-block" data-reveal-group>
-        {HOW_I_GOT_HERE.map((para) => <p>{para}</p>)}
-      </div>
-    </div>
-  </section>
-
   {/* ------------------------------------------------------ scope band -- */}
   <section class="band about-band">
     <div class="wrap">
@@ -101,14 +88,26 @@ import {
     <div class="split">
       <div>
         <p class="eyebrow split__eyebrow">What I believe</p>
-        <h2 class="split__title">At the core of all of it is one idea:</h2>
+        <h2 class="split__title">A few things I’m fairly settled on.</h2>
       </div>
-      <div class="prose-block" data-reveal-group>
-        <p class="belief">{BELIEF.headline}</p>
-        {BELIEF.paras.map((para) => <p>{para}</p>)}
-        <p>
-          {BELIEF.tattoo.before}<em>{BELIEF.tattoo.phrase}</em>{BELIEF.tattoo.after}
-        </p>
+      <div class="beliefs" data-reveal-group>
+        {
+          BELIEFS.map((item) => (
+            <div class="beliefs__item">
+              <p class="belief">{item.claim}</p>
+              <p class="beliefs__body">
+                {typeof item.body === 'string' ? (
+                  item.body
+                ) : (
+                  <Fragment>
+                    <em>{item.body.phrase}</em>
+                    {item.body.after}
+                  </Fragment>
+                )}
+              </p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -166,7 +165,7 @@ import {
   <ContactSection
     title="Get in touch."
     intro="Want to work together, chat about something you’re stuck on, or just say hey? Reach out here."
-    aside="And if you’re ever in Vancouver, coffee’s on me. I’d rather hear the problem out loud anyway."
+    aside="If you’re ever in town, coffee’s on me. I’d rather hear the problem out loud anyway."
   />
 </BaseLayout>
 
@@ -224,12 +223,38 @@ import {
     margin-bottom: 22px;
   }
 
+  /* Each belief is a claim followed by the reason it's held. The reason is what
+     keeps the claim from reading as a slogan, so the two stay paired and the
+     rule between items separates pairs rather than lines. */
+  .beliefs {
+    max-width: 680px;
+  }
+
+  .beliefs__item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .beliefs__item + .beliefs__item {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+  }
+
   .belief {
-    font-size: clamp(26px, 3vw, 36px);
-    line-height: 1.2;
+    font-size: clamp(22px, 2.4vw, 29px);
+    line-height: 1.22;
     font-weight: 500;
-    letter-spacing: -0.014em;
-    text-wrap: balance;
+    letter-spacing: -0.012em;
+    text-wrap: pretty;
+  }
+
+  .beliefs__body {
+    font-size: 17px;
+    line-height: 1.66;
+    color: var(--ink-2);
+    text-wrap: pretty;
   }
 
   /* -------------------------------------------------------- portrait -- */

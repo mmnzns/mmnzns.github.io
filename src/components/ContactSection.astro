@@ -1,5 +1,5 @@
 ---
-import { CONTACT, FORM_ENDPOINT } from '../config';
+import { SITE, CONTACT, FORM_ENDPOINT } from '../config';
 
 interface Props {
   title: string;
@@ -15,11 +15,20 @@ const {
   title,
   intro,
   messageLabel = 'What’s on your mind?',
-  aside = 'If you’re in Vancouver, coffee’s on me. I’d rather hear it out loud anyway.',
+  aside = 'If you’re in town, coffee’s on me. I’d rather hear it out loud anyway.',
   id = 'contact',
 } = Astro.props;
 
 const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+
+/** Strip the scheme so the LinkedIn row reads as an address, not a URL. */
+const linkedinLabel = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+
+const routes = [
+  { label: 'Email', value: CONTACT.email, href: `mailto:${CONTACT.email}`, external: false },
+  { label: 'Phone', value: CONTACT.phone, href: phoneHref, external: false },
+  { label: 'LinkedIn', value: linkedinLabel, href: CONTACT.linkedin, external: true },
+] as const;
 ---
 
 <section class="section wrap" id={id}>
@@ -66,12 +75,42 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     </div>
 
     <div class="card card--raised contact__panel contact__details">
-      <div class="contact__links">
-        <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-        <a href={phoneHref}>{CONTACT.phone}</a>
-        <a href={CONTACT.linkedin} target="_blank" rel="noopener">linkedin.com/in/mmonzones</a>
+      {
+        SITE.availability && (
+          <p class="contact__status-line">
+            <span class="contact__dot" aria-hidden="true" />
+            {SITE.availability}
+          </p>
+        )
+      }
+
+      {/* Each route is a row rather than a bare link: the label says what it is
+          before you read the value, which matters most for the phone number. */}
+      <div class="contact__routes">
+        {
+          routes.map((route) => (
+            <a
+              class="contact__route"
+              href={route.href}
+              target={route.external ? '_blank' : undefined}
+              rel={route.external ? 'noopener' : undefined}
+            >
+              <span class="contact__route-text">
+                <span class="eyebrow">{route.label}</span>
+                <span class="contact__route-value">{route.value}</span>
+              </span>
+              <span class="contact__route-icon" aria-hidden="true">
+                {route.external ? '↗' : '→'}
+              </span>
+            </a>
+          ))
+        }
       </div>
-      <p class="contact__aside">{aside}</p>
+
+      <div class="contact__place">
+        <p class="eyebrow">{CONTACT.city}</p>
+        <p class="contact__aside">{aside}</p>
+      </div>
     </div>
   </div>
 </section>
@@ -200,18 +239,93 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     gap: 26px;
   }
 
-  .contact__links {
+  .contact__status-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .contact__dot {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: var(--pill);
+    background: var(--moss);
+  }
+
+  .contact__routes {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    font-size: 17px;
+  }
+
+  .contact__route {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding-block: 16px;
+    border-top: 1px solid var(--rule);
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .contact__route:first-child {
+    border-top: 0;
+  }
+
+  .contact__route:hover,
+  .contact__route:focus-visible {
+    color: var(--accent);
+  }
+
+  .contact__route-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  /* The email and the LinkedIn URL are both long enough to overflow a narrow
+     card, and neither has a space to break at. */
+  .contact__route-value {
+    font-size: 18px;
+    letter-spacing: -0.005em;
+    overflow-wrap: anywhere;
+  }
+
+  .contact__route-icon {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule);
+    border-radius: var(--pill);
+    font-size: 13px;
+    color: var(--ink-2);
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+
+  .contact__route:hover .contact__route-icon {
+    border-color: currentcolor;
+  }
+
+  .contact__place {
+    margin-top: auto;
+    padding: 22px 24px;
+    background: var(--wash);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .contact__aside {
-    margin-top: auto;
-    padding-top: 26px;
-    border-top: 1px solid var(--rule);
-    font-size: 19px;
+    font-size: 18px;
     line-height: 1.5;
     letter-spacing: -0.005em;
   }

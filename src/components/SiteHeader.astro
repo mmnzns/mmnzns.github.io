@@ -156,6 +156,16 @@ function isCurrent(href: string) {
     padding-block: 4px;
   }
 
+  /* Restated here on purpose. Astro scopes component styles with an attribute
+     selector, so `.navlinks__link` outweighs the global `a:hover` and the link
+     would otherwise never change colour — only the underline would move, which
+     reads as nothing happening. Any component that sets its own link colour has
+     to set its own hover colour too. */
+  .navlinks__link:hover,
+  .navlinks__link:focus-visible {
+    color: var(--accent);
+  }
+
   .navlinks__link[aria-current='page'] {
     color: var(--ink);
     font-weight: 500;

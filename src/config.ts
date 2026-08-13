@@ -17,8 +17,8 @@ export const SITE = {
     "Senior lifecycle and GTM strategist with 11 years in fintech, SaaS, and ecommerce. I read what's actually wrong, decide what should exist, then build it.",
   author: 'Miguel N. Monzones',
   location: 'Vancouver, BC',
-  /** Rendered as the availability pill in the header and hero. Set to null to hide. */
-  availability: 'Open to senior lifecycle, GTM & automation roles',
+  /** Shown against a green dot on every contact card. Set to null to hide. */
+  availability: 'Consulting now · open to the right senior role',
   /** BCP 47 language tag, used for <html lang>. */
   lang: 'en',
   /**
@@ -35,6 +35,7 @@ export const CONTACT = {
   phone: '+1 778 829 6453',
   linkedin: 'https://www.linkedin.com/in/mmonzones/',
   entity: 'MNM Alaminos Consulting Ltd.',
+  city: 'Vancouver, BC',
 } as const;
 
 /**

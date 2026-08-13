@@ -191,6 +191,12 @@ const accent = tagAccent(post.data.tag);
     color: var(--ink-3);
   }
 
+  /* Restated because the scoped colour above outranks the global `a:hover`. */
+  .article-head__back:hover,
+  .article-head__back:focus-visible {
+    color: var(--accent);
+  }
+
   .article-head__tag {
     margin-bottom: 22px;
   }
@@ -275,6 +281,12 @@ const accent = tagAccent(post.data.tag);
     transition:
       color var(--dur-fast) var(--ease),
       border-color var(--dur-fast) var(--ease);
+  }
+
+  .toc__link:hover,
+  .toc__link:focus-visible {
+    color: var(--ink);
+    border-left-color: var(--ink-3);
   }
 
   .toc__link.is-current {

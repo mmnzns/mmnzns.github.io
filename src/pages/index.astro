@@ -9,7 +9,7 @@ import portrait from '../assets/miguel.png';
 import { SYMPTOMS, FEATURED_CASES, METHOD, RECEIPTS } from '../data/home';
 import { CATEGORY_ACCENT } from '../data/site';
 import { TAGS, tagAccent } from '../data/writing';
-import { formatDate } from '../utils/format';
+import { formatDate, readingTime } from '../utils/format';
 
 const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -430,7 +430,9 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
                   {post.data.tag}
                 </span>
                 <span class="post-card__title">{post.data.title}</span>
-                <span class="meta">{formatDate(post.data.date)}</span>
+                <span class="meta">
+                  {formatDate(post.data.date)} · {readingTime(post.body ?? '')} min read
+                </span>
               </a>
             ))
           }

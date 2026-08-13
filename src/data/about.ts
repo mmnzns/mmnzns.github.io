@@ -18,13 +18,6 @@ export const WHAT_I_DO = [
   'I’ve spent most of my career doing that inside companies, across ecommerce, SaaS and fintech. Right now I’m consulting on lifecycle, conversion and automation, and open to the right senior role. Either way — if something isn’t working the way you think it should, I’d love to hear about it.',
 ] as const;
 
-export const HOW_I_GOT_HERE = [
-  'I grew up in Canada until I was thirteen, then moved to the Philippines, where my parents were building a farm as their retirement business. I’ve been back in Canada since 2021.',
-  'That farm is where most of how I work comes from. They started with land and not much else, so you either worked with what you had or built what you needed. I learned carpentry, how to fix broken tools, and how to spot a problem before it turned into a real one — if a storm was coming and the roof looked weak, you dealt with the roof. It was the first thing I ever watched get built from nothing, and I was the labour.',
-  'My first job out of school was at Rappler in Manila, editing in a 24/7 newsroom under Maria Ressa. Everything had to be precise and sourced, and you didn’t get to accept the first explanation for anything. I still can’t, really.',
-  'Then seven years at Sportserve, working somewhere between web, lifecycle, payments and operations rather than inside any one of them. When something broke, the cause was almost always somewhere else entirely, so I got into the habit of following it until I found where it actually started. That habit never left.',
-] as const;
-
 export const SCOPE_PROOF = [
   'Hired at Mogo to turn lifecycle into a real system instead of just email and push. Ended up owning the website and the AI automation architecture too.',
   'Hired as an email coordinator at DTC. Ended up owning web, martech and automation across two companies and a dozen client accounts.',
@@ -42,19 +35,39 @@ export const TOTALS = [
   { value: '100+', label: 'Projects shipped', countTo: 100, suffix: '+' },
 ] as const;
 
-export const BELIEF = {
-  headline: 'If a system only works when I’m in the room, it isn’t a system.',
-  paras: [
-    'So I document everything, and I’ve trained a successor in every role I’ve had. The real test isn’t whether something works while you’re there. It’s whether it’s still running a year after you’ve gone.',
-  ],
-  /** Kept separate because it carries the italicised Adinkra name. */
-  tattoo: {
-    before: 'I’ve also got ',
-    phrase: 'Nea Onnim No Sua A, Ohu',
-    after:
-      ' tattooed on my right wrist. It’s an Adinkra symbol, and it means something like: he who does not know can know from learning. I don’t really believe in “I can’t do this.” I believe in “I haven’t learned it yet.” That’s the part that’s kept me learning for eleven years.',
+/**
+ * The beliefs list. Each entry is a claim and the reason it's held — the reason
+ * is what stops it reading as a slogan. The last one carries the Adinkra name,
+ * which is why its body is split around an italicised phrase.
+ */
+export const BELIEFS = [
+  {
+    claim:
+      'Most teams don’t have a strategy problem. They have a problem they haven’t diagnosed properly.',
+    body: 'Which is why I’ll usually push on a brief before agreeing to it. Not to be difficult — the fastest way to lose a quarter is to build the right thing for the wrong problem.',
   },
-} as const;
+  {
+    claim: 'The metric points at the problem. People cause it.',
+    body: 'Dashboards are good at telling you where something’s going wrong and almost useless at telling you why. That part comes from working out what someone actually felt at the moment they left.',
+  },
+  {
+    claim: 'If a system only works when I’m in the room, it isn’t a system.',
+    body: 'So I document everything, and I’ve trained a successor in every role I’ve had. The test isn’t whether something runs. It’s whether it’s still running a year after I’ve gone.',
+  },
+  {
+    claim: 'I’d rather give you the tradeoff than the pitch.',
+    body: 'Everything worth building costs something somewhere else. I’d sooner name that early than have you find it on your own later.',
+  },
+  {
+    claim: 'And one I keep on my wrist.',
+    /** Split so the Adinkra name can be set in italics without markup in data. */
+    body: {
+      phrase: 'Nea Onnim No Sua A, Ohu',
+      after:
+        ' — he who does not know can know from learning. I don’t really believe in “I can’t do this.” I believe in “I haven’t learned it yet.”',
+    },
+  },
+] as const;
 
 export const OUTSIDE_WORK = [
   'I travel for the food, not the view. Give me the choice between a landmark and a place where the locals actually eat, and I’ll take the second one every time. Sitting down to eat with people tells me more about them than anything I’d see from a viewpoint, and it puts me somewhere I’d never have got to on my own.',
