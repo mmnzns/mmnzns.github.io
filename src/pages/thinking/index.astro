@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { CONTACT } from '../../config';
-import { TAGS, tagAccent } from '../../data/writing';
+import { TAGS, PENDING, tagAccent } from '../../data/writing';
 import { formatDate, readingTime } from '../../utils/format';
 
 const all = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
@@ -31,7 +31,7 @@ const meta = (post: (typeof all)[number]) =>
     <p class="eyebrow writing-hero__eyebrow">The Thinking</p>
 
     <div class="writing-hero">
-      <h1 class="writing-hero__title">Working things out in public.</h1>
+      <h1 class="writing-hero__title">Things I’ve written.</h1>
       <div class="writing-hero__intro">
         <p>
           Lifecycle, AI, search, automation, and the occasional detour into doing the work better.
@@ -105,7 +105,7 @@ const meta = (post: (typeof all)[number]) =>
       <div class="filters__search">
         <label class="visually-hidden" for="writing-search">Search writing</label>
         <input id="writing-search" type="search" placeholder="Search writing" data-search />
-        <span class="meta" data-count aria-live="polite">{all.length} pieces</span>
+        <span class="meta" data-result-count aria-live="polite">{all.length} pieces</span>
       </div>
     </div>
 
@@ -143,7 +143,7 @@ const meta = (post: (typeof all)[number]) =>
   </section>
 
   {
-    archive.length > 0 && (
+    (archive.length > 0 || PENDING.length > 0) && (
       <section class="section--tight wrap" data-archive-section>
         <p class="eyebrow rule-heading">Earlier writing</p>
 
@@ -160,6 +160,22 @@ const meta = (post: (typeof all)[number]) =>
               <span class="archive__tag">{post.data.tag}</span>
               <span class="archive__year">{post.data.date.getUTCFullYear()}</span>
             </a>
+          ))}
+
+          {PENDING.map((item) => (
+            <div
+              class="archive__row archive__row--pending"
+              data-post
+              data-tag-value={item.tag}
+              data-text={`${item.title} ${item.tag}`.toLowerCase()}
+            >
+              <span class="archive__title">
+                {item.title}
+                <span class="archive__flag">Not posted yet</span>
+              </span>
+              <span class="archive__tag">{item.tag}</span>
+              <span class="archive__year">{item.year}</span>
+            </div>
           ))}
         </div>
       </section>
@@ -189,7 +205,7 @@ const meta = (post: (typeof all)[number]) =>
   const chips = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
   const search = document.querySelector<HTMLInputElement>('[data-search]');
   const posts = document.querySelectorAll<HTMLElement>('[data-post]');
-  const count = document.querySelector<HTMLElement>('[data-count]');
+  const count = document.querySelector<HTMLElement>('[data-result-count]');
   const empty = document.querySelector<HTMLElement>('[data-empty]');
   const grid = document.querySelector<HTMLElement>('[data-grid]');
   const archiveSection = document.querySelector<HTMLElement>('[data-archive-section]');
@@ -472,6 +488,26 @@ const meta = (post: (typeof all)[number]) =>
   .archive__row:hover {
     background: var(--paper);
     color: var(--ink);
+  }
+
+  /* A div rather than a link, because there's nothing to link to yet. It stays
+     in the list so the archive reflects what's written, not just what's up. */
+  .archive__row--pending {
+    color: var(--ink-3);
+  }
+
+  .archive__row--pending:hover {
+    background: transparent;
+    color: var(--ink-3);
+  }
+
+  .archive__flag {
+    margin-left: 10px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    white-space: nowrap;
   }
 
   .archive__title {

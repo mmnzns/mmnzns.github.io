@@ -1,15 +1,12 @@
 ---
-import { CONTACT, NAV_LINKS } from '../config';
-
-const year = new Date().getFullYear();
+import { CONTACT } from '../config';
 ---
 
 <footer class="footer">
   <div class="footer__card wrap">
-    <p class="footer__tag">Miguel Monzones — lifecycle and GTM, Vancouver.</p>
+    <p class="footer__tag">{CONTACT.entity} — lifecycle and GTM, Vancouver.</p>
 
-    <div class="footer__links">
-      {NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
+    <div class="footer__links footer__meta">
       <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
       <a
         class="footer__social"
@@ -27,12 +24,7 @@ const year = new Date().getFullYear();
     </div>
   </div>
 
-  <p class="footer__colophon wrap">
-    <span>{CONTACT.entity}</span>
-    <span>&copy; {year} Miguel Monzones</span>
-  </p>
-
-  <div class="footer__wordmark" aria-hidden="true">MONZONES</div>
+  <div class="footer__wordmark" aria-hidden="true" data-wordmark>MONZONES</div>
 </footer>
 
 <style>
@@ -91,20 +83,10 @@ const year = new Date().getFullYear();
     fill: currentcolor;
   }
 
-  .footer__colophon {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 24px;
-    font-size: 13px;
-    color: var(--ink-2);
-  }
-
   /* Outlined wordmark, cropped by the footer's overflow so it reads as a
-     watermark bleeding off the bottom of the page rather than as a heading. */
+     watermark bleeding off the bottom of the page rather than as a heading.
+     Motion.astro drifts it as the footer arrives; the authored offset here is
+     inside the range it animates over, so it sits correctly either way. */
   .footer__wordmark {
     margin-top: 36px;
     font-size: clamp(60px, 16.5vw, 240px);

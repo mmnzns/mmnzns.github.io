@@ -31,12 +31,23 @@ beyond that.
   are progressively enhanced: every state is rendered server-side, and a small vanilla
   `<script>` toggles `aria-pressed` / `hidden`. Don't reach for React or a `client:*`
   directive — nothing here has needed one.
-- **Animation must not gate content.** An effect that hides text until a script finishes
-  leaves the page unreadable whenever that script doesn't run. The scroll reveal uses a
-  native `animation-timeline: view()` inside `@supports`, so the dimmed starting state only
-  exists where the animation can complete. Use animation longhands, not the `animation`
-  shorthand — the CSS minifier folds `animation-timeline` into the shorthand, where
-  `view()` is invalid and silently kills the declaration.
+- **Animation must not gate content.** Every scroll-driven effect lives in
+  `src/components/Motion.astro`, which BaseLayout renders on every page. Two rules keep it
+  from hiding the site:
+  - **Never write a hidden starting state in CSS.** `opacity: 0` in a stylesheet applies
+    whether or not the script that clears it ever runs. Motion.astro sets those states from
+    JavaScript instead, and carries a failsafe (a timer plus a `visibilitychange` listener)
+    that clears everything still pending. The worst case is a page that appears without
+    animating.
+  - **Prefer a transition to a keyframe animation whenever the "from" state is wrong.**
+    An animation with `from { width: 0 }` holds zero width for as long as its clock is
+    stopped — a background tab, a throttled document — so the bar reads `0%`, which is a
+    wrong number rather than a missing effect. A transition rests at the real value and
+    only moves if something pushes it off. See `.bars__fill` on the home page.
+
+  Both of these have shipped broken before. If you add an effect that can hide something,
+  test it with the page hidden (`document.visibilityState === 'hidden'`), because that is
+  the condition under which observers and `requestAnimationFrame` never fire.
 - **Routing is file-based** under `src/pages/`; `build.format: 'directory'` means routes end
   in a trailing slash (`/about/`). Keep internal links trailing-slashed to avoid redirects.
 - **Interactive elements are real buttons and links** with correct ARIA state, keyboard
@@ -57,6 +68,10 @@ beyond that.
   the home page and the work index.
 - `src/data/cases.ts` — the long-form case body for each project, joined to the above by
   slug. A project with no case body fails the build rather than rendering an empty page.
+  It also owns the detail page's own `title` and `deck`, which are longer than the card's.
+- **Job titles appear in two places** — `ROLES` in `src/data/about.ts` and the `meta` line
+  of every case in `cases.ts`. Change one and change the other, or the about page and a
+  case page show a recruiter two different job titles for the same employer.
 - `src/data/home.ts`, `consulting.ts`, `about.ts` — page-specific copy, kept out of the
   templates so wording stays reviewable in one place.
 - `src/content/thinking/*.md` — articles. Frontmatter is `title`, `date`, `tag`, `excerpt`,

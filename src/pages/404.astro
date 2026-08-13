@@ -1,20 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { NAV_LINKS } from '../config';
+import { NAV_LINKS, CONTACT } from '../config';
 ---
 
 <BaseLayout title="Page not found" description="That page doesn't exist.">
   <section class="section--first wrap notfound">
     <p class="eyebrow notfound__eyebrow">404</p>
-    <h1 class="page-title">That page doesn’t exist.</h1>
+    <h1 class="page-title">This page is not here.</h1>
     <p class="lede notfound__lede">
-      Either it moved or I mistyped a link somewhere. Here’s everything that does exist:
+      Either it moved or the link was wrong, and neither of those is your fault. Here’s where most
+      people are heading anyway.
     </p>
 
     <nav class="notfound__links" aria-label="Site sections">
-      <a class="chip chip--pill" href="/">Home</a>
       {NAV_LINKS.map((link) => <a class="chip chip--pill" href={link.href}>{link.label}</a>)}
     </nav>
+
+    <p class="notfound__report">
+      Landed here from a link on my site? <a href={`mailto:${CONTACT.email}`}>Tell me</a> and I’ll fix
+      it.
+    </p>
   </section>
 </BaseLayout>
 
@@ -25,6 +30,18 @@ import { NAV_LINKS } from '../config';
 
   .notfound__eyebrow {
     margin-bottom: 26px;
+  }
+
+  .notfound__report {
+    margin-top: 44px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-3);
+  }
+
+  .notfound__report a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .notfound__lede {

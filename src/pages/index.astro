@@ -32,24 +32,26 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
             loading="eager"
             fetchpriority="high"
           />
-          <p class="hero__where">Vancouver, BC<br />Consulting, and open to senior roles</p>
+          <p class="hero__where">
+            Vancouver, BC<br />Consulting, and open to the right senior role
+          </p>
         </div>
       </div>
 
-      <div class="hero__intro" data-reveal>
+      <div class="hero__intro" data-reveal-group>
         <p>
-          I work on lifecycle and GTM — mostly fintech, some SaaS and ecommerce. Eleven years of it.
-          Right now I’m at Mogo in Vancouver, running lifecycle and martech along with the web and
-          automation underneath it.
+          I’ve spent about eleven years on lifecycle and GTM — mostly in fintech, with some SaaS and
+          ecommerce along the way. These days I’m consulting on lifecycle, conversion and
+          automation, and I’m open to the right senior role if one comes along.
         </p>
         <p>
-          Most of my work happens before anything gets built. Someone hands me a number that’s
-          moving the wrong way, and the first job is working out what’s actually causing it. It’s
-          usually not the thing everyone’s looking at.
+          Most of what I do happens before anything gets built. Someone hands me a number that’s
+          heading the wrong way, and my first job is figuring out what’s really behind it — which,
+          more often than not, isn’t the thing everyone’s been staring at.
         </p>
         <p>
-          Lately more of that has turned into automation — rebuilding the lifecycle system so it
-          runs and improves without someone watching it.
+          Lately a lot of that has turned into automation: rebuilding the lifecycle system so it
+          keeps running, and keeps getting better, without anyone having to babysit it.
         </p>
       </div>
     </div>
@@ -122,7 +124,8 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
         <p class="eyebrow">Work</p>
         <h2 class="section-title">A few things I’ve built.</h2>
         <p class="lede work__sub">
-          The ask is what I was handed. What I found is where it actually went.
+          The ask is what I was handed. What I found is usually somewhere else, so I’ve put both
+          next to each other.
         </p>
       </div>
 
@@ -340,7 +343,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
                         <span>{r.bars.beforeLabel}</span>
                       </p>
                       <div class="bars__track">
-                        <div class="bars__fill" style={`--w:${r.bars.before}%`} />
+                        <div class="bars__fill" data-bar style={`--w:${r.bars.before}%`} />
                       </div>
                     </div>
                     <div class="bars__row">
@@ -349,7 +352,11 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
                         <span>{r.bars.afterLabel}</span>
                       </p>
                       <div class="bars__track">
-                        <div class="bars__fill bars__fill--accent" style={`--w:${r.bars.after}%`} />
+                        <div
+                          class="bars__fill bars__fill--accent"
+                          data-bar
+                          style={`--w:${r.bars.after}%`}
+                        />
                       </div>
                     </div>
                   </div>
@@ -402,19 +409,40 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
         <a class="writing__all" href="/thinking/">All writing <span aria-hidden="true">→</span></a>
       </div>
 
-      <div class="writing__grid" data-writing-grid>
-        {
-          posts.map((post) => (
-            <a class="card card--interactive post-card" href={`/thinking/${post.id}/`} data-post-tag={post.data.tag}>
-              <span class="eyebrow" style={`color:${tagAccent(post.data.tag)}`}>
-                {post.data.tag}
-              </span>
-              <span class="post-card__title">{post.data.title}</span>
-              <span class="meta">{formatDate(post.data.date)}</span>
-            </a>
-          ))
-        }
-        <p class="writing__empty" data-writing-empty hidden>Nothing here for that yet.</p>
+      <div class="writing__col">
+        <div class="writing__grid" data-writing-grid>
+          {
+            posts.map((post) => (
+              <a
+                class="card card--interactive post-card"
+                href={`/thinking/${post.id}/`}
+                data-post-tag={post.data.tag}
+              >
+                <span class="eyebrow" style={`color:${tagAccent(post.data.tag)}`}>
+                  {post.data.tag}
+                </span>
+                <span class="post-card__title">{post.data.title}</span>
+                <span class="meta">{formatDate(post.data.date)}</span>
+              </a>
+            ))
+          }
+          <p class="writing__empty" data-writing-empty hidden>Nothing here for that yet.</p>
+        </div>
+
+        {/*
+          Hidden until the script takes over. Paging is a JavaScript affordance,
+          so without it the honest fallback is every piece on one page rather
+          than a pager whose buttons do nothing.
+        */}
+        <nav class="pager" aria-label="Writing pages" data-pager hidden>
+          <button type="button" class="pager__step" data-page-prev>
+            <span aria-hidden="true">←</span> Newer
+          </button>
+          <div class="pager__numbers" data-page-numbers></div>
+          <button type="button" class="pager__step" data-page-next>
+            Older <span aria-hidden="true">→</span>
+          </button>
+        </nav>
       </div>
     </div>
   </section>
@@ -533,6 +561,25 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   const receiptTabs = document.querySelectorAll<HTMLButtonElement>('[data-receipt]');
   const receiptPanels = document.querySelectorAll<HTMLElement>('[data-receipt-panel]');
 
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Draw the bars up from zero as you land on a tab. Done here rather than in
+     CSS because the resting state has to stay the true width — see the note on
+     `.bars__fill`. Nothing here is load-bearing: skip it and the bars are
+     simply already the right length. */
+  function growBars(panel: HTMLElement) {
+    if (reduceMotion) return;
+    const bars = panel.querySelectorAll<HTMLElement>('[data-bar]');
+    for (const bar of bars) bar.style.width = '0%';
+    // Flush layout so the zero width is committed as the transition's starting
+    // point, then hand the bars straight back to the stylesheet. Doing both in
+    // one synchronous pass — rather than clearing inside requestAnimationFrame
+    // — means there is no moment where an unfired callback could leave a bar
+    // reading 0%.
+    void panel.offsetWidth;
+    for (const bar of bars) bar.style.width = '';
+  }
+
   function showReceipt(index: string, focus = false) {
     for (const tab of receiptTabs) {
       const selected = tab.dataset.receipt === index;
@@ -541,7 +588,9 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
       if (selected && focus) tab.focus();
     }
     for (const panel of receiptPanels) {
-      panel.toggleAttribute('hidden', panel.dataset.receiptPanel !== index);
+      const active = panel.dataset.receiptPanel === index;
+      panel.toggleAttribute('hidden', !active);
+      if (active) growBars(panel);
     }
   }
 
@@ -555,35 +604,84 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     });
   });
 
-  /* -------------------------------------------------- writing filter -- */
-  const writingChips = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
-  const writingCards = document.querySelectorAll<HTMLElement>('[data-post-tag]');
+  /* ------------------------------------------ writing filter + paging -- */
+  const writingChips = [...document.querySelectorAll<HTMLButtonElement>('[data-tag]')];
+  const writingCards = [...document.querySelectorAll<HTMLElement>('[data-post-tag]')];
   const writingCount = document.querySelector<HTMLElement>('[data-writing-count]');
   const writingEmpty = document.querySelector<HTMLElement>('[data-writing-empty]');
+  const pager = document.querySelector<HTMLElement>('[data-pager]');
+  const pageNumbers = document.querySelector<HTMLElement>('[data-page-numbers]');
+  const prevPage = document.querySelector<HTMLButtonElement>('[data-page-prev]');
+  const nextPage = document.querySelector<HTMLButtonElement>('[data-page-next]');
+
+  const PER_PAGE = 6;
+  let activeTag = 'All';
+  let page = 0;
+
+  function renderWriting() {
+    const matching = writingCards.filter(
+      (card) => activeTag === 'All' || card.dataset.postTag === activeTag,
+    );
+    const pageCount = Math.max(1, Math.ceil(matching.length / PER_PAGE));
+    page = Math.min(page, pageCount - 1);
+    const from = page * PER_PAGE;
+    const visible = new Set(matching.slice(from, from + PER_PAGE));
+
+    for (const card of writingCards) card.toggleAttribute('hidden', !visible.has(card));
+    writingEmpty?.toggleAttribute('hidden', matching.length > 0);
+
+    if (writingCount) {
+      writingCount.textContent = matching.length
+        ? `Showing ${from + 1}–${from + visible.size} of ${matching.length}`
+        : 'Nothing under that tag';
+    }
+
+    if (!pager || !pageNumbers) return;
+    pager.hidden = pageCount < 2;
+    if (prevPage) prevPage.disabled = page === 0;
+    if (nextPage) nextPage.disabled = page === pageCount - 1;
+
+    // Rebuilt rather than toggled: filtering changes how many pages exist, so
+    // the number of buttons is part of the state.
+    pageNumbers.replaceChildren(
+      ...Array.from({ length: pageCount }, (_, i) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pager__number';
+        button.textContent = String(i + 1);
+        if (i === page) button.setAttribute('aria-current', 'true');
+        button.setAttribute('aria-label', `Page ${i + 1} of ${pageCount}`);
+        button.addEventListener('click', () => {
+          page = i;
+          renderWriting();
+        });
+        return button;
+      }),
+    );
+  }
 
   for (const chip of writingChips) {
     chip.addEventListener('click', () => {
-      const tag = chip.dataset.tag;
+      activeTag = chip.dataset.tag ?? 'All';
+      page = 0;
       for (const other of writingChips) {
         other.setAttribute('aria-pressed', String(other === chip));
       }
-
-      let shown = 0;
-      for (const card of writingCards) {
-        const match = tag === 'All' || card.dataset.postTag === tag;
-        card.toggleAttribute('hidden', !match);
-        if (match) shown += 1;
-      }
-
-      if (writingCount) {
-        writingCount.textContent =
-          tag === 'All'
-            ? `${writingCards.length} pieces`
-            : `${shown} of ${writingCards.length} pieces`;
-      }
-      writingEmpty?.toggleAttribute('hidden', shown > 0);
+      renderWriting();
     });
   }
+
+  prevPage?.addEventListener('click', () => {
+    page = Math.max(0, page - 1);
+    renderWriting();
+  });
+
+  nextPage?.addEventListener('click', () => {
+    page += 1;
+    renderWriting();
+  });
+
+  if (writingCards.length) renderWriting();
 </script>
 
 <style>
@@ -1032,30 +1130,24 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     overflow: hidden;
   }
 
-  /* The bar is always at its true width; the grow is an animation on top of
-     that. Switching tabs takes a panel from `hidden` back to displayed, which
-     restarts the animation, so each number draws itself as you land on it —
-     and a browser that skips the animation still shows the right bar. */
+  /* A transition, deliberately, and not a keyframe animation.
+
+     An animation with `from { width: 0 }` holds that zero width for as long as
+     its clock is stopped, and the clock is stopped whenever the page isn't
+     producing frames — a background tab, a browser that throttles hidden
+     documents. The bar then reads as "0%", which is a wrong number rather than
+     a missing effect. A transition has no such state: its resting value is the
+     real width, and the grow only happens if something moves it off that. */
   .bars__fill {
     height: 12px;
     border-radius: var(--pill);
     background: var(--ink-2);
     width: var(--w);
-    animation: bar-grow var(--dur-slow) var(--ease) both;
+    transition: width var(--dur-slow) var(--ease);
   }
 
   .bars__fill--accent {
     background: var(--accent);
-  }
-
-  @keyframes bar-grow {
-    from {
-      width: 0;
-    }
-
-    to {
-      width: var(--w);
-    }
   }
 
   .receipts__single {
@@ -1141,11 +1233,65 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     font-weight: 500;
   }
 
+  .writing__col {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
   .writing__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
     align-content: start;
+  }
+
+  /* -------------------------------------------------------- the pager -- */
+  .pager {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pager__numbers {
+    display: flex;
+    gap: 8px;
+  }
+
+  .pager__step,
+  .pager__number {
+    min-width: 38px;
+    padding: 9px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    color: var(--ink-2);
+    font-size: 13px;
+    white-space: nowrap;
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .pager__step:hover:not(:disabled),
+  .pager__number:hover:not([aria-current]) {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  /* Kept in the flow rather than hidden: the row shouldn't reflow when you
+     reach the first or last page. */
+  .pager__step:disabled {
+    color: var(--ink-3);
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  .pager__number[aria-current] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
   }
 
   .post-card {

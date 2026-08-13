@@ -35,7 +35,7 @@ export const PRACTICES: readonly Practice[] = [
       'Deliverability and sending infrastructure',
       'Segmentation and event architecture',
     ],
-    tools: 'Braze · Klaviyo · Iterable · Customer.io · Segment · Amplitude',
+    tools: 'Braze · Klaviyo · Iterable · Segment · Amplitude',
   },
   {
     key: 'web',
@@ -81,16 +81,14 @@ export interface Engagement {
   fits: readonly PracticeKey[];
   body: string;
   leave: string;
+  /**
+   * The catch-all at the end of the list. It fits everything by definition, so
+   * it's styled as an invitation to write rather than as another priced shape.
+   */
+  other?: true;
 }
 
 export const ENGAGEMENTS: readonly Engagement[] = [
-  {
-    name: 'Paid call',
-    length: '1 hour',
-    fits: ['lifecycle', 'web', 'ai'],
-    body: 'Bring the thing that’s stuck — the funnel, the flow, the launch plan, the automation nobody trusts. I’ll have read whatever you send ahead of time.',
-    leave: 'You leave with a call on what to do next.',
-  },
   {
     name: 'Teardown',
     length: '1 week',
@@ -117,14 +115,22 @@ export const ENGAGEMENTS: readonly Engagement[] = [
     length: 'Monthly',
     fits: ['lifecycle', 'ai'],
     body: 'A standing second read for a team that already has hands. Strategy, prioritisation, reviewing what your people build. No execution from me.',
-    leave: 'Ongoing, cancel any month.',
+    leave: 'You get a standing second opinion.',
   },
   {
     name: 'Fractional',
     length: '1–2 days a week',
     fits: ['lifecycle', 'ai'],
     body: 'Inside the team, owning the function — running the roadmap, making the calls, hiring the person who eventually replaces me.',
-    leave: 'Usually 3–6 months.',
+    leave: 'You get someone accountable for the function, not just advice.',
+  },
+  {
+    name: 'Something else',
+    length: 'Depends',
+    fits: ['lifecycle', 'web', 'ai'],
+    other: true,
+    body: 'Advisory, a one-off build, an interim stretch while you hire, a second opinion on someone else’s plan. Tell me the shape and I’ll tell you honestly whether I’m the right person.',
+    leave: 'An honest answer either way.',
   },
 ];
 
@@ -138,22 +144,22 @@ export const FIT_YES = [
 
 export const FIT_NO = [
   'You need extra hands to ship a campaign calendar someone else already decided on.',
-  'The diagnosis is already fixed and what you want is agreement.',
-  'You need a full team — I’m one person, and I’ll say so before you find out.',
+  'You have already settled on the diagnosis and you would like someone to agree with it.',
+  'You need a whole team. I’m one person, and I’d rather say that now than three weeks in.',
   'Pre-product or pre-traffic. There isn’t enough signal yet for this to be worth your money.',
-  'The answer has to arrive next week. The read takes as long as it takes.',
+  'You need the answer next week. The read usually takes longer than that, and rushing it defeats the point of it.',
 ] as const;
 
 export const START_STEPS = [
   {
     num: '01',
     name: 'Email me',
-    body: 'The number, the theory, and what you’ve already tried. Two paragraphs is plenty. I answer everything within a couple of days.',
+    body: 'The number, the theory, and what you’ve already tried. Two paragraphs is plenty.',
   },
   {
     num: '02',
-    name: 'A short call',
-    body: 'Thirty minutes, free. Enough for me to see whether I’d be useful and for you to see how I think. Sometimes it ends with me pointing you elsewhere.',
+    name: 'A 30-minute intro call',
+    body: 'Free, and the point of it is working out whether this is something I can actually help with — not advice on the call itself. Sometimes it ends with me pointing you somewhere else.',
   },
   {
     num: '03',
@@ -175,8 +181,8 @@ export const PROOF = [
     slug: 'winback',
     client: 'Mogo',
     accent: 'var(--sun)',
-    title: 'The Intelligent Investing winback',
-    line: '900K quiet customers that turned out to be two audiences and four different pitches.',
+    title: 'The Intelligent Investing winback and cross-sell',
+    line: 'About 900,000 quiet customers who turned out to be two audiences and four different conversations.',
   },
   {
     slug: 'agentic-ops',
@@ -196,8 +202,10 @@ export const CONSULTING_NUMBERS = [
 ] as const;
 
 export const WORTH_KNOWING = [
-  { accent: 'var(--coral)', text: 'It’s me doing the work. Not an agency, no team behind me, no account manager.' },
-  { accent: 'var(--sun)', text: 'A couple of engagements at a time, so the read is mine and not delegated.' },
+  {
+    accent: 'var(--coral)',
+    text: 'It’s me doing the work — no agency, no team behind me, nobody managing the account.',
+  },
   {
     accent: 'var(--moss)',
     text: 'Vancouver, BC. Remote across North America and Europe; I’ve worked in 14 markets.',

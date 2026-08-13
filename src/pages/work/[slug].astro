@@ -36,7 +36,7 @@ if (!study) {
 const accent = CATEGORY_ACCENT[project.category];
 ---
 
-<BaseLayout title={project.title} description={project.problem}>
+<BaseLayout title={study.title} description={study.deck}>
   <div class="wrap case-back">
     <a href="/work/">← All work</a>
   </div>
@@ -47,8 +47,8 @@ const accent = CATEGORY_ACCENT[project.category];
         <span class="accent-bar" style={`--bar:${accent}`} />
         <span class="eyebrow">{study.meta}</span>
       </p>
-      <h1 class="case-head__title">{project.title}</h1>
-      <p class="case-head__deck">{project.problem}</p>
+      <h1 class="case-head__title">{study.title}</h1>
+      <p class="case-head__deck">{study.deck}</p>
     </header>
 
     <section class="wrap case-arc">
@@ -60,7 +60,7 @@ const accent = CATEGORY_ACCENT[project.category];
               <h2 class="case-arc__heading">{section.label}</h2>
             </div>
 
-            <div class="case-arc__body" data-reveal>
+            <div class="case-arc__body" data-reveal-group>
               {section.paras.map((para) => (
                 <p>{para}</p>
               ))}

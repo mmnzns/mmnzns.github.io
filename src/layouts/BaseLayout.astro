@@ -2,6 +2,7 @@
 import { SITE, CONTACT } from '../config';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import Motion from '../components/Motion.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -82,5 +83,7 @@ const personSchema = {
     </main>
 
     <SiteFooter />
+
+    <Motion />
   </body>
 </html>

@@ -2,13 +2,13 @@
  * Long-form case study bodies, keyed by the same slug as `PROJECTS` in
  * ./site.ts.
  *
- * The split is deliberate: site.ts owns what a project *is* — title, tags,
- * category, headline metrics — and is read by both the home page and the work
- * index. This file owns only what the detail page adds on top, so a title can
- * never drift between the card and the page it links to.
+ * The split is deliberate: site.ts owns what a project *is* — the card title,
+ * tags, category and headline metrics read by the home page and the work index.
+ * This file owns what the detail page adds on top, including its own `title`,
+ * because the full write-up wants a longer headline than a card can carry.
  *
  * Every case follows the same arc, because that is genuinely how the work went:
- * the read → the decision → the metric I chose → the build. Facts here come
+ * the read → the decision → the number I picked → the build. Facts here come
  * from Website MD Repository/Professional History and the approved copy deck.
  * Do not invent a number, a date or a tool that isn't in those files.
  */
@@ -31,6 +31,10 @@ export interface CaseTech {
 export interface CaseStudy {
   /** Org · role · dates, exactly as recorded in Professional History. */
   meta: string;
+  /** Headline for the detail page. */
+  title: string;
+  /** The one-line framing under the headline. */
+  deck: string;
   sections: readonly CaseSection[];
   stats: readonly CaseStat[];
   /** The closing read — did the diagnosis hold? */
@@ -40,7 +44,9 @@ export interface CaseStudy {
 
 export const CASES: Record<string, CaseStudy> = {
   'mogo-lifecycle': {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'The Mogo lifecycle rebuild',
+    deck: 'Activation was stuck and everyone blamed email. The real problem was a web and lifecycle misalignment nobody had named.',
     sections: [
       {
         label: 'The read',
@@ -58,9 +64,9 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
-          'Activation rate at 7 days. Not open rate, not click rate, not revenue — those are downstream. Activation at day 7 was the leading indicator that predicted retention, credit utilization, and LTV. If that number moved, the read was correct.',
+          'Activation rate — bank-connection rate, specifically. Not open rate and not click rate, because those were already healthy, which was the confusing part. If activation moved, the read was right.',
           'I tracked 7-day drop-off as the inverse. Both numbers had to move together, or the intervention was noise.',
         ],
       },
@@ -68,17 +74,15 @@ export const CASES: Record<string, CaseStudy> = {
         label: 'The build',
         paras: [
           'Rebuilt the onboarding web experience. Added behavioral event tracking for real product actions. Rebuilt the lifecycle in Braze around those events instead of time delays. Built segmented journeys for activated vs. not-yet-activated users with distinct messaging and timing logic.',
-          'Pulled in Product and Engineering to instrument the activation event properly, and worked with Data on the measurement framework. The build took six months to get right. The signals started moving at month three.',
+          'Pulled in Product and Engineering to instrument the activation event properly, and worked with Data on the measurement framework. The Braze rebuild took six weeks, and the numbers moved inside two months of launch.',
         ],
       },
     ],
     stats: [
       { value: '24% → 38%', label: 'Activation rate' },
       { value: '78% → 62%', label: '7-day drop-off' },
-      { value: '35% → 23%', label: 'First-year churn' },
     ],
-    outcome:
-      'The read held. Activation moved because the lifecycle was tracking actual product behavior. Drop-off fell because users who weren’t activating got a different experience, not just more emails. Churn followed. The system compounded.',
+    outcome: 'The read held. Activation moved because the lifecycle was tracking actual product behavior. Drop-off fell because users who weren’t activating got a different experience, not just more emails.',
     tech: [
       { name: 'Braze', use: 'Lifecycle and behavioral messaging' },
       { name: 'Webflow', use: 'Onboarding web experience' },
@@ -86,58 +90,64 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Looker', use: 'Measurement and reporting' },
     ],
   },
-
-  winback: {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+  'winback': {
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'The Intelligent Investing winback and cross-sell',
+    deck: 'About 900,000 people had either gone quiet on investing or never started. It was not one audience, and it was never going to be one campaign.',
     sections: [
       {
         label: 'The read',
         paras: [
-          'There was a single suppressed list of about 900K dormant users across two products. Nobody had treated these as distinct audiences with different reactivation logic. The previous approach was one blast, one offer, low conversion, done.',
-          'The list had been undertreated. There were multiple winback and cross-sell opportunities depending on which product the user had originally held, what their last interaction was, and what the current offer environment looked like. Running it as a campaign meant leaving most of the value on the table.',
+          'Leadership wanted investing activations out of a dormant base of roughly 900,000 people. The first thing that mattered was that it was not one audience. Some had gone quiet on Intelligent Investing, but a large part of the pool were lending customers who had never invested with us at all — which is a cross-sell, not a winback.',
+          'The two products needed different pitches on top of that. Manage is automated weekly investing into an S&P 500 strategy. Self-directed is manual trading with research alongside it. One list, four different conversations.',
+          'And I genuinely did not know what the list quality was. Pruning it on guesswork would have thrown away contacts that were still worth something, so the quality question had to be answered under real campaign conditions rather than assumed.',
         ],
       },
       {
         label: 'The decision',
         paras: [
-          'Segment the list by product, lapse period, and prior engagement signal. Build separate messaging tracks for winback vs. cross-sell. Run iteratively, not as a single send. Test incentive vs. no-incentive. Feed learnings from each wave into the next.',
-          'The decision was to treat dormant differently by product and by behavior, not by marketing convenience.',
+          'Build it as a multi-iteration program rather than a campaign. Iteration 1 would do two jobs at once: give a real read on conversion, and act as the list clean-up, since engagement under live conditions is the only honest signal of who is still reachable.',
+          'Two behavioural hooks anchored the whole thing. For the Manage path, an investment calculator where someone could model what a small weekly contribution grows into by 75. For Self-directed, Fiscal.ai — a research tool already included in every Mogo membership, so the pitch was about something they already had.',
+          'Messaging split by relationship rather than by segment name. Lending customers got progression: you have borrowed with us, here is how to start building. Dormant investors got resumption without judgment: you paused, you are still an investor as far as we are concerned.',
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
-          'Total conversions from the dormant base. Not open rate, not click rate. Did they come back and take an action? I tracked it cumulatively across waves so I could see the compound effect of running it as a system rather than a one-time event.',
+          'Conversion rate, with one condition attached: Iteration 1 was also the decision gate for how to treat the list afterwards — who to keep, who to cull, and what to do with the segment that never engaged at all.',
         ],
       },
       {
         label: 'The build',
         paras: [
-          'Built a segmentation model on the dormant base using lapse recency, product type, and last known engagement signal. Set up wave-based deployment in Braze so each send informed the next. Built winback messaging for existing product holders and cross-sell messaging for those who had never tried the second product.',
-          'Tested three incentive conditions. Fed suppression logic back after each wave so we weren’t hitting the same users twice without a reason, and iterated the offer based on what each wave showed.',
+          'Iteration 1 ran February to June 2025 across the full pool. Re-introduction in month one with a subject-line resend to non-openers, product-specific tracks through months two and three, then objection handling in months three and four using a one-click survey where people named their own barrier — too risky, cash flow, confused about the products, or already investing somewhere else. Each answer got its own response: risk mapped to long-term dollar-cost-averaging education and the calculator, cash flow to micro-contribution framing at ten or twenty dollars a week, confusion to plain product explainers, and other platforms repositioned as complementary rather than competitive. Months four and five tapered off for the coldest segments.',
+          'That round converted about 2.7%. Afterwards I culled hard bounces, spam complaints, and anything with three or more soft bounces, which brought the reachable audience to roughly 600,000.',
+          'Iteration 2 ran July 2025 to January 2026 on the cleaned list and converted about 5% — around 30,000 people who either activated for the first time or came back to real activity. The structural call in that round was what to do with people who had never interacted at all. Going dark on them risks a reputation spike whenever you eventually return, and normal cadence just burns them, so I ran a low-frequency monthly drip instead: one educational email a month, alternating between calculator content and Fiscal.ai research concepts.',
         ],
       },
     ],
     stats: [
-      { value: '~54K', label: 'Conversions from the dormant base' },
-      { value: '~900K', label: 'Dormant users in base' },
+      { value: '~54K', label: 'Activated or returned across two rounds' },
+      { value: '~2.7% → ~5%', label: 'Conversion, Iteration 1 to Iteration 2' },
+      { value: '~900K', label: 'People in the original pool' },
     ],
-    outcome:
-      'The system compounded across waves. Segmentation plus wave-based deployment outperformed a single-blast equivalent on both conversion rate and per-contact value. The most recent lapsed users converted best, which validated the recency segmentation.',
+    outcome: 'Iteration 3 is running now against the remaining ~300K, with a sunset program planned for whatever is left after it. The numbers matter less than what the program left behind: a repeatable winback and cross-sell architecture — the two-hook model, cleaning the list as you convert it, and the low-frequency drip for the coldest segments — plus proof that lending-to-investing cross-sell works if you frame it as progression and give it more than one pass.',
     tech: [
-      { name: 'Braze', use: 'Segmentation and wave deployment' },
-      { name: 'Segment', use: 'Behavioral data and suppression logic' },
-      { name: 'Looker', use: 'Wave-by-wave conversion tracking' },
+      { name: 'Braze', use: 'Segmentation, iteration waves and cross-channel delivery' },
+      { name: 'Investment calculator', use: 'Behavioural hook for the Manage path' },
+      { name: 'Fiscal.ai', use: 'Research hook for the Self-directed path' },
+      { name: 'One-click survey', use: 'Objection capture and routing' },
     ],
   },
-
   'behavioral-trigger-layer': {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'Building the behavioral trigger layer',
+    deck: 'The activation sequence fired on a schedule instead of on what people actually did, and nobody had named that as the problem.',
     sections: [
       {
         label: 'The read',
         paras: [
-          'Funded-idle users were sitting at 0% conversion to first trade. The lifecycle program was running, emails were going out, nobody was trading.',
+          'Funded users were stopping there, and nothing in the lifecycle spoke to them once they had. There was no path at all from a funded account to a first trade.',
           'Users were funding their accounts and stopping. The lifecycle was sending scheduled emails about why to trade. They had already decided to fund — they were stuck on the next step, not the first one. The messaging was solving the wrong problem.',
           'The read: the lifecycle was timed, not triggered. A user who funded yesterday and a user who funded six weeks ago were getting the same email at the same time.',
         ],
@@ -150,7 +160,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Funded-idle to first-trade conversion. Not activation broadly, not engagement. The specific transition from funded and dormant to first real product action. That was the number that proved whether the trigger layer was working.',
         ],
@@ -164,21 +174,20 @@ export const CASES: Record<string, CaseStudy> = {
       },
     ],
     stats: [
-      { value: '0% → ~19%', label: 'Funded-idle to first trade, within two months' },
-      { value: '~24%', label: 'By the end-of-year read' },
-      { value: '~22%', label: 'First-trade push interaction rate' },
+      { value: '~19%', label: 'Funded-idle to first trade at two months, where there had been no path before' },
+      { value: '~24%', label: 'The same rate on the longer-term read' },
     ],
-    outcome:
-      'The behavioral layer proved that responding to what users did, rather than how long they’d been in the funnel, was what moved revenue behavior. It also validated the next step: branching the whole Canvas by product intent.',
+    outcome: 'The behavioral layer proved that responding to what users did, rather than how long they’d been in the funnel, was what moved revenue behavior. It also validated the next step: branching the whole Canvas by product intent.',
     tech: [
       { name: 'Braze', use: 'Multi-channel Canvas architecture' },
       { name: 'Product event instrumentation', use: 'Behavioral triggers' },
       { name: 'Push deep-linking', use: 'Suppression and frequency logic' },
     ],
   },
-
   'esp-migration': {
-    meta: 'DTC Newsletter · Senior Website and Email Operations Manager · 2021 – 2024',
+    meta: 'DTC Newsletter · Email & Website Operations Manager (MarTech) · 2021 – 2024',
+    title: 'ESP migration and deliverability rescue',
+    deck: 'Sender score in the low 20s, inbox placement collapsing, and the cause was not the content.',
     sections: [
       {
         label: 'The read',
@@ -196,7 +205,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Sender score. Not open rate, not click rate — those were already broken signals, suppressed by the deliverability problem itself. The underlying reputation score was the leading indicator. If it moved, everything downstream would follow.',
           'Secondary: spam placement rate via GlockApps. Inbox vs. spam across major providers was the real-time read on whether the migration was working.',
@@ -206,7 +215,7 @@ export const CASES: Record<string, CaseStudy> = {
         label: 'The build',
         paras: [
           'Built the migration in phases so the newsletter never stopped. Configured DKIM, SPF, and DMARC on the new domain, executed a warming sequence from zero before scaling to full list volume, and rebuilt every automation from scratch.',
-          'Segmented the list before the first send into active, inactive, and zombie. Started warming with the most engaged segment only and expanded volume as sender score climbed. Used ZeroBounce to clean the list, GlockApps to monitor placement, and Litmus for rendering checks. Then built deliverability SOPs so the team had a defined response if scores dropped again.',
+          'Segmented the list before the first send into active, inactive, and zero-engagement. Started warming with the most engaged segment only and expanded volume as sender score climbed. Used ZeroBounce to clean the list, GlockApps to monitor placement, and Litmus for rendering checks. Then built deliverability SOPs so the team had a defined response if scores dropped again.',
         ],
       },
     ],
@@ -215,8 +224,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '200K+', label: 'Subscribers migrated' },
       { value: '5x / week', label: 'Send cadence maintained throughout' },
     ],
-    outcome:
-      'The sender score didn’t just recover, it stabilized above 90 with the SOPs in place. The diagnostic was right: the problem was never the content. It was the infrastructure. Once that was clean, the content had a fair chance to perform.',
+    outcome: 'The sender score didn’t just recover, it stabilized above 90 with the SOPs in place. The diagnostic was right: the problem was never the content. It was the infrastructure. Once that was clean, the content had a fair chance to perform.',
     tech: [
       { name: 'Campaign Monitor', use: 'Primary ESP post-migration' },
       { name: 'ZeroBounce', use: 'List hygiene and bounce management' },
@@ -225,9 +233,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'DKIM / SPF / DMARC', use: 'Email authentication' },
     ],
   },
-
   'dafabet-sfmc': {
-    meta: 'Sportserve (Dafabet) · Senior Digital Projects and Marketing Operations Manager · 2014 – 2021',
+    meta: 'Sportserve (Dafabet) · Senior Marketing Projects and Operations Manager · 2014 – 2021',
+    title: 'Salesforce lifecycle automation — Dafabet',
+    deck: 'Twelve countries, safer-gambling compliance in every market, and no system connecting user behavior to messaging.',
     sections: [
       {
         label: 'The read',
@@ -245,7 +254,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'First-bet conversion rate. In a gaming product the first bet is the activation event — retention, LTV, and cross-sport engagement all depended on whether the user crossed that threshold.',
           'Secondary: 7-day reactivation rate. If the re-engagement flows were working, that number would move independently of acquisition volume.',
@@ -265,8 +274,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '+10–20%', label: '7-day dormant reactivation' },
       { value: '+20–40%', label: 'CTR on triggered vs. batch campaigns' },
     ],
-    outcome:
-      'Six flows, one connected system, one activation milestone at the center. It proved a principle that carried into every lifecycle system I built after: if the system doesn’t know what the user just did, it can’t send the right message.',
+    outcome: 'Six flows, one connected system, one activation milestone at the center. It proved a principle that carried into every lifecycle system I built after: if the system doesn’t know what the user just did, it can’t send the right message.',
     tech: [
       { name: 'Salesforce Marketing Cloud', use: 'Lifecycle orchestration' },
       { name: 'Journey Builder', use: 'Flow design and execution' },
@@ -275,9 +283,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'MobilePush / SMS Studio', use: 'Cross-channel delivery' },
     ],
   },
-
   'agentic-ops': {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'Agentic ops infrastructure',
+    deck: 'Leadership wanted automation but had not named a platform or an owner, and what the Ops teams actually needed was to be able to build things themselves.',
     sections: [
       {
         label: 'The read',
@@ -289,41 +298,40 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The decision',
         paras: [
-          'Pick three high-friction manual processes and build agentic workflows for each: loan routing, compliance review cycles, and email production. These had the clearest input-output logic and the most measurable time cost. Build the infrastructure for the team to run them, not for a central team to manage them.',
-          'The selection criteria was: where does a human spend time doing something a model can do more consistently? Not: where does AI sound impressive?',
+          'I took a hybrid architecture to the COO: Zapier for the messy integrations with existing systems, and self-hosted n8n on the AWS infrastructure we already had for the high-volume operational work. Zapier per-task pricing breaks at operational scale, so self-hosting kept both the cost and the ownership internal as volume grew.',
+          'The other half of the decision was who it was for. This had to be infrastructure the Ops teams could build on themselves, not a service a central team ran for them, or I would just be moving the dependency from Engineering onto me.',
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
-          'Cycle time reduction per process — how long did it take before vs. after — tracked separately per workflow so we could see which interventions worked and which needed adjustment. Secondary metric: underwriter close rate on AI-routed loans.',
+          'Underwriter close rate on the applications the system routed. It was the most direct measure of whether the automation was freeing up the right capacity for the right work, and if it did not move, the infrastructure was not earning its place.',
         ],
       },
       {
         label: 'The build',
         paras: [
-          'Built an AI loan routing agent that scored inbound applications and matched them to the right underwriter tier. Built a compliance review workflow that drafted and flagged review items, cutting the manual read cycle. Built an email production system that produced first drafts from a creative brief.',
-          'Each workflow was designed so the ops team owned it directly. No central AI team required. The infrastructure was the point.',
+          'DevOps handled the infrastructure setup; I owned the operational use cases, the workflow architecture and the rollout. The first production build was loan application profiling and routing. Loan Ops were sorting and prioritising applications by hand, and that sorting was where the delay actually sat, so I sat with them to work out how they were making those calls, mapped the criteria into scoring logic, and automated the routing into the right queues.',
+          'After that I went looking for the next ones rather than waiting to be asked, and the infrastructure grew to more than fifteen production automations. Then I wrote the documentation, put the SOPs in Confluence, and ran sessions with each Ops lead so their team could build and maintain their own.',
         ],
       },
     ],
     stats: [
-      { value: '~+30%', label: 'Underwriter close rate on AI-routed loans' },
-      { value: '~−50%', label: 'Compliance review cycle time' },
-      { value: '~−75%', label: 'Email build time' },
+      { value: '~+30%', label: 'Underwriter close rate on the applications the system routed' },
+      { value: '15+', label: 'Automations in production, run by the Ops teams themselves' },
     ],
-    outcome:
-      'The routing improvement was the most significant — better loan matching meant underwriters spent time on applications with higher close probability. The email and compliance gains were efficiency wins; the routing improvement directly affected revenue.',
+    outcome: 'Underwriters stopped sorting and spent the time closing, which is where the close rate came from. The part that mattered more was the one the original read pointed at: Ops teams now build and extend their own workflows, so what started as one automation project became a capability the business owns without me.',
     tech: [
-      { name: 'OpenAI API', use: 'Loan routing and compliance review agents' },
-      { name: 'n8n', use: 'Workflow orchestration' },
-      { name: 'Braze', use: 'Email production pipeline' },
-      { name: 'Confluence', use: 'Workflow documentation and SOPs' },
+      { name: 'n8n', use: 'Self-hosted on existing AWS for high-volume workflows' },
+      { name: 'Zapier', use: 'Integrations with existing systems' },
+      { name: 'OpenAI API', use: 'Application profiling and scoring logic' },
+      { name: 'Confluence', use: 'SOPs, documentation and training material' },
     ],
   },
-
   'lead-enrichment': {
-    meta: 'Pilothouse / DTC Newsletter · Senior Website and Email Operations Manager · 2021 – 2024',
+    meta: 'Pilothouse / DTC Newsletter · Email & Website Operations Manager (MarTech) · 2021 – 2024',
+    title: 'AI-powered lead enrichment and routing',
+    deck: 'The CFO asked for enriched leads, when what sales needed was to know which signups were worth calling the moment they arrived.',
     sections: [
       {
         label: 'The read',
@@ -341,7 +349,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Lead data pre-population rate. What percentage of fields did sales have before they touched a record? If the system was working, a salesperson should be able to open a new lead and already know who they were looking at.',
           'Secondary: enriched lead volume per month. The system had to perform at scale, not just in demo conditions.',
@@ -359,10 +367,9 @@ export const CASES: Record<string, CaseStudy> = {
     stats: [
       { value: '~70%', label: 'Lead data pre-populated before sales contact' },
       { value: '1K–2K', label: 'Enriched leads per month' },
-      { value: '+30%', label: 'Lead quality vs. unenriched baseline' },
+      { value: '+30%', label: 'Lead quality' },
     ],
-    outcome:
-      'The reframe was the whole thing. Enrichment as a goal produces a richer spreadsheet. Speed-to-contact as a goal produces a system sales actually uses. The difference wasn’t in the tools — it was in asking what the data was supposed to solve.',
+    outcome: 'The reframe was the whole thing. Enrichment as a goal produces a richer spreadsheet. Speed-to-contact as a goal produces a system sales actually uses. The difference wasn’t in the tools — it was in asking what the data was supposed to solve.',
     tech: [
       { name: 'Zapier', use: 'Workflow orchestration and trigger logic' },
       { name: 'LindyAI', use: 'Individual contact enrichment' },
@@ -372,9 +379,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Slack', use: 'Real-time high-value lead routing' },
     ],
   },
-
   'compliance-workflow': {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'Email validation and compliance workflow',
+    deck: 'The validation workflow ran fine technically and still nobody leaned on it, because it was not checking what Compliance actually checks.',
     sections: [
       {
         label: 'The read',
@@ -392,7 +400,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Compliance review cycles per email. How many rounds of back-and-forth before sign-off? That was the friction the tool was supposed to remove. If the number didn’t drop, the tool wasn’t working regardless of what it produced technically.',
         ],
@@ -411,8 +419,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '−50%', label: 'Review cycle time' },
       { value: '4', label: 'Versions to get it right' },
     ],
-    outcome:
-      'The lesson wasn’t about the tool. It was about who you design with. The first three versions failed because I was building a compliance workflow without a compliance expert in the room. Subject matter experts aren’t approvers. They’re design inputs.',
+    outcome: 'The lesson wasn’t about the tool. It was about who you design with. The first three versions failed because I was building a compliance workflow without a compliance expert in the room. Subject matter experts aren’t approvers. They’re design inputs.',
     tech: [
       { name: 'n8n', use: 'Workflow orchestration and self-serve QA' },
       { name: 'OpenAI API', use: 'Content validation and flag classification' },
@@ -420,15 +427,16 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Confluence', use: 'Workflow documentation and rule sets' },
     ],
   },
-
   'mogo-web': {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'Mogo web ecosystem rebuild',
+    deck: 'Marketing needed to ship pages in hours, but the website sat with DevOps — which turned out to be the whole problem, not a detail of it.',
     sections: [
       {
         label: 'The read',
         paras: [
           'Lifecycle conversion was weak and the assumption in the room was that the emails needed work. I looked upstream. The emails were performing reasonably. What wasn’t performing was where they sent people — campaign traffic landed on generic product pages with nothing to do with the message the user had just read.',
-          'The second problem was structural. The website was owned by DevOps. Any change required an engineering ticket, and a campaign landing page took two to three weeks. Marketing had no way to move at campaign speed.',
+          'The second problem was structural. The website was owned by DevOps. Any change required an engineering ticket, and a campaign landing page took weeks. Marketing had no way to move at campaign speed.',
           'The read: two problems at once. A conversion problem caused by lifecycle-web misalignment, and an ownership problem caused by the wrong team controlling the tool.',
         ],
       },
@@ -440,7 +448,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Conversion rate from lifecycle traffic. That was the specific failure the rebuild was meant to address: if lifecycle emails drove traffic to pages that matched the message and the intent, that number would move.',
           'Secondary: time to launch for a new page. The ownership problem was only solved if Marketing could actually ship without waiting on engineering.',
@@ -449,7 +457,7 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The build',
         paras: [
-          'Rebuilt five properties: MogoTrade as the initial proof of the Webflow model, then Moka, Intelligent Investing, mogo.ai, and mogo.ca.',
+          'Rebuilt five properties: MogoTrade as the initial proof of the Webflow model, then Moka, Intelligent Investing, orion-digital.com, and mogo.ca.',
           'Built a component system rather than individual pages — reusable sections, governed naming, and a CMS structure that let anyone assemble a page from the library in hours. Defined URL structures, content models, and metadata templates before touching layouts, so SEO and tracking were built in rather than retrofitted.',
           'Applied SEO, AEO, and GEO across all five properties: schema markup, canonical structures, internal linking, metadata by page type. Rebuilt GA4 and GTM in parallel, bringing Analytics, DevOps, Product, and Legal into the tracking architecture during the migration rather than after. Every page launched with clean event tracking on day one.',
         ],
@@ -458,10 +466,9 @@ export const CASES: Record<string, CaseStudy> = {
     stats: [
       { value: '+15%', label: 'Conversion from lifecycle traffic' },
       { value: '+30%', label: 'Conversion on campaign-specific landing pages' },
-      { value: '2x', label: 'Organic traffic within 90 days' },
+      { value: '~5% → ~14%', label: 'MogoTrade organic traffic share, within 90 days' },
     ],
-    outcome:
-      'The lifecycle conversion problem was never an email problem. It was a destination problem. Once the pages matched the message and Marketing owned the ability to change them, conversion followed — and the component system meant the fix wasn’t one campaign, it was every campaign after.',
+    outcome: 'The lifecycle conversion problem was never an email problem. It was a destination problem. Once the pages matched the message and Marketing owned the ability to change them, conversion followed — and the component system meant the fix wasn’t one campaign, it was every campaign after.',
     tech: [
       { name: 'Webflow', use: 'Full web ecosystem and component system' },
       { name: 'GA4 + GTM', use: 'Rebuilt tracking infrastructure' },
@@ -471,9 +478,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Branch Metrics', use: 'App deep-link attribution' },
     ],
   },
-
   'dtc-newsletter': {
-    meta: 'DTC Newsletter · Senior Website and Email Operations Manager · 2021 – 2024',
+    meta: 'DTC Newsletter · Email & Website Operations Manager (MarTech) · 2021 – 2024',
+    title: 'DTC Newsletter web and SEO rebuild',
+    deck: 'The newsletter had a 70% bounce rate, and the right people were arriving — they just were not being given a reason to stay.',
     sections: [
       {
         label: 'The read',
@@ -491,7 +499,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Bounce rate, as the primary signal of whether the site was working for the reader who arrived. If the architecture and content hierarchy were right, it would fall.',
           'Secondary: organic newsletter signup rate. The site’s job was ultimately to convert organic readers into subscribers. That number had to move or the rebuild hadn’t solved the right problem.',
@@ -500,8 +508,8 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The build',
         paras: [
-          'The first version shipped with a clean content taxonomy, consistent URL structure, schema markup across all content types, and metadata templates matched to search intent by page category. Bounce rate went from 70% to 38%.',
-          'The second rebuild expanded the system for growing content volume: new page types for sponsor content, resource sections, and topic cluster hubs, with internal linking built around keyword groupings. Organic traffic grew 28% and organic signup conversion 27%.',
+          'The first version shipped with a clean content taxonomy, consistent URL structure, schema markup across all content types, and metadata templates matched to search intent by page category.',
+          'The second rebuild expanded the system for growing content volume: new page types for sponsor content, resource sections, and topic cluster hubs, with internal linking built around keyword groupings.',
           'The third rebuild was forced by an external contractor deleting the entire Webflow environment. I rebuilt the full site from memory and documentation — every component, CMS collection, automation, and content system — without data loss. Operations never stopped.',
         ],
       },
@@ -511,8 +519,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '+28%', label: 'Organic traffic' },
       { value: '+27%', label: 'Organic newsletter signups' },
     ],
-    outcome:
-      'Three rebuilds taught the same lesson each time. The bounce rate was always a symptom, not the problem. The problem was whether the page gave the reader a reason to be there. When the architecture matched how readers actually moved through the content, the numbers followed.',
+    outcome: 'Three rebuilds taught the same lesson each time. The bounce rate was always a symptom, not the problem. The problem was whether the page gave the reader a reason to be there. When the architecture matched how readers actually moved through the content, the numbers followed.',
     tech: [
       { name: 'Webflow', use: 'Full site development and CMS' },
       { name: 'Semrush / Ahrefs', use: 'SEO audit and keyword research' },
@@ -522,9 +529,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Campaign Monitor', use: 'Newsletter signup integration' },
     ],
   },
-
   'analytics-rebuild': {
-    meta: 'Mogo · Senior Marketing Operations Manager · 2024 – present',
+    meta: 'Mogo · Senior Marketing Operations & Lifecycle Manager (MarTech) · 2024 – present',
+    title: 'Analytics and tracking infrastructure rebuild',
+    deck: 'Leadership had stopped trusting the numbers, and the cause was sitting underneath the campaigns: years of undocumented tag debt.',
     sections: [
       {
         label: 'The read',
@@ -543,7 +551,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Data accuracy rate. The specific question leadership needed answered was whether they could trust what the reports showed. Accuracy at the event level was the only metric that answered it.',
           'Secondary: cost savings from the martech audit. If the audit surfaced unused tools or redundant subscriptions, that was a direct business outcome from the diagnostic work.',
@@ -561,10 +569,8 @@ export const CASES: Record<string, CaseStudy> = {
     stats: [
       { value: '40% → 80%', label: 'Data accuracy rate' },
       { value: '~$18K', label: 'Annual martech savings identified' },
-      { value: '0 → connected', label: 'Braze to Dynamics integration' },
     ],
-    outcome:
-      'The rebuild didn’t improve campaign performance directly. It made campaign performance legible. When leadership can trust the data, they make decisions with it; when they can’t, they stop looking at it entirely. The real outcome wasn’t better numbers — it was numbers that could be used.',
+    outcome: 'The rebuild didn’t improve campaign performance directly. It made campaign performance legible. When leadership can trust the data, they make decisions with it; when they can’t, they stop looking at it entirely. The real outcome wasn’t better numbers — it was numbers that could be used.',
     tech: [
       { name: 'GA4', use: 'Analytics property rebuilt from scratch' },
       { name: 'Google Tag Manager', use: 'Full implementation and governance' },
@@ -574,9 +580,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Looker', use: 'Measurement and reporting' },
     ],
   },
-
   'sportserve-payments-division': {
-    meta: 'Sportserve · Senior Digital Projects and Marketing Operations Manager · Mar 2014 – Feb 2021',
+    meta: 'Sportserve · Senior Marketing Projects and Operations Manager · Mar 2014 – Feb 2021',
+    title: 'Building the Payments Operations Division',
+    deck: 'Payment launches were fragmented across 8 departments with no single owner. I made the case for a dedicated division and built it from scratch.',
     sections: [
       {
         label: 'The read',
@@ -594,7 +601,7 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
           'Launch throughput and production error rate across the full portfolio of launches, not any single one. If the system was working, every launch would get faster and cleaner, not just the ones I personally touched. That was the only way to prove the diagnosis was right: that the problem was systemic, not isolated.',
         ],
@@ -613,8 +620,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '2x', label: 'Campaign throughput' },
       { value: '~40%', label: 'Production errors reduced' },
     ],
-    outcome:
-      'The read held. Throughput doubled, errors dropped about 40%, and payment method adoption improved 20–30% by market — because launches were finally running through one system instead of eight. The structure outlasted me.',
+    outcome: 'That turned out to be the right call. Throughput doubled, errors dropped about 40%, and payment method adoption improved 20–30% by market — because launches were finally running through one system instead of eight. The structure outlasted me.',
     tech: [
       { name: 'Jira', use: 'Sprint planning and backlog management' },
       { name: 'Agile and RACI', use: 'Delivery governance and ownership clarity' },
@@ -622,9 +628,10 @@ export const CASES: Record<string, CaseStudy> = {
       { name: 'Creative production tooling', use: 'Merchant assets and campaign creative' },
     ],
   },
-
-  craftconcepts: {
-    meta: 'CraftConcepts · Founder and Growth Strategist · May 2022 – Jan 2025',
+  'craftconcepts': {
+    meta: 'CraftConcepts · Founder, Growth Marketing Strategist · May 2022 – Jan 2025',
+    title: 'Founding and scaling CraftConcepts',
+    deck: 'Local businesses lost their digital presence after the pandemic and couldn’t afford an agency to fix it. I built a collective to close that gap, and used it to mentor early-career marketers on real client work.',
     sections: [
       {
         label: 'The read',
@@ -641,9 +648,9 @@ export const CASES: Record<string, CaseStudy> = {
         ],
       },
       {
-        label: 'The metric I chose',
+        label: 'The number I picked',
         paras: [
-          'Number of businesses served, since that was the only way to know whether the model scaled past me personally. And average organic visibility lift, since that proved the work held up after we shipped it — not just that we shipped something.',
+          'Number of businesses served, since that was the only way to know whether the model scaled past me personally. And organic visibility, since that proved the work held up after we shipped it — not just that we shipped something.',
         ],
       },
       {
@@ -657,10 +664,9 @@ export const CASES: Record<string, CaseStudy> = {
     stats: [
       { value: '3 → 20+', label: 'Contributors at peak' },
       { value: '26', label: 'Businesses served' },
-      { value: '+40%', label: 'Average organic visibility lift' },
+      { value: '~40%', label: 'Organic visibility lift' },
     ],
-    outcome:
-      'The model scaled past what I could do alone — not because I hired in the traditional sense, but because the mentorship structure meant contributors could actually execute client work, not just shadow it. I wound it down deliberately in January 2025, once the gap it was built for had closed.',
+    outcome: 'The model scaled past what I could do alone — not because I hired in the traditional sense, but because the mentorship structure meant contributors could actually execute client work, not just shadow it. I wound it down deliberately in January 2025, once the gap it was built for had closed.',
     tech: [
       { name: 'Webflow and WordPress', use: 'Client website builds' },
       { name: 'SEO and CRO', use: 'Visibility and conversion work' },

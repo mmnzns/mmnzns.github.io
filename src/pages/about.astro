@@ -43,7 +43,7 @@ import {
 
       <div class="portrait-split__body">
         <p class="eyebrow prose-block__eyebrow">What I do</p>
-        <div class="prose-block" data-reveal>
+        <div class="prose-block" data-reveal-group>
           {WHAT_I_DO.map((para) => <p>{para}</p>)}
         </div>
         <p class="portrait-split__sign">Miguel Monzones</p>
@@ -58,7 +58,7 @@ import {
         <p class="eyebrow split__eyebrow">How I got here</p>
         <h2 class="split__title">Canada, then a farm, then newsrooms.</h2>
       </div>
-      <div class="prose-block" data-reveal>
+      <div class="prose-block" data-reveal-group>
         {HOW_I_GOT_HERE.map((para) => <p>{para}</p>)}
       </div>
     </div>
@@ -103,7 +103,7 @@ import {
         <p class="eyebrow split__eyebrow">What I believe</p>
         <h2 class="split__title">At the core of all of it is one idea:</h2>
       </div>
-      <div class="prose-block" data-reveal>
+      <div class="prose-block" data-reveal-group>
         <p class="belief">{BELIEF.headline}</p>
         {BELIEF.paras.map((para) => <p>{para}</p>)}
         <p>
@@ -120,7 +120,7 @@ import {
         <p class="eyebrow split__eyebrow">Outside work</p>
         <h2 class="split__title">Food, fiction, and a fat cat.</h2>
       </div>
-      <div class="prose-block" data-reveal>
+      <div class="prose-block" data-reveal-group>
         {OUTSIDE_WORK.map((para) => <p>{para}</p>)}
       </div>
     </div>
@@ -140,6 +140,7 @@ import {
             <div class="roles__row">
               <div>
                 <p class="roles__org">{role.org}</p>
+                <p class="roles__title">{role.title}</p>
                 <p class="roles__what">{role.what}</p>
               </div>
               <p class="roles__years">{role.years}</p>
@@ -156,7 +157,7 @@ import {
       <div>
         <p class="eyebrow split__eyebrow">What I’m like to work with</p>
       </div>
-      <div class="prose-block" data-reveal>
+      <div class="prose-block" data-reveal-group>
         {TO_WORK_WITH.map((para) => <p>{para}</p>)}
       </div>
     </div>
@@ -169,45 +170,9 @@ import {
   />
 </BaseLayout>
 
-<script>
-  // Career totals count up the first time they scroll into view. The rendered
-  // value is already correct, so this only replaces a correct number with the
-  // same number — nothing breaks if it never runs.
-  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (counters.length && !reduce && 'IntersectionObserver' in window) {
-    const countUp = (el: HTMLElement) => {
-      const target = Number(el.dataset.count);
-      if (!Number.isFinite(target)) return;
-      const suffix = el.dataset.suffix ?? '';
-      const duration = 900;
-      const start = performance.now();
-
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = Math.round(target * eased) + suffix;
-        if (progress < 1) requestAnimationFrame(tick);
-      };
-
-      requestAnimationFrame(tick);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          observer.unobserve(entry.target);
-          countUp(entry.target as HTMLElement);
-        }
-      },
-      { threshold: 0.4 },
-    );
-
-    for (const counter of counters) observer.observe(counter);
-  }
-</script>
+{/* The `data-count` totals are animated by Motion.astro, along with every other
+    scroll-driven effect on the site. There is no page-local script here on
+    purpose: two observers watching the same elements would count twice. */}
 
 <style>
   .about-hero__eyebrow {
@@ -388,6 +353,13 @@ import {
     font-size: 18px;
     font-weight: 500;
     letter-spacing: -0.005em;
+  }
+
+  .roles__title {
+    margin-top: 3px;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--ink-3);
   }
 
   .roles__what {

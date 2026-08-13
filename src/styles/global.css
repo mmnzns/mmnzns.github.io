@@ -615,40 +615,46 @@ p {
 
 /* ---------------------------------------------------------------- motion -- */
 
-/* Paragraphs lift and settle as they scroll into view.
+/* Scroll reveals live in src/components/Motion.astro, not here.
  *
- * Driven by a native scroll timeline rather than JavaScript, which matters for
- * more than elegance: an effect that starts text at 32% opacity and relies on a
- * script to finish the job leaves the page unreadable whenever that script
- * doesn't run. Inside @supports, the dimmed starting state only ever exists in
- * browsers that can complete the animation. Everywhere else the text simply
- * renders, which is the correct fallback.
+ * That split is deliberate. A starting state of "invisible" written in CSS
+ * applies whether or not the script that clears it ever runs, so a stylesheet
+ * is the wrong place to put one. Motion.astro writes those states from
+ * JavaScript and carries a failsafe that clears them unconditionally, which
+ * means the worst case is a page that appears without animating.
+ *
+ * What belongs here is polish that needs no script and no starting state:
+ * pressed buttons and underlines that grow on hover.
  */
-@keyframes reveal-rise {
-  from {
-    opacity: 0.32;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
+button {
+  transition:
+    transform var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    /* Longhands, not the `animation` shorthand: the CSS minifier folds
-       adjacent animation properties together, and `view()` inside the
-       shorthand is invalid, which silently kills the whole declaration. */
-    [data-reveal] > * {
-      animation-name: reveal-rise;
-      animation-fill-mode: both;
-      animation-timing-function: linear;
-      animation-timeline: view();
-      animation-range: entry 5% cover 22%;
-    }
-  }
+button:active {
+  transform: scale(0.972);
+}
+
+/* Underline drawn as a background so it can grow from the left. A border or
+   text-decoration can only fade, which reads as a default rather than a
+   response. Icon links are excluded — there's no text to underline. */
+.prose a[href],
+.footer__meta a[href]:not([aria-label]) {
+  background-image: linear-gradient(currentcolor, currentcolor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1.2px;
+  transition:
+    background-size var(--dur) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.prose a[href]:hover,
+.footer__meta a[href]:not([aria-label]):hover {
+  background-size: 100% 1.2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

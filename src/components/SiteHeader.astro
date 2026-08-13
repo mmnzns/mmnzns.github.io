@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import { SITE, NAV_LINKS, NAV_CTA } from '../config';
+import logoMark from '../assets/logo-mark.png';
 
 interface Props {
   /** Renders the article reading-progress bar along the bottom edge. */
@@ -9,15 +11,22 @@ interface Props {
 const { progress = false } = Astro.props;
 const path = Astro.url.pathname;
 
-/** `/work/mogo-lifecycle/` should still light up the "Work" tab. */
+/**
+ * `/work/mogo-lifecycle/` should still light up the "Work" tab. Home is matched
+ * exactly — every path starts with "/", so a prefix test would mark it current
+ * on every page of the site.
+ */
 function isCurrent(href: string) {
-  return path === href || path.startsWith(href);
+  return href === '/' ? path === '/' : path.startsWith(href);
 }
 ---
 
 <header class="header">
   <nav class="header__bar wrap" aria-label="Primary">
-    <a class="brand" href="/">{SITE.title.replace('N. ', '')}</a>
+    <a class="brand" href="/">
+      <Image src={logoMark} alt="" width={34} height={26} loading="eager" />
+      <span>{SITE.title.replace('N. ', '')}</span>
+    </a>
 
     <ul class="navlinks">
       {
@@ -95,6 +104,16 @@ function isCurrent(href: string) {
     background: color-mix(in srgb, var(--paper) 82%, transparent);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--rule);
+    transition:
+      box-shadow 320ms ease,
+      background-color 320ms ease;
+  }
+
+  /* Set by Motion.astro past the first few pixels of scroll: the bar reads as
+     sitting above the page rather than printed on it. */
+  .header--lifted {
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    box-shadow: 0 10px 30px -22px rgb(31 28 25 / 50%);
   }
 
   .header__bar {
@@ -105,11 +124,21 @@ function isCurrent(href: string) {
   }
 
   .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
     font-size: 16px;
     font-weight: 600;
     letter-spacing: -0.01em;
     margin-right: auto;
     white-space: nowrap;
+  }
+
+  .brand :global(img) {
+    height: 26px;
+    width: auto;
+    flex: none;
+    display: block;
   }
 
   .navlinks {

@@ -54,44 +54,27 @@ export const PROJECTS: readonly Project[] = [
     metrics: [
       { from: '24%', to: '38%', label: 'activation rate' },
       { from: '78%', to: '62%', label: '7-day drop-off' },
-      { from: '35%', to: '23%', label: 'first-year churn' },
     ],
     category: 'Lifecycle',
   },
   {
     slug: 'winback',
-    title: 'Winback and cross-sell at scale',
+    title: 'The Intelligent Investing winback and cross-sell',
     problem:
-      '900K dormant users across two products and one list. I treated it as a multi-iteration system from day one.',
-    tags: ['Lifecycle', 'Retention', 'Winback'],
-    metrics: [{ value: '~54K', label: 'conversions' }],
+      'About 900,000 people had gone quiet on investing or never started, and a large part of them had only ever borrowed from us.',
+    tags: ['Lifecycle', 'Retention', 'Cross-sell'],
+    metrics: [{ value: '~54K', label: 'activated or returned across two rounds' }],
     category: 'Lifecycle',
-  },
-  {
-    slug: 'agentic-ops',
-    title: 'Agentic ops infrastructure',
-    problem:
-      'Leadership mandated automation with no platform and no owner. The real need was ops self-sufficiency.',
-    tags: ['AI', 'Automation', 'GTM'],
-    metrics: [{ value: '~30%', label: 'close rate' }],
-    category: 'AI Automation',
-  },
-  {
-    slug: 'sportserve-payments-division',
-    title: 'Payments Operations Division at Sportserve',
-    problem:
-      'Payment launches were fragmented across 8 departments with no single owner. I made the case for a dedicated division and built it from zero.',
-    tags: ['Leadership', 'Operations', 'Team Building'],
-    metrics: [{ value: '0 → 5', label: 'person team, built from zero' }],
-    category: 'Leadership & Operations',
   },
   {
     slug: 'behavioral-trigger-layer',
     title: 'Building the behavioral trigger layer',
     problem:
-      'The activation sequence fired on a schedule, never on what users actually did. Nobody had named that as the problem.',
+      'The activation sequence fired on a schedule instead of on what people actually did, and nobody had named that as the problem.',
     tags: ['Lifecycle', 'Behavioral', 'Activation'],
-    metrics: [{ from: '0%', to: '~24%', label: 'funded-idle to first-trade' }],
+    metrics: [
+      { value: '~24%', label: 'funded-idle to first trade, where there was no path before' },
+    ],
     category: 'Lifecycle',
   },
   {
@@ -119,10 +102,22 @@ export const PROJECTS: readonly Project[] = [
     category: 'Lifecycle',
   },
   {
+    slug: 'agentic-ops',
+    title: 'Agentic ops infrastructure',
+    problem:
+      'Leadership wanted automation but had not named a platform or an owner, and what the Ops teams actually needed was to be able to build things themselves.',
+    tags: ['AI', 'Automation', 'GTM'],
+    metrics: [
+      { value: '~30%', label: 'underwriter close rate' },
+      { value: '15+', label: 'workflows in production' },
+    ],
+    category: 'AI Automation',
+  },
+  {
     slug: 'lead-enrichment',
     title: 'AI-powered lead enrichment and routing',
     problem:
-      "The CFO wanted to enrich leads. The real problem was sales couldn't tell which signups were worth calling as soon as they arrived.",
+      'The CFO asked for enriched leads, when what sales needed was to know which signups were worth calling the moment they arrived.',
     tags: ['AI', 'Automation', 'RevOps'],
     metrics: [{ value: '~70%', label: 'lead data pre-populated' }],
     category: 'AI Automation',
@@ -131,21 +126,20 @@ export const PROJECTS: readonly Project[] = [
     slug: 'compliance-workflow',
     title: 'Email validation and compliance workflow',
     problem:
-      "The email validation workflow worked technically. The real problem was that it didn't reflect how Compliance actually reviewed content.",
+      'The validation workflow ran fine technically and still nobody leaned on it, because it was not checking what Compliance actually checks.',
     tags: ['AI', 'Automation', 'Compliance'],
-    metrics: [{ from: '4 rounds', to: '1–2', label: 'review cycles, halved' }],
+    metrics: [{ value: '−50%', label: 'review cycles: 4–5 rounds → 1–2' }],
     category: 'AI Automation',
   },
   {
     slug: 'mogo-web',
     title: 'Mogo web ecosystem rebuild',
     problem:
-      'Marketing needed to ship pages in hours. DevOps owned the website. That was the actual problem.',
+      'Marketing needed to ship pages in hours, but the website sat with DevOps — which turned out to be the whole problem, not a detail of it.',
     tags: ['Web', 'Webflow', 'Conversion'],
     metrics: [
       { value: '+15%', label: 'lifecycle conversion' },
-      { value: '+30%', label: 'campaign conversion' },
-      { value: '2×', label: 'organic in 90 days' },
+      { from: '~5%', to: '~14%', label: 'organic traffic share in 90 days' },
     ],
     category: 'Web Operations',
   },
@@ -153,11 +147,10 @@ export const PROJECTS: readonly Project[] = [
     slug: 'dtc-newsletter',
     title: 'DTC Newsletter web and SEO rebuild',
     problem:
-      "The newsletter had a 70% bounce rate. The problem wasn't the audience — it was what they landed on.",
+      'The newsletter had a 70% bounce rate, and the right people were arriving — they just were not being given a reason to stay.',
     tags: ['Web', 'Webflow', 'SEO'],
     metrics: [
       { from: '70%', to: '38%', label: 'bounce rate' },
-      { value: '+28%', label: 'organic traffic' },
       { value: '+27%', label: 'signups' },
     ],
     category: 'Web Operations',
@@ -166,7 +159,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'analytics-rebuild',
     title: 'Analytics and tracking infrastructure rebuild',
     problem:
-      "Leadership didn't trust the data. The problem wasn't the campaigns. It was years of undocumented tag debt underneath them.",
+      'Leadership had stopped trusting the numbers, and the cause was sitting underneath the campaigns: years of undocumented tag debt.',
     tags: ['Analytics', 'Tracking', 'Martech'],
     metrics: [
       { from: '40%', to: '80%', label: 'data accuracy' },
@@ -175,13 +168,25 @@ export const PROJECTS: readonly Project[] = [
     category: 'Web Operations',
   },
   {
-    slug: 'craftconcepts',
-    title: 'Founding and scaling CraftConcepts',
+    slug: 'sportserve-payments-division',
+    title: 'Payments Operations Division at Sportserve',
     problem:
-      "Local businesses lost their digital presence after the pandemic and couldn't afford an agency to fix it. I built a collective to close that gap, and used it to mentor early-career marketers on real client work.",
+      'Payment launches were fragmented across 8 departments with no single owner. I made the case for a dedicated division and built it from zero.',
+    tags: ['Leadership', 'Operations', 'Team building'],
+    metrics: [
+      { from: '0', to: '5', label: 'person team, built from scratch' },
+      { value: '2x', label: 'campaign throughput' },
+    ],
+    category: 'Leadership & Operations',
+  },
+  {
+    slug: 'craftconcepts',
+    title: 'Founding CraftConcepts',
+    problem:
+      "Local businesses lost their digital presence after the pandemic and couldn't afford an agency to fix it. I built a collective to close that gap, and mentored early-career marketers on real client work.",
     tags: ['Leadership', 'Founder', 'Mentorship'],
     metrics: [
-      { from: '3', to: '20+', label: 'contributors' },
+      { from: '3', to: '20+', label: 'contributors at peak' },
       { value: '26', label: 'businesses served' },
     ],
     category: 'Leadership & Operations',

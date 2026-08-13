@@ -1,0 +1,273 @@
+---
+/**
+ * The site's motion layer. One behaviour per thing, nothing decorative.
+ *
+ *   1. Hero — its parts rise in sequence on load.
+ *   2. Sections — one fade and rise as each crosses into view, once.
+ *   3. Framed images — settle out of a slight scale-up with their section.
+ *   4. Paragraph groups — `data-reveal-group` fades its paragraphs individually.
+ *   5. Counters — `data-count` counts up when it first appears.
+ *   6. Header — lifts off the page once you scroll.
+ *   7. Footer wordmark — drifts slowly as the footer arrives.
+ *
+ * Everything here is an enhancement. The starting states are written by this
+ * script and never by the stylesheet, so a browser that doesn't run it, or a
+ * visitor who has asked for reduced motion, gets the finished page immediately.
+ * The failsafe below covers the other direction: if the script runs but the
+ * observer never reports back, everything is shown anyway rather than left
+ * invisible. An animation that can hide content has to be able to give up.
+ */
+---
+
+<script>
+  const EASE = 'cubic-bezier(.16,.86,.34,1)';
+
+  /** If an element is still waiting this long after load, just show it. */
+  const FAILSAFE_MS = 2600;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canObserve = typeof IntersectionObserver === 'function';
+
+  if (!reduced && canObserve) {
+    /* ---------------------------------------------------------- helpers -- */
+
+    /** Elements hidden and still waiting to be revealed. */
+    const pending = new Set<HTMLElement>();
+    const done = new WeakSet<HTMLElement>();
+
+    function hide(el: HTMLElement, y: number, dim = 0) {
+      el.style.opacity = String(dim);
+      el.style.transform = `translate3d(0,${y}px,0)`;
+      el.style.willChange = 'opacity, transform';
+      pending.add(el);
+    }
+
+    function show(el: HTMLElement, duration: number, delay = 0) {
+      if (!pending.delete(el)) return;
+      el.style.transition =
+        `opacity ${duration}ms ${EASE} ${delay}ms, transform ${duration}ms ${EASE} ${delay}ms`;
+      el.style.opacity = '1';
+      el.style.transform = 'translate3d(0,0,0)';
+      // Hand the element back to the stylesheet once it has arrived, so nothing
+      // downstream inherits a stuck transform or an idle compositor layer.
+      window.setTimeout(() => {
+        el.style.transition = '';
+        el.style.transform = '';
+        el.style.willChange = '';
+      }, duration + delay + 80);
+    }
+
+    /** Show everything still waiting, with no animation. */
+    function flush() {
+      for (const el of [...pending]) {
+        pending.delete(el);
+        el.style.transition = '';
+        el.style.opacity = '1';
+        el.style.transform = '';
+        el.style.willChange = '';
+      }
+      for (const run of afterFlush) run();
+      afterFlush.length = 0;
+    }
+
+    const afterFlush: Array<() => void> = [];
+
+    /* An image in a clipped frame settles out of a slight scale-up. */
+    function armImage(scope: HTMLElement) {
+      const img = scope.querySelector('img');
+      const frame = img?.parentElement;
+      if (!img || !frame || getComputedStyle(frame).overflow !== 'hidden') return null;
+
+      img.style.transform = 'scale(1.06)';
+      img.style.willChange = 'transform';
+      return () => {
+        img.style.transition = `transform 1400ms ${EASE}`;
+        img.style.transform = 'none';
+        window.setTimeout(() => {
+          img.style.transition = '';
+          img.style.willChange = '';
+        }, 1500);
+      };
+    }
+
+    /* ------------------------------------------------- section reveals -- */
+
+    const settle = new WeakMap<HTMLElement, () => void>();
+
+    const sectionIO = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const el = entry.target as HTMLElement;
+          // Anything scrolled clean past in one jump — an anchor link, a flick
+          // scroll — is already behind the reader. Snap it visible instead.
+          const passed = !entry.isIntersecting && entry.boundingClientRect.bottom < 60;
+          if (!entry.isIntersecting && !passed) continue;
+          sectionIO.unobserve(el);
+          show(el, passed ? 0 : 760);
+          settle.get(el)?.();
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.02 },
+    );
+
+    const main = document.querySelector('main') ?? document.body;
+    const sections = [...main.querySelectorAll<HTMLElement>(':scope > section, :scope > * > section')];
+    const viewport = window.innerHeight;
+    let heroDone = false;
+
+    for (const [index, section] of sections.entries()) {
+      if (done.has(section)) continue;
+      done.add(section);
+
+      // Paragraph groups run their own reveal; leave the section alone.
+      if (section.querySelector('[data-reveal-group]')) continue;
+
+      const aboveFold = section.getBoundingClientRect().top < viewport * 0.85;
+
+      // The hero doesn't wait for a scroll — its parts rise in sequence on load.
+      if (!heroDone && index === 0 && aboveFold) {
+        heroDone = true;
+        const parts = [...section.children].flatMap((child) => {
+          const display = getComputedStyle(child).display;
+          return child.children.length > 1 && (display === 'grid' || display === 'flex')
+            ? [...child.children]
+            : [child];
+        }) as HTMLElement[];
+
+        const arrive = armImage(section);
+        for (const part of parts.slice(0, 6)) hide(part, 15);
+        requestAnimationFrame(() => {
+          parts.slice(0, 6).forEach((part, i) => show(part, 720, 70 + i * 80));
+          arrive?.();
+        });
+        continue;
+      }
+
+      // Already on screen: no reveal to run, but the image still settles.
+      if (aboveFold) {
+        armImage(section)?.();
+        continue;
+      }
+
+      const arrive = armImage(section);
+      if (arrive) settle.set(section, arrive);
+      hide(section, 22);
+      sectionIO.observe(section);
+    }
+
+    /* ----------------------------------------- per-paragraph reveals -- */
+
+    const paragraphIO = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          paragraphIO.unobserve(entry.target);
+          show(entry.target as HTMLElement, 500);
+        }
+      },
+      { rootMargin: '-10% 0px -20%' },
+    );
+
+    for (const group of document.querySelectorAll<HTMLElement>('[data-reveal-group]')) {
+      for (const paragraph of group.querySelectorAll<HTMLElement>('p')) {
+        // Dimmed rather than invisible: the words are still readable while the
+        // reveal is pending, which keeps the page usable if it never arrives.
+        hide(paragraph, 10, 0.32);
+        paragraphIO.observe(paragraph);
+      }
+    }
+
+    /* ------------------------------------------------------- counters -- */
+
+    const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+
+    if (counters.length) {
+      const countIO = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            countIO.unobserve(entry.target);
+            countUp(entry.target as HTMLElement);
+          }
+        },
+        { threshold: 0.4 },
+      );
+      for (const counter of counters) countIO.observe(counter);
+    }
+
+    function countUp(el: HTMLElement) {
+      const target = Number(el.dataset.count);
+      if (!Number.isFinite(target)) return;
+      const suffix = el.dataset.suffix ?? '';
+      const started = performance.now();
+      const duration = 900;
+
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - started) / duration);
+        const eased = 1 - (1 - progress) ** 3;
+        el.textContent = Math.round(target * eased) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    /* -------------------------------------------------------- failsafe -- */
+
+    // Two ways this fires. Either the observer never reported back within a
+    // couple of seconds, or the tab was hidden while the page loaded — in which
+    // case nothing intersected and every entry is still queued.
+    window.setTimeout(flush, FAILSAFE_MS);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && pending.size) flush();
+    });
+  }
+
+  /* ------------------------------------------- scroll-linked pieces -- */
+  // These run regardless of the reduced-motion setting: the header shadow is a
+  // depth cue rather than an animation, and the wordmark's drift is bounded by
+  // the same media query in the stylesheet.
+
+  const header = document.querySelector<HTMLElement>('.header');
+  const wordmark = document.querySelector<HTMLElement>('[data-wordmark]');
+  const wordmarkFrame = wordmark?.closest('footer');
+  const progressBar = document.querySelector<HTMLElement>('[data-reading-progress]');
+
+  if (header || wordmark || progressBar) {
+    let ticking = false;
+
+    const frame = () => {
+      ticking = false;
+
+      if (header) header.classList.toggle('header--lifted', window.scrollY > 10);
+
+      if (progressBar) {
+        const doc = document.documentElement;
+        const scrollable = doc.scrollHeight - doc.clientHeight;
+        const pct = scrollable > 0 ? Math.min(100, (doc.scrollTop / scrollable) * 100) : 0;
+        progressBar.style.width = `${pct.toFixed(1)}%`;
+      }
+
+      // Driven by the footer's entry, not the wordmark's own box — the wordmark
+      // only ever reaches the bottom sliver of the viewport, so its own
+      // position would barely move. The range brackets the resting offset so
+      // the crop still looks deliberate when you stop scrolling.
+      if (wordmark && wordmarkFrame && !reduced) {
+        const box = wordmarkFrame.getBoundingClientRect();
+        if (box.top <= window.innerHeight && box.bottom >= 0) {
+          const t = Math.min(1, Math.max(0, (window.innerHeight - box.top) / (window.innerHeight * 0.5 + box.height)));
+          wordmark.style.transform = `translateY(${(21 - 13 * t).toFixed(2)}%)`;
+        }
+      }
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(frame);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    frame();
+  }
+</script>

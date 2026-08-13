@@ -20,15 +20,14 @@ import {
   <section class="section--first wrap" id="top">
     <p class="eyebrow consult-hero__eyebrow">Consulting</p>
     <h1 class="page-title consult-hero__title">
-      The number is the symptom. I work on the system behind it.
+      Help with lifecycle, conversion, and the automation underneath.
     </h1>
 
     <div class="consult-hero">
-      <div class="consult-hero__copy" data-reveal>
+      <div class="consult-hero__copy" data-reveal-group>
         <p>
-          I’m Miguel Monzones. Eleven years on lifecycle, web and marketing operations — mostly
-          fintech, some SaaS and ecommerce. I take on a small number of independent engagements
-          alongside my work at Mogo.
+          Hi — I’m Miguel. Eleven years on lifecycle, web and marketing operations, mostly fintech
+          with some SaaS and ecommerce. Consulting runs through MNM Alaminos Consulting Ltd.
         </p>
         <p>
           Most people come to me with a number that’s moving the wrong way and a theory about why.
@@ -63,9 +62,9 @@ import {
   <section class="section wrap" id="practices">
     <p class="eyebrow practices__eyebrow">What I work on</p>
     <h2 class="section-title--sm practices__title">
-      Three areas. Usually the problem sits between two of them.
+      Three areas — though the problem usually sits between two of them.
     </h2>
-    <p class="lede practices__sub">Pick one to see what’s inside it and how it can be scoped.</p>
+    <p class="lede practices__sub">Have a look at whichever one sounds like your problem.</p>
 
     <div class="practices" role="tablist" aria-label="Practice areas">
       {
@@ -128,7 +127,9 @@ import {
     <div class="engage__head">
       <div>
         <p class="eyebrow engage__eyebrow">How it’s scoped</p>
-        <h2 class="section-title--sm">Six shapes, from an hour to a day a week.</h2>
+        <h2 class="section-title--sm">
+          Ways to work together, from a one-week teardown to a day a week.
+        </h2>
         <p class="lede engage__sub">
           Showing what’s available for <strong data-practice-name>{PRACTICES[0].name.toLowerCase()}</strong>.
           Not everything fits every area, and I’d rather say so than sell you the bigger one.
@@ -143,7 +144,7 @@ import {
       {
         ENGAGEMENTS.map((engagement) => (
           <article
-            class="card engage__card"
+            class:list={['card', 'engage__card', engagement.other && 'engage__card--else']}
             data-engagement
             data-fits={engagement.fits.join(' ')}
             data-available={engagement.fits.includes(PRACTICES[0].key) ? 'true' : 'false'}
@@ -155,29 +156,26 @@ import {
             <p class="engage__body">{engagement.body}</p>
             <div class="engage__foot">
               <span class="meta">{engagement.leave}</span>
-              <span class="engage__status" data-engage-status>
-                {engagement.fits.includes(PRACTICES[0].key) ? 'Available' : 'Not for this area'}
-              </span>
+              {
+                engagement.other ? (
+                  <a class="engage__status engage__status--link" href="#contact">
+                    Email me <span aria-hidden="true">→</span>
+                  </a>
+                ) : (
+                  <span class="engage__status" data-engage-status>
+                    {engagement.fits.includes(PRACTICES[0].key) ? 'Available' : 'Not for this area'}
+                  </span>
+                )
+              }
             </div>
           </article>
         ))
       }
     </div>
 
-    <div class="engage__else">
-      <div>
-        <h3 class="engage__name">Something else</h3>
-        <p class="engage__body">
-          Advisory, a one-off build, an interim stretch while you hire, a second opinion on someone
-          else’s plan. Tell me the shape and I’ll tell you honestly whether I’m the right person.
-        </p>
-      </div>
-      <a class="btn btn--ghost" href="#contact">Email me</a>
-    </div>
-
     <p class="engage__pricing">
-      Pricing is per engagement and depends on scope and system complexity — I’ll send a fixed
-      number with the proposal, before anything starts. No hourly billing after the first call.
+      Fixed fee, quoted with the proposal before anything starts. No hourly billing after the intro
+      call.
     </p>
   </section>
 
@@ -185,7 +183,10 @@ import {
   <section class="band consult-numbers">
     <div class="wrap">
       <p class="eyebrow consult-numbers__eyebrow">Receipts</p>
-      <h2 class="consult-numbers__title">Numbers from in-house work, not from a pitch deck.</h2>
+      <h2 class="consult-numbers__title">
+        These are all from in-house work rather than client engagements, which I’d rather you knew
+        up front.
+      </h2>
 
       <div class="stat-row consult-numbers__grid">
         {
@@ -591,25 +592,27 @@ import {
     color: var(--accent);
   }
 
-  .engage__else {
-    margin-top: 16px;
+  /* The catch-all card. It sits on wash rather than white and ends in a link
+     instead of an availability label, because it isn't a shape you pick — it's
+     an invitation to describe one. */
+  .engage__card--else {
     background: var(--wash);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    padding: 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 28px;
-    flex-wrap: wrap;
+    box-shadow: none;
   }
 
-  .engage__else > div {
-    max-width: 640px;
+  .engage__card--else[data-available] {
+    opacity: 1;
   }
 
-  .engage__else .engage__name {
-    margin-bottom: 8px;
+  .engage__status--link {
+    color: var(--ink);
+    display: inline-flex;
+    gap: 6px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .engage__status--link:hover {
+    color: var(--accent);
   }
 
   .engage__pricing {

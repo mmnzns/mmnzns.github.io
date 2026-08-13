@@ -37,10 +37,15 @@ export const CONTACT = {
   entity: 'MNM Alaminos Consulting Ltd.',
 } as const;
 
-/** Primary navigation. Order here is the order rendered in the header. */
+/**
+ * Primary navigation. Order here is the order rendered in the header, and
+ * Consulting sits ahead of Work deliberately: the site now leads with what
+ * Miguel is available for rather than with the archive of what he has done.
+ */
 export const NAV_LINKS = [
-  { label: 'Work', href: '/work/' },
+  { label: 'Home', href: '/' },
   { label: 'Consulting', href: '/consulting/' },
+  { label: 'Work', href: '/work/' },
   { label: 'Writing', href: '/thinking/' },
   { label: 'About', href: '/about/' },
 ] as const;

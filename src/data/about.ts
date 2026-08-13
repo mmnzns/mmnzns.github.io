@@ -15,7 +15,7 @@ export const INTRO = [
 
 export const WHAT_I_DO = [
   'Most of what I do starts before anything gets built. Someone comes to me with a number moving the wrong way — activation’s flat, people are churning in week one, nobody’s opening anything — and the first job is working out what’s actually causing it. In my experience it’s hardly ever the thing everyone’s staring at.',
-  'I’ve spent most of my career doing that inside companies, across ecommerce, SaaS and fintech. Right now I’m taking on consulting work in lifecycle, conversion and automation, and I’m open to the right senior role if one comes along. Either way — if something isn’t working the way you think it should, I’d love to hear about it.',
+  'I’ve spent most of my career doing that inside companies, across ecommerce, SaaS and fintech. Right now I’m consulting on lifecycle, conversion and automation, and open to the right senior role. Either way — if something isn’t working the way you think it should, I’d love to hear about it.',
 ] as const;
 
 export const HOW_I_GOT_HERE = [
@@ -52,7 +52,7 @@ export const BELIEF = {
     before: 'I’ve also got ',
     phrase: 'Nea Onnim No Sua A, Ohu',
     after:
-      ' tattooed on my right wrist. It’s an Adinkra symbol, and it means something like: he who does not know can know from learning. I don’t really believe in “I can’t do this.” I believe in “I haven’t learned it yet.” That one’s kept me employable for eleven years.',
+      ' tattooed on my right wrist. It’s an Adinkra symbol, and it means something like: he who does not know can know from learning. I don’t really believe in “I can’t do this.” I believe in “I haven’t learned it yet.” That’s the part that’s kept me learning for eleven years.',
   },
 } as const;
 
@@ -64,33 +64,44 @@ export const OUTSIDE_WORK = [
 ] as const;
 
 export const TO_WORK_WITH = [
-  'More open than people expect from someone senior. I say what I’m thinking, I get attached to problems, and I’d rather be honest than composed. It’s cost me a few interviews.',
+  'More open than people expect from someone senior. I say what I’m thinking, I get attached to problems, and I’d rather be honest than composed.',
   'The reason I do this work is that it’s the closest thing to a puzzle I get paid for. Something’s moving the wrong way, nobody’s sure why, and I get to find out. Eleven years in, that hasn’t got old.',
 ] as const;
 
+/**
+ * Job titles here are the ones that appear on LinkedIn, and the same strings
+ * are used in the `meta` line of every case study in ./cases.ts. If one changes
+ * it has to change in both places, or a recruiter reading a case page and a
+ * recruiter reading this list see two different job titles.
+ */
 export const ROLES = [
   {
     org: 'Mogo',
+    title: 'Senior Marketing Operations & Lifecycle Manager (MarTech)',
     what: 'Lifecycle, martech, web and automation infrastructure',
     years: '2024 — now',
   },
   {
     org: 'CraftConcepts',
-    what: 'Founder — a collective helping local businesses rebuild their digital presence',
+    title: 'Founder, Growth Marketing Strategist',
+    what: 'A collective helping local businesses rebuild their digital presence',
     years: '2022 — 2025',
   },
   {
     org: 'DTC Newsletter · Pilothouse',
+    title: 'Email & Website Operations Manager (MarTech)',
     what: 'Web, SEO and email for ecommerce brands',
     years: '2021 — 2024',
   },
   {
     org: 'Sportserve',
+    title: 'Senior Marketing Projects and Operations Manager',
     what: 'Web, lifecycle and payments operations; built the payments division',
     years: '2014 — 2021',
   },
   {
     org: 'Rappler',
+    title: 'Editor & Contributor',
     what: 'First job out of school — editing in a 24/7 newsroom in Manila',
     years: '2013 — 2014',
   },
