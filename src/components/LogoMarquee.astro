@@ -1,0 +1,116 @@
+---
+import { Image } from 'astro:assets';
+import { LOGOS } from '../data/home';
+
+/**
+ * Resolved eagerly at build time. A name in LOGOS with no matching file throws
+ * during the build rather than rendering a broken image on the live site.
+ */
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/logos/*.jpg', {
+  eager: true,
+});
+
+const logos = LOGOS.map((name) => {
+  const file = `../assets/logos/${name.toLowerCase().replace(/&/g, '').replace(/\s+/g, '-')}.jpg`;
+  const mod = files[file];
+  if (!mod) throw new Error(`LogoMarquee: no image found at ${file} for "${name}"`);
+  return { name, src: mod.default };
+});
+
+/* The track is rendered twice so the loop is seamless: the animation slides it
+   exactly one copy's width, at which point the second copy is where the first
+   one started. The duplicate is hidden from assistive tech. */
+const track = [...logos, ...logos];
+---
+
+<section class="marquee" aria-label="Companies I've worked with">
+  <div class="marquee__track">
+    {
+      track.map((logo, i) => (
+        <span class="marquee__item" aria-hidden={i >= logos.length ? 'true' : undefined}>
+          <Image
+            src={logo.src}
+            alt={i >= logos.length ? '' : logo.name}
+            width={344}
+            height={200}
+            loading="lazy"
+            densities={[1, 2]}
+          />
+        </span>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .marquee {
+    margin-top: clamp(80px, 12vw, 150px);
+    padding-block: 30px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+  }
+
+  .marquee__track {
+    display: flex;
+    gap: 18px;
+    width: max-content;
+    align-items: center;
+    animation: drift 46s linear infinite;
+  }
+
+  .marquee:hover .marquee__track,
+  .marquee:focus-within .marquee__track {
+    animation-play-state: paused;
+  }
+
+  .marquee__item {
+    flex: none;
+    display: block;
+    width: 172px;
+    height: 100px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    filter: grayscale(1);
+    opacity: 0.62;
+    transition:
+      filter var(--dur) var(--ease),
+      opacity var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+
+  .marquee__item:hover {
+    filter: grayscale(0);
+    opacity: 1;
+    border-color: var(--rule-2);
+  }
+
+  .marquee__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  @keyframes drift {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Motion off: the strip becomes a static, scrollable row instead. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
+    }
+
+    .marquee__track {
+      animation: none;
+    }
+  }
+</style>

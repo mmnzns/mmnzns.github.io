@@ -1,0 +1,262 @@
+---
+import { SITE, NAV_LINKS, NAV_CTA } from '../config';
+
+interface Props {
+  /** Renders the article reading-progress bar along the bottom edge. */
+  progress?: boolean;
+}
+
+const { progress = false } = Astro.props;
+const path = Astro.url.pathname;
+
+/** `/work/mogo-lifecycle/` should still light up the "Work" tab. */
+function isCurrent(href: string) {
+  return path === href || path.startsWith(href);
+}
+---
+
+<header class="header">
+  <nav class="header__bar wrap" aria-label="Primary">
+    <a class="brand" href="/">{SITE.title.replace('N. ', '')}</a>
+
+    <ul class="navlinks">
+      {
+        NAV_LINKS.map((link) => (
+          <li>
+            <a
+              class="navlinks__link"
+              href={link.href}
+              aria-current={isCurrent(link.href) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a class="btn btn--ghost header__cta" href={NAV_CTA.href}>{NAV_CTA.label}</a>
+
+    <button
+      type="button"
+      class="header__toggle"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      data-nav-toggle
+    >
+      <span class="visually-hidden">Menu</span>
+      <span class="header__bars" aria-hidden="true"></span>
+    </button>
+  </nav>
+
+  <div class="mobilenav" id="mobile-nav" hidden data-nav-panel>
+    <ul class="mobilenav__list wrap">
+      {
+        NAV_LINKS.map((link) => (
+          <li>
+            <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+      <li><a href={NAV_CTA.href}>{NAV_CTA.label}</a></li>
+    </ul>
+  </div>
+
+  {progress && <div class="header__progress" aria-hidden="true" data-reading-progress></div>}
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    panel?.toggleAttribute('hidden', open);
+  });
+
+  // Escape closes it, and returns focus to the control that opened it.
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (toggle?.getAttribute('aria-expanded') !== 'true') return;
+    toggle.setAttribute('aria-expanded', 'false');
+    panel?.setAttribute('hidden', '');
+    toggle.focus();
+  });
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .header__bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding-block: 18px;
+  }
+
+  .brand {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-right: auto;
+    white-space: nowrap;
+  }
+
+  .navlinks {
+    display: none;
+    gap: 26px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .navlinks__link {
+    position: relative;
+    color: var(--ink-2);
+    padding-block: 4px;
+  }
+
+  .navlinks__link[aria-current='page'] {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Underline grows from the left on hover. Directional motion reads as
+     intentional where a fade reads as a default. */
+  .navlinks__link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .navlinks__link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .header__cta {
+    display: none;
+    padding: 9px 18px;
+    font-size: 14px;
+  }
+
+  .header__toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-right: -8px;
+    border: 1px solid var(--rule);
+    border-radius: var(--pill);
+    background: var(--card);
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+
+  .header__toggle:hover {
+    border-color: var(--ink);
+  }
+
+  /* Three lines drawn from one element: the bar itself plus two shadows. */
+  .header__bars,
+  .header__bars::before,
+  .header__bars::after {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .header__bars::before,
+  .header__bars::after {
+    content: '';
+    position: absolute;
+  }
+
+  .header__bars::before {
+    transform: translateY(-5px);
+  }
+
+  .header__bars::after {
+    transform: translateY(5px);
+  }
+
+  [aria-expanded='true'] .header__bars {
+    background: transparent;
+  }
+
+  [aria-expanded='true'] .header__bars::before {
+    transform: rotate(45deg);
+  }
+
+  [aria-expanded='true'] .header__bars::after {
+    transform: rotate(-45deg);
+  }
+
+  .mobilenav {
+    border-top: 1px solid var(--rule);
+    background: var(--paper);
+  }
+
+  .mobilenav__list {
+    list-style: none;
+    margin: 0;
+    padding-block: 8px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobilenav__list a {
+    display: block;
+    padding: 12px 0;
+    font-size: 17px;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .mobilenav__list li:last-child a {
+    border-bottom: 0;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .mobilenav__list a[aria-current='page'] {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .header__progress {
+    height: 2px;
+    background: var(--accent);
+    width: 0;
+    transition: width 120ms linear;
+  }
+
+  @media (min-width: 860px) {
+    .navlinks,
+    .header__cta {
+      display: flex;
+    }
+
+    .header__toggle {
+      display: none;
+    }
+  }
+</style>

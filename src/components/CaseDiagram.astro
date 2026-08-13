@@ -1,0 +1,398 @@
+---
+/**
+ * The sketch that sits beside each featured case on the home page.
+ *
+ * Each one draws the same idea the case text describes — the before state next
+ * to the after state — so the diagram is doing explanatory work rather than
+ * decorating the card. They're inline SVG (and, for the winback, plain boxes)
+ * so they inherit the palette and cost no extra request.
+ *
+ * Decorative by design: every drawing is aria-hidden and carries a written
+ * caption underneath, which is what a screen reader gets instead.
+ */
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+
+const CAPTIONS: Record<string, string> = {
+  'mogo-lifecycle': 'From calendar time to what people actually did.',
+  winback: 'Two audiences, two products, four different pitches.',
+  'sportserve-payments-division': 'Eight departments, before and after.',
+  'agentic-ops': 'Ops teams building their own.',
+};
+---
+
+<div class="diagram">
+  {
+    slug === 'mogo-lifecycle' && (
+      <div class="diagram__pair">
+        <svg viewBox="0 0 250 130" aria-hidden="true">
+          <path d="M14 66 C70 62, 130 70, 236 64" class="ink-line" />
+          <path d="M52 52 L53 80" class="ink-line" />
+          <path d="M124 55 L122 83" class="ink-line" />
+          <path d="M198 53 L200 81" class="ink-line" />
+          <text x="52" y="44" text-anchor="middle">Day 1</text>
+          <text x="123" y="47" text-anchor="middle">Day 3</text>
+          <text x="199" y="45" text-anchor="middle">Day 7</text>
+          <text x="14" y="112">calendar time</text>
+        </svg>
+
+        <svg viewBox="0 0 250 130" aria-hidden="true">
+          <path d="M14 66 C68 71, 132 60, 236 67" class="accent-line" />
+          <path d="M46 52 L47 80" class="ink-line" />
+          <path d="M126 56 L124 84" class="ink-line" />
+          <path d="M204 53 L206 81" class="ink-line" />
+          <circle cx="46" cy="68" r="3.4" class="accent-dot" />
+          <circle cx="125" cy="66" r="3.4" class="accent-dot" />
+          <circle cx="205" cy="67" r="3.4" class="accent-dot" />
+          <text x="46" y="44" text-anchor="middle">bank connected</text>
+          <text x="125" y="48" text-anchor="middle">first deposit</text>
+          <text x="205" y="45" text-anchor="middle">first trade</text>
+          <text x="14" y="112">what people did</text>
+        </svg>
+      </div>
+    )
+  }
+
+  {
+    slug === 'winback' && (
+      <div class="matrix" aria-hidden="true">
+        <div class="matrix__col matrix__col--head">
+          <div class="matrix__spacer" />
+          <div class="matrix__rowlabel">
+            dormant
+            <br />
+            investors
+          </div>
+          <div class="matrix__rowlabel matrix__rowlabel--sun">
+            lending
+            <br />
+            customers<span>never invested</span>
+          </div>
+        </div>
+
+        <div class="matrix__col">
+          <div class="matrix__colhead">
+            <span>Manage</span>
+            <span>auto weekly investing</span>
+          </div>
+          <div class="matrix__cell matrix__cell--a">
+            <span>resume the habit</span>
+            <span>→ calculator</span>
+          </div>
+          <div class="matrix__cell matrix__cell--sun matrix__cell--b">
+            <span>start the habit</span>
+            <span>→ calculator</span>
+          </div>
+        </div>
+
+        <div class="matrix__col">
+          <div class="matrix__colhead">
+            <span>Self-directed</span>
+            <span>manual trading</span>
+          </div>
+          <div class="matrix__cell matrix__cell--b">
+            <span>back to research</span>
+            <span>→ Fiscal.ai</span>
+          </div>
+          <div class="matrix__cell matrix__cell--sun matrix__cell--a">
+            <span>start researching</span>
+            <span>→ Fiscal.ai</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    slug === 'sportserve-payments-division' && (
+      <div class="diagram__pair">
+        <svg viewBox="0 0 250 190" aria-hidden="true">
+          <g class="ink-line faint">
+            <path d="M62 44 C96 66, 74 96, 120 108" />
+            <path d="M158 52 C130 88, 176 104, 150 140" />
+            <path d="M40 118 C82 130, 96 150, 132 158" />
+          </g>
+          <g class="ink-line">
+            <rect x="14" y="24" width="70" height="24" rx="5" transform="rotate(-2.2 49 36)" />
+            <rect x="120" y="18" width="80" height="24" rx="5" transform="rotate(1.8 160 30)" />
+            <rect x="24" y="66" width="72" height="24" rx="5" transform="rotate(1.4 60 78)" />
+            <rect x="132" y="62" width="78" height="24" rx="5" transform="rotate(-1.6 171 74)" />
+            <rect x="12" y="108" width="66" height="24" rx="5" transform="rotate(-1.2 45 120)" />
+            <rect x="112" y="104" width="66" height="24" rx="5" transform="rotate(2.4 145 116)" />
+            <rect x="30" y="150" width="76" height="24" rx="5" transform="rotate(1.1 68 162)" />
+            <rect x="140" y="148" width="88" height="24" rx="5" transform="rotate(-2 184 160)" />
+          </g>
+          <g>
+            <text x="24" y="40">Product</text>
+            <text x="130" y="34">Engineering</text>
+            <text x="34" y="82">Payments</text>
+            <text x="142" y="78">Compliance</text>
+            <text x="22" y="124">Support</text>
+            <text x="122" y="120">Creative</text>
+            <text x="40" y="166">Marketing</text>
+            <text x="150" y="164">Regional Ops</text>
+          </g>
+        </svg>
+
+        <svg viewBox="0 0 250 190" aria-hidden="true">
+          <g class="ink-line">
+            <rect x="8" y="20" width="62" height="20" rx="4" />
+            <rect x="8" y="50" width="62" height="20" rx="4" />
+            <rect x="8" y="80" width="62" height="20" rx="4" />
+            <rect x="8" y="110" width="62" height="20" rx="4" />
+            <rect x="78" y="20" width="62" height="20" rx="4" />
+            <rect x="78" y="50" width="62" height="20" rx="4" />
+            <rect x="78" y="80" width="62" height="20" rx="4" />
+            <rect x="78" y="110" width="62" height="20" rx="4" />
+            <path
+              class="faint"
+              d="M142 30 L176 68 M142 60 L176 74 M142 90 L176 84 M142 120 L176 92"
+            />
+          </g>
+          <g class="sm">
+            <text x="13" y="34">Product</text>
+            <text x="13" y="64">Payments</text>
+            <text x="13" y="94">Support</text>
+            <text x="13" y="124">Marketing</text>
+            <text x="83" y="34">Engineering</text>
+            <text x="83" y="64">Compliance</text>
+            <text x="83" y="94">Creative</text>
+            <text x="83" y="124">Regional Ops</text>
+          </g>
+          <path d="M180 18 C183 70, 182 108, 179 148" class="sky-line" />
+          <path d="M182 152 C196 158, 204 160, 224 160" class="ink-line" />
+          <text x="196" y="84" text-anchor="middle" transform="rotate(-90 196 84)" class="sky-label">
+            Payments Ops
+          </text>
+          <text x="200" y="178">Launch</text>
+        </svg>
+      </div>
+    )
+  }
+
+  {
+    slug === 'agentic-ops' && (
+      <svg viewBox="0 0 320 200" aria-hidden="true" class="diagram__wide">
+        <g class="ink-line">
+          <rect x="8" y="34" width="62" height="22" rx="5" />
+          <rect x="8" y="70" width="62" height="22" rx="5" />
+          <rect x="8" y="106" width="62" height="22" rx="5" />
+          <rect x="108" y="40" width="124" height="30" rx="6" transform="rotate(-.8 170 55)" />
+          <rect x="108" y="96" width="124" height="34" rx="6" transform="rotate(.7 170 113)" />
+          <path d="M72 46 C90 48, 94 54, 107 55" />
+          <path d="M72 82 C88 80, 94 60, 107 57" />
+          <path d="M72 118 C88 118, 94 114, 107 112" />
+          <rect x="246" y="66" width="66" height="24" rx="5" />
+          <path d="M234 56 C240 60, 242 68, 245 74" />
+          <path d="M234 112 C240 104, 242 92, 245 84" />
+        </g>
+        <g>
+          <text x="18" y="49">sources</text>
+          <text x="18" y="85">CRM</text>
+          <text x="18" y="121">forms</text>
+          <text x="116" y="59">Zapier — integrations</text>
+          <text x="116" y="110">self-hosted n8n</text>
+          <text x="116" y="124">on AWS — high volume</text>
+          <text x="279" y="82" text-anchor="middle" class="sm">
+            Ops teams
+          </text>
+        </g>
+        <g class="moss-line">
+          <path d="M278 96 C276 140, 210 152, 168 140" />
+          <path d="M176 137 L167 140 L174 146" />
+          <path d="M280 60 C278 22, 212 14, 170 30" />
+          <path d="M178 27 L169 30 L176 36" />
+        </g>
+        <text x="196" y="170" class="moss-label">they build their own</text>
+      </svg>
+    )
+  }
+
+  <p class="diagram__caption">{CAPTIONS[slug]}</p>
+</div>
+
+<style>
+  .diagram {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .diagram__pair {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+  }
+
+  .diagram__pair svg {
+    flex: 1 1 240px;
+    min-width: 0;
+    height: auto;
+  }
+
+  .diagram__wide {
+    width: 100%;
+    height: auto;
+  }
+
+  .diagram__caption {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-3);
+  }
+
+  /* Shared drawing language: hairline strokes, no fills, rounded caps. */
+  svg :global(.ink-line),
+  svg :global(.accent-line),
+  svg :global(.sky-line),
+  svg :global(.moss-line) {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  svg :global(.ink-line) {
+    stroke: rgb(31 28 25 / 35%);
+  }
+
+  svg :global(.faint) {
+    stroke: rgb(31 28 25 / 18%);
+  }
+
+  svg :global(.accent-line) {
+    stroke: var(--coral);
+  }
+
+  svg :global(.accent-dot) {
+    fill: var(--coral);
+  }
+
+  svg :global(.sky-line) {
+    stroke: var(--sky);
+    stroke-width: 2.5;
+  }
+
+  svg :global(.moss-line) {
+    stroke: var(--moss);
+  }
+
+  svg text {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    fill: var(--ink-2);
+  }
+
+  svg :global(.sm) text,
+  svg text:global(.sm) {
+    font-size: 9px;
+  }
+
+  svg :global(.sky-label) {
+    fill: var(--sky);
+    font-weight: 600;
+  }
+
+  svg :global(.moss-label) {
+    fill: var(--moss);
+    font-weight: 600;
+  }
+
+  /* The winback drawing is a layout, not a path — boxes on a grid, tilted a
+     degree or so each so it reads as sketched rather than generated. */
+  .matrix {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-family: var(--font-sans);
+  }
+
+  .matrix__col {
+    flex: 1 1 190px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .matrix__col--head {
+    flex: 0 0 104px;
+  }
+
+  .matrix__spacer,
+  .matrix__colhead {
+    height: 34px;
+  }
+
+  .matrix__colhead {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-bottom: 1.5px solid rgb(31 28 25 / 18%);
+    padding-bottom: 6px;
+  }
+
+  .matrix__colhead span:first-child {
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+
+  .matrix__colhead span:last-child,
+  .matrix__rowlabel span {
+    font-size: 9px;
+    color: var(--ink-3);
+  }
+
+  .matrix__rowlabel {
+    height: 86px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 11px;
+    line-height: 1.35;
+    color: var(--ink-2);
+  }
+
+  .matrix__rowlabel--sun {
+    color: #b98a28;
+  }
+
+  .matrix__cell {
+    height: 86px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding-inline: 18px;
+    border: 1.5px solid rgb(31 28 25 / 28%);
+    border-radius: 10px;
+  }
+
+  .matrix__cell--sun {
+    border-color: rgb(245 184 65 / 90%);
+  }
+
+  .matrix__cell--a {
+    transform: rotate(-0.4deg);
+  }
+
+  .matrix__cell--b {
+    transform: rotate(0.35deg);
+  }
+
+  .matrix__cell span:first-child {
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+
+  .matrix__cell span:last-child {
+    font-size: 9px;
+    color: var(--ink-3);
+  }
+</style>

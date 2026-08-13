@@ -1,86 +1,202 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import CaseCard from '../../components/CaseCard.astro';
-import { PROJECTS, CATEGORY_ORDER } from '../../data/site';
+import ContactBand from '../../components/ContactBand.astro';
+import { PROJECTS, CATEGORY_ORDER, CATEGORY_ACCENT, type Category } from '../../data/site';
 
-const grouped = CATEGORY_ORDER.map((category) => ({
+/** Anchor id for a category, e.g. "Leadership & Operations" → "leadership-operations". */
+function anchor(category: Category) {
+  return category
+    .toLowerCase()
+    .replace(/&/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+const groups = CATEGORY_ORDER.map((category) => ({
   category,
-  projects: PROJECTS.filter((p) => p.category === category),
-})).filter((g) => g.projects.length > 0);
+  id: anchor(category),
+  accent: CATEGORY_ACCENT[category],
+  items: PROJECTS.filter((project) => project.category === category),
+})).filter((group) => group.items.length > 0);
 ---
 
 <BaseLayout
   title="The Work"
-  description="Systems Miguel N. Monzones diagnosed, decided on, and built — lifecycle, AI automation, web operations and leadership, each with the metric that proved it."
+  description="Thirteen systems I diagnosed, decided on, and built — lifecycle, AI automation, web operations and team building across fintech, SaaS and ecommerce."
 >
-  <section class="wrap head">
-    <p class="marker enter" style="--i:0">{PROJECTS.length} projects</p>
-    <h1 class="head__title enter" style="--i:1">The work</h1>
-    <p class="head__lede enter" style="--i:2">
-      Systems I diagnosed, decided on, and built. Each project follows the same arc: read what is
-      actually wrong, decide what should exist, choose the metric, build it, prove it.
+  <section class="section--first wrap">
+    <p class="eyebrow work-hero__eyebrow">The work</p>
+    <h1 class="page-title work-hero__title">Systems I diagnosed, decided on, and built.</h1>
+    <p class="lede work-hero__lede">
+      Each one follows the same arc: read what’s actually wrong, decide what should exist, choose
+      the metric, build it, prove it.
     </p>
+
+    <nav class="work-hero__jump" aria-label="Jump to a category">
+      {groups.map((group) => <a class="chip chip--pill" href={`#${group.id}`}>{group.category}</a>)}
+    </nav>
   </section>
 
-  {
-    grouped.map(({ category, projects }) => (
-      <section class="wrap section">
-        <header class="group__head reveal">
-          <h2 class="group__title">{category}</h2>
-          <span class="group__count">
-            {projects.length} {projects.length === 1 ? 'project' : 'projects'}
-          </span>
-        </header>
+  <div class="work-groups">
+    {
+      groups.map((group) => (
+        <section class="wrap work-group" id={group.id}>
+          <div class="work-group__head">
+            <p class="label-row work-group__count">
+              <span class="accent-bar" style={`--bar:${group.accent}`} />
+              <span class="eyebrow">
+                {group.items.length} {group.items.length === 1 ? 'case' : 'cases'}
+              </span>
+            </p>
+            <h2 class="work-group__title">{group.category}</h2>
+          </div>
 
-        <div class="group__items">
-          {projects.map((p) => (
-            <div class="reveal">
-              <CaseCard title={p.title} problem={p.problem} tags={p.tags} metrics={p.metrics} />
-            </div>
-          ))}
-        </div>
-      </section>
-    ))
-  }
+          <div class="work-group__list">
+            {group.items.map((project) => (
+              <a class="card card--interactive work-card" href={`/work/${project.slug}/`}>
+                <div class="work-card__inner">
+                  <div>
+                    <p class="eyebrow work-card__tags">{project.tags.join(' / ')}</p>
+                    <h3 class="work-card__title">{project.title}</h3>
+                    <p class="work-card__summary">{project.problem}</p>
+                  </div>
+
+                  <div class="work-card__metrics">
+                    {project.metrics.slice(0, 2).map((metric) => (
+                      <div>
+                        <p class="work-card__metric">
+                          {metric.value ?? `${metric.from} → ${metric.to}`}
+                        </p>
+                        <p class="work-card__metric-label">{metric.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+
+  <ContactBand />
 </BaseLayout>
 
 <style>
-  .head {
-    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+  .work-hero__eyebrow {
+    margin-bottom: 26px;
   }
 
-  .head__title {
-    font-size: var(--step-6);
-    margin-block: 1.25rem 0;
+  .work-hero__title {
+    max-width: 1000px;
   }
 
-  .head__lede {
-    margin-top: 1.5rem;
-    max-width: 54ch;
-    font-size: var(--step-1);
+  .work-hero__lede {
+    margin-top: 30px;
+    max-width: 620px;
+  }
+
+  .work-hero__jump {
+    margin-top: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .work-groups {
+    margin-top: clamp(64px, 9vw, 110px);
+  }
+
+  .work-group {
+    padding-bottom: clamp(64px, 8vw, 96px);
+    scroll-margin-top: calc(var(--header-h) + 40px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .work-group__count {
+    margin-bottom: 14px;
+  }
+
+  .work-group__title {
+    font-size: clamp(24px, 2.8vw, 32px);
+    line-height: 1.1;
+  }
+
+  .work-group__list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .work-card {
+    padding: clamp(26px, 3vw, 32px) clamp(26px, 3vw, 34px);
+  }
+
+  .work-card__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .work-card__tags {
+    font-size: 11px;
+  }
+
+  .work-card__title {
+    margin-top: 12px;
+    font-size: 23px;
+    line-height: 1.2;
+  }
+
+  .work-card__summary {
+    margin-top: 12px;
+    max-width: 560px;
+    font-size: 16px;
+    line-height: 1.6;
     color: var(--ink-2);
   }
 
-  .group__head {
+  .work-card__metrics {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .group__title {
-    font-size: var(--step-3);
+  .work-card__metric {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
   }
 
-  .group__count {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
+  .work-card__metric-label {
+    margin-top: 3px;
+    font-size: 13px;
+    line-height: 1.4;
     color: var(--ink-3);
-    white-space: nowrap;
   }
 
-  .group__items {
-    border-bottom: 1px solid var(--rule);
+  @media (min-width: 900px) {
+    .work-group {
+      grid-template-columns: 210px 1fr;
+      gap: 44px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .work-group {
+      grid-template-columns: 250px 1fr;
+      gap: 56px;
+    }
+
+    .work-card__inner {
+      grid-template-columns: minmax(0, 1fr) 210px;
+      gap: 36px;
+      align-items: center;
+    }
   }
 </style>

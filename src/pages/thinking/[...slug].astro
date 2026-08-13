@@ -1,198 +1,501 @@
 ---
+import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import portrait from '../../assets/miguel.png';
+import { tagAccent } from '../../data/writing';
 import { formatDate, readingTime } from '../../utils/format';
 
-export async function getStaticPaths() {
-  const posts = (await getCollection('thinking')).filter((p) => !p.data.draft);
-  const sorted = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('thinking', ({ data }) => !data.draft);
+  const sorted = [...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-  return sorted.map((post, i) => ({
+  return sorted.map((post) => ({
     params: { slug: post.id },
-    props: { post, prev: sorted[i + 1], next: sorted[i - 1] },
+    props: {
+      post,
+      /* Same topic first, newest first, never the piece you're reading. */
+      related: sorted
+        .filter((other) => other.id !== post.id)
+        .sort((a, b) => {
+          const score = (entry: typeof post) => (entry.data.tag === post.data.tag ? 0 : 1);
+          return score(a) - score(b);
+        })
+        .slice(0, 3),
+    },
   }));
-}
+}) satisfies GetStaticPaths;
 
-const { post, prev, next } = Astro.props;
-const { Content } = await render(post);
+const { post, related } = Astro.props;
+const { Content, headings } = await render(post);
+
+/* Only h2s make the rail — h3s would turn it into an outline of an outline. */
+const toc = headings.filter((heading) => heading.depth === 2);
+const minutes = readingTime(post.body ?? '');
+const accent = tagAccent(post.data.tag);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.excerpt}>
+<BaseLayout title={post.data.title} description={post.data.excerpt} progress ogType="article">
   <article>
-    <header class="wrap article__head">
-      <p class="marker enter" style="--i:0">
-        {formatDate(post.data.date)} &nbsp;·&nbsp; {readingTime(post.body ?? '')} min read
+    <header class="wrap article-head">
+      <a class="article-head__back" href="/thinking/">← All writing</a>
+
+      <p class="label-row article-head__tag">
+        <span class="accent-bar accent-bar--sm" style={`--bar:${accent}`}></span>
+        <span class="eyebrow">{post.data.tag}</span>
       </p>
-      <h1 class="article__title enter" style="--i:1">{post.data.title}</h1>
-      <p class="article__excerpt enter" style="--i:2">{post.data.excerpt}</p>
+
+      <h1 class="article-head__title">{post.data.title}</h1>
+      <p class="article-head__dek">{post.data.excerpt}</p>
+
+      <div class="byline">
+        <Image src={portrait} alt="" width={68} height={68} loading="eager" />
+        <span class="byline__name">Miguel Monzones</span>
+        <span class="meta">{formatDate(post.data.date)}</span>
+        <span class="meta">{minutes} min read</span>
+        <button type="button" class="chip byline__copy" data-copy-link>Copy link</button>
+      </div>
     </header>
 
-    <div class="wrap">
-      <div class="article__body">
+    <div class="wrap article-body">
+      {
+        toc.length > 1 && (
+          <nav class="toc" aria-label="On this page">
+            <div class="toc__inner">
+              <p class="eyebrow toc__label">On this page</p>
+              {toc.map((heading) => (
+                <a class="toc__link" href={`#${heading.slug}`} data-toc={heading.slug}>
+                  {heading.text}
+                </a>
+              ))}
+            </div>
+          </nav>
+        )
+      }
+
+      <div class="prose">
         <Content />
+      </div>
+    </div>
+
+    <div class="wrap author">
+      <Image src={portrait} alt="" width={112} height={112} loading="lazy" />
+      <div>
+        <p class="author__name">Miguel Monzones</p>
+        <p class="author__bio">
+          Lifecycle and GTM in fintech, SaaS and ecommerce. Currently running lifecycle, martech and
+          automation at Mogo in Vancouver.
+        </p>
+        <a class="chip author__cta" href="/consulting/">Work with me <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </article>
 
-  <nav class="wrap article__nav" aria-label="More articles">
-    {
-      prev && (
-        <a class="adjacent" href={`/thinking/${prev.id}/`}>
-          <span class="adjacent__label">← Previous</span>
-          <span class="adjacent__title">{prev.data.title}</span>
-        </a>
-      )
-    }
-    {
-      next && (
-        <a class="adjacent adjacent--next" href={`/thinking/${next.id}/`}>
-          <span class="adjacent__label">Next →</span>
-          <span class="adjacent__title">{next.data.title}</span>
-        </a>
-      )
-    }
-  </nav>
+  {
+    related.length > 0 && (
+      <section class="section--tight wrap">
+        <p class="eyebrow rule-heading">Keep reading</p>
+
+        <div class="related">
+          {related.map((other) => (
+            <a class="card card--interactive related__card" href={`/thinking/${other.id}/`}>
+              <span class="label-row">
+                <span
+                  class="accent-bar accent-bar--sm"
+                  style={`--bar:${tagAccent(other.data.tag)}`}
+                />
+                <span class="eyebrow">{other.data.tag}</span>
+              </span>
+              <span class="related__title">{other.data.title}</span>
+              <span class="related__foot meta">
+                {formatDate(other.data.date)} · {readingTime(other.body ?? '')} min read
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
 </BaseLayout>
 
+<script>
+  /* ------------------------------------------------ reading progress -- */
+  const bar = document.querySelector<HTMLElement>('[data-reading-progress]');
+  const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc]'));
+  const headings = tocLinks
+    .map((link) => document.getElementById(link.dataset.toc ?? ''))
+    .filter((el): el is HTMLElement => el !== null);
+
+  function onScroll() {
+    const root = document.documentElement;
+
+    if (bar) {
+      const max = root.scrollHeight - root.clientHeight;
+      const progress = max > 0 ? Math.min(100, (root.scrollTop / max) * 100) : 0;
+      bar.style.width = `${progress.toFixed(1)}%`;
+    }
+
+    // The current section is the last heading whose top has passed the header.
+    let current = headings[0]?.id;
+    for (const heading of headings) {
+      if (heading.getBoundingClientRect().top < 160) current = heading.id;
+    }
+    for (const link of tocLinks) {
+      link.classList.toggle('is-current', link.dataset.toc === current);
+    }
+  }
+
+  // rAF-throttled so a fast scroll doesn't queue up layout reads.
+  let ticking = false;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        onScroll();
+        ticking = false;
+      });
+    },
+    { passive: true },
+  );
+  onScroll();
+
+  /* -------------------------------------------------------- copy link -- */
+  const copyButton = document.querySelector<HTMLButtonElement>('[data-copy-link]');
+
+  copyButton?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      copyButton.textContent = 'Link copied';
+    } catch {
+      copyButton.textContent = 'Press ⌘C to copy';
+    }
+    window.setTimeout(() => {
+      copyButton.textContent = 'Copy link';
+    }, 2000);
+  });
+</script>
+
 <style>
-  .article__head {
-    padding-block: clamp(3rem, 2rem + 6vw, 6rem) clamp(2rem, 1rem + 3vw, 3rem);
-    max-width: 54rem;
+  .article-head {
+    max-width: 820px;
+    padding-top: 64px;
   }
 
-  .article__title {
-    font-size: var(--step-5);
-    margin-block: 1.25rem 0;
-    max-width: 22ch;
+  .article-head__back {
+    display: inline-block;
+    margin-bottom: 34px;
+    font-size: 13px;
+    color: var(--ink-3);
   }
 
-  .article__excerpt {
-    margin-top: 1.75rem;
-    max-width: 58ch;
-    font-size: var(--step-1);
+  .article-head__tag {
+    margin-bottom: 22px;
+  }
+
+  .article-head__title {
+    font-size: clamp(36px, 5.4vw, 62px);
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+  }
+
+  .article-head__dek {
+    margin-top: 26px;
+    font-size: clamp(18px, 2vw, 21px);
+    line-height: 1.55;
     color: var(--ink-2);
-    padding-top: 1.75rem;
+    max-width: 660px;
+  }
+
+  .byline {
+    margin-top: 38px;
+    padding-top: 22px;
     border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
-  .article__body {
-    max-width: 40rem;
-    padding-bottom: var(--section-gap);
-    font-size: var(--step-0);
-    line-height: 1.8;
+  .byline :global(img) {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--pill);
+    object-fit: cover;
+    display: block;
   }
 
-  /* Long-form typography. Scoped with :global because the Markdown renders
-     into this container rather than through Astro components. */
-  .article__body :global(h2) {
-    font-size: var(--step-3);
-    margin-block: 3rem 1rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--rule);
+  .byline__name {
+    font-size: 14px;
+    font-weight: 500;
   }
 
-  .article__body :global(h3) {
-    font-size: var(--step-2);
-    margin-block: 2.25rem 0.75rem;
+  .byline__copy {
+    margin-left: auto;
+    border-radius: var(--pill);
   }
 
-  .article__body :global(h4) {
+  /* ------------------------------------------------------------- body -- */
+  .article-body {
+    padding-top: 56px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+  }
+
+  .toc {
+    display: none;
+  }
+
+  .toc__inner {
+    position: sticky;
+    top: calc(var(--header-h) + 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Some pieces run to a dozen sections. The rail scrolls inside itself
+       rather than growing past the bottom of the screen. */
+    max-height: calc(100vh - var(--header-h) - 80px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .toc__label {
+    margin-bottom: 4px;
+  }
+
+  .toc__link {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink-3);
+    border-left: 2px solid var(--rule);
+    padding-left: 12px;
+    transition:
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+
+  .toc__link.is-current {
+    color: var(--ink);
+    border-left-color: var(--accent);
+  }
+
+  /* ------------------------------------------------------------ prose -- */
+  /* The one place the serif appears. Long-form should feel like a different
+     surface from the rest of the site, because it is one. */
+  .prose {
+    max-width: var(--wrap-prose);
+    font-family: var(--font-serif);
+    font-size: 20px;
+    line-height: 1.72;
+    color: #2a2622;
+  }
+
+  .prose :global(> p:first-child) {
+    font-size: 23px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  .prose :global(p) {
+    margin: 0 0 24px;
+  }
+
+  .prose :global(h2),
+  .prose :global(h3) {
     font-family: var(--font-sans);
-    font-size: var(--step-0);
-    font-weight: 600;
-    margin-block: 1.75rem 0.5rem;
-  }
-
-  .article__body :global(p) {
-    margin-block: 1.25rem;
-    color: var(--ink-2);
-  }
-
-  .article__body :global(strong) {
     color: var(--ink);
+    scroll-margin-top: calc(var(--header-h) + 24px);
+  }
+
+  .prose :global(h2) {
+    margin: 56px 0 18px;
+    font-size: clamp(24px, 3vw, 29px);
+    line-height: 1.18;
+    letter-spacing: -0.014em;
+  }
+
+  .prose :global(h3) {
+    margin: 40px 0 14px;
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 28px;
+    padding-left: 24px;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 12px;
+  }
+
+  .prose :global(strong) {
     font-weight: 600;
+    color: var(--ink);
   }
 
-  .article__body :global(ul),
-  .article__body :global(ol) {
-    margin-block: 1.25rem;
-    padding-left: 1.25rem;
-    color: var(--ink-2);
-  }
-
-  .article__body :global(li) {
-    margin-block: 0.6rem;
-    padding-left: 0.35rem;
-  }
-
-  .article__body :global(li::marker) {
-    color: var(--accent);
-  }
-
-  .article__body :global(a) {
-    color: var(--accent);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-    transition: opacity var(--dur-fast) var(--ease);
-  }
-
-  .article__body :global(a:hover) {
-    opacity: 0.7;
-  }
-
-  .article__body :global(blockquote) {
-    margin: 2rem 0;
-    padding-left: 1.5rem;
-    border-left: 2px solid var(--accent);
-    font-family: var(--font-display);
-    font-size: var(--step-2);
+  .prose :global(blockquote) {
+    margin: 44px 0;
+    padding: 32px 36px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    font-family: var(--font-sans);
+    font-size: 24px;
     line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     color: var(--ink);
   }
 
-  .article__body :global(hr) {
-    margin-block: 3rem;
+  .prose :global(blockquote p) {
+    margin: 0;
+  }
+
+  .prose :global(hr) {
+    margin: 48px 0;
     border: 0;
     border-top: 1px solid var(--rule);
   }
 
-  /* ---- prev / next ---- */
-  .article__nav {
-    display: grid;
-    gap: 1px;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-    padding-bottom: var(--section-gap);
+  .prose :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin-block: 32px;
   }
 
-  .adjacent {
+  .prose :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em;
+    background: var(--wash);
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+
+  .prose :global(pre) {
+    background: var(--wash);
+    padding: 24px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    margin-block: 32px;
+  }
+
+  .prose :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  /* Wide tables scroll inside their own box rather than the page. */
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    margin-block: 32px;
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .prose :global(th) {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    background: var(--wash);
+  }
+
+  /* ----------------------------------------------------------- author -- */
+  .author {
+    max-width: 820px;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .author :global(img) {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    flex: none;
+    display: block;
+  }
+
+  .author__name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .author__bio {
+    margin-top: 6px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 480px;
+  }
+
+  .author__cta {
+    display: inline-flex;
+    gap: 8px;
+    margin-top: 16px;
+    border-radius: var(--pill);
+  }
+
+  /* ---------------------------------------------------------- related -- */
+  .related {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .related__card {
+    padding: 30px;
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
-    padding: 1.75rem 0;
+    gap: 14px;
+  }
+
+  .related__title {
+    font-size: 19px;
+    line-height: 1.26;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .related__foot {
+    margin-top: auto;
+    padding-top: 18px;
     border-top: 1px solid var(--rule);
-    text-decoration: none;
-    transition: border-color var(--dur) var(--ease);
   }
 
-  .adjacent--next {
-    text-align: right;
-    align-items: flex-end;
-  }
+  @media (min-width: 1000px) {
+    .article-body {
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: 64px;
+    }
 
-  .adjacent:hover {
-    border-top-color: var(--accent);
-  }
-
-  .adjacent__label {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--accent);
-  }
-
-  .adjacent__title {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    line-height: 1.2;
-    max-width: 26ch;
+    .toc {
+      display: block;
+    }
   }
 </style>

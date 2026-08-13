@@ -1,0 +1,314 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { PROJECTS, CATEGORY_ORDER, CATEGORY_ACCENT } from '../../data/site';
+import { CASES } from '../../data/cases';
+
+export const getStaticPaths = (() => {
+  /* Ordered the same way the work index reads, so "next" walks the visitor
+     through the site in the order it presents itself rather than in array
+     order. Built inside the function because Astro hoists getStaticPaths out
+     of the module, so it cannot close over module-level constants. */
+  const ordered = CATEGORY_ORDER.flatMap((category) =>
+    PROJECTS.filter((project) => project.category === category),
+  );
+
+  return ordered.map((project, index) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      previous: ordered[(index - 1 + ordered.length) % ordered.length],
+      next: ordered[(index + 1) % ordered.length],
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { project, previous, next } = Astro.props;
+const study = CASES[project.slug];
+
+if (!study) {
+  throw new Error(
+    `No case body for "${project.slug}". Add one to src/data/cases.ts or remove the project from src/data/site.ts.`,
+  );
+}
+
+const accent = CATEGORY_ACCENT[project.category];
+---
+
+<BaseLayout title={project.title} description={project.problem}>
+  <div class="wrap case-back">
+    <a href="/work/">← All work</a>
+  </div>
+
+  <article>
+    <header class="wrap case-head">
+      <p class="label-row case-head__meta">
+        <span class="accent-bar" style={`--bar:${accent}`} />
+        <span class="eyebrow">{study.meta}</span>
+      </p>
+      <h1 class="case-head__title">{project.title}</h1>
+      <p class="case-head__deck">{project.problem}</p>
+    </header>
+
+    <section class="wrap case-arc">
+      {
+        study.sections.map((section, i) => (
+          <div class="case-arc__row">
+            <div class="case-arc__label">
+              <span class="case-arc__num">{String(i + 1).padStart(2, '0')}</span>
+              <h2 class="case-arc__heading">{section.label}</h2>
+            </div>
+
+            <div class="case-arc__body" data-reveal>
+              {section.paras.map((para) => (
+                <p>{para}</p>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="band case-stats">
+      <div class="wrap">
+        <div class="case-stats__grid">
+          {
+            study.stats.map((stat) => (
+              <div>
+                <p class="stat__value">{stat.value}</p>
+                <p class="stat__label">{stat.label}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <hr class="band-rule case-stats__rule" />
+
+        <p class="case-stats__outcome">{study.outcome}</p>
+      </div>
+    </section>
+
+    {
+      study.tech.length > 0 && (
+        <section class="section--tight wrap case-arc">
+          <div class="case-arc__row case-arc__row--flush">
+            <div class="case-arc__label">
+              <h2 class="case-arc__heading">Tech</h2>
+            </div>
+
+            <div class="case-tech">
+              {study.tech.map((tool) => (
+                <div class="case-tech__row">
+                  <p class="case-tech__name">{tool.name}</p>
+                  <p class="case-tech__use">{tool.use}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
+  </article>
+
+  <nav class="section--tight wrap case-nav" aria-label="More work">
+    <a class="card card--interactive case-nav__link" href={`/work/${previous.slug}/`}>
+      <span class="eyebrow">Previous</span>
+      <span class="case-nav__title">{previous.title}</span>
+    </a>
+    <a
+      class="card card--interactive case-nav__link case-nav__link--next"
+      href={`/work/${next.slug}/`}
+    >
+      <span class="eyebrow">Next</span>
+      <span class="case-nav__title">{next.title}</span>
+    </a>
+  </nav>
+
+  <ContactBand />
+</BaseLayout>
+
+<style>
+  .case-back {
+    padding-top: 48px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .case-head {
+    padding-top: 40px;
+  }
+
+  .case-head__meta {
+    margin-bottom: 26px;
+  }
+
+  .case-head__title {
+    max-width: 960px;
+    font-size: clamp(36px, 5.6vw, 74px);
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+  }
+
+  .case-head__deck {
+    margin-top: 32px;
+    max-width: 660px;
+    font-size: clamp(19px, 2.1vw, 24px);
+    line-height: 1.5;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink-deck);
+  }
+
+  .case-arc {
+    padding-top: clamp(56px, 8vw, 96px);
+  }
+
+  .case-arc__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-block: 46px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .case-arc__row--flush {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .case-arc__label {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .case-arc__num {
+    font-size: 13px;
+    font-weight: 500;
+    color: #c0b8ae;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .case-arc__heading {
+    font-size: 20px;
+    letter-spacing: -0.008em;
+  }
+
+  .case-arc__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 680px;
+  }
+
+  .case-arc__body p {
+    font-size: 18px;
+    line-height: 1.66;
+  }
+
+  .case-stats {
+    margin-top: 90px;
+  }
+
+  .case-stats__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .case-stats .stat__value {
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: -0.02em;
+  }
+
+  .case-stats .stat__label {
+    margin-top: 14px;
+  }
+
+  .case-stats__rule {
+    margin-block: clamp(44px, 5vw, 64px);
+  }
+
+  .case-stats__outcome {
+    max-width: 820px;
+    font-size: clamp(19px, 2.2vw, 27px);
+    line-height: 1.45;
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    color: var(--sun);
+  }
+
+  .case-tech {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .case-tech__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .case-tech__name {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+
+  .case-tech__use {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .case-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .case-nav__link {
+    padding: 28px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .case-nav__link--next {
+    text-align: right;
+  }
+
+  .case-nav__title {
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  @media (min-width: 720px) {
+    .case-stats__grid {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 40px;
+    }
+
+    .case-nav {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .case-arc__row {
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 56px;
+    }
+
+    .case-tech__row {
+      grid-template-columns: 230px 1fr;
+      gap: 24px;
+      align-items: baseline;
+    }
+  }
+</style>

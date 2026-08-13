@@ -1,82 +1,108 @@
 /*
- * Design system — "The read"
+ * Design system — "Paper"
  *
- * Editorial rather than promotional: warm paper, high-contrast serif display,
- * hairline rules instead of cards-on-grey. One accent colour, reserved almost
- * exclusively for metric movement, so the eye learns that accent = proof.
+ * Warm paper, near-black ink, white cards floating on top with a soft two-layer
+ * shadow. One typeface (General Sans) does all the interface work; Newsreader is
+ * held back for article body copy only, so long-form reads differently from the
+ * rest of the site on purpose.
  *
- * Motion is CSS-only — native cross-document view transitions and scroll-driven
- * animations. No client JS ships for any of it.
+ * Four accents, and each one means something: coral = lifecycle, sky =
+ * leadership & operations, moss = AI automation, sun = web operations. Colour
+ * carries category rather than decoration, so a reader learns the mapping
+ * without being told it.
+ *
+ * The design is committed to light. There is no dark override block: a paper
+ * palette inverted is a different design, not the same one at night.
  */
 
+/* Newsreader is only ever used inside article prose, so it comes from a
+   packaged variable face rather than three static weights. CSS requires
+   @import before any other rule, which is why it sits above the @font-face
+   declarations for General Sans. */
 @import '@fontsource-variable/newsreader';
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/jetbrains-mono';
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  /* Paper & ink — warm, never pure white or blue-black */
-  --paper: #fbf9f5;
-  --paper-2: #f4f0e7;
-  --ink: #17140f;
-  --ink-2: #5d5449;
-  --ink-3: #8b8175;
-  --rule: #e4ddd0;
-  --rule-strong: #cdc3b1;
+  /* Paper & ink */
+  --paper: #fbf9f6;
+  --wash: #f4f1ec;
+  --card: #ffffff;
+  --ink: #1f1c19;
+  --ink-deck: #3d3833;
+  --ink-2: #6b6560;
+  --ink-3: #9a938b;
+  --rule: #eae4dc;
+  --rule-2: #d9d1c6;
 
-  /* The one accent. Metrics, links, focus. Scarcity is what makes it signal. */
-  --accent: #b0442a;
-  --accent-ink: #8f3520;
-  --accent-wash: rgb(176 68 42 / 7%);
+  /* On the dark bands */
+  --dark: #1f1c19;
+  --on-dark: #fbf9f6;
+  --on-dark-2: #c8c0b7;
+  --on-dark-3: #9a938b;
+  --on-dark-rule: rgb(251 249 246 / 12%);
+  --on-dark-rule-2: rgb(251 249 246 / 22%);
+  --on-dark-fill: rgb(251 249 246 / 6%);
 
-  --font-display: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+  /* The four accents. Each is bound to a category — see CATEGORY_ACCENT in
+     src/data/site.ts, which is the single place the mapping is declared. */
+  --coral: #f2603f;
+  --sun: #f5b841;
+  --sky: #3e8fd8;
+  --moss: #3fa981;
+  /* The interaction accent: links, focus, selection, active indicators. */
+  --accent: var(--coral);
 
-  /* Fluid type scale, ~1.25 ratio at small / ~1.333 at large */
-  --step--1: clamp(0.83rem, 0.79rem + 0.18vw, 0.94rem);
-  --step-0: clamp(1rem, 0.95rem + 0.24vw, 1.13rem);
-  --step-1: clamp(1.2rem, 1.11rem + 0.44vw, 1.5rem);
-  --step-2: clamp(1.44rem, 1.29rem + 0.75vw, 2rem);
-  --step-3: clamp(1.73rem, 1.49rem + 1.2vw, 2.66rem);
-  --step-4: clamp(2.07rem, 1.7rem + 1.85vw, 3.55rem);
-  --step-5: clamp(2.49rem, 1.93rem + 2.8vw, 4.74rem);
-  --step-6: clamp(2.99rem, 2.15rem + 4.18vw, 6.31rem);
+  --font-sans: 'General Sans', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
 
-  --wrap: 74rem;
-  --wrap-prose: 40rem;
-  --gutter: clamp(1.25rem, 0.9rem + 1.7vw, 2.5rem);
-  --section-gap: clamp(4.5rem, 3rem + 7vw, 9rem);
+  /* Surfaces */
+  --radius: 18px;
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --pill: 999px;
+  --shadow-sm: 0 1px 2px rgb(31 28 25 / 4%);
+  --shadow: 0 1px 2px rgb(31 28 25 / 4%), 0 12px 28px -8px rgb(31 28 25 / 10%);
+  --shadow-lg: 0 1px 2px rgb(31 28 25 / 4%), 0 16px 34px -10px rgb(31 28 25 / 16%);
 
-  /* Motion. One easing curve everywhere — consistency reads as intent. */
-  --ease: cubic-bezier(0.22, 0.75, 0.24, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-fast: 180ms;
-  --dur: 380ms;
-  --dur-slow: 720ms;
+  /* Layout */
+  --wrap: 1120px;
+  --wrap-wide: 1440px;
+  --wrap-prose: 680px;
+  --gutter: 24px;
+  --header-h: 69px;
 
-  color-scheme: light dark;
-}
+  /* Motion. One curve everywhere; consistency is what makes it read as
+     deliberate rather than as whatever each component felt like. */
+  --ease: cubic-bezier(0.2, 0.8, 0.25, 1);
+  --dur-fast: 220ms;
+  --dur: 300ms;
+  --dur-slow: 500ms;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #12100c;
-    --paper-2: #1a1712;
-    --ink: #f0ebe1;
-    --ink-2: #a09686;
-    --ink-3: #7b7264;
-    --rule: #2b2620;
-    --rule-strong: #443d33;
-
-    --accent: #e07a54;
-    --accent-ink: #ef9877;
-    --accent-wash: rgb(224 122 84 / 12%);
-  }
-}
-
-/* Native cross-document page transitions. Zero JS — the browser morphs
-   between documents on navigation. Unsupported browsers simply navigate. */
-@view-transition {
-  navigation: auto;
+  color-scheme: light;
 }
 
 *,
@@ -87,33 +113,82 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Anchors land below the sticky header rather than under it. */
+  scroll-padding-top: calc(var(--header-h) + 24px);
 }
 
 body {
   margin: 0;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: var(--step-0);
+  font-size: 17px;
   line-height: 1.65;
-  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  /* Oversized display type and the marquee both overflow by design; clip the
+     horizontal axis without creating a scroll container on the vertical one,
+     which would break position: sticky. */
+  overflow-x: clip;
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.06;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
   margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
 p {
@@ -121,117 +196,472 @@ p {
   text-wrap: pretty;
 }
 
-a {
-  color: inherit;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-::selection {
-  background: var(--accent);
-  color: var(--paper);
-}
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-  border-radius: 2px;
-}
-
-/* ---------- layout primitives ---------- */
+/* ---------------------------------------------------------------- layout -- */
 
 .wrap {
-  width: 100%;
   max-width: var(--wrap);
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
 
-.prose {
-  max-width: var(--wrap-prose);
+.wrap--wide {
+  max-width: var(--wrap-wide);
 }
 
+/* Vertical rhythm between major page sections. The design runs generous —
+   ~190px between sections on desktop, tightening hard on small screens. */
 .section {
-  padding-block: var(--section-gap);
-  border-top: 1px solid var(--rule);
+  padding-top: clamp(88px, 13vw, 190px);
 }
 
-/* Mono eyebrow label — his own {01} device, kept because it's his */
-.marker {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
+.section--tight {
+  padding-top: clamp(64px, 9vw, 110px);
+}
+
+.section--first {
+  padding-top: clamp(56px, 8vw, 104px);
+}
+
+/* ------------------------------------------------------------ typography -- */
+
+.eyebrow {
+  display: block;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
 }
 
-/* ---------- motion primitives ---------- */
+.display {
+  font-size: clamp(52px, 9.4vw, 128px);
+  line-height: 0.94;
+  letter-spacing: -0.022em;
+}
 
-/* Scroll-driven reveal. Pure CSS: no observer, no JS, no layout thrash.
-   Guarded by @supports so unsupported browsers just render content visible. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal {
-      animation: reveal-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 55%;
-    }
+.page-title {
+  font-size: clamp(38px, 6.2vw, 84px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.section-title {
+  font-size: clamp(30px, 3.6vw, 48px);
+  line-height: 1.07;
+}
+
+.section-title--sm {
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.1;
+}
+
+.lede {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.body-muted {
+  color: var(--ink-2);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* The little coloured rule that prefixes a category or client label. */
+.accent-bar {
+  display: block;
+  width: 26px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bar, var(--accent));
+  flex: none;
+}
+
+.accent-bar--sm {
+  width: 22px;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --------------------------------------------------------------- surface -- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--raised {
+  box-shadow: var(--shadow);
+}
+
+/* Cards that are themselves links or buttons get the lift on hover. */
+.card--interactive {
+  display: block;
+  transition:
+    transform var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.card--interactive:hover {
+  transform: translateY(-2px);
+  border-color: var(--rule-2);
+  box-shadow: var(--shadow-lg);
+  color: var(--ink);
+}
+
+/* Full-bleed dark band. Used for the numbers sections and the big pull quotes,
+   where the contrast switch is doing the work of a section break. */
+.band {
+  background: var(--dark);
+  color: var(--on-dark);
+  padding-block: clamp(70px, 9vw, 130px);
+}
+
+.band a:hover {
+  color: var(--sun);
+}
+
+.band-rule {
+  height: 1px;
+  background: var(--on-dark-rule);
+  border: 0;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- pieces -- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: var(--pill);
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn--ghost {
+  background: var(--card);
+  border-color: var(--rule);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--ghost:hover {
+  background: var(--card);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn--on-dark {
+  background: var(--on-dark);
+  border-color: var(--on-dark);
+  color: var(--ink);
+}
+
+.btn--on-dark:hover {
+  background: var(--sun);
+  border-color: var(--sun);
+  color: var(--ink);
+}
+
+.btn--outline-dark {
+  background: transparent;
+  border-color: var(--on-dark-rule-2);
+  color: var(--on-dark);
+}
+
+.btn--outline-dark:hover {
+  background: transparent;
+  border-color: var(--on-dark);
+  color: var(--on-dark);
+}
+
+/* Segmented control — "The ask / What I found", "Shelf / Grid". */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--wash);
+  border-radius: var(--radius-md);
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.segmented--bare {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 5px;
+  gap: 6px;
+}
+
+.segmented__btn {
+  padding: 9px 16px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 13px;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.segmented__btn:hover {
+  color: var(--ink);
+}
+
+.segmented__btn[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Filter chip — writing tags, work category jumps. */
+.chip {
+  padding: 9px 15px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  background: var(--card);
+  color: var(--ink-2);
+  font-size: 13px;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.chip--pill {
+  border-radius: var(--pill);
+  font-weight: 500;
+  padding: 9px 16px;
+}
+
+.field {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.field input,
+.field textarea {
+  margin-top: 8px;
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.field input:hover,
+.field textarea:hover {
+  border-color: var(--rule-2);
+}
+
+.field input:focus,
+.field textarea:focus {
+  background: var(--card);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+/* A stat: big figure, small caption underneath. */
+.stat__value {
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.stat__label {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  max-width: 240px;
+}
+
+.band .stat__value {
+  color: var(--on-dark);
+}
+
+.band .stat__label {
+  color: var(--on-dark-3);
+}
+
+/* Divided stat row — hairlines appear only once the columns sit side by side. */
+.stat-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px 0;
+}
+
+@media (min-width: 640px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-row > *:nth-child(2n) {
+    border-left: 1px solid var(--on-dark-rule);
+    padding-left: 32px;
   }
 }
 
-@keyframes reveal-in {
+@media (min-width: 1024px) {
+  .stat-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .stat-row > * {
+    border-left: 1px solid var(--on-dark-rule);
+    padding-left: 32px;
+  }
+
+  .stat-row > *:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+/* Section heading with a hairline running off to the right. */
+.rule-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.rule-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 12px 20px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
+.skip-link:focus {
+  left: 0;
+  color: var(--paper);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------- motion -- */
+
+/* Paragraphs lift and settle as they scroll into view.
+ *
+ * Driven by a native scroll timeline rather than JavaScript, which matters for
+ * more than elegance: an effect that starts text at 32% opacity and relies on a
+ * script to finish the job leaves the page unreadable whenever that script
+ * doesn't run. Inside @supports, the dimmed starting state only ever exists in
+ * browsers that can complete the animation. Everywhere else the text simply
+ * renders, which is the correct fallback.
+ */
+@keyframes reveal-rise {
   from {
-    opacity: 0;
-    transform: translateY(1.75rem);
+    opacity: 0.32;
+    transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: none;
   }
 }
 
-/* Staggered entry for above-the-fold content, which scroll timelines can't
-   drive because it's already in view on load. */
-@media (prefers-reduced-motion: no-preference) {
-  .enter {
-    animation: reveal-in var(--dur-slow) var(--ease-out) both;
-    animation-delay: calc(var(--i, 0) * 90ms);
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Longhands, not the `animation` shorthand: the CSS minifier folds
+       adjacent animation properties together, and `view()` inside the
+       shorthand is invalid, which silently kills the whole declaration. */
+    [data-reveal] > * {
+      animation-name: reveal-rise;
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-timeline: view();
+      animation-range: entry 5% cover 22%;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 1ms !important;
     scroll-behavior: auto !important;
   }
-
-  @view-transition {
-    navigation: none;
-  }
-}
-
-/* ---------- skip link ---------- */
-
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 20;
-  padding: 0.75rem 1.25rem;
-  background: var(--ink);
-  color: var(--paper);
-  font-size: var(--step--1);
-}
-
-.skip-link:focus {
-  left: var(--gutter);
 }

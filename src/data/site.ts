@@ -33,6 +33,18 @@ export const CATEGORY_ORDER: readonly Category[] = [
   'Leadership & Operations',
 ];
 
+/**
+ * Category → accent colour. Declared once here so the marker on a home page
+ * card, a work index group and a case study header always agree. The values
+ * are the CSS custom properties defined in src/styles/global.css.
+ */
+export const CATEGORY_ACCENT: Record<Category, string> = {
+  Lifecycle: 'var(--coral)',
+  'AI Automation': 'var(--moss)',
+  'Web Operations': 'var(--sun)',
+  'Leadership & Operations': 'var(--sky)',
+};
+
 export const PROJECTS: readonly Project[] = [
   {
     slug: 'mogo-lifecycle',
@@ -169,7 +181,7 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: 'craftconcepts',
-    title: 'Founder, CraftConcepts',
+    title: 'Founding and scaling CraftConcepts',
     problem:
       "Local businesses lost their digital presence after the pandemic and couldn't afford an agency to fix it. I built a collective to close that gap, and used it to mentor early-career marketers on real client work.",
     tags: ['Leadership', 'Founder', 'Mentorship'],

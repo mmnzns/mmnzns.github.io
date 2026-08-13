@@ -1,267 +1,412 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import VideoEmbed from '../components/VideoEmbed.astro';
-import { HEADLINE_STATS } from '../data/site';
-
-const EXPERIENCE = [
-  {
-    role: 'Senior Marketing Operations Manager, Lifecycle and MarTech',
-    org: 'Mogo Financial',
-    place: 'Vancouver, BC',
-    dates: 'Aug 2024 — Current',
-  },
-  {
-    role: 'Website, Email & Martech Operations Manager',
-    org: 'Pilothouse / DTC Newsletter',
-    place: 'Vancouver, BC',
-    dates: 'Apr 2021 — Aug 2024',
-  },
-  {
-    role: 'Founder & Growth Marketing Strategist',
-    org: 'CraftConcepts',
-    place: 'Vancouver, BC',
-    dates: 'May 2022 — Jan 2025',
-  },
-  {
-    role: 'Senior Marketing Projects & Operations Manager',
-    org: 'Sportserve',
-    place: 'Manila, Philippines',
-    dates: 'Mar 2014 — Feb 2021',
-  },
-  {
-    role: 'Article Editor & Contributor',
-    org: 'Rappler',
-    place: 'Manila, Philippines',
-    dates: 'Jan 2013 — Feb 2014',
-  },
-];
+import ContactSection from '../components/ContactSection.astro';
+import poster from '../assets/about-poster.png';
+import {
+  INTRO,
+  WHAT_I_DO,
+  HOW_I_GOT_HERE,
+  SCOPE_PROOF,
+  TOTALS,
+  BELIEF,
+  OUTSIDE_WORK,
+  TO_WORK_WITH,
+  ROLES,
+  INTRO_VIDEO,
+} from '../data/about';
 ---
 
 <BaseLayout
   title="About"
-  description="Miguel N. Monzones — 11 years across fintech, SaaS and ecommerce. From a newsroom in Manila to lifecycle and GTM systems in Vancouver."
+  description="Miguel Monzones — eleven years on lifecycle and GTM across fintech, SaaS and ecommerce. Canada, then a farm in the Philippines, then newsrooms, then marketing systems."
 >
-  <section class="wrap head">
-    <p class="marker enter" style="--i:0">About</p>
-    <blockquote class="pull enter" style="--i:1">
-      <p>“He who does not know, can know by learning.”</p>
-      <cite>Akan proverb</cite>
-    </blockquote>
-    <p class="head__lede enter" style="--i:2">
-      This serves as a guiding principle in my work. I approach problems without presuming to have
-      the answer, but with confidence in my ability to find it.
-    </p>
-  </section>
+  <section class="section--first wrap" id="top">
+    <p class="eyebrow about-hero__eyebrow">About</p>
+    <h1 class="page-title">A bit more about me.</h1>
 
-  <section class="wrap section">
-    <div class="intro-video reveal">
-      <VideoEmbed
-        videoId="WegUH6EIXgY"
-        title="A two-minute introduction — who I am and how I work."
-        poster="/video-poster.jpg"
-        start={78}
-      />
+    <div class="about-hero__intro">
+      {INTRO.map((para, i) => <p class={i === 0 ? 'about-hero__hello' : undefined}>{para}</p>)}
     </div>
   </section>
 
-  <section class="wrap section">
-    <div class="prose story reveal">
-      <p>
-        I grew up on a farm. There, you quickly learn to make do with what you have or figure out
-        how to create what you need. I picked up carpentry, learned to fix broken tools, and got
-        used to spotting problems before they happened. Thinking in systems was just part of
-        everyday life, long before I ever heard the term at work. That habit has always stayed with
-        me.
-      </p>
-      <p>
-        I started my career as an editor at Rappler in Manila, where I trained with Nobel Peace
-        Prize winner Maria Ressa in a busy digital newsroom. Working there taught me to be precise,
-        focus on facts, and dig deeper when answers weren't clear. I still use that editorial
-        discipline whenever I approach problems now.
-      </p>
-      <p>
-        My career didn't stick to a set plan. Instead, I just kept chasing the next problem. I
-        started with copywriting, which took me into email, then lifecycle marketing, and from there
-        into web, SEO, CRO, martech, and finally AI systems. I wasn't just trying to pick up new
-        skills. I simply followed each problem to its source. The work keeps changing because I
-        don't settle for surface-level fixes.
-      </p>
-      <p>
-        When I join a team, I often challenge existing workflows, not to prove a point, but because
-        I am committed to identifying gaps and opportunities for improvement.
-      </p>
-      <p class="story__kicker">
-        Every role I've had evolved into something bigger than I was hired for, because I look at
-        the whole system.
-      </p>
+  {/* ------------------------------------------------------ what I do -- */}
+  <section class="section--tight wrap">
+    <div class="portrait-split">
+      <figure class="portrait">
+        <Image src={poster} alt="Miguel Monzones" width={880} height={1100} loading="lazy" />
+        <a class="portrait__play" href={INTRO_VIDEO.href} target="_blank" rel="noopener">
+          <span class="portrait__icon" aria-hidden="true">▶</span>
+          {INTRO_VIDEO.label}
+        </a>
+      </figure>
+
+      <div class="portrait-split__body">
+        <p class="eyebrow prose-block__eyebrow">What I do</p>
+        <div class="prose-block" data-reveal>
+          {WHAT_I_DO.map((para) => <p>{para}</p>)}
+        </div>
+        <p class="portrait-split__sign">Miguel Monzones</p>
+      </div>
     </div>
   </section>
 
-  <section class="wrap section">
-    <div class="stats reveal">
-      {
-        HEADLINE_STATS.map((s) => (
-          <div class="stat">
-            <span class="stat__value">{s.value}</span>
-            <span class="stat__label">{s.label}</span>
-          </div>
-        ))
-      }
+  {/* --------------------------------------------------- how I got here -- */}
+  <section class="section wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow split__eyebrow">How I got here</p>
+        <h2 class="split__title">Canada, then a farm, then newsrooms.</h2>
+      </div>
+      <div class="prose-block" data-reveal>
+        {HOW_I_GOT_HERE.map((para) => <p>{para}</p>)}
+      </div>
     </div>
   </section>
 
-  <section class="wrap section">
-    <header class="section__head reveal">
-      <p class="marker">Experience</p>
-    </header>
+  {/* ------------------------------------------------------ scope band -- */}
+  <section class="band about-band">
+    <div class="wrap">
+      <blockquote class="about-band__quote">
+        Every role I’ve had turned into something bigger than what I was hired for.
+      </blockquote>
 
-    <ol class="timeline">
-      {
-        EXPERIENCE.map((job) => (
-          <li class="job reveal">
-            <span class="job__dates">{job.dates}</span>
-            <div class="job__detail">
-              <h2 class="job__role">{job.role}</h2>
-              <p class="job__org">
-                {job.org} <span aria-hidden="true">·</span> {job.place}
+      <div class="about-band__proof">
+        {SCOPE_PROOF.map((para) => <p>{para}</p>)}
+      </div>
+
+      <hr class="band-rule about-band__rule" />
+
+      <div class="stat-row">
+        {
+          TOTALS.map((total) => (
+            <div>
+              <p
+                class="stat__value"
+                data-count={'countTo' in total ? total.countTo : undefined}
+                data-suffix={'suffix' in total ? total.suffix : undefined}
+              >
+                {total.value}
               </p>
+              <p class="stat__label">{total.label}</p>
             </div>
-          </li>
-        ))
-      }
-    </ol>
+          ))
+        }
+      </div>
+    </div>
   </section>
+
+  {/* --------------------------------------------------- what I believe -- */}
+  <section class="section wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow split__eyebrow">What I believe</p>
+        <h2 class="split__title">At the core of all of it is one idea:</h2>
+      </div>
+      <div class="prose-block" data-reveal>
+        <p class="belief">{BELIEF.headline}</p>
+        {BELIEF.paras.map((para) => <p>{para}</p>)}
+        <p>
+          {BELIEF.tattoo.before}<em>{BELIEF.tattoo.phrase}</em>{BELIEF.tattoo.after}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------- outside work -- */}
+  <section class="section wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow split__eyebrow">Outside work</p>
+        <h2 class="split__title">Food, fiction, and a fat cat.</h2>
+      </div>
+      <div class="prose-block" data-reveal>
+        {OUTSIDE_WORK.map((para) => <p>{para}</p>)}
+      </div>
+    </div>
+  </section>
+
+  {/* ----------------------------------------------------------- roles -- */}
+  <section class="section wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow split__eyebrow">Where</p>
+        <h2 class="split__title">Where I’ve worked.</h2>
+      </div>
+
+      <div class="roles">
+        {
+          ROLES.map((role) => (
+            <div class="roles__row">
+              <div>
+                <p class="roles__org">{role.org}</p>
+                <p class="roles__what">{role.what}</p>
+              </div>
+              <p class="roles__years">{role.years}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* -------------------------------------------------- to work with -- */}
+  <section class="section wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow split__eyebrow">What I’m like to work with</p>
+      </div>
+      <div class="prose-block" data-reveal>
+        {TO_WORK_WITH.map((para) => <p>{para}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <ContactSection
+    title="Get in touch."
+    intro="Want to work together, chat about something you’re stuck on, or just say hey? Reach out here."
+    aside="And if you’re ever in Vancouver, coffee’s on me. I’d rather hear the problem out loud anyway."
+  />
 </BaseLayout>
 
+<script>
+  // Career totals count up the first time they scroll into view. The rendered
+  // value is already correct, so this only replaces a correct number with the
+  // same number — nothing breaks if it never runs.
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (counters.length && !reduce && 'IntersectionObserver' in window) {
+    const countUp = (el: HTMLElement) => {
+      const target = Number(el.dataset.count);
+      if (!Number.isFinite(target)) return;
+      const suffix = el.dataset.suffix ?? '';
+      const duration = 900;
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+
+      requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          observer.unobserve(entry.target);
+          countUp(entry.target as HTMLElement);
+        }
+      },
+      { threshold: 0.4 },
+    );
+
+    for (const counter of counters) observer.observe(counter);
+  }
+</script>
+
 <style>
-  .head {
-    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+  .about-hero__eyebrow {
+    margin-bottom: 26px;
   }
 
-  .pull {
-    margin: 1.5rem 0 0;
-    max-width: 20ch;
-  }
-
-  .pull p {
-    font-family: var(--font-display);
-    font-size: var(--step-5);
-    line-height: 1.12;
-    letter-spacing: -0.02em;
-  }
-
-  .pull cite {
-    display: block;
-    margin-top: 1.25rem;
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    font-style: normal;
-    color: var(--ink-3);
-  }
-
-  .head__lede {
-    margin-top: 2rem;
-    max-width: 52ch;
-    font-size: var(--step-1);
-    color: var(--ink-2);
-  }
-
-  .intro-video {
-    max-width: 52rem;
-  }
-
-  .story {
-    display: grid;
-    gap: 1.5rem;
-    font-size: var(--step-0);
-    line-height: 1.8;
-    color: var(--ink-2);
-  }
-
-  .story__kicker {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    line-height: 1.35;
-    color: var(--ink);
-    margin-top: 1rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--rule);
-  }
-
-  .stats {
-    display: grid;
-    gap: clamp(1.75rem, 1rem + 3vw, 3rem);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-  }
-
-  .stat {
+  .about-hero__intro {
+    margin-top: 44px;
+    max-width: 680px;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .stat__value {
-    font-family: var(--font-display);
-    font-size: var(--step-5);
-    line-height: 1;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-    color: var(--accent);
-  }
-
-  .stat__label {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
+    gap: 20px;
+    font-size: clamp(18px, 2vw, 21px);
+    line-height: 1.6;
     color: var(--ink-2);
+  }
+
+  .about-hero__hello {
+    color: var(--ink);
+  }
+
+  /* ------------------------------------------------------------ split -- */
+  .split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(32px, 5vw, 56px);
+    align-items: start;
+  }
+
+  .split__eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .split__title {
+    font-size: clamp(28px, 3.2vw, 42px);
+    line-height: 1.08;
+  }
+
+  .prose-block {
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    font-size: 18px;
+    line-height: 1.66;
+  }
+
+  .prose-block__eyebrow {
+    margin-bottom: 22px;
+  }
+
+  .belief {
+    font-size: clamp(26px, 3vw, 36px);
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: -0.014em;
     text-wrap: balance;
   }
 
-  .section__head {
-    margin-bottom: 2rem;
+  /* -------------------------------------------------------- portrait -- */
+  .portrait-split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(40px, 6vw, 72px);
+    align-items: start;
   }
 
-  .timeline {
-    list-style: none;
+  .portrait {
+    position: relative;
     margin: 0;
-    padding: 0;
+  }
+
+  .portrait :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius);
+    display: block;
+    box-shadow: var(--shadow);
+  }
+
+  .portrait__play {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px 9px 12px;
+    background: rgb(251 249 246 / 94%);
+    border-radius: var(--pill);
+    font-size: 13px;
+    font-weight: 500;
+    transition:
+      background var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+
+  .portrait__play:hover {
+    background: var(--card);
+    transform: translateY(-1px);
+    color: var(--ink);
+  }
+
+  .portrait__icon {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--pill);
+    background: var(--accent);
+    color: #fff;
+    font-size: 9px;
+  }
+
+  .portrait-split__body {
+    padding-top: 6px;
+  }
+
+  .portrait-split__sign {
+    margin-top: 34px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* ------------------------------------------------------------- band -- */
+  .about-band {
+    margin-top: clamp(96px, 14vw, 170px);
+  }
+
+  .about-band__quote {
+    margin: 0;
+    max-width: 880px;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    color: var(--sun);
+    text-wrap: balance;
+  }
+
+  .about-band__proof {
+    margin-top: clamp(44px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .about-band__proof p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--on-dark-2);
+  }
+
+  .about-band__rule {
+    margin-block: clamp(52px, 6vw, 76px) clamp(44px, 5vw, 60px);
+  }
+
+  /* ------------------------------------------------------------ roles -- */
+  .roles {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .roles__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px;
+    align-items: baseline;
+    padding-block: 22px;
     border-bottom: 1px solid var(--rule);
   }
 
-  .job {
-    display: grid;
-    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
-    gap: 0.5rem 2rem;
-    padding-block: clamp(1.25rem, 1rem + 1.5vw, 2rem);
-    border-top: 1px solid var(--rule);
-    transition: border-color var(--dur) var(--ease);
+  .roles__org {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
   }
 
-  .job:hover {
-    border-top-color: var(--accent);
-  }
-
-  .job__dates {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--ink-3);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .job__role {
-    font-size: var(--step-2);
-    max-width: 30ch;
-  }
-
-  .job__org {
-    margin-top: 0.4rem;
-    font-size: var(--step--1);
+  .roles__what {
+    margin-top: 5px;
+    font-size: 15px;
+    line-height: 1.55;
     color: var(--ink-2);
   }
 
-  @media (max-width: 40rem) {
-    .job {
-      grid-template-columns: 1fr;
+  .roles__years {
+    font-size: 13px;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  @media (min-width: 860px) {
+    .about-band__proof {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
     }
   }
 </style>

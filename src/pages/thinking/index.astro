@@ -1,99 +1,539 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { RECENT_THINKING } from '../../data/site';
+import { CONTACT } from '../../config';
+import { TAGS, tagAccent } from '../../data/writing';
+import { formatDate, readingTime } from '../../utils/format';
+
+const all = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+/* The featured flag wins; otherwise the newest piece leads. */
+const featured = all.find((post) => post.data.featured) ?? all[0];
+const rest = all.filter((post) => post.id !== featured?.id);
+
+/* Recent work gets cards; everything older collapses into a compact list, so
+   the page stays scannable as the archive grows. */
+const CARD_COUNT = 6;
+const cards = rest.slice(0, CARD_COUNT);
+const archive = rest.slice(CARD_COUNT);
+
+const meta = (post: (typeof all)[number]) =>
+  `${formatDate(post.data.date)} · ${readingTime(post.body ?? '')} min read`;
 ---
 
 <BaseLayout
   title="The Thinking"
-  description="Lifecycle, AI, web, automation — and the occasional detour into doing the work better. Writing by Miguel N. Monzones."
+  description="Writing on lifecycle, AI, search and automation — working things out until they make sense."
 >
-  <section class="wrap head">
-    <p class="marker enter" style="--i:0">The thinking</p>
-    <h1 class="head__title enter" style="--i:1">Working things out in public.</h1>
-    <p class="head__lede enter" style="--i:2">
-      Lifecycle, AI, web, automation, and the occasional detour into doing the work better. Mostly
-      me thinking through something until it makes sense.
+  <section class="section--first wrap">
+    <p class="eyebrow writing-hero__eyebrow">The Thinking</p>
+
+    <div class="writing-hero">
+      <h1 class="writing-hero__title">Working things out in public.</h1>
+      <div class="writing-hero__intro">
+        <p>
+          Lifecycle, AI, search, automation, and the occasional detour into doing the work better.
+          Mostly me thinking through something until it makes sense.
+        </p>
+        <p>
+          I write when I can’t yet explain something in a meeting. If a piece is here, it means I
+          got to the end of the thought.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {
+    featured && (
+      <section class="section--tight wrap" data-feature-section>
+        <p class="eyebrow rule-heading">Latest</p>
+
+        <a
+          class="card card--raised card--interactive feature"
+          href={`/thinking/${featured.id}/`}
+          data-post
+          data-tag-value={featured.data.tag}
+          data-text={`${featured.data.title} ${featured.data.excerpt} ${featured.data.tag}`.toLowerCase()}
+        >
+          <div class="feature__panel">
+            <span class="eyebrow" style={`color:${tagAccent(featured.data.tag)}`}>
+              {featured.data.tag}
+            </span>
+
+            <svg class="feature__art" viewBox="0 0 260 150" aria-hidden="true">
+              <path d="M12 128 L248 128" class="axis" />
+              <path d="M12 128 L12 18" class="axis" />
+              <path
+                d="M12 128 C60 126, 92 120, 128 104 C168 86, 200 52, 248 30"
+                class="curve"
+              />
+              <circle cx="128" cy="104" r="3.6" class="dot" />
+              <circle cx="248" cy="30" r="3.6" class="dot" />
+            </svg>
+
+            <span class="meta">Most recent</span>
+          </div>
+
+          <div class="feature__body">
+            <h2 class="feature__title">{featured.data.title}</h2>
+            <p class="feature__dek">{featured.data.excerpt}</p>
+            <p class="feature__foot">
+              <span class="meta">{meta(featured)}</span>
+              <span class="feature__read">Read →</span>
+            </p>
+          </div>
+        </a>
+      </section>
+    )
+  }
+
+  <section class="section--tight wrap">
+    <div class="filters">
+      <div class="filters__chips" role="group" aria-label="Filter writing by topic">
+        <button type="button" class="chip" data-tag="All" aria-pressed="true">All</button>
+        {
+          TAGS.map((tag) => (
+            <button type="button" class="chip" data-tag={tag} aria-pressed="false">
+              {tag}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="filters__search">
+        <label class="visually-hidden" for="writing-search">Search writing</label>
+        <input id="writing-search" type="search" placeholder="Search writing" data-search />
+        <span class="meta" data-count aria-live="polite">{all.length} pieces</span>
+      </div>
+    </div>
+
+    {/*
+      Filtering spans all three views — the featured card above, these cards,
+      and the compact archive list — so a search reaches every piece rather
+      than only the ones in this grid. Each view hides itself when nothing in
+      it matches.
+    */}
+    <div class="post-grid" data-grid>
+      {
+        cards.map((post) => (
+          <a
+            class="card card--interactive post"
+            href={`/thinking/${post.id}/`}
+            data-post
+            data-tag-value={post.data.tag}
+            data-text={`${post.data.title} ${post.data.excerpt} ${post.data.tag}`.toLowerCase()}
+          >
+            <span class="label-row">
+              <span class="accent-bar accent-bar--sm" style={`--bar:${tagAccent(post.data.tag)}`} />
+              <span class="eyebrow">{post.data.tag}</span>
+            </span>
+            <span class="post__title">{post.data.title}</span>
+            <span class="post__dek">{post.data.excerpt}</span>
+            <span class="post__foot meta">{meta(post)}</span>
+          </a>
+        ))
+      }
+    </div>
+
+    <p class="no-results" data-empty hidden>
+      Nothing here for that yet. <button type="button" class="link-button" data-clear>Clear filters</button>
     </p>
   </section>
 
-  <section class="wrap section">
-    <ul class="posts">
-      {
-        RECENT_THINKING.map((p) => (
-          <li class="post reveal">
-            <span class="post__date">{p.date}</span>
-            <div>
-              <h2 class="post__title">{p.title}</h2>
-              <p class="post__excerpt">{p.excerpt}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+  {
+    archive.length > 0 && (
+      <section class="section--tight wrap" data-archive-section>
+        <p class="eyebrow rule-heading">Earlier writing</p>
+
+        <div class="card archive">
+          {archive.map((post) => (
+            <a
+              class="archive__row"
+              href={`/thinking/${post.id}/`}
+              data-post
+              data-tag-value={post.data.tag}
+              data-text={`${post.data.title} ${post.data.excerpt} ${post.data.tag}`.toLowerCase()}
+            >
+              <span class="archive__title">{post.data.title}</span>
+              <span class="archive__tag">{post.data.tag}</span>
+              <span class="archive__year">{post.data.date.getUTCFullYear()}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section--tight wrap">
+    <div class="follow">
+      <div>
+        <h2 class="follow__title">New piece every few weeks.</h2>
+        <p class="follow__body">
+          No schedule, no newsletter template. It goes out when I’ve finished thinking about
+          something.
+        </p>
+      </div>
+      <div class="follow__actions">
+        <a class="btn btn--on-dark" href={CONTACT.linkedin} target="_blank" rel="noopener">
+          Follow on LinkedIn
+        </a>
+        <a class="btn btn--outline-dark" href="/rss.xml">RSS</a>
+      </div>
+    </div>
   </section>
 </BaseLayout>
 
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
+  const search = document.querySelector<HTMLInputElement>('[data-search]');
+  const posts = document.querySelectorAll<HTMLElement>('[data-post]');
+  const count = document.querySelector<HTMLElement>('[data-count]');
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+  const grid = document.querySelector<HTMLElement>('[data-grid]');
+  const archiveSection = document.querySelector<HTMLElement>('[data-archive-section]');
+  const featureSection = document.querySelector<HTMLElement>('[data-feature-section]');
+  const clear = document.querySelector<HTMLButtonElement>('[data-clear]');
+
+  let tag = 'All';
+  let query = '';
+
+  function apply() {
+    let shown = 0;
+    let gridShown = 0;
+    let archiveShown = 0;
+    let featureShown = 0;
+
+    for (const post of posts) {
+      const matchesTag = tag === 'All' || post.dataset.tagValue === tag;
+      const matchesQuery = !query || (post.dataset.text ?? '').includes(query);
+      const match = matchesTag && matchesQuery;
+
+      post.toggleAttribute('hidden', !match);
+      if (!match) continue;
+
+      shown += 1;
+      if (post.closest('[data-feature-section]')) featureShown += 1;
+      else if (post.closest('[data-archive-section]')) archiveShown += 1;
+      else gridShown += 1;
+    }
+
+    // Hide a section that has been filtered down to nothing, so the page never
+    // shows an empty card or a heading with no rows under it.
+    featureSection?.toggleAttribute('hidden', featureShown === 0);
+    grid?.toggleAttribute('hidden', gridShown === 0);
+    archiveSection?.toggleAttribute('hidden', archiveShown === 0);
+    empty?.toggleAttribute('hidden', shown > 0);
+
+    if (count) {
+      const filtering = tag !== 'All' || query !== '';
+      count.textContent = filtering
+        ? `${shown} of ${posts.length} pieces`
+        : `${posts.length} pieces`;
+    }
+  }
+
+  for (const chip of chips) {
+    chip.addEventListener('click', () => {
+      tag = chip.dataset.tag ?? 'All';
+      for (const other of chips) other.setAttribute('aria-pressed', String(other === chip));
+      apply();
+    });
+  }
+
+  search?.addEventListener('input', () => {
+    query = search.value.trim().toLowerCase();
+    apply();
+  });
+
+  clear?.addEventListener('click', () => {
+    tag = 'All';
+    query = '';
+    if (search) search.value = '';
+    for (const chip of chips) chip.setAttribute('aria-pressed', String(chip.dataset.tag === 'All'));
+    apply();
+  });
+</script>
+
 <style>
-  .head {
-    padding-block: clamp(3.5rem, 2rem + 7vw, 7rem) clamp(2rem, 1rem + 3vw, 3.5rem);
+  .writing-hero__eyebrow {
+    margin-bottom: 24px;
   }
 
-  .head__title {
-    font-size: var(--step-5);
-    margin-block: 1.25rem 0;
-    max-width: 18ch;
+  .writing-hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(32px, 5vw, 64px);
+    align-items: end;
   }
 
-  .head__lede {
-    margin-top: 1.5rem;
-    max-width: 54ch;
-    font-size: var(--step-1);
+  .writing-hero__title {
+    font-size: clamp(44px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.022em;
+  }
+
+  .writing-hero__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    color: var(--ink-2);
+    padding-bottom: 10px;
+  }
+
+  /* --------------------------------------------------------- featured -- */
+  .feature {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .feature__panel {
+    min-height: 300px;
+    background: var(--wash);
+    padding: 34px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .feature__art {
+    width: 100%;
+    height: auto;
+  }
+
+  .feature__art .axis {
+    stroke: rgb(31 28 25 / 22%);
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  .feature__art .curve {
+    stroke: var(--accent);
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .feature__art .dot {
+    fill: var(--accent);
+  }
+
+  .feature__body {
+    padding: clamp(28px, 4vw, 42px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .feature__title {
+    font-size: clamp(26px, 2.8vw, 36px);
+    line-height: 1.12;
+    letter-spacing: -0.014em;
+  }
+
+  .feature__dek {
+    font-size: 17px;
+    line-height: 1.68;
     color: var(--ink-2);
   }
 
-  .posts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid var(--rule);
+  .feature__foot {
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .feature__read {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ---------------------------------------------------------- filters -- */
+  .filters {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .filters__chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filters__search {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filters__search input {
+    width: 210px;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    font-size: 14px;
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+
+  .filters__search input:hover {
+    border-color: var(--rule-2);
+  }
+
+  /* ------------------------------------------------------------ posts -- */
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
   }
 
   .post {
-    display: grid;
-    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
-    gap: 0.6rem 2rem;
-    padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-    border-top: 1px solid var(--rule);
-    transition: border-color var(--dur) var(--ease);
-  }
-
-  .post:hover {
-    border-top-color: var(--accent);
-  }
-
-  .post__date {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--ink-3);
-    white-space: nowrap;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
   .post__title {
-    font-size: var(--step-2);
-    max-width: 36ch;
+    font-size: 20px;
+    line-height: 1.24;
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    text-wrap: pretty;
   }
 
-  .post__excerpt {
-    margin-top: 0.75rem;
+  .post__dek {
+    font-size: 15px;
+    line-height: 1.62;
     color: var(--ink-2);
-    font-size: var(--step--1);
-    line-height: 1.75;
-    max-width: 64ch;
+    /* Excerpts vary a lot in length; clamping keeps the card grid even. */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  @media (max-width: 40rem) {
-    .post {
-      grid-template-columns: 1fr;
+  .post__foot {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .no-results {
+    padding-block: 56px;
+    text-align: center;
+    color: var(--ink-3);
+    font-size: 16px;
+  }
+
+  .link-button {
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-size: 16px;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  /* ---------------------------------------------------------- archive -- */
+  .archive {
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .archive__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 24px;
+    align-items: baseline;
+    padding: 20px 28px;
+    border-top: 1px solid #f1ede7;
+    transition: background var(--dur-fast) var(--ease);
+  }
+
+  .archive__row:first-child {
+    border-top: 0;
+  }
+
+  .archive__row:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .archive__title {
+    font-size: 17px;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    grid-column: 1;
+  }
+
+  .archive__tag {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .archive__year {
+    font-size: 13px;
+    color: var(--ink-3);
+    text-align: right;
+    min-width: 38px;
+  }
+
+  /* ----------------------------------------------------------- follow -- */
+  .follow {
+    background: var(--dark);
+    color: var(--on-dark);
+    border-radius: var(--radius);
+    padding: clamp(36px, 5vw, 56px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    align-items: center;
+  }
+
+  .follow__title {
+    font-size: clamp(26px, 3vw, 38px);
+    line-height: 1.08;
+    letter-spacing: -0.014em;
+  }
+
+  .follow__body {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--on-dark-2);
+    max-width: 420px;
+  }
+
+  .follow__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  @media (min-width: 720px) {
+    .archive__row {
+      grid-template-columns: 1fr auto auto;
+    }
+
+    .archive__tag {
+      grid-column: 2;
     }
   }
 </style>

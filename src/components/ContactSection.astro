@@ -1,0 +1,224 @@
+---
+import { CONTACT, FORM_ENDPOINT } from '../config';
+
+interface Props {
+  title: string;
+  intro: string;
+  /** Label above the message box — the ask differs per page. */
+  messageLabel?: string;
+  /** The line at the bottom of the details card. */
+  aside?: string;
+  id?: string;
+}
+
+const {
+  title,
+  intro,
+  messageLabel = 'What’s on your mind?',
+  aside = 'If you’re in Vancouver, coffee’s on me. I’d rather hear it out loud anyway.',
+  id = 'contact',
+} = Astro.props;
+
+const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+---
+
+<section class="section wrap" id={id}>
+  <h2 class="contact__title">{title}</h2>
+  <p class="contact__intro">{intro}</p>
+
+  <div class="contact__grid">
+    <div class="card card--raised contact__panel">
+      {/*
+        A plain POST to Formspree, so the form still works with JavaScript
+        disabled — the visitor just lands on Formspree's own thank-you page
+        instead of seeing the inline message.
+      */}
+      <form action={FORM_ENDPOINT} method="POST" data-contact-form>
+        <label class="field">
+          Your name
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+
+        <label class="field">
+          Email
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+
+        <label class="field">
+          {messageLabel}
+          <textarea name="message" rows="4" required></textarea>
+        </label>
+
+        {/* Formspree discards any submission that fills this in. */}
+        <input
+          type="text"
+          name="_gotcha"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          class="honeypot"
+        />
+
+        <button type="submit" class="btn contact__submit">Send</button>
+
+        <p class="contact__status" role="status" aria-live="polite" data-form-status></p>
+      </form>
+    </div>
+
+    <div class="card card--raised contact__panel contact__details">
+      <div class="contact__links">
+        <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+        <a href={phoneHref}>{CONTACT.phone}</a>
+        <a href={CONTACT.linkedin} target="_blank" rel="noopener">linkedin.com/in/mmonzones</a>
+      </div>
+      <p class="contact__aside">{aside}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Upgrades the form to submit in place. Anything unexpected falls through to
+  // a normal navigation, which is the no-JS behaviour, so a failure here can
+  // never swallow someone's message.
+  const forms = document.querySelectorAll<HTMLFormElement>('[data-contact-form]');
+
+  for (const form of forms) {
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    form.addEventListener('submit', async (event) => {
+      if (!form.checkValidity()) return;
+      event.preventDefault();
+
+      const original = submit?.textContent ?? 'Send';
+      if (submit) {
+        submit.disabled = true;
+        submit.textContent = 'Sending…';
+      }
+      if (status) {
+        status.textContent = '';
+        status.dataset.state = '';
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (response.ok) {
+          form.reset();
+          if (status) {
+            status.textContent = 'Thanks — that’s with me. I answer everything within a couple of days.';
+            status.dataset.state = 'ok';
+          }
+        } else {
+          throw new Error(String(response.status));
+        }
+      } catch {
+        if (status) {
+          status.textContent =
+            'That didn’t send. Email me directly at miguel@mnmonzones.com and I’ll pick it up.';
+          status.dataset.state = 'error';
+        }
+      } finally {
+        if (submit) {
+          submit.disabled = false;
+          submit.textContent = original;
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact__title {
+    font-size: clamp(34px, 5vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+
+  .contact__intro {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 620px;
+    margin-bottom: 48px;
+  }
+
+  .contact__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .contact__panel {
+    padding: clamp(28px, 4vw, 38px);
+  }
+
+  .contact__panel form,
+  .contact__details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contact__submit {
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+
+  .honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .contact__status:empty {
+    display: none;
+  }
+
+  .contact__status {
+    margin-top: 4px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .contact__status[data-state='ok'] {
+    color: var(--moss);
+  }
+
+  .contact__status[data-state='error'] {
+    color: var(--coral);
+  }
+
+  .contact__details {
+    gap: 26px;
+  }
+
+  .contact__links {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 17px;
+  }
+
+  .contact__aside {
+    margin-top: auto;
+    padding-top: 26px;
+    border-top: 1px solid var(--rule);
+    font-size: 19px;
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+  }
+
+  @media (min-width: 900px) {
+    .contact__grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+</style>

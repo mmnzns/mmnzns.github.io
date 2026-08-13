@@ -13,16 +13,30 @@ beyond that.
 
 ## Conventions
 
-- **Site metadata lives in `src/config.ts`.** Title, description, nav and social links are
-  read from there by `BaseLayout`. Don't hardcode them in pages or components.
+- **Site metadata lives in `src/config.ts`.** Title, description, nav, social links and the
+  Formspree endpoint are read from there by `BaseLayout`. Don't hardcode them in pages or
+  components.
 - **`BaseLayout.astro` owns `<head>`.** Pages pass `title` and `description` as props rather
-  than writing their own meta tags. Canonical URL, Open Graph and Twitter tags are derived.
-- **Styling is plain CSS with tokens** in `src/styles/global.css` (`--bg`, `--text`,
-  `--accent`, …), with a `prefers-color-scheme: dark` override block. When adding colors,
-  define a token in both blocks rather than inlining a hex value.
-- **Components are `.astro` by default.** Astro ships zero client JS unless a framework
-  component is hydrated, which is the point of the stack choice — reach for a `client:*`
-  directive only when something genuinely needs interactivity.
+  than writing their own meta tags. Canonical URL, Open Graph, Twitter tags and the Person
+  JSON-LD are derived.
+- **Styling is plain CSS with tokens** in `src/styles/global.css` (`--paper`, `--ink`,
+  `--coral`, …). When adding a colour, define a token rather than inlining a hex value.
+  The design is **light only** — there is deliberately no `prefers-color-scheme: dark`
+  block, because a paper palette inverted is a different design rather than the same one
+  at night. Don't add one piecemeal.
+- **Four accents, each bound to a category** — coral/lifecycle, sky/leadership, moss/AI,
+  sun/web. The mapping is declared once in `CATEGORY_ACCENT` (`src/data/site.ts`); read it
+  from there rather than picking a colour by eye.
+- **Components are `.astro` by default and no framework is installed.** Interactive pieces
+  are progressively enhanced: every state is rendered server-side, and a small vanilla
+  `<script>` toggles `aria-pressed` / `hidden`. Don't reach for React or a `client:*`
+  directive — nothing here has needed one.
+- **Animation must not gate content.** An effect that hides text until a script finishes
+  leaves the page unreadable whenever that script doesn't run. The scroll reveal uses a
+  native `animation-timeline: view()` inside `@supports`, so the dimmed starting state only
+  exists where the animation can complete. Use animation longhands, not the `animation`
+  shorthand — the CSS minifier folds `animation-timeline` into the shorthand, where
+  `view()` is invalid and silently kills the declaration.
 - **Routing is file-based** under `src/pages/`; `build.format: 'directory'` means routes end
   in a trailing slash (`/about/`). Keep internal links trailing-slashed to avoid redirects.
 - **Interactive elements are real buttons and links** with correct ARIA state, keyboard
@@ -36,6 +50,21 @@ beyond that.
 - Output must stay fully static. GitHub Pages has no server runtime, so SSR adapters,
   API routes and on-demand rendering are not options.
 - `main` is the deploy branch: pushing to it publishes the live site.
+
+## Where content lives
+
+- `src/data/site.ts` — the project record: title, tags, category, headline metrics. Read by
+  the home page and the work index.
+- `src/data/cases.ts` — the long-form case body for each project, joined to the above by
+  slug. A project with no case body fails the build rather than rendering an empty page.
+- `src/data/home.ts`, `consulting.ts`, `about.ts` — page-specific copy, kept out of the
+  templates so wording stays reviewable in one place.
+- `src/content/thinking/*.md` — articles. Frontmatter is `title`, `date`, `tag`, `excerpt`,
+  plus optional `featured` and `draft`; the schema in `src/content.config.ts` validates it
+  at build time. Reading time is computed from word count, never typed by hand.
+
+Contact forms POST to Formspree (`FORM_ENDPOINT` in `src/config.ts`). The plain HTML POST is
+the fallback; a script upgrades it to submit in place. Keep it working without JavaScript.
 
 ## Content and facts
 

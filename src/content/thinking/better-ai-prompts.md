@@ -1,6 +1,7 @@
 ---
 title: "How to Write Better AI Prompts: A Simple Framework for Powerful Results"
 date: 2025-09-08
+tag: "AI & automation"
 excerpt: "Getting mediocre ChatGPT outputs? Learn the T-C-R-E-I prompt framework and iteration tactics to turn vague prompts into professional results across writing, images, and responsible AI use."
 ---
 ## Generative AI: Your New Best Friend
@@ -210,31 +211,3 @@ Responsible prompting is not paranoia. It is being deliberate.
 At the end of the day, prompting is a bit like any creative skill: writing, design, or even cooking. You learn the basics, experiment, and mess up a few times, but you get better the more you play with it. I’ve seen firsthand that small tweaks can turn “meh” outputs into something surprisingly sharp.
 
 So don’t be afraid to keep refining, testing, and most of all, having fun with it.
-
-[‹ Your Buyer's Brain Has Changed: Why SEO Now Means 'Solution Engine Optimization' and How to Win with It.](./your-buyer-s-brain-has-changed-why-seo-now-means-solution-engine-optimization-and-how-to-win-with-it.)
-
-[Seizing Opportunities: Mastering the Art of Conveying Your Value ›](./seizing-opportunities-mastering-the-art-of-conveying-your-value)
-
-## Let’s build something.
-
-If you’re working on something meaningful and want a partner who cares just as much, I’d love to connect.
-
-Open to senior lifecycle, GTM, and automation roles.
-
-LinkedIn
-
-Email
-
-Name
-
-message
-
-Submit
-
-MNM Alaminos Consulting Ltd.
-
-Vancouver, BC, Canada
-
-[MIGUEL@MNMONZONES.COM](mailto:miguel@mnmonzones.com)
-
-[+1 778 829 6453](tel:+17788296453)

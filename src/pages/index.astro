@@ -1,330 +1,1185 @@
 ---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import MetricDelta from '../components/MetricDelta.astro';
-import CaseCard from '../components/CaseCard.astro';
-import { SITE } from '../config';
-import { FEATURED_WORK, CAPABILITIES, PROCESS, RECENT_THINKING, HEADLINE_STATS } from '../data/site';
+import LogoMarquee from '../components/LogoMarquee.astro';
+import CaseDiagram from '../components/CaseDiagram.astro';
+import ContactSection from '../components/ContactSection.astro';
+import portrait from '../assets/miguel.png';
+import { SYMPTOMS, FEATURED_CASES, METHOD, RECEIPTS } from '../data/home';
+import { CATEGORY_ACCENT } from '../data/site';
+import { TAGS, tagAccent } from '../data/writing';
+import { formatDate } from '../utils/format';
+
+const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 ---
 
-<BaseLayout description={SITE.description}>
-  <!-- Hero -->
-  <section class="wrap hero">
-    <p class="marker enter" style="--i:0">
-      {SITE.location} · 11 years · lifecycle, GTM & automation
-    </p>
+<BaseLayout>
+  {/* ------------------------------------------------------------- hero -- */}
+  <section class="section--first wrap" id="top">
+    <div class="hero">
+      <div>
+        <h1 class="display">Hi, I’m Miguel.</h1>
 
-    <h1 class="hero__title enter" style="--i:1">I get handed a problem, not a spec.</h1>
+        <div class="hero__id">
+          <Image
+            src={portrait}
+            alt="Miguel Monzones"
+            width={264}
+            height={264}
+            loading="eager"
+            fetchpriority="high"
+          />
+          <p class="hero__where">Vancouver, BC<br />Consulting, and open to senior roles</p>
+        </div>
+      </div>
 
-    <p class="hero__lede enter" style="--i:2">
-      I read what's actually wrong, decide what should exist, choose the metric that proves it,
-      and build the system that gets there.
-    </p>
+      <div class="hero__intro" data-reveal>
+        <p>
+          I work on lifecycle and GTM — mostly fintech, some SaaS and ecommerce. Eleven years of it.
+          Right now I’m at Mogo in Vancouver, running lifecycle and martech along with the web and
+          automation underneath it.
+        </p>
+        <p>
+          Most of my work happens before anything gets built. Someone hands me a number that’s
+          moving the wrong way, and the first job is working out what’s actually causing it. It’s
+          usually not the thing everyone’s looking at.
+        </p>
+        <p>
+          Lately more of that has turned into automation — rebuilding the lifecycle system so it
+          runs and improves without someone watching it.
+        </p>
+      </div>
+    </div>
 
-    <div class="hero__proof enter" style="--i:3">
-      {FEATURED_WORK.slice(0, 3).map((w) => <MetricDelta {...w.metrics[0]} size="lg" />)}
+    {/* ------------------------------------------------ the symptom card -- */}
+    <div class="symptom">
+      <p class="symptom__rail eyebrow">Here’s what I mean</p>
+
+      <div class="card card--raised symptom__card" data-symptom>
+        <div class="symptom__body">
+          <p class="eyebrow" data-symptom-label>The ask</p>
+          <p class="symptom__text" data-symptom-text>{SYMPTOMS[0].ask}</p>
+        </div>
+
+        <div class="symptom__controls">
+          <button type="button" class="btn" data-symptom-flip aria-pressed="false">
+            What I found
+          </button>
+          <button type="button" class="btn btn--ghost" data-symptom-next>Show me another</button>
+          <p class="symptom__count" data-symptom-count>1 of {SYMPTOMS.length}</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Selected work -->
-  <section class="wrap section">
-    <header class="section__head reveal">
-      <p class="marker">{'{01}'} &nbsp; Selected work</p>
-      <h2 class="section__title">Systems I diagnosed, decided on, and built.</h2>
-      <p class="section__lede">
-        Each project follows the same arc: read what is actually wrong, decide what should exist,
-        choose the metric, build it, prove it.
-      </p>
-    </header>
+  <script is:inline define:vars={{ SYMPTOMS }}>
+    // Inlined so the copy is available without a second request. The card
+    // renders its first state server-side, so this only ever changes it.
+    (() => {
+      const root = document.querySelector('[data-symptom]');
+      if (!root) return;
 
-    <div class="cases">
+      const label = root.querySelector('[data-symptom-label]');
+      const text = root.querySelector('[data-symptom-text]');
+      const flip = root.querySelector('[data-symptom-flip]');
+      const next = root.querySelector('[data-symptom-next]');
+      const count = root.querySelector('[data-symptom-count]');
+
+      let index = 0;
+      let flipped = false;
+
+      function render() {
+        const item = SYMPTOMS[index];
+        label.textContent = flipped ? 'What I found' : 'The ask';
+        text.textContent = flipped ? item.found : item.ask;
+        flip.textContent = flipped ? '← Back to the ask' : 'What I found';
+        flip.setAttribute('aria-pressed', String(flipped));
+        count.textContent = `${index + 1} of ${SYMPTOMS.length}`;
+      }
+
+      flip.addEventListener('click', () => {
+        flipped = !flipped;
+        render();
+      });
+
+      next.addEventListener('click', () => {
+        index = (index + 1) % SYMPTOMS.length;
+        flipped = false;
+        render();
+      });
+    })();
+  </script>
+
+  <LogoMarquee />
+
+  {/* ------------------------------------------------------------- work -- */}
+  <section class="section" id="work">
+    <div class="wrap work__head">
+      <div>
+        <p class="eyebrow">Work</p>
+        <h2 class="section-title">A few things I’ve built.</h2>
+        <p class="lede work__sub">
+          The ask is what I was handed. What I found is where it actually went.
+        </p>
+      </div>
+
+      <div class="segmented segmented--bare" role="group" aria-label="Layout">
+        <button type="button" class="segmented__btn" data-view="shelf" aria-pressed="true">
+          ☰ Shelf
+        </button>
+        <button type="button" class="segmented__btn" data-view="grid" aria-pressed="false">
+          ⊞ Grid
+        </button>
+      </div>
+    </div>
+
+    {/* Shelf: one case open, the rest collapsed to spines beside it. */}
+    <div class="wrap wrap--wide shelf" data-view-panel="shelf">
       {
-        FEATURED_WORK.map((w) => (
-          <div class="reveal">
-            <CaseCard {...w} />
-          </div>
+        FEATURED_CASES.map((item, i) => (
+          <article class="card card--raised shelf__case" data-case-panel={i} hidden={i !== 0}>
+            <div class="shelf__visual">
+              <CaseDiagram slug={item.slug} />
+            </div>
+
+            <div class="shelf__text">
+              <p class="label-row">
+                <span class="accent-bar" style={`--bar:${CATEGORY_ACCENT[item.category]}`} />
+                <span class="eyebrow">{item.client}</span>
+              </p>
+
+              <h3 class="shelf__title">
+                <a href={`/work/${item.slug}/`}>{item.title}</a>
+              </h3>
+
+              <div class="segmented" role="group" aria-label="Which part of the story">
+                <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
+                  The ask
+                </button>
+                <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
+                  What I found
+                </button>
+              </div>
+
+              <p class="shelf__copy" data-copy="ask">{item.ask}</p>
+              <p class="shelf__copy" data-copy="found" hidden>
+                {item.found}
+              </p>
+
+              <p class="shelf__metric">
+                <span class="shelf__metric-value">{item.metric}</span>
+                <span class="meta">{item.note}</span>
+              </p>
+            </div>
+          </article>
         ))
       }
+
+      <div class="shelf__spines">
+        {
+          FEATURED_CASES.map((item, i) => (
+            <button
+              type="button"
+              class="shelf__spine"
+              data-spine={i}
+              hidden={i === 0}
+              style={`--bar:${CATEGORY_ACCENT[item.category]}`}
+              title={item.client}
+            >
+              <span>{item.client} · {item.title}</span>
+            </button>
+          ))
+        }
+      </div>
     </div>
 
-    <a class="more reveal" href="/work/">
-      See all thirteen projects <span aria-hidden="true">→</span>
-    </a>
-  </section>
-
-  <!-- What I do -->
-  <section class="wrap section">
-    <header class="section__head reveal">
-      <p class="marker">{'{02}'} &nbsp; What I do</p>
-      <h2 class="section__title">Three systems, run as one.</h2>
-    </header>
-
-    <div class="pillars">
+    {/* Grid: all four at once, for anyone who'd rather scan than click. */}
+    <div class="wrap grid-view" data-view-panel="grid" hidden>
       {
-        CAPABILITIES.map((c) => (
-          <article class="pillar reveal">
-            <h3 class="pillar__title">{c.title}</h3>
-            <p class="pillar__body">{c.body}</p>
+        FEATURED_CASES.map((item) => (
+          <article class="card card--raised grid-view__card">
+            <p class="label-row">
+              <span class="accent-bar" style={`--bar:${CATEGORY_ACCENT[item.category]}`} />
+              <span class="eyebrow">{item.client}</span>
+            </p>
+
+            <h3 class="grid-view__title">
+              <a href={`/work/${item.slug}/`}>{item.title}</a>
+            </h3>
+
+            <div class="segmented" role="group" aria-label="Which part of the story">
+              <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
+                The ask
+              </button>
+              <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
+                What I found
+              </button>
+            </div>
+
+            <p class="grid-view__copy" data-copy="ask">{item.ask}</p>
+            <p class="grid-view__copy" data-copy="found" hidden>
+              {item.found}
+            </p>
+
+            <p class="shelf__metric">
+              <span class="grid-view__metric-value">{item.metric}</span>
+              <span class="meta">{item.note}</span>
+            </p>
           </article>
         ))
       }
     </div>
   </section>
 
-  <!-- Process -->
-  <section class="wrap section">
-    <header class="section__head reveal">
-      <p class="marker">{'{03}'} &nbsp; The process</p>
-      <h2 class="section__title">How the work actually happens.</h2>
-    </header>
+  {/* ----------------------------------------------------------- method -- */}
+  <section class="section wrap" id="method">
+    <div class="method">
+      <div class="method__intro">
+        <p class="eyebrow">How I work</p>
+        <h2 class="section-title">Read, decide, pick the metric, build, check.</h2>
+        <p class="method__sub">
+          Same five steps most of the time. Here’s what each one looked like on one project.
+        </p>
+      </div>
 
-    <ol class="process">
-      {
-        PROCESS.map((step, i) => (
-          <li class="step reveal">
-            <span class="step__num">{String(i + 1).padStart(2, '0')}</span>
-            <h3 class="step__title">{step.title}</h3>
-            <p class="step__body">{step.body}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
+      <div class="method__panel" data-method>
+        <div class="method__tabs" role="tablist" aria-label="Method steps">
+          {
+            METHOD.map((step, i) => (
+              <button
+                type="button"
+                role="tab"
+                class="method__tab"
+                id={`method-tab-${i}`}
+                aria-controls={`method-panel-${i}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-step={i}
+              >
+                <span class="method__num">0{i + 1}</span>
+                {step.name}
+              </button>
+            ))
+          }
+          <span
+            class="method__indicator"
+            aria-hidden="true"
+            style={`width:${100 / METHOD.length}%`}
+            data-method-indicator></span>
+        </div>
 
-  <!-- By the numbers -->
-  <section class="wrap section">
-    <div class="stats reveal">
-      {
-        HEADLINE_STATS.map((s) => (
-          <div class="stat">
-            <span class="stat__value">{s.value}</span>
-            <span class="stat__label">{s.label}</span>
-          </div>
-        ))
-      }
+        <div class="card card--raised method__body">
+          {
+            METHOD.map((step, i) => (
+              <div
+                role="tabpanel"
+                id={`method-panel-${i}`}
+                aria-labelledby={`method-tab-${i}`}
+                data-step-panel={i}
+                hidden={i !== 0}
+              >
+                <p class="eyebrow">{step.source}</p>
+                <p class="method__example">{step.example}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Thinking -->
-  <section class="wrap section">
-    <header class="section__head reveal">
-      <p class="marker">{'{04}'} &nbsp; The thinking</p>
-      <h2 class="section__title">Working things out in public.</h2>
-    </header>
+  {/* --------------------------------------------------------- receipts -- */}
+  <section class="band" id="numbers">
+    <div class="wrap">
+      <div class="receipts__head">
+        <div>
+          <p class="eyebrow">Numbers</p>
+          <h2 class="section-title">Some numbers, and what was behind them.</h2>
+        </div>
 
-    <ul class="posts">
-      {
-        RECENT_THINKING.map((p) => (
-          <li class="post reveal">
-            <span class="post__date">{p.date}</span>
-            <h3 class="post__title">{p.title}</h3>
-            <p class="post__excerpt">{p.excerpt}</p>
-          </li>
-        ))
-      }
-    </ul>
+        <div class="receipts__tabs" role="tablist" aria-label="Numbers">
+          {
+            RECEIPTS.map((r, i) => (
+              <button
+                type="button"
+                role="tab"
+                class="receipts__tab"
+                id={`receipt-tab-${i}`}
+                aria-controls={`receipt-panel-${i}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-receipt={i}
+              >
+                {r.name}
+              </button>
+            ))
+          }
+        </div>
+      </div>
 
-    <a class="more reveal" href="/thinking/">
-      Read the thinking <span aria-hidden="true">→</span>
-    </a>
+      <div class="receipts__body">
+        {
+          RECEIPTS.map((r, i) => (
+            <div
+              role="tabpanel"
+              id={`receipt-panel-${i}`}
+              aria-labelledby={`receipt-tab-${i}`}
+              class="receipts__panel"
+              data-receipt-panel={i}
+              hidden={i !== 0}
+            >
+              <div>
+                {r.bars ? (
+                  <div class="bars">
+                    <div class="bars__row">
+                      <p class="bars__legend">
+                        <span>Before</span>
+                        <span>{r.bars.beforeLabel}</span>
+                      </p>
+                      <div class="bars__track">
+                        <div class="bars__fill" style={`--w:${r.bars.before}%`} />
+                      </div>
+                    </div>
+                    <div class="bars__row">
+                      <p class="bars__legend">
+                        <span>After</span>
+                        <span>{r.bars.afterLabel}</span>
+                      </p>
+                      <div class="bars__track">
+                        <div class="bars__fill bars__fill--accent" style={`--w:${r.bars.after}%`} />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p class="receipts__single">{r.headline}</p>
+                    <p class="receipts__single-sub">{r.single}</p>
+                  </div>
+                )}
+                <p class="receipts__window">{r.window}</p>
+              </div>
+
+              <div>
+                <p class="receipts__headline">{r.bars ? r.headline : r.name}</p>
+                <p class="receipts__read">{r.read}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
   </section>
+
+  {/* ---------------------------------------------------------- writing -- */}
+  <section class="section wrap" id="writing">
+    <div class="writing">
+      <div class="writing__rail">
+        <p class="eyebrow">Writing</p>
+        <h2 class="section-title--sm writing__title">Things I’ve written.</h2>
+        <p class="writing__sub">
+          Mostly lifecycle, AI, and how search is changing. I write to work out what I actually
+          think.
+        </p>
+
+        <div class="writing__chips" role="group" aria-label="Filter writing by topic">
+          <button type="button" class="chip" data-tag="All" aria-pressed="true">All</button>
+          {
+            TAGS.map((tag) => (
+              <button type="button" class="chip" data-tag={tag} aria-pressed="false">
+                {tag}
+              </button>
+            ))
+          }
+        </div>
+
+        <p class="meta writing__count" data-writing-count aria-live="polite">
+          {posts.length} pieces
+        </p>
+
+        <a class="writing__all" href="/thinking/">All writing <span aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="writing__grid" data-writing-grid>
+        {
+          posts.map((post) => (
+            <a class="card card--interactive post-card" href={`/thinking/${post.id}/`} data-post-tag={post.data.tag}>
+              <span class="eyebrow" style={`color:${tagAccent(post.data.tag)}`}>
+                {post.data.tag}
+              </span>
+              <span class="post-card__title">{post.data.title}</span>
+              <span class="meta">{formatDate(post.data.date)}</span>
+            </a>
+          ))
+        }
+        <p class="writing__empty" data-writing-empty hidden>Nothing here for that yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <ContactSection
+    title="Get in touch."
+    intro="If you’ve got something you’re trying to figure out, or a role you think might fit, I’d like to hear about it."
+  />
 </BaseLayout>
 
-<style>
-  /* ---------- hero ---------- */
-  .hero {
-    padding-block: clamp(4rem, 2rem + 9vw, 9rem) clamp(3rem, 2rem + 5vw, 6rem);
+<script>
+  /* ---------------------------------------------------- shelf / grid -- */
+  const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-view]');
+  const viewPanels = document.querySelectorAll<HTMLElement>('[data-view-panel]');
+
+  for (const button of viewButtons) {
+    button.addEventListener('click', () => {
+      const view = button.dataset.view;
+      for (const other of viewButtons) {
+        other.setAttribute('aria-pressed', String(other === button));
+      }
+      for (const panel of viewPanels) {
+        panel.toggleAttribute('hidden', panel.dataset.viewPanel !== view);
+      }
+    });
   }
 
-  .hero__title {
-    font-size: var(--step-6);
-    margin-block: 1.5rem 0;
-    max-width: 16ch;
+  /* --------------------------------------------------- case selection -- */
+  const casePanels = document.querySelectorAll<HTMLElement>('[data-case-panel]');
+  const spines = document.querySelectorAll<HTMLButtonElement>('[data-spine]');
+
+  for (const spine of spines) {
+    spine.addEventListener('click', () => {
+      const index = spine.dataset.spine;
+      for (const panel of casePanels) {
+        panel.toggleAttribute('hidden', panel.dataset.casePanel !== index);
+      }
+      for (const other of spines) {
+        other.toggleAttribute('hidden', other.dataset.spine === index);
+      }
+    });
   }
 
-  .hero__lede {
-    margin-top: 1.75rem;
-    max-width: 52ch;
-    font-size: var(--step-1);
-    color: var(--ink-2);
+  /* --------------------------------------------- ask / found toggles -- */
+  // Scoped to the card the buttons live in, so the shelf and each grid card
+  // keep their own state.
+  for (const group of document.querySelectorAll<HTMLElement>('[data-mode]')) {
+    group.addEventListener('click', () => {
+      const card = group.closest('article');
+      if (!card) return;
+      const mode = group.dataset.mode;
+
+      for (const button of card.querySelectorAll<HTMLElement>('[data-mode]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
+      }
+      for (const copy of card.querySelectorAll<HTMLElement>('[data-copy]')) {
+        copy.toggleAttribute('hidden', copy.dataset.copy !== mode);
+      }
+    });
   }
 
-  .hero__proof {
-    display: flex;
-    flex-wrap: wrap;
-    gap: clamp(2rem, 1rem + 5vw, 5rem);
-    margin-top: clamp(3rem, 2rem + 4vw, 5.5rem);
-  }
+  /* --------------------------------------------------------- method -- */
+  const method = document.querySelector<HTMLElement>('[data-method]');
 
-  /* ---------- section scaffolding ---------- */
-  .section__head {
-    max-width: 46ch;
-    margin-bottom: clamp(2.5rem, 2rem + 3vw, 4rem);
-  }
+  if (method) {
+    const tabs = Array.from(method.querySelectorAll<HTMLButtonElement>('[data-step]'));
+    const panels = Array.from(method.querySelectorAll<HTMLElement>('[data-step-panel]'));
+    const indicator = method.querySelector<HTMLElement>('[data-method-indicator]');
+    let timer: number | undefined;
 
-  .section__title {
-    font-size: var(--step-4);
-    margin-top: 1.25rem;
-  }
-
-  .section__lede {
-    margin-top: 1.25rem;
-    color: var(--ink-2);
-  }
-
-  .more {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-    margin-top: 3rem;
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    text-decoration: none;
-    color: var(--accent);
-    border-bottom: 1px solid currentcolor;
-    padding-bottom: 0.25rem;
-    transition: gap var(--dur) var(--ease);
-  }
-
-  .more:hover {
-    gap: 1.1em;
-  }
-
-  /* ---------- work ---------- */
-  .cases {
-    border-bottom: 1px solid var(--rule);
-  }
-
-  /* ---------- capabilities ---------- */
-  .pillars {
-    display: grid;
-    gap: clamp(2rem, 1rem + 3vw, 3rem);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-  }
-
-  .pillar {
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--rule-strong);
-  }
-
-  .pillar__title {
-    font-size: var(--step-2);
-    margin-bottom: 0.85rem;
-  }
-
-  .pillar__body {
-    color: var(--ink-2);
-    font-size: var(--step--1);
-    line-height: 1.75;
-  }
-
-  /* ---------- process ---------- */
-  .process {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-  }
-
-  .step {
-    padding: 1.5rem clamp(1rem, 0.5rem + 1.5vw, 1.75rem) 2.5rem 0;
-    border-top: 1px solid var(--rule);
-    transition: border-color var(--dur) var(--ease);
-  }
-
-  .step:hover {
-    border-top-color: var(--accent);
-  }
-
-  .step__num {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .step__title {
-    font-size: var(--step-2);
-    margin-block: 0.6rem 0.5rem;
-  }
-
-  .step__body {
-    color: var(--ink-2);
-    font-size: var(--step--1);
-    line-height: 1.7;
-  }
-
-  /* ---------- stats ---------- */
-  .stats {
-    display: grid;
-    gap: clamp(1.75rem, 1rem + 3vw, 3rem);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-  }
-
-  .stat {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .stat__value {
-    font-family: var(--font-display);
-    font-size: var(--step-5);
-    line-height: 1;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .stat__label {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--ink-2);
-    text-wrap: balance;
-  }
-
-  /* ---------- thinking ---------- */
-  .posts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .post {
-    padding-block: clamp(1.5rem, 1rem + 2vw, 2.25rem);
-    border-top: 1px solid var(--rule);
-    display: grid;
-    gap: 0.6rem;
-    grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
-  }
-
-  .post__date {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-    color: var(--ink-3);
-    grid-row: span 2;
-  }
-
-  .post__title {
-    font-size: var(--step-2);
-    max-width: 34ch;
-  }
-
-  .post__excerpt {
-    color: var(--ink-2);
-    font-size: var(--step--1);
-    line-height: 1.7;
-    max-width: 62ch;
-  }
-
-  @media (max-width: 40rem) {
-    .post {
-      grid-template-columns: 1fr;
+    function show(index: number, focus = false) {
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((panel, i) => panel.toggleAttribute('hidden', i !== index));
+      if (indicator) indicator.style.transform = `translateX(${index * 100}%)`;
+      if (focus) tabs[index]?.focus();
     }
 
-    .post__date {
-      grid-row: auto;
+    function stop() {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        stop();
+        show(i);
+      });
+
+      // Arrow-key navigation, which is what makes a tablist a tablist.
+      tab.addEventListener('keydown', (event) => {
+        const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+        if (!delta) return;
+        event.preventDefault();
+        stop();
+        show((i + delta + tabs.length) % tabs.length, true);
+      });
+    });
+
+    // Advances on its own until someone takes over, and never when the visitor
+    // has asked for reduced motion.
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let current = 0;
+      timer = window.setInterval(() => {
+        current = (current + 1) % tabs.length;
+        show(current);
+      }, 5000);
+      method.addEventListener('pointerdown', stop, { once: true });
+      method.addEventListener('focusin', stop, { once: true });
+    }
+  }
+
+  /* ------------------------------------------------------- receipts -- */
+  const receiptTabs = document.querySelectorAll<HTMLButtonElement>('[data-receipt]');
+  const receiptPanels = document.querySelectorAll<HTMLElement>('[data-receipt-panel]');
+
+  function showReceipt(index: string, focus = false) {
+    for (const tab of receiptTabs) {
+      const selected = tab.dataset.receipt === index;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected && focus) tab.focus();
+    }
+    for (const panel of receiptPanels) {
+      panel.toggleAttribute('hidden', panel.dataset.receiptPanel !== index);
+    }
+  }
+
+  receiptTabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => showReceipt(tab.dataset.receipt ?? '0'));
+    tab.addEventListener('keydown', (event) => {
+      const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+      if (!delta) return;
+      event.preventDefault();
+      showReceipt(String((i + delta + receiptTabs.length) % receiptTabs.length), true);
+    });
+  });
+
+  /* -------------------------------------------------- writing filter -- */
+  const writingChips = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
+  const writingCards = document.querySelectorAll<HTMLElement>('[data-post-tag]');
+  const writingCount = document.querySelector<HTMLElement>('[data-writing-count]');
+  const writingEmpty = document.querySelector<HTMLElement>('[data-writing-empty]');
+
+  for (const chip of writingChips) {
+    chip.addEventListener('click', () => {
+      const tag = chip.dataset.tag;
+      for (const other of writingChips) {
+        other.setAttribute('aria-pressed', String(other === chip));
+      }
+
+      let shown = 0;
+      for (const card of writingCards) {
+        const match = tag === 'All' || card.dataset.postTag === tag;
+        card.toggleAttribute('hidden', !match);
+        if (match) shown += 1;
+      }
+
+      if (writingCount) {
+        writingCount.textContent =
+          tag === 'All'
+            ? `${writingCards.length} pieces`
+            : `${shown} of ${writingCards.length} pieces`;
+      }
+      writingEmpty?.toggleAttribute('hidden', shown > 0);
+    });
+  }
+</script>
+
+<style>
+  /* ------------------------------------------------------------- hero -- */
+  .hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(40px, 6vw, 72px);
+    align-items: start;
+  }
+
+  .hero__id {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+
+  .hero__id :global(img) {
+    width: 132px;
+    height: 132px;
+    flex: none;
+    border-radius: 18px;
+    object-fit: cover;
+    object-position: 50% 18%;
+    display: block;
+    box-shadow: var(--shadow);
+  }
+
+  .hero__where {
+    max-width: 230px;
+    color: var(--ink-3);
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  .hero__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    color: var(--ink-2);
+    padding-top: 10px;
+  }
+
+  /* ---------------------------------------------------------- symptom -- */
+  .symptom {
+    margin-top: clamp(56px, 8vw, 88px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .symptom__rail {
+    display: none;
+  }
+
+  .symptom__card {
+    padding: clamp(28px, 4vw, 38px) clamp(24px, 4vw, 40px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .symptom__body .eyebrow {
+    margin-bottom: 16px;
+  }
+
+  .symptom__text {
+    font-size: clamp(20px, 2.3vw, 29px);
+    line-height: 1.35;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    min-height: 2.7em;
+  }
+
+  .symptom__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    min-width: 196px;
+  }
+
+  .symptom__controls .btn {
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+
+  .symptom__count {
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  @media (min-width: 900px) {
+    .symptom {
+      grid-template-columns: auto 1fr;
+      gap: 36px;
+    }
+
+    .symptom__rail {
+      display: block;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    .symptom__card {
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+    }
+  }
+
+  /* ------------------------------------------------------------- work -- */
+  .work__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .work__head > div:first-child {
+    max-width: 640px;
+  }
+
+  .work__head .eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .work__sub {
+    margin-top: 18px;
+    max-width: 520px;
+  }
+
+  .shelf {
+    margin-top: 56px;
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .shelf__case {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .shelf__visual {
+    min-width: 0;
+    width: 100%;
+    min-height: 320px;
+    background: var(--wash);
+    padding: 30px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .shelf__text {
+    min-width: 0;
+    padding: clamp(28px, 3vw, 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .shelf__title {
+    font-size: 29px;
+    line-height: 1.14;
+  }
+
+  .shelf__copy {
+    font-size: 17px;
+    line-height: 1.68;
+    color: var(--ink-2);
+  }
+
+  .shelf__metric {
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .shelf__metric-value {
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .shelf__spines {
+    display: none;
+    flex-direction: row;
+    gap: 14px;
+  }
+
+  .shelf__spine {
+    width: 58px;
+    flex: none;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--bar);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: 22px;
+    transition:
+      transform var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+
+  .shelf__spine:hover {
+    transform: translateY(-2px);
+    border-color: var(--ink);
+    border-left-color: var(--bar);
+  }
+
+  .shelf__spine span {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 340px;
+  }
+
+  .grid-view {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .grid-view__card {
+    padding: clamp(26px, 3vw, 34px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .grid-view__title {
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .grid-view__copy {
+    font-size: 16px;
+    line-height: 1.66;
+    color: var(--ink-2);
+  }
+
+  .grid-view__metric-value {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  @media (min-width: 760px) {
+    .grid-view {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .shelf__case {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .shelf__spines {
+      display: flex;
+    }
+  }
+
+  /* ----------------------------------------------------------- method -- */
+  .method {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(36px, 5vw, 56px);
+    align-items: start;
+  }
+
+  .method__intro .eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .method__sub {
+    margin-top: 22px;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-3);
+    max-width: 330px;
+  }
+
+  .method__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .method__tab {
+    flex: 1;
+    padding: 0 0 16px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: var(--ink-3);
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .method__tab[aria-selected='true'],
+  .method__tab:hover {
+    color: var(--ink);
+  }
+
+  .method__num {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+
+  .method__indicator {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: transform 340ms var(--ease);
+  }
+
+  .method__body {
+    margin-top: 34px;
+    padding: clamp(28px, 3.5vw, 36px);
+  }
+
+  .method__body .eyebrow {
+    margin-bottom: 16px;
+  }
+
+  .method__example {
+    font-size: 19px;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
+    min-height: 6.4em;
+  }
+
+  @media (min-width: 900px) {
+    .method {
+      grid-template-columns: 0.8fr 1.2fr;
+    }
+  }
+
+  /* --------------------------------------------------------- receipts -- */
+  .receipts__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .receipts__head .eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .receipts__tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .receipts__tab {
+    padding: 10px 17px;
+    border-radius: var(--pill);
+    border: 1px solid var(--on-dark-rule-2);
+    background: transparent;
+    color: var(--on-dark-2);
+    font-size: 13px;
+    white-space: nowrap;
+    transition:
+      background var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .receipts__tab:hover {
+    border-color: var(--on-dark);
+    color: var(--on-dark);
+  }
+
+  .receipts__tab[aria-selected='true'] {
+    background: var(--on-dark);
+    border-color: var(--on-dark);
+    color: var(--ink);
+  }
+
+  .receipts__body {
+    margin-top: clamp(40px, 6vw, 64px);
+  }
+
+  .receipts__panel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(36px, 5vw, 64px);
+    align-items: center;
+  }
+
+  .bars {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .bars__legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--on-dark-3);
+    margin-bottom: 9px;
+  }
+
+  .bars__track {
+    height: 12px;
+    border-radius: var(--pill);
+    background: rgb(251 249 246 / 9%);
+    overflow: hidden;
+  }
+
+  /* The bar is always at its true width; the grow is an animation on top of
+     that. Switching tabs takes a panel from `hidden` back to displayed, which
+     restarts the animation, so each number draws itself as you land on it —
+     and a browser that skips the animation still shows the right bar. */
+  .bars__fill {
+    height: 12px;
+    border-radius: var(--pill);
+    background: var(--ink-2);
+    width: var(--w);
+    animation: bar-grow var(--dur-slow) var(--ease) both;
+  }
+
+  .bars__fill--accent {
+    background: var(--accent);
+  }
+
+  @keyframes bar-grow {
+    from {
+      width: 0;
+    }
+
+    to {
+      width: var(--w);
+    }
+  }
+
+  .receipts__single {
+    font-size: clamp(56px, 7vw, 96px);
+    line-height: 0.94;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--accent);
+  }
+
+  .receipts__single-sub {
+    margin-top: 14px;
+    font-size: 17px;
+    color: var(--on-dark-2);
+  }
+
+  .receipts__window {
+    margin-top: 26px;
+    font-size: 13px;
+    color: var(--on-dark-3);
+    letter-spacing: 0.02em;
+  }
+
+  .receipts__headline {
+    font-size: clamp(38px, 4.4vw, 58px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .receipts__read {
+    margin-top: 20px;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--on-dark-2);
+    max-width: 460px;
+  }
+
+  @media (min-width: 900px) {
+    .receipts__panel {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* ---------------------------------------------------------- writing -- */
+  .writing {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(36px, 5vw, 64px);
+    align-items: start;
+  }
+
+  .writing__rail .eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .writing__title {
+    margin-bottom: 18px;
+  }
+
+  .writing__sub {
+    margin-bottom: 26px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .writing__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .writing__count {
+    margin-top: 22px;
+  }
+
+  .writing__all {
+    display: inline-flex;
+    gap: 8px;
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .writing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    align-content: start;
+  }
+
+  .post-card {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .post-card__title {
+    font-size: 19px;
+    line-height: 1.28;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .writing__empty {
+    color: var(--ink-3);
+    padding-block: 32px;
+  }
+
+  @media (min-width: 1000px) {
+    .writing {
+      grid-template-columns: 280px 1fr;
+    }
+
+    .writing__rail {
+      position: sticky;
+      top: calc(var(--header-h) + 40px);
+    }
+
+    .writing__chips {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>

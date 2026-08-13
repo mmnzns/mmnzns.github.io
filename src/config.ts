@@ -39,13 +39,27 @@ export const CONTACT = {
 
 /** Primary navigation. Order here is the order rendered in the header. */
 export const NAV_LINKS = [
-  { label: 'The Work', href: '/work/' },
-  { label: 'The Thinking', href: '/thinking/' },
+  { label: 'Work', href: '/work/' },
+  { label: 'Consulting', href: '/consulting/' },
+  { label: 'Writing', href: '/thinking/' },
   { label: 'About', href: '/about/' },
 ] as const;
+
+/**
+ * The header's single call to action, kept out of NAV_LINKS so it can be
+ * styled and positioned separately.
+ */
+export const NAV_CTA = { label: 'Work with me', href: '/consulting/#contact' } as const;
 
 /** Profile links rendered in the footer. */
 export const SOCIAL_LINKS = [
   { label: 'LinkedIn', href: CONTACT.linkedin },
   { label: 'Email', href: `mailto:${CONTACT.email}` },
 ] as const;
+
+/**
+ * Formspree endpoint behind every contact form on the site. Forms POST here
+ * directly, so they keep working with JavaScript disabled; the enhancement
+ * script only upgrades the response to an inline message.
+ */
+export const FORM_ENDPOINT = 'https://formspree.io/f/xjybrpnw';

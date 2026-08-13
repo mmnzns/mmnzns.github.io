@@ -1,0 +1,127 @@
+---
+import { CONTACT, NAV_LINKS } from '../config';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__card wrap">
+    <p class="footer__tag">Miguel Monzones — lifecycle and GTM, Vancouver.</p>
+
+    <div class="footer__links">
+      {NAV_LINKS.map((link) => <a href={link.href}>{link.label}</a>)}
+      <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      <a
+        class="footer__social"
+        href={CONTACT.linkedin}
+        target="_blank"
+        rel="noopener"
+        aria-label="Miguel Monzones on LinkedIn"
+      >
+        <svg viewBox="0 0 50 50" aria-hidden="true" focusable="false">
+          <path
+            d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"
+          ></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <p class="footer__colophon wrap">
+    <span>{CONTACT.entity}</span>
+    <span>&copy; {year} Miguel Monzones</span>
+  </p>
+
+  <div class="footer__wordmark" aria-hidden="true">MONZONES</div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: clamp(96px, 14vw, 170px);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #fde8dc 0%, #fbf3e4 42%, #e9eff7 100%);
+    padding: clamp(72px, 10vw, 120px) var(--gutter) 0;
+  }
+
+  .footer__card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 30px 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+  }
+
+  .footer__tag {
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  .footer__links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+
+  .footer__social {
+    display: block;
+    width: 19px;
+    height: 19px;
+    opacity: 0.5;
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+
+  .footer__social:hover {
+    opacity: 1;
+  }
+
+  .footer__social svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: currentcolor;
+  }
+
+  .footer__colophon {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  /* Outlined wordmark, cropped by the footer's overflow so it reads as a
+     watermark bleeding off the bottom of the page rather than as a heading. */
+  .footer__wordmark {
+    margin-top: 36px;
+    font-size: clamp(60px, 16.5vw, 240px);
+    line-height: 0.82;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(31 28 25 / 22%);
+    transform: translateY(14%);
+    user-select: none;
+  }
+
+  @media (max-width: 640px) {
+    .footer__card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

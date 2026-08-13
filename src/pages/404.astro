@@ -1,9 +1,41 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { NAV_LINKS } from '../config';
 ---
 
-{/* GitHub Pages serves this automatically for unmatched paths. */}
-<BaseLayout title="Page not found">
-  <h1>404 — page not found</h1>
-  <p>That page doesn't exist. <a href="/">Head back home</a>.</p>
+<BaseLayout title="Page not found" description="That page doesn't exist.">
+  <section class="section--first wrap notfound">
+    <p class="eyebrow notfound__eyebrow">404</p>
+    <h1 class="page-title">That page doesn’t exist.</h1>
+    <p class="lede notfound__lede">
+      Either it moved or I mistyped a link somewhere. Here’s everything that does exist:
+    </p>
+
+    <nav class="notfound__links" aria-label="Site sections">
+      <a class="chip chip--pill" href="/">Home</a>
+      {NAV_LINKS.map((link) => <a class="chip chip--pill" href={link.href}>{link.label}</a>)}
+    </nav>
+  </section>
 </BaseLayout>
+
+<style>
+  .notfound {
+    padding-bottom: clamp(64px, 10vw, 140px);
+  }
+
+  .notfound__eyebrow {
+    margin-bottom: 26px;
+  }
+
+  .notfound__lede {
+    margin-top: 30px;
+    max-width: 520px;
+  }
+
+  .notfound__links {
+    margin-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+</style>
