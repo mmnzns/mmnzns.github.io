@@ -51,12 +51,6 @@ export const NAV_LINKS = [
  */
 export const NAV_CTA = { label: 'Work with me', href: '/consulting/#contact' } as const;
 
-/** Profile links rendered in the footer. */
-export const SOCIAL_LINKS = [
-  { label: 'LinkedIn', href: CONTACT.linkedin },
-  { label: 'Email', href: `mailto:${CONTACT.email}` },
-] as const;
-
 /**
  * Formspree endpoint behind every contact form on the site. Forms POST here
  * directly, so they keep working with JavaScript disabled; the enhancement

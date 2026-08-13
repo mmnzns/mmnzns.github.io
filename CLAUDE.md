@@ -13,9 +13,9 @@ beyond that.
 
 ## Conventions
 
-- **Site metadata lives in `src/config.ts`.** Title, description, nav, social links and the
-  Formspree endpoint are read from there by `BaseLayout`. Don't hardcode them in pages or
-  components.
+- **Site metadata lives in `src/config.ts`.** Title, description, nav, contact details and
+  the Formspree endpoint are read from there. Don't hardcode them in pages or components —
+  the footer builds its links from `NAV_LINKS` and `CONTACT`.
 - **`BaseLayout.astro` owns `<head>`.** Pages pass `title` and `description` as props rather
   than writing their own meta tags. Canonical URL, Open Graph, Twitter tags and the Person
   JSON-LD are derived.
