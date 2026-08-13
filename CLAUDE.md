@@ -8,6 +8,19 @@ Personal portfolio site — Astro 7 (static output) + TypeScript, deployed to Gi
 - `npm run build` — static build into `dist/`
 - `npm run check` — Astro/TypeScript diagnostics; this is what CI gates on
 
+Porting a new design export (`MAIN WEBSITE FILES/mnmonzones vN/`):
+
+- `node scripts/gen-cases.mjs <Monzones-D-Case.dc.html>` — regenerates `src/data/cases.ts`
+  wholesale. Don't hand-edit the prose in that file; edit the design and re-run.
+- `node scripts/sync-projects.mjs <Monzones-D-Work.dc.html>` — reports where `PROJECTS` in
+  `src/data/site.ts` disagrees with the design. Its `-apply` pair writes the changes, and
+  touches only `title`, `problem` and `tags` — `category` and the metric shape have no
+  design equivalent, so a full regeneration would silently drop them.
+
+**Diff against the design, not against the previous export.** This repo has drifted from
+what was shipped before, so a small vN-1 → vN diff can hide a page's worth of divergence.
+Extract the design's sentences and check each one against `dist/`.
+
 Run `npm run check && npm run build` before committing. There is no test suite or linter
 beyond that.
 
@@ -79,7 +92,10 @@ beyond that.
   It also owns the detail page's own `title` and `deck`, which are longer than the card's.
 - **Job titles appear in two places** — `ROLES` in `src/data/about.ts` and the `meta` line
   of every case in `cases.ts`. Change one and change the other, or the about page and a
-  case page show a recruiter two different job titles for the same employer.
+  case page show a recruiter two different job titles for the same employer. The v6 design
+  export disagrees with itself here (Mogo and CraftConcepts), so both files currently carry
+  what their own design page says. Ask before reconciling — picking one is a claim about
+  Miguel's employment history, not a formatting decision.
 - `src/data/home.ts`, `consulting.ts`, `about.ts` — page-specific copy, kept out of the
   templates so wording stays reviewable in one place.
 - `src/content/thinking/*.md` — articles. Frontmatter is `title`, `date`, `tag`, `excerpt`,
