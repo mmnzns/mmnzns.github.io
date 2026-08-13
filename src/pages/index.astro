@@ -972,6 +972,17 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   }
 
   /* ----------------------------------------------------------- method -- */
+
+  /* Method and the dark band sit a step wider apart than the site's default
+     section rhythm — they're the pivot from "what I built" to "what it did". */
+  #method {
+    padding-top: clamp(100px, 17.9vw, 200px);
+  }
+
+  #numbers {
+    margin-top: clamp(100px, 17.9vw, 200px);
+  }
+
   .method {
     display: grid;
     grid-template-columns: 1fr;
