@@ -27,6 +27,14 @@ beyond that.
 - **Four accents, each bound to a category** — coral/lifecycle, sky/leadership, moss/AI,
   sun/web. The mapping is declared once in `CATEGORY_ACCENT` (`src/data/site.ts`); read it
   from there rather than picking a colour by eye.
+- **A scoped rule beats a global one, so restate what it cancels.** Astro compiles component
+  styles with an attribute selector, so `.thing { color }` inside a component scores higher
+  than a bare `a:hover { color }` in global.css. Any component that sets its own link colour
+  must set its own `:hover` and `:focus-visible` colour, or the link silently stops
+  responding. The same trap applies to `display`: a scoped `display: grid` outranks the
+  `hidden` attribute's own rule, which is why global.css forces `[hidden] { display: none }`.
+  Both of these shipped broken. When a hover or a toggle "does nothing", check specificity
+  before anything else.
 - **Components are `.astro` by default and no framework is installed.** Interactive pieces
   are progressively enhanced: every state is rendered server-side, and a small vanilla
   `<script>` toggles `aria-pressed` / `hidden`. Don't reach for React or a `client:*`
