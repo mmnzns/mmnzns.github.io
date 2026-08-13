@@ -1,10 +1,8 @@
 # mmnzns.github.io
 
-Personal portfolio site, built with [Astro](https://astro.build) and deployed to GitHub Pages
-at **https://mmnzns.github.io**.
-
-This is currently a scaffold: the build, deploy pipeline, layout and metadata plumbing are in
-place, with placeholder content in the pages.
+Personal portfolio site for Miguel Monzones — lifecycle and GTM strategist, Vancouver. Built
+with [Astro](https://astro.build), fully static, deployed to GitHub Pages at
+**https://mmnzns.github.io**.
 
 ## Requirements
 
@@ -18,6 +16,11 @@ npm install
 npm run dev      # http://localhost:4321
 ```
 
+> **Windows note:** npm's script launcher breaks if the repo lives under a folder whose name
+> contains `&` (it truncates the path at the ampersand). If `npm run dev` fails with
+> `Cannot find module ...astro\bin\astro.mjs`, move the checkout somewhere like
+> `C:\Users\<you>\projects\mmnzns.github.io`. CI runs on Linux and is unaffected.
+
 ## Scripts
 
 | Command | What it does |
@@ -27,20 +30,60 @@ npm run dev      # http://localhost:4321
 | `npm run preview` | Serve `dist/` locally, as it will be served in production |
 | `npm run check` | Astro + TypeScript diagnostics across `.astro` and `.ts` files |
 
+`npm run check && npm run build` is what CI gates on. Run it before committing.
+
 ## Project structure
 
 ```
-public/              Served verbatim at the site root (favicon, robots.txt, images)
+public/              Served verbatim at the site root
+  fonts/             Self-hosted General Sans (400/500/600)
 src/
-  config.ts          Site title, description, nav and social links — edit here first
-  layouts/           Page shells; BaseLayout owns <head>, header and footer
+  assets/            Images processed at build time (portrait, client logos)
+  components/        Header, footer, contact form, logo marquee, case diagrams
+  config.ts          Site metadata, nav, contact details, form endpoint — edit here first
+  content/thinking/  Articles as Markdown; schema in src/content.config.ts
+  data/              Typed content: projects, case bodies, page copy
+  layouts/           BaseLayout owns <head> and wraps every page
   pages/             File-based routing: src/pages/about.astro -> /about/
-  styles/global.css  Design tokens and baseline styles
+  styles/global.css  Design tokens and shared primitives
 astro.config.mjs     Astro config (site URL, integrations, build format)
 ```
 
-Routing is file-based: adding `src/pages/uses.astro` publishes `/uses/`. `src/pages/404.astro`
-becomes the site's 404 page, which GitHub Pages serves automatically for unmatched paths.
+Routing is file-based, and `build.format: 'directory'` means URLs end in a trailing slash
+(`/about/`). `src/pages/404.astro` becomes the site's 404 page, which GitHub Pages serves
+automatically for unmatched paths.
+
+## The design
+
+One typeface (General Sans) does the interface work; Newsreader is reserved for article body
+copy so long-form reads as a different surface. Four accent colours each map to a work
+category — coral/lifecycle, sky/leadership, moss/AI, sun/web — declared once in
+`CATEGORY_ACCENT` (`src/data/site.ts`).
+
+The palette is light only, on purpose. No framework ships to the browser: interactive pieces
+render every state server-side and small vanilla scripts toggle between them.
+
+See `CLAUDE.md` for the conventions in full, including the content and voice rules.
+
+## Publishing an article
+
+Add a Markdown file to `src/content/thinking/` with this frontmatter:
+
+```yaml
+---
+title: "The headline, in sentence or title case"
+date: 2026-02-24
+tag: "Lifecycle"        # Lifecycle | Search | AI & automation | Positioning
+excerpt: "One or two sentences, used on cards and as the meta description."
+featured: false         # true promotes it to the big card on /thinking/
+draft: false            # true keeps it out of the build
+---
+```
+
+Then write the body in plain Markdown — `##` headings feed the article's contents rail
+automatically. Reading time is computed from word count, so don't type it. Commit to `main`
+and the Actions workflow publishes in about two minutes. Images go in `public/images/` and
+are referenced as `/images/name.jpg`.
 
 ## Deployment
 
@@ -55,16 +98,16 @@ The workflow can't publish until Pages is switched to the Actions source:
 1. Go to **Settings → Pages** in this repository.
 2. Under **Build and deployment → Source**, select **GitHub Actions**.
 
-That's it — the next push to `main` deploys. Runs are visible under the **Actions** tab, and
-the live URL appears on the `github-pages` environment.
+Runs are visible under the **Actions** tab, and the live URL appears on the `github-pages`
+environment.
 
-Note that this is a *user site* (`<username>.github.io`), so it is always served from the domain
-root and needs no `base` path in `astro.config.mjs`. It also must be a public repository for
-Pages to serve it on a free account.
+This is a *user site* (`<username>.github.io`), so it is always served from the domain root
+and needs no `base` path in `astro.config.mjs`. It also must be a public repository for Pages
+to serve it on a free account.
 
 ## Moving to a custom domain
 
-1. Add a `public/CNAME` file containing just the domain, e.g. `miguelmonzones.com`.
+1. Add a `public/CNAME` file containing just the domain, e.g. `mnmonzones.com`.
 2. Update `SITE.url` in `src/config.ts` and the `Sitemap:` line in `public/robots.txt`.
 3. At your DNS provider, point the apex domain at GitHub's Pages IPs with four `A` records
    (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`), and point
@@ -74,6 +117,5 @@ Pages to serve it on a free account.
 
 ## To do
 
-- [ ] Add a 1200x630 link-preview image at `public/og-image.png` and set `SITE.ogImage`
-- [ ] Replace the placeholder favicon in `public/favicon.svg`
-- [ ] Fill in real content and design
+- [ ] Add a 1200x630 link-preview image at `public/og-image.png` and set `SITE.ogImage` —
+      until then, links shared to LinkedIn or Slack unfurl without an image
