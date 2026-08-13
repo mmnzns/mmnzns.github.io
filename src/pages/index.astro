@@ -24,11 +24,19 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
         <h1 class="display">Hi, I’m Miguel.</h1>
 
         <div class="hero__id">
+          {/*
+            The source is 1024x1536. Asking for a square here would make Astro
+            resize it to a square first, squashing the photo — and the CSS crop
+            below would then frame the wrong part of a distorted image, which
+            is why the face sat too low. Keep the 2:3 ratio and let
+            `object-fit: cover` with `object-position` do the cropping, exactly
+            as the design does.
+          */}
           <Image
             src={portrait}
             alt="Miguel Monzones"
             width={264}
-            height={264}
+            height={396}
             loading="eager"
             fetchpriority="high"
           />

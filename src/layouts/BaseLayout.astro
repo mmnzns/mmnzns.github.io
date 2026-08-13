@@ -43,7 +43,15 @@ const personSchema = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/*
+      Raster icons, not SVG. A favicon is rasterised in a context where system
+      fonts aren't guaranteed, so the previous SVG — which drew its monogram
+      with a <text> element — rendered as an empty tile. Built from the brand
+      mark by scripts/build-icons.mjs.
+    */}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.title} — Writing`} href="/rss.xml" />
