@@ -20,8 +20,47 @@ export const ACCENT_TOKEN = {
 
 const ACCENTS = { coral: '#F2603F', sun: '#F5B841', sky: '#3E8FD8', moss: '#3FA981' };
 
+/**
+ * The design tool exports two shapes, and a round may ship either one:
+ *
+ *  - a plain `.dc.html`, which *is* the page document; and
+ *  - a "Website standalone" build, which wraps that same document inside a
+ *    loader page as a single double-quoted JS string literal — newlines
+ *    arrive as the two characters \ and n, and inner double quotes are
+ *    escaped, while single quotes are not.
+ *
+ * That escaping is exactly JSON string syntax, so the literal is parsed
+ * rather than unescaped by hand. Returns the inner document for a standalone
+ * file and the input unchanged for a plain one, so callers never care which
+ * they were handed.
+ */
+export function unwrapStandalone(raw) {
+  const open = raw.indexOf('"<!DOCTYPE html>\\n');
+  if (open === -1) return raw;
+
+  let end = -1;
+  for (let p = open + 1; p < raw.length; p++) {
+    if (raw[p] === '\\') {
+      p++;
+      continue;
+    }
+    if (raw[p] === '"') {
+      end = p;
+      break;
+    }
+  }
+  if (end === -1) {
+    throw new Error('Standalone export: the embedded document has no closing quote.');
+  }
+  try {
+    return JSON.parse(raw.slice(open, end + 1));
+  } catch (e) {
+    throw new Error(`Standalone export: could not parse the embedded document — ${e.message}`);
+  }
+}
+
 export function readDesign(path) {
-  return readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+  return unwrapStandalone(readFileSync(path, 'utf8')).replace(/\r\n/g, '\n');
 }
 
 /**

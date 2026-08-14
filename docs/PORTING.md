@@ -10,13 +10,24 @@ The v6 port took hours because most of it was done by hand and the drift had to 
 *discovered*. The scripts below exist so the next one doesn't. Following this playbook, a
 content-only port should be **~20–30 minutes**, most of it reviewing a diff.
 
+## Two export shapes — both work
+
+A round may ship either the plain `.dc.html` files, a `Website standalone/` folder, or
+both (v6 had both; v7 had only standalone). The standalone build wraps the same document
+inside a loader page as one escaped JS string, so the files are 10–40× larger and the data
+arrays aren't greppable. `readDesign()` in `scripts/lib/design.mjs` detects and unwraps
+that, so **every script accepts either shape** — just point them at whichever folder
+exists. If a generator ever throws "Could not find the end of the X array" on a file that
+clearly contains X, that unwrapping is the first thing to check.
+
 ## The recipe
 
 Run from the repo root. The `&` in this repo's absolute path breaks `npm run` on Windows,
 so invoke Astro directly.
 
 ```bash
-D="../MAIN WEBSITE FILES/mnmonzones v7"   # or wherever the new export landed
+D="../MAIN WEBSITE FILES/mnmonzones v7"                    # plain export, or:
+D="../MAIN WEBSITE FILES/mnmonzones v7/Website standalone" # standalone export
 node scripts/gen-cases.mjs      "$D/Monzones-D-Case.dc.html"
 node scripts/gen-home.mjs       "$D/Monzones-D-Paper.dc.html"
 node scripts/gen-consulting.mjs "$D/Monzones-D-Consulting.dc.html"
@@ -25,7 +36,12 @@ node scripts/sync-projects.mjs  "$D/Monzones-D-Work.dc.html"          # report o
 node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work.dc.html"     # then apply
 ```
 
-1. **Read the export's own `CLAUDE.md`** (the design folder ships one with project facts).
+1. **Read the export's own `CLAUDE.md`** if it ships one (v6 did, v7 didn't) — it carries
+   project facts that aren't in `Website MD Repository/`.
+1. **Grep the export for `<dc-import name="...">`.** Those are design components, and they
+   are frequently *not* included in the export — v7 referenced `Monzones-D-Nav` and
+   `Monzones-D-Cookies`, neither of which shipped. Anything a missing component would have
+   rendered cannot be ported faithfully; say so rather than inventing a replacement.
 2. Run the six commands above, then **review `git diff`** — that diff *is* the content
    change; read it like a copy review, not like code.
 3. **Hand-check the surfaces no generator covers** (list below) against the design pages.
@@ -82,6 +98,11 @@ One-off prose living in templates. Check these by eye against the design (and tr
   headings and ledes
 - `src/components/ContactBand.astro` — title, body, availability line (deliberately not
   read from `SITE`; see the comment there)
+- `src/components/ConsentBanner.astro` — the cookie banner's own copy. Its wording is
+  *not* from the design (v7's `Monzones-D-Cookies` component never shipped), so replace it
+  if a later export includes one. The storage contract it shares with `Analytics.astro`
+  — `CONSENT_STORAGE_KEY`, `{ analytics: boolean }` — does come from the design and must
+  keep matching, or GA stops respecting the visitor's answer.
 - `src/components/CaseDiagram.astro` — per-case SVG diagrams and captions; a new or
   re-scoped case needs its diagram ported by hand
 - `src/content/thinking/*.md` — article frontmatter (`title`, `excerpt`, `tag`, dates)

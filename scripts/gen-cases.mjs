@@ -8,8 +8,9 @@
  *
  * Usage: node scripts/gen-cases.mjs "<path to Monzones-D-Case.dc.html>"
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { readDesign } from './lib/design.mjs';
 
 const source = process.argv[2];
 if (!source) {
@@ -17,7 +18,7 @@ if (!source) {
   process.exit(1);
 }
 
-const html = readFileSync(source, 'utf8').replace(/\r\n/g, '\n');
+const html = readDesign(source);
 
 const start = html.indexOf('const CASES = [');
 if (start === -1) throw new Error('Could not find `const CASES = [` in the design file.');

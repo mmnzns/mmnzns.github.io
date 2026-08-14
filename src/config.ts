@@ -39,6 +39,21 @@ export const SITE = {
  */
 export const GA_MEASUREMENT_ID: string | null = 'G-FPK859XY74';
 
+/**
+ * Where the visitor's cookie choice is stored, and the shape it is stored in:
+ * `{"analytics": boolean, "date": "<ISO string>"}`.
+ *
+ * localStorage rather than a cookie or sessionStorage, deliberately — the
+ * answer has to outlive the tab and the browser restart, and only disappear
+ * when someone clears their site data. Both Analytics.astro (which reads it
+ * before GA loads) and ConsentBanner.astro (which writes it) use this
+ * constant; the key itself is the contract the v7 design export defined.
+ *
+ * Bump the `-v1` suffix only to deliberately re-ask everyone — every stored
+ * answer stops matching and every visitor sees the banner again.
+ */
+export const CONSENT_STORAGE_KEY = 'mnm-consent-v1';
+
 export const CONTACT = {
   email: 'miguel@mnmonzones.com',
   phone: '+1 778 829 6453',

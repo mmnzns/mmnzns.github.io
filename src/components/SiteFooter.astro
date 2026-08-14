@@ -7,6 +7,9 @@ import { CONTACT } from '../config';
     <p class="footer__tag">{CONTACT.entity} — lifecycle and GTM, Vancouver.</p>
 
     <div class="footer__links footer__meta">
+      {/* Reopens the consent banner — see ConsentBanner.astro, which binds
+          every [data-cookie-settings] link on the page. */}
+      <a class="footer__cookies" href="#cookie-settings" data-cookie-settings>Cookie settings</a>
       <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
       <a
         class="footer__social"
@@ -64,6 +67,18 @@ import { CONTACT } from '../config';
     font-size: 14px;
   }
 
+  /* Quieter than the email address beside it — it's a utility, not a contact
+     detail. Setting a colour here outranks the global `a:hover`, so the hover
+     and focus colours have to be restated or the link stops responding. */
+  .footer__cookies {
+    color: var(--ink-3);
+  }
+
+  .footer__cookies:hover,
+  .footer__cookies:focus-visible {
+    color: var(--coral);
+  }
+
   .footer__social {
     display: block;
     width: 19px;
@@ -104,6 +119,24 @@ import { CONTACT } from '../config';
     .footer__card {
       flex-direction: column;
       align-items: flex-start;
+    }
+  }
+
+  /* Touch targets. The text links are only as tall as their line box, and the
+     social icon is 19px square — both well under the 44px a finger needs, so
+     they get padded out on small screens without changing how they look. */
+  @media (max-width: 719px) {
+    .footer__links a:not(.footer__social) {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .footer__social {
+      width: 44px;
+      height: 44px;
+      padding: 12px;
+      opacity: 0.6;
     }
   }
 </style>

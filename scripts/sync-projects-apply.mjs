@@ -8,6 +8,7 @@
  * Usage: node scripts/sync-projects-apply.mjs "<path to Monzones-D-Work.dc.html>"
  */
 import { readFileSync, writeFileSync } from 'node:fs';
+import { readDesign } from './lib/design.mjs';
 
 const source = process.argv[2];
 if (!source) {
@@ -15,7 +16,7 @@ if (!source) {
   process.exit(1);
 }
 
-const html = readFileSync(source, 'utf8').replace(/\r\n/g, '\n');
+const html = readDesign(source);
 const start = html.indexOf('const GROUPS = [');
 const end = html.indexOf('\n];', start);
 const A = { coral: '#F2603F', sun: '#F5B841', sky: '#3E8FD8', moss: '#3FA981' };

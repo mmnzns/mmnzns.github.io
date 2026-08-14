@@ -22,6 +22,7 @@
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { readDesign } from './lib/design.mjs';
 
 const [designDir, distDir] = process.argv.slice(2);
 if (!designDir || !distDir) {
@@ -60,7 +61,7 @@ const isSentence = (t) =>
 const missing = new Map();
 
 for (const file of readdirSync(designDir).filter((f) => f.endsWith('.dc.html'))) {
-  const raw = readFileSync(join(designDir, file), 'utf8').replace(/\r\n/g, '\n');
+  const raw = readDesign(join(designDir, file));
   const found = new Set();
 
   // Quoted strings from the design's own data arrays.

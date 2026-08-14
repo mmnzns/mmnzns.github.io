@@ -1,16 +1,26 @@
 ---
 /**
- * Google Analytics 4, rendered from BaseLayout's <head> on every page.
+ * Google Analytics 4 with Consent Mode v2, rendered from BaseLayout's <head>.
  *
  * Emits nothing unless `GA_MEASUREMENT_ID` is set in src/config.ts *and* this
  * is a production build, so local development never counts as traffic — which
  * matters on a site whose whole point is the traffic report.
  *
- * Both tags are `is:inline`: Astro must leave them exactly as written rather
- * than bundling them. The loader is a third-party URL, and the config snippet
- * has to define `window.dataLayer` before that loader runs.
+ * Order matters here and is the reason this is one component rather than two:
+ * the consent default has to be pushed *before* the gtag loader runs, or the
+ * first pageview is sent under the wrong assumption. `wait_for_update: 500`
+ * gives the banner half a second to answer for a returning visitor whose
+ * stored choice is read below.
+ *
+ * The storage key and payload shape (`mnm-consent-v1`, `{ analytics: bool }`)
+ * are the contract the v7 design export defines — ConsentBanner.astro writes
+ * it and CONSENT_STORAGE_KEY in src/config.ts names it. Change it in one place
+ * only and analytics silently stops respecting the visitor's answer.
+ *
+ * Tags are `is:inline`: Astro must leave them exactly as written rather than
+ * bundling and deferring them.
  */
-import { GA_MEASUREMENT_ID } from '../config';
+import { GA_MEASUREMENT_ID, CONSENT_STORAGE_KEY } from '../config';
 
 const measurementId = import.meta.env.PROD ? GA_MEASUREMENT_ID : null;
 ---
@@ -18,20 +28,40 @@ const measurementId = import.meta.env.PROD ? GA_MEASUREMENT_ID : null;
 {
   measurementId && (
     <Fragment>
-      <script
-        is:inline
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-      />
-      <script is:inline define:vars={{ measurementId }}>
+      <script is:inline define:vars={{ storageKey: CONSENT_STORAGE_KEY }}>
         window.dataLayer = window.dataLayer || [];
         function gtag() {
           window.dataLayer.push(arguments);
         }
         /* `define:vars` compiles this into an IIFE, so `gtag` would otherwise be
-           scoped to it. The canonical snippet leaves it global — anything added
-           later (a form-submit event, an outbound-link event) calls it by name. */
+           scoped to it. The canonical snippet leaves it global — the banner and
+           anything added later (a form-submit event) call it by name. */
         window.gtag = gtag;
+
+        var granted = false;
+        try {
+          var stored = localStorage.getItem(storageKey);
+          granted = !!stored && JSON.parse(stored).analytics === true;
+        } catch (e) {
+          /* Private mode or blocked storage: treat as no answer, which denies. */
+        }
+
+        gtag('consent', 'default', {
+          analytics_storage: granted ? 'granted' : 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+          wait_for_update: 500,
+        });
+      </script>
+
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+      />
+
+      <script is:inline define:vars={{ measurementId }}>
         gtag('js', new Date());
         gtag('config', measurementId);
       </script>

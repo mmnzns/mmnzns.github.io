@@ -1,0 +1,226 @@
+---
+/**
+ * Cookie consent banner, rendered on every page by BaseLayout.
+ *
+ * The visitor's answer lives in localStorage under CONSENT_STORAGE_KEY, so it
+ * survives reloads, new tabs and browser restarts, and only goes away when
+ * someone clears their site data. Analytics.astro reads the same key before
+ * loading GA, so a returning visitor's choice is applied on the very first
+ * request rather than after a flicker of tracking.
+ *
+ * Two details worth not "tidying" later:
+ *
+ *  - **It ships hidden and is revealed by script**, not the reverse. A banner
+ *    that starts visible in CSS would flash on every page for people who
+ *    already answered, and would sit there permanently if the script failed.
+ *    This follows the same rule as Motion.astro: never write a state in CSS
+ *    that only JavaScript can undo.
+ *  - **The `hidden` attribute does the hiding**, backed by the
+ *    `[hidden] { display: none !important }` rule in global.css, because the
+ *    scoped `display: flex` below would otherwise outrank the UA rule.
+ *
+ * The banner's own copy is not from the design export: v7 references a
+ * `Monzones-D-Cookies` component that was not included in it, so this wording
+ * is deliberately plain and safe to replace with the design's when it lands.
+ */
+import { CONSENT_STORAGE_KEY } from '../config';
+---
+
+<div
+  class="consent"
+  id="cookie-settings"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="consent-title"
+  data-consent
+  hidden
+>
+  <div class="consent__card">
+    <div class="consent__copy">
+      <p class="consent__title" id="consent-title">A quick note about cookies.</p>
+      <p class="consent__body">
+        I use Google Analytics to see which pages people actually read. It sets cookies. Nothing here
+        is used for advertising, and declining does not change how the site works.
+      </p>
+    </div>
+
+    <div class="consent__actions">
+      <button type="button" class="consent__btn consent__btn--ghost" data-consent-decline>
+        Decline
+      </button>
+      <button type="button" class="consent__btn consent__btn--solid" data-consent-accept>
+        Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ storageKey: CONSENT_STORAGE_KEY }}>
+  (function () {
+    var banner = document.querySelector('[data-consent]');
+    if (!banner) return;
+
+    /* Storage can throw outright in private mode or when a browser blocks it.
+       Every access goes through these two so a throw degrades to "no answer
+       stored" instead of taking the page's scripts down with it. */
+    function read() {
+      try {
+        var raw = localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function write(analytics) {
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({ analytics: analytics, date: new Date().toISOString() }),
+        );
+      } catch (e) {
+        /* Choice can't be persisted, so the banner will ask again next time.
+           Applying it for this pageview is still better than ignoring it. */
+      }
+    }
+
+    function show() {
+      banner.hidden = false;
+    }
+
+    function hide() {
+      banner.hidden = true;
+    }
+
+    function answer(analytics) {
+      write(analytics);
+      /* Tell GA within the wait_for_update window set in Analytics.astro, so
+         this pageview is attributed correctly rather than the next one. */
+      if (typeof window.gtag === 'function') {
+        window.gtag('consent', 'update', {
+          analytics_storage: analytics ? 'granted' : 'denied',
+        });
+      }
+      hide();
+    }
+
+    var stored = read();
+    /* Only a stored boolean counts as an answer. Anything else — no entry,
+       corrupt JSON, an older shape — means ask. */
+    if (!stored || typeof stored.analytics !== 'boolean') show();
+
+    banner.querySelector('[data-consent-accept]').addEventListener('click', function () {
+      answer(true);
+    });
+    banner.querySelector('[data-consent-decline]').addEventListener('click', function () {
+      answer(false);
+    });
+
+    /* "Cookie settings" in the footer reopens the banner so a choice can be
+       changed without clearing site data. */
+    document.querySelectorAll('[data-cookie-settings]').forEach(function (link) {
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+        show();
+        banner.querySelector('[data-consent-accept]').focus();
+      });
+    });
+  })();
+</script>
+
+<style>
+  .consent {
+    position: fixed;
+    z-index: 60;
+    inset: auto 0 0;
+    padding: 0 var(--gutter) clamp(16px, 3vw, 28px);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .consent__card {
+    pointer-events: auto;
+    width: min(100%, 720px);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(18px, 3vw, 24px) clamp(20px, 3.4vw, 28px);
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 32px);
+    flex-wrap: wrap;
+  }
+
+  .consent__copy {
+    flex: 1 1 320px;
+    min-width: 0;
+  }
+
+  .consent__title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.008em;
+  }
+
+  .consent__body {
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .consent__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+
+  .consent__btn {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    /* 44px tall including the border, so it is a comfortable tap target. */
+    min-height: 44px;
+    white-space: nowrap;
+    transition:
+      background var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .consent__btn--solid {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .consent__btn--solid:hover {
+    background: var(--coral);
+    border-color: var(--coral);
+  }
+
+  .consent__btn--ghost {
+    background: transparent;
+    color: var(--ink-2);
+    border-color: var(--rule);
+  }
+
+  .consent__btn--ghost:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  @media (max-width: 560px) {
+    .consent__actions {
+      width: 100%;
+    }
+
+    .consent__btn {
+      flex: 1;
+    }
+  }
+</style>
