@@ -30,6 +30,15 @@ export const SITE = {
   ogImage: null as string | null,
 } as const;
 
+/**
+ * Google Analytics 4 measurement ID for the mnmonzones.com data stream.
+ *
+ * Set to null to switch analytics off site-wide. It is only ever emitted in a
+ * production build (see components/Analytics.astro), so `npm run dev` and local
+ * previews never register as traffic.
+ */
+export const GA_MEASUREMENT_ID: string | null = 'G-FPK859XY74';
+
 export const CONTACT = {
   email: 'miguel@mnmonzones.com',
   phone: '+1 778 829 6453',

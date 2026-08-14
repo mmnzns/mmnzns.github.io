@@ -1,0 +1,40 @@
+---
+/**
+ * Google Analytics 4, rendered from BaseLayout's <head> on every page.
+ *
+ * Emits nothing unless `GA_MEASUREMENT_ID` is set in src/config.ts *and* this
+ * is a production build, so local development never counts as traffic — which
+ * matters on a site whose whole point is the traffic report.
+ *
+ * Both tags are `is:inline`: Astro must leave them exactly as written rather
+ * than bundling them. The loader is a third-party URL, and the config snippet
+ * has to define `window.dataLayer` before that loader runs.
+ */
+import { GA_MEASUREMENT_ID } from '../config';
+
+const measurementId = import.meta.env.PROD ? GA_MEASUREMENT_ID : null;
+---
+
+{
+  measurementId && (
+    <Fragment>
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+      />
+      <script is:inline define:vars={{ measurementId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        /* `define:vars` compiles this into an IIFE, so `gtag` would otherwise be
+           scoped to it. The canonical snippet leaves it global — anything added
+           later (a form-submit event, an outbound-link event) calls it by name. */
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', measurementId);
+      </script>
+    </Fragment>
+  )
+}
