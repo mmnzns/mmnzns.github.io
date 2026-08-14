@@ -1,0 +1,86 @@
+/*
+ * Shared plumbing for the gen-* scripts that read a design export.
+ *
+ * Two facts about the export shape everything here:
+ *  - Repeating content lives in plain JS arrays inside the page's trailing
+ *    <script>, so it is evaluated rather than scraped.
+ *  - One-off content is inline HTML with straight apostrophes, while this
+ *    repo's data files use typographic ones — so every string that leaves
+ *    this module goes through smart() first.
+ */
+import { readFileSync } from 'node:fs';
+
+/** The four accents as the design writes them, hex → token name. */
+export const ACCENT_TOKEN = {
+  '#F2603F': 'coral',
+  '#F5B841': 'sun',
+  '#3E8FD8': 'sky',
+  '#3FA981': 'moss',
+};
+
+const ACCENTS = { coral: '#F2603F', sun: '#F5B841', sky: '#3E8FD8', moss: '#3FA981' };
+
+export function readDesign(path) {
+  return readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
+}
+
+/**
+ * Evaluate a `const NAME = [ ... ];` array out of a design file. The design
+ * references its palette as either `A` or `ACCENTS` depending on the page,
+ * so both names are provided.
+ */
+export function evalArray(html, name) {
+  const marker = `const ${name} = [`;
+  const start = html.indexOf(marker);
+  if (start === -1) throw new Error(`Could not find \`${marker}\` in the design file.`);
+  const end = html.indexOf('\n];', start);
+  if (end === -1) throw new Error(`Could not find the end of the ${name} array.`);
+  const body = html.slice(start + marker.length, end);
+  // eslint-disable-next-line no-new-func
+  return new Function('A', 'ACCENTS', `return [${body}]`)(ACCENTS, ACCENTS);
+}
+
+/**
+ * Straight quotes → typographic. The design's JS arrays and inline HTML use
+ * straight apostrophes; the data files here use ’ and “ ” throughout. Curly
+ * input passes through untouched, so this is safe to apply unconditionally.
+ */
+export function smart(s) {
+  return String(s)
+    .replace(/(^|[\s([—–-])"/g, '$1“')
+    .replace(/"/g, '”')
+    .replace(/'/g, '’');
+}
+
+/** Decode the few entities the export actually uses, then strip tags. */
+export function text(htmlFragment) {
+  return htmlFragment
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Single-quoted TS string literal. */
+export function q(s) {
+  return `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+}
+
+/**
+ * Read a top-level field out of one PROJECTS block in src/data/site.ts —
+ * used to carry repo-only fields (category) into regenerated files without
+ * hardcoding them in a generator.
+ */
+export function siteField(siteSource, slug, field) {
+  const i = siteSource.indexOf(`slug: '${slug}'`);
+  if (i === -1) throw new Error(`${slug} is not in PROJECTS (src/data/site.ts).`);
+  const stop = siteSource.indexOf('\n  },', i);
+  const m = siteSource
+    .slice(i, stop)
+    .match(new RegExp(`${field}:\\s*\\n?\\s*(?:'((?:[^'\\\\]|\\\\.)*)'|"((?:[^"\\\\]|\\\\.)*)")`));
+  if (!m) throw new Error(`${slug} has no ${field} in PROJECTS.`);
+  return (m[1] ?? m[2]).replace(/\\(['"])/g, '$1');
+}
