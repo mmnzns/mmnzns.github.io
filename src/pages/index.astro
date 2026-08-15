@@ -113,6 +113,9 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
         const item = SYMPTOMS[index];
         label.textContent = flipped ? 'What was happening underneath' : 'What we were seeing';
         text.textContent = flipped ? item.found : item.ask;
+        // The flipped answer is prose, not a headline, so it renders at body
+        // size rather than the front's larger, tighter-set question.
+        root.dataset.flipped = String(flipped);
         flip.textContent = flipped ? '← Back to the starting point' : 'Look underneath';
         flip.setAttribute('aria-pressed', String(flipped));
         count.textContent = `${index + 1} of ${SYMPTOMS.length}`;
@@ -799,6 +802,15 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     font-weight: 500;
     letter-spacing: -0.01em;
     min-height: 2.7em;
+    transition: font-size var(--dur) var(--ease);
+  }
+
+  /* Flipped side reads as an explanation rather than a headline, so it drops
+     to a body size with room to breathe rather than the front's large,
+     tightly-set question. */
+  [data-flipped='true'] .symptom__text {
+    font-size: clamp(16px, 1.4vw, 18px);
+    line-height: 1.62;
   }
 
   .symptom__controls {
