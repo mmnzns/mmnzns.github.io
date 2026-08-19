@@ -314,6 +314,16 @@ const accent = tagAccent(post.data.tag);
     color: var(--ink);
   }
 
+  /* An article may open with a hero image, which Markdown wraps in its own
+     paragraph. Without this the lead treatment lands on that wrapper — where
+     it does nothing, since there is no text in it — and the actual opening
+     line reads at body size. */
+  .prose :global(> p:first-child:has(img) + p) {
+    font-size: 23px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
   .prose :global(p) {
     margin: 0 0 24px;
   }
@@ -412,8 +422,16 @@ const accent = tagAccent(post.data.tag);
     padding: 0;
   }
 
-  /* Wide tables scroll inside their own box rather than the page. */
+  /* Wide tables scroll inside their own box rather than the page.
+     `display: block` is what makes that true: it gives the table its own
+     scroll container, so the columns keep a readable width instead of
+     squeezing to slivers on a phone. Markdown emits a bare <table> with no
+     wrapper to hang the overflow on, which is why it lives on the table
+     itself. Above the min-widths below there is no scrollbar, so wide screens
+     are unaffected. */
   .prose :global(table) {
+    display: block;
+    overflow-x: auto;
     width: 100%;
     border-collapse: collapse;
     font-family: var(--font-sans);
@@ -426,6 +444,8 @@ const accent = tagAccent(post.data.tag);
     text-align: left;
     padding: 12px 16px;
     border-bottom: 1px solid var(--rule);
+    /* Narrower than this and prose cells wrap into unreadable towers. */
+    min-width: 170px;
   }
 
   .prose :global(th) {
