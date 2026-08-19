@@ -52,14 +52,13 @@ const meta = (post: (typeof all)[number]) =>
         <a
           class="card card--raised card--interactive feature"
           href={`/thinking/${featured.id}/`}
+          style={`--feature-accent:${tagAccent(featured.data.tag)}`}
           data-post
           data-tag-value={featured.data.tag}
           data-text={`${featured.data.title} ${featured.data.excerpt} ${featured.data.tag}`.toLowerCase()}
         >
           <div class="feature__panel">
-            <span class="eyebrow" style={`color:${tagAccent(featured.data.tag)}`}>
-              {featured.data.tag}
-            </span>
+            <span class="eyebrow feature__tag">{featured.data.tag}</span>
 
             <svg class="feature__art" viewBox="0 0 260 150" aria-hidden="true">
               <path d="M12 128 L248 128" class="axis" />
@@ -72,7 +71,7 @@ const meta = (post: (typeof all)[number]) =>
               <circle cx="248" cy="30" r="3.6" class="dot" />
             </svg>
 
-            <span class="meta">Most recent</span>
+            <span class="feature__badge">Most recent</span>
           </div>
 
           <div class="feature__body">
@@ -265,11 +264,32 @@ const meta = (post: (typeof all)[number]) =>
   }
 
   /* --------------------------------------------------------- featured -- */
+  /* This card sits on the same paper as the grid below it and used to wear the
+     same chrome, so the only thing marking it as the latest piece was its size
+     — which is not much of a signal once you have scrolled past it. Three
+     things promote it now: a rail in the post's own topic colour, a badge, and
+     more lift than a grid card gets. `--feature-accent` is set inline from
+     tagAccent() so all three stay bound to the category mapping. */
   .feature {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     overflow: hidden;
     padding: 0;
+    border-top: 6px solid var(--feature-accent, var(--accent));
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* .card--interactive already lifts to --shadow-lg on hover, which is where
+     this one rests — so it needs its own deeper hover or the lift reads as
+     nothing happening. */
+  .feature:hover {
+    box-shadow:
+      0 1px 2px rgb(31 28 25 / 4%),
+      0 24px 48px -14px rgb(31 28 25 / 24%);
+  }
+
+  .feature__tag {
+    color: var(--feature-accent, var(--accent));
   }
 
   .feature__panel {
@@ -280,6 +300,20 @@ const meta = (post: (typeof all)[number]) =>
     flex-direction: column;
     justify-content: space-between;
     gap: 24px;
+  }
+
+  /* Ink on the accent rather than the accent on white: at this size the label
+     has to hold its own against the rail above it. */
+  .feature__badge {
+    align-self: flex-start;
+    padding: 6px 13px;
+    border-radius: var(--pill);
+    background: var(--feature-accent, var(--accent));
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 
   .feature__art {
@@ -312,9 +346,9 @@ const meta = (post: (typeof all)[number]) =>
   }
 
   .feature__title {
-    font-size: clamp(26px, 2.8vw, 36px);
-    line-height: 1.12;
-    letter-spacing: -0.014em;
+    font-size: clamp(28px, 3.2vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -0.016em;
   }
 
   .feature__dek {
