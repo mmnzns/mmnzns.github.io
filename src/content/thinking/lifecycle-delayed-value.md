@@ -1,5 +1,5 @@
 ---
-title: "Lifecycle loses for the same reason it's needed"
+title: "Why lifecycle marketing matters before customers see value"
 date: 2026-08-18
 tag: "Lifecycle"
 featured: true
