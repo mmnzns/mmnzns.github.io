@@ -1,8 +1,8 @@
 # mmnzns.github.io
 
 Personal portfolio site for Miguel Monzones — lifecycle and GTM strategist, Vancouver. Built
-with [Astro](https://astro.build), fully static, deployed to GitHub Pages at
-**https://mmnzns.github.io**.
+with [Astro](https://astro.build), fully static, deployed to GitHub Pages and served at
+**https://mnmonzones.com**.
 
 ## Requirements
 
@@ -105,7 +105,10 @@ This is a *user site* (`<username>.github.io`), so it is always served from the 
 and needs no `base` path in `astro.config.mjs`. It also must be a public repository for Pages
 to serve it on a free account.
 
-## Moving to a custom domain
+## The custom domain
+
+Already in place — `public/CNAME` holds `mnmonzones.com`, and `SITE.url` points at it. The
+steps below are the record of how it is wired, for the next time it moves.
 
 1. Add a `public/CNAME` file containing just the domain, e.g. `mnmonzones.com`.
 2. Update `SITE.url` in `src/config.ts` and the `Sitemap:` line in `public/robots.txt`.
