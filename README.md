@@ -139,8 +139,9 @@ meta tags themselves.
 There is deliberately no `dateModified` anywhere. Nothing records when a post was last
 edited, and a made-up freshness date is a claim search engines act on.
 
-Publishing an article needs no work here: the sitemap, both `llms` files and the RSS feed all
-read the same collection.
+Publishing an article feeds the sitemap, both `llms` files and the RSS feed automatically —
+they all read the same collection. The one manual step is `node scripts/build-og-image.mjs`
+for the new article's preview card, and the build fails until you do it.
 
 ## One-off generators
 
@@ -150,10 +151,17 @@ Two scripts produce committed assets rather than build output, so neither runs d
 | Command | Produces | Re-run when |
 | --- | --- | --- |
 | `node scripts/build-icons.mjs` | `public/favicon.ico`, `favicon-32.png`, `apple-touch-icon.png` | the brand mark changes |
-| `node scripts/build-og-image.mjs` | `public/og-image.png` (1200x630 link preview) | the portrait, `SITE.title` or `SITE.role` changes |
+| `node scripts/build-og-image.mjs` | `public/og-image.png` plus one 1200x630 card per article in `public/og/` | an article is added or renamed, a title changes, or the portrait changes |
 
-`build-og-image.mjs` renders a card — the hero portrait beside the name and role — through
-headless Chrome, because the card is set in General Sans and a preview image that quietly
-falls back to a system font is worse than none. It expects Chrome at the macOS default path;
-override with `CHROME=/path/to/binary`. It reads the name and role straight out of
-`src/config.ts`, so the only way the unfurl and the site disagree is forgetting to re-run it.
+`build-og-image.mjs` renders through headless Chrome, because the cards are set in General
+Sans and a preview image that quietly falls back to a system font is worse than none. It
+expects Chrome at the macOS default path; override with `CHROME=/path/to/binary`.
+
+It writes two kinds of card. The site card is the portrait beside the name and role, read from
+`src/config.ts`. Each article gets its own: the headline, its topic chip in that topic's accent
+colour, and the byline — plus the article's own opening image in the photo slot when it has
+one. Titles, topics and colours are all read from the content and from
+`src/data/writing.ts`, so a card cannot show something the site doesn't.
+
+Forgetting to re-run it after publishing is a build failure, not a silent one — the article
+template checks its card exists and names the missing slugs.

@@ -124,9 +124,17 @@ the fallback; a script upgrades it to submit in place. Keep it working without J
   ClaudeBot, PerplexityBot, Google-Extended and the rest explicitly even though `*` already
   permits them, as a record that being quotable was chosen over being withheld. Reversing
   that is a decision for Miguel, not a cleanup.
-- **Publishing an article requires no discoverability work.** The sitemap, both `llms` files
-  and the RSS feed all read the `thinking` collection, so a new Markdown file appears in all
-  four. If you find yourself hand-listing an article somewhere, that's a bug.
+- **Publishing an article requires one manual step.** The sitemap, both `llms` files and the
+  RSS feed all read the `thinking` collection, so a new Markdown file appears in all of them
+  by itself — if you find yourself hand-listing an article somewhere, that's a bug. The
+  exception is its link-preview card: run `node scripts/build-og-image.mjs` and commit
+  `public/og/<slug>.png`. The article template throws when a card is missing, so this cannot
+  ship broken, but the build does stop until you run it.
+- **Every article has its own preview card, so don't point one at the site card.** The card
+  carries the headline and the topic accent, which is why `og:image:alt` differs on an article
+  from everywhere else. Titles longer than about 95 characters drop to the smallest headline
+  size in the generator; past roughly 120 they will start to crowd the card, which is a reason
+  to shorten the title rather than to change the layout.
 
 ## Content and facts
 

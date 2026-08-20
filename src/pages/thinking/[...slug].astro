@@ -1,4 +1,7 @@
 ---
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -10,6 +13,21 @@ import { formatDate, readingTime, wordCount } from '../../utils/format';
 export const getStaticPaths = (async () => {
   const posts = await getCollection('thinking', ({ data }) => !data.draft);
   const sorted = [...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+  /* Every article needs its own link-preview card, and the cards are committed
+     rather than built, so a new post has none until the generator is re-run.
+     Fail here instead of shipping an og:image that 404s — the same bargain
+     cases.ts makes for a project with no case body. */
+  const missing = sorted.filter(
+    (post) =>
+      !existsSync(fileURLToPath(new URL(`../../../public/og/${post.id}.png`, import.meta.url))),
+  );
+  if (missing.length) {
+    throw new Error(
+      `No link-preview card for: ${missing.map((post) => post.id).join(', ')}. ` +
+        'Run `node scripts/build-og-image.mjs` and commit the output.',
+    );
+  }
 
   return sorted.map((post) => ({
     params: { slug: post.id },
@@ -42,6 +60,7 @@ const accent = tagAccent(post.data.tag);
   progress
   ogType="article"
   article={{ published: post.data.date, tag: post.data.tag, wordCount: wordCount(post.body ?? '') }}
+  ogImage={`/og/${post.id}.png`}
   breadcrumbs={[
     { label: 'Writing', href: '/thinking/' },
     { label: post.data.title, href: `/thinking/${post.id}/` },

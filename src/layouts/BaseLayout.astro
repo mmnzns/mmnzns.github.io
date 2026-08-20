@@ -31,6 +31,13 @@ interface Props {
    * Search results render this in place of a bare URL.
    */
   breadcrumbs?: readonly { label: string; href: string }[];
+  /**
+   * Root-relative path to this page's link-preview image, overriding the site
+   * card. Articles point at their own card in `public/og/`. Whatever it is, it
+   * has to be 1200x630 — the width and height are declared in the tags below,
+   * and scripts/build-og-image.mjs is what guarantees the geometry.
+   */
+  ogImage?: string;
 }
 
 const {
@@ -40,6 +47,7 @@ const {
   ogType = 'website',
   article,
   breadcrumbs,
+  ogImage,
 } = Astro.props;
 
 const pageTitle = title
@@ -47,7 +55,11 @@ const pageTitle = title
   : `${SITE.title} — ${SITE.role}`;
 const origin = Astro.site ?? new URL(SITE.url);
 const canonical = new URL(Astro.url.pathname, origin);
-const ogImage = SITE.ogImage ? new URL(SITE.ogImage, origin) : null;
+const ogImagePath = ogImage ?? SITE.ogImage;
+const ogImageUrl = ogImagePath ? new URL(ogImagePath, origin) : null;
+/* The card an article points at carries its own headline, so describing it as
+   the site card would be wrong. */
+const ogImageAlt = article ? `${title} — ${SITE.author}` : `${SITE.author} — ${SITE.role}`;
 
 /* Structured data so a search result for Miguel's name shows the role and
    employer rather than just a page title.
@@ -74,7 +86,7 @@ const person = {
      something the site doesn't. */
   worksFor: { '@type': 'Organization', name: CONTACT.entity, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' } },
   knowsAbout: CATEGORY_ORDER,
-  ...(ogImage ? { image: ogImage.href } : {}),
+  ...(ogImageUrl ? { image: ogImageUrl.href } : {}),
 };
 
 const website = {
@@ -105,7 +117,7 @@ const articleNode = article
       isPartOf: { '@id': siteId },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
       ...(article.wordCount ? { wordCount: article.wordCount } : {}),
-      ...(ogImage ? { image: ogImage.href } : {}),
+      ...(ogImageUrl ? { image: ogImageUrl.href } : {}),
     }
   : null;
 
@@ -165,18 +177,18 @@ const schema = {
          fails rather than writing anything other than 1200x630. Declaring them
          lets a scraper reserve the right space before the image arrives. */
     }
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    {ogImage && <meta property="og:image:width" content="1200" />}
-    {ogImage && <meta property="og:image:height" content="630" />}
-    {ogImage && <meta property="og:image:alt" content={`${SITE.author} — ${SITE.role}`} />}
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:width" content="1200" />}
+    {ogImageUrl && <meta property="og:image:height" content="630" />}
+    {ogImageUrl && <meta property="og:image:alt" content={ogImageAlt} />}
     {article && <meta property="article:published_time" content={article.published.toISOString()} />}
     {article && <meta property="article:section" content={article.tag} />}
     {article && <meta property="article:author" content={SITE.author} />}
 
-    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
 
     <meta name="generator" content={Astro.generator} />
 
