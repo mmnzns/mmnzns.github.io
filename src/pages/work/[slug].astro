@@ -36,7 +36,14 @@ if (!study) {
 const accent = CATEGORY_ACCENT[project.category];
 ---
 
-<BaseLayout title={study.title} description={study.deck}>
+<BaseLayout
+  title={study.title}
+  description={study.deck}
+  breadcrumbs={[
+    { label: 'Work', href: '/work/' },
+    { label: project.title, href: `/work/${project.slug}/` },
+  ]}
+>
   <div class="wrap case-back">
     <a href="/work/">← All work</a>
   </div>

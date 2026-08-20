@@ -1,5 +1,6 @@
 ---
 import { SITE, CONTACT } from '../config';
+import { CATEGORY_ORDER } from '../data/site';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Motion from '../components/Motion.astro';
@@ -14,9 +15,32 @@ interface Props {
   progress?: boolean;
   /** Overrides og:type — articles set this to "article". */
   ogType?: 'website' | 'article';
+  /**
+   * Set on writing pages. Turns the page's schema node into a BlogPosting and
+   * emits the article:* Open Graph tags, so a crawler can tell an article from
+   * a landing page and knows when it was published.
+   */
+  article?: {
+    published: Date;
+    /** The topic chip — becomes articleSection / article:section. */
+    tag: string;
+    wordCount?: number;
+  };
+  /**
+   * Trail for BreadcrumbList, in order, excluding Home — that is prepended.
+   * Search results render this in place of a bare URL.
+   */
+  breadcrumbs?: readonly { label: string; href: string }[];
 }
 
-const { title, description = SITE.description, progress = false, ogType = 'website' } = Astro.props;
+const {
+  title,
+  description = SITE.description,
+  progress = false,
+  ogType = 'website',
+  article,
+  breadcrumbs,
+} = Astro.props;
 
 const pageTitle = title
   ? `${title} ${SITE.titleSeparator} ${SITE.title}`
@@ -26,10 +50,18 @@ const canonical = new URL(Astro.url.pathname, origin);
 const ogImage = SITE.ogImage ? new URL(SITE.ogImage, origin) : null;
 
 /* Structured data so a search result for Miguel's name shows the role and
-   employer rather than just a page title. */
-const personSchema = {
-  '@context': 'https://schema.org',
+   employer rather than just a page title.
+ *
+ * One @graph rather than several loose scripts, with stable @ids, so a crawler
+ * reads one person who authored every article rather than a fresh unnamed
+ * author per page. The ids are fragments on the origin and never change.
+ */
+const personId = `${origin.href}#person`;
+const siteId = `${origin.href}#website`;
+
+const person = {
   '@type': 'Person',
+  '@id': personId,
   name: SITE.author,
   jobTitle: SITE.role,
   description: SITE.description,
@@ -37,6 +69,62 @@ const personSchema = {
   url: origin.href,
   address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' },
   sameAs: [CONTACT.linkedin],
+  /* The consulting entity, and the four categories the work is filed under —
+     both read from data rather than described here, so neither can claim
+     something the site doesn't. */
+  worksFor: { '@type': 'Organization', name: CONTACT.entity, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' } },
+  knowsAbout: CATEGORY_ORDER,
+  ...(ogImage ? { image: ogImage.href } : {}),
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': siteId,
+  url: origin.href,
+  name: SITE.title,
+  description: SITE.description,
+  inLanguage: SITE.lang,
+  publisher: { '@id': personId },
+};
+
+/* No dateModified: nothing records when a post was last edited, and inventing
+   one is a claim about freshness that search engines act on. Omitted until the
+   frontmatter carries it. */
+const articleNode = article
+  ? {
+      '@type': 'BlogPosting',
+      '@id': `${canonical.href}#article`,
+      headline: title,
+      description,
+      url: canonical.href,
+      datePublished: article.published.toISOString(),
+      articleSection: article.tag,
+      inLanguage: SITE.lang,
+      author: { '@id': personId },
+      publisher: { '@id': personId },
+      isPartOf: { '@id': siteId },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
+      ...(article.wordCount ? { wordCount: article.wordCount } : {}),
+      ...(ogImage ? { image: ogImage.href } : {}),
+    }
+  : null;
+
+const breadcrumbNode = breadcrumbs?.length
+  ? {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonical.href}#breadcrumbs`,
+      itemListElement: [{ label: 'Home', href: '/' }, ...breadcrumbs].map((crumb, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.label,
+        item: new URL(crumb.href, origin).href,
+      })),
+    }
+  : null;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [person, website, articleNode, breadcrumbNode].filter(Boolean),
 };
 ---
 
@@ -71,7 +159,19 @@ const personSchema = {
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_CA" />
+    {
+      /* Dimensions are safe to state here because scripts/build-og-image.mjs
+         fails rather than writing anything other than 1200x630. Declaring them
+         lets a scraper reserve the right space before the image arrives. */
+    }
     {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:width" content="1200" />}
+    {ogImage && <meta property="og:image:height" content="630" />}
+    {ogImage && <meta property="og:image:alt" content={`${SITE.author} — ${SITE.role}`} />}
+    {article && <meta property="article:published_time" content={article.published.toISOString()} />}
+    {article && <meta property="article:section" content={article.tag} />}
+    {article && <meta property="article:author" content={SITE.author} />}
 
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={pageTitle} />
@@ -80,7 +180,7 @@ const personSchema = {
 
     <meta name="generator" content={Astro.generator} />
 
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
 
     <Analytics />
   </head>

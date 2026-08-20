@@ -5,7 +5,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import portrait from '../../assets/miguel.png';
 import { tagAccent } from '../../data/writing';
-import { formatDate, readingTime } from '../../utils/format';
+import { formatDate, readingTime, wordCount } from '../../utils/format';
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('thinking', ({ data }) => !data.draft);
@@ -36,7 +36,17 @@ const minutes = readingTime(post.body ?? '');
 const accent = tagAccent(post.data.tag);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.excerpt} progress ogType="article">
+<BaseLayout
+  title={post.data.title}
+  description={post.data.excerpt}
+  progress
+  ogType="article"
+  article={{ published: post.data.date, tag: post.data.tag, wordCount: wordCount(post.body ?? '') }}
+  breadcrumbs={[
+    { label: 'Writing', href: '/thinking/' },
+    { label: post.data.title, href: `/thinking/${post.id}/` },
+  ]}
+>
   <article>
     <header class="wrap article-head">
       <a class="article-head__back" href="/thinking/">← All writing</a>

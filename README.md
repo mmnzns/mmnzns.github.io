@@ -111,12 +111,36 @@ Already in place — `public/CNAME` holds `mnmonzones.com`, and `SITE.url` point
 steps below are the record of how it is wired, for the next time it moves.
 
 1. Add a `public/CNAME` file containing just the domain, e.g. `mnmonzones.com`.
-2. Update `SITE.url` in `src/config.ts` and the `Sitemap:` line in `public/robots.txt`.
+2. Update `SITE.url` in `src/config.ts` — canonicals, the sitemap, `robots.txt` and
+   `llms.txt` all read the origin from there, so nothing else needs touching.
 3. At your DNS provider, point the apex domain at GitHub's Pages IPs with four `A` records
    (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`), and point
    `www` at `mmnzns.github.io` with a `CNAME` record.
 4. In **Settings → Pages**, set the custom domain and enable **Enforce HTTPS** once the
    certificate is issued.
+
+## Discoverability
+
+Four surfaces, all generated from the same content so none of them can drift:
+
+| Route | What it is |
+| --- | --- |
+| `/sitemap-index.xml` | Every page. Articles carry `lastmod` from their publish date; other pages carry none, because a synthetic timestamp on all 31 URLs every deploy is a signal Google discards wholesale. |
+| `/robots.txt` | `src/pages/robots.txt.ts`. Allows everything, then names the AI crawlers explicitly. |
+| `/llms.txt` | A plain-text map of the site — pages, work, every article with its excerpt. |
+| `/llms-full.txt` | Every published article's full Markdown in one file, each labelled with its canonical URL. |
+
+`BaseLayout` emits one JSON-LD `@graph` per page with stable `@id`s, so a crawler reads one
+Person who authored every article rather than a new anonymous author each time. Articles add
+a `BlogPosting` node and `article:*` Open Graph tags; articles and case studies add a
+`BreadcrumbList`. Pages opt in by passing `article` and `breadcrumbs` props — they never write
+meta tags themselves.
+
+There is deliberately no `dateModified` anywhere. Nothing records when a post was last
+edited, and a made-up freshness date is a claim search engines act on.
+
+Publishing an article needs no work here: the sitemap, both `llms` files and the RSS feed all
+read the same collection.
 
 ## One-off generators
 

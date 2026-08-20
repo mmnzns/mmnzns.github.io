@@ -104,6 +104,30 @@ beyond that.
 Contact forms POST to Formspree (`FORM_ENDPOINT` in `src/config.ts`). The plain HTML POST is
 the fallback; a script upgrades it to submit in place. Keep it working without JavaScript.
 
+## Discoverability
+
+- **`robots.txt`, `llms.txt` and `llms-full.txt` are generated routes** under `src/pages/`,
+  not files in `public/`. A static one drifted once already: moving to the custom domain
+  updated `SITE.url`, the sitemap followed, and the hand-typed `Sitemap:` line kept pointing
+  at the old host — which a crawler ignores rather than follows, so the sitemap went unread.
+  Never re-add a static copy; read the origin from config.
+- **Structured data lives in `BaseLayout` as one `@graph`**, with `@id`s that don't change
+  (`#person`, `#website`). Pages opt into extra nodes by passing props — `article={{…}}` adds
+  `BlogPosting` and the `article:*` OG tags, `breadcrumbs={[…]}` adds `BreadcrumbList`. Don't
+  emit a second `ld+json` script from a page; a crawler reading two disconnected graphs sees
+  two different authors.
+- **Never add `dateModified`, and don't backfill it.** No frontmatter records when a post was
+  edited, and a freshness date search engines act on is exactly the kind of invented fact the
+  rules below forbid. If `updated` is ever added to the schema, `astro.config.mjs` and the
+  `BlogPosting` node both need to read it.
+- **The AI crawlers are allowed on purpose.** `src/pages/robots.txt.ts` names GPTBot,
+  ClaudeBot, PerplexityBot, Google-Extended and the rest explicitly even though `*` already
+  permits them, as a record that being quotable was chosen over being withheld. Reversing
+  that is a decision for Miguel, not a cleanup.
+- **Publishing an article requires no discoverability work.** The sitemap, both `llms` files
+  and the RSS feed all read the `thinking` collection, so a new Markdown file appears in all
+  four. If you find yourself hand-listing an article somewhere, that's a bug.
+
 ## Content and facts
 
 Source material lives in `Website MD Repository/`:
