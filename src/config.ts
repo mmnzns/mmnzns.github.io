@@ -23,11 +23,14 @@ export const SITE = {
   lang: 'en',
   /**
    * Link-preview image for Open Graph / Twitter cards, relative to the site
-   * root. Drop a 1200x630 PNG in `public/` and point this at it — until then
-   * it stays null and the image meta tags are omitted rather than pointing at
-   * a URL that 404s.
+   * root. Built by `node scripts/build-og-image.mjs`, which composes the hero
+   * portrait with this file's `title` and `role` — so changing either of those
+   * means regenerating the image, or the unfurl and the site disagree.
+   *
+   * Set to null to omit the image meta tags entirely rather than point them at
+   * a URL that 404s; BaseLayout also drops `twitter:card` back to `summary`.
    */
-  ogImage: null as string | null,
+  ogImage: '/og-image.png' as string | null,
 } as const;
 
 /**

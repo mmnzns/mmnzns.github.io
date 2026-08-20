@@ -118,7 +118,18 @@ steps below are the record of how it is wired, for the next time it moves.
 4. In **Settings → Pages**, set the custom domain and enable **Enforce HTTPS** once the
    certificate is issued.
 
-## To do
+## One-off generators
 
-- [ ] Add a 1200x630 link-preview image at `public/og-image.png` and set `SITE.ogImage` —
-      until then, links shared to LinkedIn or Slack unfurl without an image
+Two scripts produce committed assets rather than build output, so neither runs during
+`npm run build`. Re-run them by hand when their source changes.
+
+| Command | Produces | Re-run when |
+| --- | --- | --- |
+| `node scripts/build-icons.mjs` | `public/favicon.ico`, `favicon-32.png`, `apple-touch-icon.png` | the brand mark changes |
+| `node scripts/build-og-image.mjs` | `public/og-image.png` (1200x630 link preview) | the portrait, `SITE.title` or `SITE.role` changes |
+
+`build-og-image.mjs` renders a card — the hero portrait beside the name and role — through
+headless Chrome, because the card is set in General Sans and a preview image that quietly
+falls back to a system font is worse than none. It expects Chrome at the macOS default path;
+override with `CHROME=/path/to/binary`. It reads the name and role straight out of
+`src/config.ts`, so the only way the unfurl and the site disagree is forgetting to re-run it.
