@@ -20,7 +20,7 @@ const { flush = false } = Astro.props;
       {/* Reopens the consent banner — see ConsentBanner.astro, which binds
           every [data-cookie-settings] link on the page. */}
       <a class="footer__cookies" href="#cookie-settings" data-cookie-settings>Cookie settings</a>
-      <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      <a class="footer__email" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
       <a
         class="footer__social"
         href={CONTACT.linkedin}
@@ -143,6 +143,44 @@ const { flush = false } = Astro.props;
     .footer__card {
       flex-direction: column;
       align-items: flex-start;
+    }
+
+    /* Wrapping put the email beside the cookie link and left the LinkedIn mark
+       stranded on a line of its own. Laid out explicitly instead: the utility
+       link takes the first row, and the two contact routes share the second. */
+    .footer__links {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      column-gap: 10px;
+      row-gap: 0;
+    }
+
+    .footer__cookies {
+      grid-area: 1 / 1 / 2 / -1;
+    }
+
+    .footer__social {
+      grid-area: 2 / 1;
+    }
+
+    /* The address is the longest string in the footer and it now shares its
+       row with the 44px LinkedIn target, so it gives up a little tracking
+       rather than breaking across two lines mid-domain. */
+    .footer__email {
+      grid-area: 2 / 2;
+      font-size: 12px;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* Narrower than an iPhone SE there isn't room for the address beside the
+     icon at any tracking, so it takes a row of its own rather than breaking
+     mid-domain. */
+  @media (max-width: 359px) {
+    .footer__email {
+      grid-area: 3 / 1 / 4 / -1;
     }
   }
 

@@ -1821,7 +1821,7 @@ const BUDGETS = [
     position: absolute;
     top: -16px;
     right: 52px;
-    background: var(--wd-blue);
+    background: var(--wd-butter);
     border: 1.5px solid var(--wd-ink);
     font-weight: 800;
     font-size: 13px;
@@ -2785,6 +2785,23 @@ const BUDGETS = [
       padding-right: 18px;
       padding-top: 66px;
       padding-bottom: 66px;
+    }
+
+    /* Once these stack, a left-aligned button sits off to one side of a
+       full-width box. Each wrapped line centres instead, so the CTA has the
+       same air either side of it. */
+    .hero__ctas {
+      align-items: center;
+      text-align: center;
+    }
+
+    .hero__buttons {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .ctabox {
+      justify-content: center;
     }
 
     .disc {

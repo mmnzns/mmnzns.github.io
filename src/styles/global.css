@@ -542,18 +542,30 @@ p {
 
 /* Segmented control — "The starting point / What we learned", "Shelf / Grid".
    Joined buttons inside one 3px frame; the active one inverts. */
+/* The divider between segments is the frame showing through a 3px gap, not a
+   border on the button. A border only draws between neighbours on the same
+   line, so when a long pair wraps — "Starting point / What we learned" on a
+   phone — the second row lost its rule and the first row kept a stub. The gap
+   draws both, whichever way the buttons land. */
 .segmented {
   display: flex;
   flex-wrap: wrap;
   max-width: 100%;
   border: var(--border);
+  background: var(--ink);
+  gap: 3px;
   align-self: flex-start;
 }
 
 .segmented__btn {
+  /* Never narrower than its own label, and it fills whatever room is left on
+     its line — so a pair that can't sit side by side becomes two full-width
+     rows rather than two ragged ones with white space beside them. */
+  flex: 1 0 auto;
+  min-width: max-content;
   padding: 12px 18px;
   border: 0;
-  background: transparent;
+  background: var(--paper);
   color: var(--ink);
   font-size: 12px;
   font-weight: 700;
@@ -563,10 +575,6 @@ p {
   transition:
     background var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
-}
-
-.segmented__btn + .segmented__btn {
-  border-left: var(--border);
 }
 
 .segmented__btn[aria-pressed='true'] {
