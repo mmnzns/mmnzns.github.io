@@ -679,6 +679,7 @@ const DEFAULT_RECEIPT = 1;
     const tabs = [...methodRoot.querySelectorAll<HTMLButtonElement>('[data-step]')];
     const panels = methodRoot.querySelectorAll<HTMLElement>('[data-step-panel]');
     const indicator = methodRoot.querySelector<HTMLElement>('[data-method-indicator]');
+    const bar = tabs[0]?.parentElement;
     let current = 0;
     let touched = false;
 
@@ -690,6 +691,12 @@ const DEFAULT_RECEIPT = 1;
       });
       for (const panel of panels) panel.hidden = panel.dataset.stepPanel !== String(index);
       if (indicator) indicator.style.transform = `translateX(${index * 100}%)`;
+      /* On a phone the bar scrolls in place, so the active tab can sit past
+         its edge. Scrolling the bar directly — never scrollIntoView — keeps
+         the autoplay from yanking the page itself around. */
+      if (bar && bar.scrollWidth > bar.clientWidth) {
+        bar.scrollTo({ left: tabs[index].offsetLeft - 16, behavior: 'smooth' });
+      }
     }
 
     tabs.forEach((tab, index) => {
@@ -1195,6 +1202,14 @@ const DEFAULT_RECEIPT = 1;
     max-width: 380px;
   }
 
+  /* Both columns must be allowed to shrink below their content, or the tab
+     row's min-content width blows the grid track past the viewport on a
+     phone — the page then pans sideways instead of clipping. */
+  .method__intro,
+  .method__panel {
+    min-width: 0;
+  }
+
   .method__tabs {
     display: flex;
     border-bottom: 5px solid var(--ink);
@@ -1203,6 +1218,7 @@ const DEFAULT_RECEIPT = 1;
 
   .method__tab {
     flex: 1;
+    min-width: 0;
     padding: 0 22px 20px 0;
     border: 0;
     background: transparent;
@@ -1515,9 +1531,25 @@ const DEFAULT_RECEIPT = 1;
       padding: 16px 10px;
     }
 
+    /* Horizontal spines carry full case titles, which nowrap would push
+       past the viewport edge — the widest was 452px on a 375px screen. */
     .shelf__spine span {
       writing-mode: horizontal-tb;
       transform: none;
+      white-space: normal;
+      line-height: 1.3;
+    }
+
+    /* Five uppercase tabs never fit a phone; they scroll inside their own
+       box rather than widening the page. */
+    .method__tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .method__tab {
+      flex: 1 0 auto;
     }
 
     .receipts__read {
