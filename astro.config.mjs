@@ -1,5 +1,5 @@
 // @ts-check
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
@@ -38,6 +38,100 @@ function articleDates() {
 
 const ARTICLE_DATES = articleDates();
 
+/**
+ * URLs from the previous Wix site, which Google still has queued and is
+ * crawling into 404s.
+ *
+ * This map is consumed twice. Astro's `redirects` compiles each entry to a
+ * small HTML file carrying a zero-second meta refresh, a canonical and noindex
+ * — the best GitHub Pages can do with no server, and something Google does
+ * treat as a redirect. `redirectsFile` below turns the same map into a
+ * `_redirects` file, which Cloudflare answers with an actual 301. Add an entry
+ * once and whichever host is serving the domain picks it up.
+ *
+ * Every mapping below was confirmed by matching the old slug against the
+ * article's actual title, not inferred from the URL shape. Wix used three
+ * different prefixes over the site's life (/blog/, /post/, /systemscales/) and
+ * the same article appears under more than one, which is why there are two
+ * entries pointing at build-trust-with-transparent-marketing.
+ *
+ * The odd punctuation is deliberate and must be preserved: Wix kept full stops
+ * inside slugs, turned a straight apostrophe into "-s" ("here-s"), and left a
+ * curly one intact ("it’s"). These are the URLs Google actually holds.
+ */
+const LEGACY_URLS = {
+  '/aboutme': '/about/',
+  '/writing': '/thinking/',
+  '/blog': '/thinking/',
+
+  '/blog/6-strategies-for-leveraging-content-marketing-to-boost-saas-customer-retention':
+    '/thinking/content-marketing-saas-retention/',
+  '/blog/lifecycle-marketing-is-not-a-traffic-strategy.-it\u2019s-a-revenue-pipeline.':
+    '/thinking/lifecycle-is-a-revenue-pipeline/',
+  '/blog/your-seo-content-already-works.-here-s-how-to-make-ai-see-it-too.':
+    '/thinking/make-ai-see-your-seo-content/',
+  '/blog/steal-this-strategy-how-high-trust-saas-companies-practice-transparent-marketing':
+    '/thinking/transparent-marketing/',
+
+  '/post/how-ai-rewrote-search-and-what-that-means-for-seo':
+    '/thinking/how-ai-rewrote-search/',
+  '/post/saas-success-this-is-how-you-can-build-trust-with-transparent-marketing':
+    '/thinking/build-trust-with-transparent-marketing/',
+  '/post/how-to-write-better-ai-prompts-a-simple-framework-for-powerful-results':
+    '/thinking/better-ai-prompts/',
+
+  '/systemscales/saas-success-this-is-how-you-can-build-trust-with-transparent-marketing':
+    '/thinking/build-trust-with-transparent-marketing/',
+};
+
+/**
+ * Writes `_redirects` alongside the built pages.
+ *
+ * Cloudflare reads that file and answers with a real 301 before it looks for a
+ * file to serve - "redirects are always followed, regardless of whether or not
+ * an asset matches the incoming request" - so there these win. GitHub Pages has
+ * no idea the file exists, and falls back to the meta-refresh pages Astro
+ * generates from this same map. One source of truth, correct on both hosts,
+ * which is what lets the domain move without a third state in between.
+ *
+ * Two details, both established by running the thing rather than reading about
+ * it (`wrangler dev`, then curl for the status code):
+ *
+ * Every path is emitted with and without a trailing slash. Matching is literal,
+ * and an unmatched path falls through to the asset - so `/post/x` answered 301
+ * while `/post/x/` quietly answered 200, serving the meta-refresh stub and
+ * throwing away the reason for being on Cloudflare at all. Google holds both
+ * spellings.
+ *
+ * Sources are percent-encoded, and only percent-encoded. Cloudflare normalises
+ * a non-ASCII path before it consults this file, so a rule carrying a literal
+ * curly apostrophe never fires - the request has already become `%E2%80%99` by
+ * the time matching happens. Search Console displays these raw, which is what
+ * makes the encoded form look wrong when it is the only one that works.
+ *
+ * @param {Record<string, string>} map
+ * @returns {import('astro').AstroIntegration}
+ */
+function redirectsFile(map) {
+  return {
+    name: 'legacy-redirects-file',
+    hooks: {
+      'astro:build:done'({ dir, logger }) {
+        const lines = [];
+
+        for (const [from, to] of Object.entries(map)) {
+          const source = encodeURI(from);
+          lines.push(`${source} ${to} 301`);
+          lines.push(`${source}/ ${to} 301`);
+        }
+
+        writeFileSync(new URL('_redirects', dir), `${lines.join('\n')}\n`, 'utf8');
+        logger.info(`_redirects - ${lines.length} rules`);
+      },
+    },
+  };
+}
+
 // https://astro.build/config
 export default defineConfig({
   // `site` is what makes sitemap.xml and canonical URLs come out absolute.
@@ -46,52 +140,10 @@ export default defineConfig({
   // A user site (mmnzns.github.io) is served from the domain root, so no `base`
   // is needed. A project site (github.com/mmnzns/<repo>) would need
   // `base: '/<repo>'` here.
-  /**
-   * URLs from the previous Wix site, which Google still has queued and is
-   * crawling into 404s.
-   *
-   * Static output means these compile to a small HTML file per path carrying a
-   * zero-second meta refresh, a canonical pointing at the destination, and
-   * noindex — GitHub Pages has no server, so a real 301 is not available. Google
-   * treats that as a redirect and passes the signals along; a visitor following
-   * an old LinkedIn link lands on the right page instead of a 404.
-   *
-   * Every mapping below was confirmed by matching the old slug against the
-   * article's actual title, not inferred from the URL shape. Wix used three
-   * different prefixes over the site's life (/blog/, /post/, /systemscales/) and
-   * the same article appears under more than one, which is why there are two
-   * entries pointing at build-trust-with-transparent-marketing.
-   *
-   * The odd punctuation is deliberate and must be preserved: Wix kept full stops
-   * inside slugs, turned a straight apostrophe into "-s" ("here-s"), and left a
-   * curly one intact ("it’s"). These are the URLs Google actually holds.
-   */
-  redirects: {
-    '/aboutme': '/about/',
-    '/writing': '/thinking/',
-    '/blog': '/thinking/',
-
-    '/blog/6-strategies-for-leveraging-content-marketing-to-boost-saas-customer-retention':
-      '/thinking/content-marketing-saas-retention/',
-    '/blog/lifecycle-marketing-is-not-a-traffic-strategy.-it\u2019s-a-revenue-pipeline.':
-      '/thinking/lifecycle-is-a-revenue-pipeline/',
-    '/blog/your-seo-content-already-works.-here-s-how-to-make-ai-see-it-too.':
-      '/thinking/make-ai-see-your-seo-content/',
-    '/blog/steal-this-strategy-how-high-trust-saas-companies-practice-transparent-marketing':
-      '/thinking/transparent-marketing/',
-
-    '/post/how-ai-rewrote-search-and-what-that-means-for-seo':
-      '/thinking/how-ai-rewrote-search/',
-    '/post/saas-success-this-is-how-you-can-build-trust-with-transparent-marketing':
-      '/thinking/build-trust-with-transparent-marketing/',
-    '/post/how-to-write-better-ai-prompts-a-simple-framework-for-powerful-results':
-      '/thinking/better-ai-prompts/',
-
-    '/systemscales/saas-success-this-is-how-you-can-build-trust-with-transparent-marketing':
-      '/thinking/build-trust-with-transparent-marketing/',
-  },
+  redirects: LEGACY_URLS,
 
   integrations: [
+    redirectsFile(LEGACY_URLS),
     sitemap({
       /**
        * `lastmod` only where a real date exists — the articles. Google acts on

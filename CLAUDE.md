@@ -132,14 +132,23 @@ the fallback; a script upgrades it to submit in place. Keep it working without J
   ClaudeBot, PerplexityBot, Google-Extended and the rest explicitly even though `*` already
   permits them, as a record that being quotable was chosen over being withheld. Reversing
   that is a decision for Miguel, not a cleanup.
-- **Old URLs live in `redirects` in `astro.config.mjs`.** The previous Wix site used
-  `/blog/`, `/post/` and `/systemscales/` prefixes, and Google still crawls them. Static
-  output compiles each to an HTML file with a zero-second meta refresh, a canonical and
-  noindex — GitHub Pages has no server, so a real 301 is not on the table. **This is also the
-  only way to rename an article slug without losing it**: change the filename and add the old
-  path here, or every existing link to that piece dies. Confirm a mapping against the
-  article's title rather than inferring it from the URL; the old slugs kept full stops and
-  turned apostrophes into `-s` inconsistently.
+- **Old URLs live in `LEGACY_URLS` in `astro.config.mjs`, and that map feeds two outputs.**
+  The previous Wix site used `/blog/`, `/post/` and `/systemscales/` prefixes, and Google
+  still crawls them. Astro's `redirects` compiles each to an HTML file with a zero-second
+  meta refresh, a canonical and noindex, which is all GitHub Pages can do without a server;
+  the `redirectsFile` integration writes the same map to `dist/_redirects`, which Cloudflare
+  answers with a real 301. Add an entry once — whichever host holds the domain picks it up.
+  **This is also the only way to rename an article slug without losing it**: change the
+  filename and add the old path here, or every existing link to that piece dies. Confirm a
+  mapping against the article's title rather than inferring it from the URL; the old slugs
+  kept full stops and turned apostrophes into `-s` inconsistently.
+- **Don't hand-edit `_redirects`, and don't trust it by reading it.** Two of its rules are
+  non-obvious and both were found by running `wrangler dev` and curling for the status code,
+  not by reasoning: every path needs a trailing-slash twin (an unmatched path falls through
+  to the asset, so `/post/x/` was answering 200 and serving the meta-refresh stub), and
+  sources must be percent-encoded, because Cloudflare normalises the path before it consults
+  the file — a rule containing a literal `’` never fires. If you change the generator, verify
+  the same way; `curl -o /dev/null -w '%{http_code}'` is the whole test.
 - **Publishing an article requires one manual step.** The sitemap, both `llms` files and the
   RSS feed all read the `thinking` collection, so a new Markdown file appears in all of them
   by itself — if you find yourself hand-listing an article somewhere, that's a bug. The
