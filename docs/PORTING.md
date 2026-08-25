@@ -26,10 +26,10 @@ Run from the repo root. The `&` in this repo's absolute path breaks `npm run` on
 so invoke Astro directly.
 
 ```bash
-# v8 lives in "Website - Main Site/" and suffixes every page with -Bold;
+# v8/v9 live in "Website - Main Site/" and suffix every page with -Bold;
 # earlier rounds lived in "MAIN WEBSITE FILES/" without the suffix. The
 # scripts take paths, so only these variables change between rounds.
-D="../Website - Main Site/mnmonzones v8"
+D="../Website - Main Site/mnmonzones v9"
 node scripts/gen-cases.mjs      "$D/Monzones-D-Case-Bold.dc.html"
 node scripts/gen-home.mjs       "$D/Monzones-D-Bold.dc.html"
 node scripts/gen-consulting.mjs "$D/Monzones-D-Consulting-Bold.dc.html"
@@ -52,11 +52,16 @@ node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work-Bold.dc.html"     # the
 ```bash
 node ./node_modules/astro/bin/astro.mjs check
 node ./node_modules/astro/bin/astro.mjs build
-node scripts/check-copy.mjs "../Website - Main Site/mnmonzones v8" dist
+node scripts/check-copy.mjs "../Website - Main Site/mnmonzones v9" dist
 ```
 
-5. Browser sanity pass (the dev server, or `dist/` served locally): home shelf tabs, the
-   consulting practice filter, one case page, about. At 375px and 1440px.
+5. Browser sanity pass (the dev server, or `dist/` served locally): home shelf tabs and
+   method tabs, the consulting "what's included" toggles, one case page, about. At 375px
+   and 1440px.
+   **375px has to be a real 375px layout viewport.** Load each page in a 375px-wide
+   iframe and assert `documentElement.scrollWidth === innerWidth`; screenshot through the
+   same iframe. Headless Chrome's `--window-size=375` lays the page out wider and crops,
+   so it reports overflow on pages that are fine and hides the real thing.
 6. Commit and push — `main` deploys the live site.
 
 ## What each script owns
@@ -112,7 +117,7 @@ One-off prose living in templates. Check these by eye against the design (and tr
 
 ## Verification baseline
 
-`check-copy.mjs` currently reports **3 missing** on a clean port (v8), all intentional:
+`check-copy.mjs` currently reports **3 missing** on a clean port (v9), all intentional:
 
 1. The Case page's "case not found" fallback — unreachable here, because a project
    without a case body fails the build instead of rendering an empty page.
@@ -136,5 +141,11 @@ If a leftover turns out to be intentional, update this list in the same commit.
 - **Design copy is authoritative.** Don't rewrite, tighten or "improve" it in transit.
 - When the design contradicts itself (it has: job titles, org names, date formats),
   flag it to Miguel rather than silently picking a side.
+- **Port the design's intent, not its CSS bugs.** Each round has shipped at least one:
+  v8 had no mobile nav and two elements that widened the viewport; v9's home page has a
+  media query that closes one rule early, so the step-tab overrides meant for phones land
+  at every width, and its consulting hero pins a heading with `white-space: nowrap` that
+  can't fit a phone. Port what the rule was clearly for, note the departure in the page's
+  header comment, and tell Miguel.
 - `npm run check && npm run build` green before committing (via the direct `node`
   invocations above); pushing `main` publishes.

@@ -64,9 +64,19 @@ export function readDesign(path) {
 }
 
 /**
+ * The v9 consulting page paints from four named pastels rather than the four
+ * accents. Every reference to one comes back as the literal token string the
+ * data file re-exports, so a swatch stays a name end to end.
+ */
+const PASTELS = new Proxy(
+  {},
+  { get: (_, key) => (typeof key === 'string' ? `PASTELS.${key}` : undefined) },
+);
+
+/**
  * Evaluate a `const NAME = [ ... ];` array out of a design file. The design
- * references its palette as either `A` or `ACCENTS` depending on the page,
- * so both names are provided.
+ * references its palette as `A`, `ACCENTS` or `PASTELS` depending on the
+ * page, so all three names are provided.
  */
 export function evalArray(html, name) {
   const marker = `const ${name} = [`;
@@ -76,7 +86,7 @@ export function evalArray(html, name) {
   if (end === -1) throw new Error(`Could not find the end of the ${name} array.`);
   const body = html.slice(start + marker.length, end);
   // eslint-disable-next-line no-new-func
-  return new Function('A', 'ACCENTS', `return [${body}]`)(ACCENTS, ACCENTS);
+  return new Function('A', 'ACCENTS', 'PASTELS', `return [${body}]`)(ACCENTS, ACCENTS, PASTELS);
 }
 
 /**

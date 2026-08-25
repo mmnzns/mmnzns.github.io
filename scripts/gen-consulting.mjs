@@ -1,24 +1,32 @@
 /*
  * Regenerates src/data/consulting.ts from the design's consulting page.
  *
- * PRACTICES, ENGAGEMENTS, PROOF, FIT_YES, FIT_NO and START are JS arrays in
- * the design and are evaluated. Two exports have no array behind them —
- * CONSULTING_NUMBERS and WORTH_KNOWING sit inline in the dark band's HTML —
- * so those are scraped from the two markup patterns the design uses for them.
- * Accent hex values become `var(--token)` via ACCENT_TOKEN.
+ * PRACTICES, ENGAGEMENTS, PROOF, FIT_YES, FIT_NO, START, SYSTEMS and DEPTH
+ * are JS arrays in the design and are evaluated. CONSULTING_NUMBERS has no
+ * array behind it — the four stat tiles sit inline in the results grid — so
+ * it is scraped from that markup.
  *
- * The page's own intro prose lives in src/pages/consulting.astro, not here —
- * scripts/check-copy.mjs is what catches drift in that.
+ * v9 paints the page from four named pastels rather than the site's four
+ * accents; evalArray hands those back as `PASTELS.<name>` token strings,
+ * which are emitted unquoted so the data file keeps referring to the swatch
+ * by name.
  *
- * Usage: node scripts/gen-consulting.mjs "<path to Monzones-D-Consulting.dc.html>"
+ * Two design fields are deliberately dropped: a practice's `ill` (the page
+ * imports its own hashed copies of those illustrations from src/assets) and
+ * a proof case's `href` (the repo routes to /work/<slug>/).
+ *
+ * The page's own section prose lives in src/pages/consulting.astro, not here
+ * — scripts/check-copy.mjs is what catches drift in that.
+ *
+ * Usage: node scripts/gen-consulting.mjs "<path to Monzones-D-Consulting-Bold.dc.html>"
  */
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { readDesign, evalArray, smart, q, ACCENT_TOKEN } from './lib/design.mjs';
+import { readDesign, evalArray, smart, q } from './lib/design.mjs';
 
 const source = process.argv[2];
 if (!source) {
-  console.error('Usage: node scripts/gen-consulting.mjs <Monzones-D-Consulting.dc.html>');
+  console.error('Usage: node scripts/gen-consulting.mjs <Monzones-D-Consulting-Bold.dc.html>');
   process.exit(1);
 }
 
@@ -29,34 +37,34 @@ const PROOF = evalArray(html, 'PROOF');
 const FIT_YES = evalArray(html, 'FIT_YES');
 const FIT_NO = evalArray(html, 'FIT_NO');
 const START = evalArray(html, 'START');
-// v8 adds the stack section: six tool-category cards and the depth rows.
 const SYSTEMS = evalArray(html, 'SYSTEMS');
 const DEPTH = evalArray(html, 'DEPTH');
 
-const accent = (hex) => {
-  const token = ACCENT_TOKEN[hex];
-  if (!token) throw new Error(`Unknown accent ${hex} — not one of the four palette colours.`);
-  return `var(--${token})`;
+/** A `PASTELS.butter` token is emitted as code; anything else as a string. */
+const swatch = (value) => {
+  if (!/^PASTELS\.[a-z]+$/.test(String(value))) {
+    throw new Error(`Expected a PASTELS token, got ${value}.`);
+  }
+  return value;
 };
 
 /*
- * The numbers band: pairs of a value div (light ink on the dark band) and a
- * label div, inside the .numbers container.
+ * The results grid: each tile is a pastel-backed div holding a value and a
+ * label. Read in document order so the tiles keep the design's sequence.
  */
-const numbersBlock = html.slice(html.indexOf('class="numbers"'), html.indexOf('{{ proof }}'));
-const NUMBERS = [...numbersBlock.matchAll(
-  /color:#FBF9F6">([^<]+)<\/div>\s*<div[^>]*>([^<]+)<\/div>/g,
-)].map((m) => ({ value: m[1].trim(), label: m[2].trim() }));
-if (NUMBERS.length === 0) throw new Error('Found no entries in the numbers band.');
+const statsBlock = html.slice(html.indexOf('class="statgrid"'), html.indexOf('id="practices"'));
+const NUMBERS = [...statsBlock.matchAll(
+  /background:(#[0-9A-Fa-f]{6});border-radius:24px[^>]*>\s*<div[^>]*>([^<]+)<\/div>\s*<div[^>]*>([^<]+)<\/div>/g,
+)].map((m) => ({ hex: m[1].toUpperCase(), value: m[2].trim(), label: m[3].trim() }));
+if (NUMBERS.length === 0) throw new Error('Found no tiles in the results grid.');
 
-/*
- * "Worth knowing": bullet rows whose dot carries the accent as a background
- * colour, followed by the text span.
- */
-const WORTH = [...html.matchAll(
-  /background:(#[0-9A-Fa-f]{6});margin-top:8px"><\/span><span>([^<]+)<\/span>/g,
-)].map((m) => ({ accent: accent(m[1]), text: m[2].trim() }));
-if (WORTH.length === 0) throw new Error('Found no "Worth knowing" rows.');
+/* The same four swatches the arrays name, resolved back from their hex. */
+const PASTEL_BY_HEX = { '#F5EFD8': 'butter', '#DDEBD2': 'sage', '#C9D2F4': 'peri', '#E9E6DC': 'stone' };
+for (const n of NUMBERS) {
+  const name = PASTEL_BY_HEX[n.hex];
+  if (!name) throw new Error(`Stat tile uses ${n.hex}, which is not one of the four pastels.`);
+  n.bg = `PASTELS.${name}`;
+}
 
 const lines = [];
 const w = (s = '') => lines.push(s);
@@ -72,20 +80,38 @@ const kv = (indent, key, value, width = 100) => {
 w('/**');
 w(' * Consulting page content.');
 w(' *');
-w(" * Engagements declare which practice areas they apply to. Rather than hiding");
-w(' * the ones that don\'t fit, the page dims them and says so — "not for this area"');
-w(' * is more useful to a prospective client than a shorter list.');
+w(' * The v9 design turned this page into a standalone service page — its own');
+w(' * palette, its own nav, its own voice — the sibling of /web-design/. The copy');
+w(' * here is that design’s copy verbatim; the numbers and the platform notes are');
+w(' * the same claims the rest of the site makes, just said more directly.');
+w(' *');
+w(' * Pastels are named rather than hex-repeated: the page paints stat tiles,');
+w(' * engagement chips and case cards from the same four, so a swatch change is a');
+w(' * one-line change here.');
 w(' *');
 w(' * Generated by scripts/gen-consulting.mjs from the design export. Edit the');
 w(' * design file and re-run rather than hand-editing the prose here.');
 w(' */');
+w('');
+w("/** The page's four pastels — see .cn { --cn-* } in pages/consulting.astro. */");
+w('export const PASTELS = {');
+w("  butter: 'var(--cn-butter)',");
+w("  sage: 'var(--cn-sage)',");
+w("  peri: 'var(--cn-peri)',");
+w("  stone: 'var(--cn-stone)',");
+w('} as const;');
 w('');
 w("export type PracticeKey = 'lifecycle' | 'web' | 'ai';");
 w('');
 w('export interface Practice {');
 w('  key: PracticeKey;');
 w('  name: string;');
-w('  accent: string;');
+w('  /** Pastel behind the illustration. */');
+w('  blob: string;');
+w("  /** The blob's own irregular radius — each card leans a different way. */");
+w('  blobShape: string;');
+w('  /** Bullet colour in the expanded "what’s included" list. */');
+w('  dot: string;');
 w('  blurb: string;');
 w('  detail: string;');
 w('  items: readonly string[];');
@@ -97,7 +123,9 @@ for (const p of PRACTICES) {
   w('  {');
   w(`    key: ${q(p.key)},`);
   kv('    ', 'name', smart(p.name));
-  w(`    accent: ${q(accent(p.accent))},`);
+  w(`    blob: ${swatch(p.blob)},`);
+  w(`    blobShape: ${q(p.blobShape)},`);
+  w(`    dot: ${q(p.dot.toLowerCase())},`);
   kv('    ', 'blurb', smart(p.blurb));
   kv('    ', 'detail', smart(p.detail));
   w('    items: [');
@@ -111,15 +139,10 @@ w('');
 w('export interface Engagement {');
 w('  name: string;');
 w('  length: string;');
-w('  /** Practice areas this shape actually fits. */');
-w('  fits: readonly PracticeKey[];');
+w('  /** Pastel behind the length chip. */');
+w('  chip: string;');
 w('  body: string;');
 w('  leave: string;');
-w('  /**');
-w('   * The catch-all at the end of the list. It fits everything by definition, so');
-w("   * it's styled as an invitation to write rather than as another priced shape.");
-w('   */');
-w('  other?: true;');
 w('}');
 w('');
 w('export const ENGAGEMENTS: readonly Engagement[] = [');
@@ -127,8 +150,7 @@ for (const e of ENGAGEMENTS) {
   w('  {');
   kv('    ', 'name', smart(e.name));
   kv('    ', 'length', smart(e.length));
-  w(`    fits: [${e.for.map((f) => q(f)).join(', ')}],`);
-  if (e.other) w('    other: true,');
+  w(`    chip: ${swatch(e.chip)},`);
   kv('    ', 'body', smart(e.body));
   kv('    ', 'leave', smart(e.leave));
   w('  },');
@@ -153,26 +175,28 @@ for (const s of START) {
 }
 w('] as const;');
 w('');
-w('/** Three cases surfaced as proof on the dark band, linked to the full write-ups. */');
+w('/**');
+w(' * Three cases surfaced as proof, linked to the full write-ups. `client` is the');
+w(' * practice area rather than the company — the card leads with the kind of');
+w(' * problem, and the write-up behind it names the client.');
+w(' */');
 w('export const PROOF = [');
 for (const p of PROOF) {
   w('  {');
   w(`    slug: ${q(p.slug)},`);
   kv('    ', 'client', smart(p.client));
-  w(`    accent: ${q(accent(p.accent))},`);
+  w(`    bg: ${swatch(p.bg)},`);
   kv('    ', 'title', smart(p.title));
   kv('    ', 'line', smart(p.line));
   w('  },');
 }
 w('] as const;');
 w('');
-w("/** Headline numbers on the consulting page's dark band. */");
 w('/** The stack section: tool categories, then the platforms known deepest. */');
 w('export const SYSTEMS = [');
 for (const c of SYSTEMS) {
   w('  {');
   kv('    ', 'name', smart(c.name));
-  w(`    accent: '${accent(c.accent)}',`);
   w(`    tools: [${c.tools.map((t) => q(smart(t))).join(', ')}],`);
   w('  },');
 }
@@ -183,23 +207,18 @@ for (const d of DEPTH) {
   w('  {');
   kv('    ', 'name', smart(d.name));
   kv('    ', 'level', smart(d.level));
-  w(`    accent: '${accent(d.accent)}',`);
   kv('    ', 'note', smart(d.note));
   w('  },');
 }
 w('] as const;');
 w('');
+w('/** The four headline numbers. Same claims the case write-ups carry. */');
 w('export const CONSULTING_NUMBERS = [');
 for (const n of NUMBERS) {
-  w(`  { value: ${q(smart(n.value))}, label: ${q(smart(n.label))} },`);
-}
-w('] as const;');
-w('');
-w('export const WORTH_KNOWING = [');
-for (const item of WORTH) {
   w('  {');
-  w(`    accent: ${q(item.accent)},`);
-  kv('    ', 'text', smart(item.text));
+  kv('    ', 'value', smart(n.value));
+  kv('    ', 'label', smart(n.label));
+  w(`    bg: ${swatch(n.bg)},`);
   w('  },');
 }
 w('] as const;');
@@ -209,5 +228,6 @@ const out = resolve('src/data/consulting.ts');
 writeFileSync(out, lines.join('\n'), 'utf8');
 console.log(
   `Wrote ${out}: ${PRACTICES.length} practices, ${ENGAGEMENTS.length} engagements, ` +
-    `${PROOF.length} proof cases, ${NUMBERS.length} numbers, ${WORTH.length} worth-knowing rows.`,
+    `${PROOF.length} proof cases, ${NUMBERS.length} numbers, ${SYSTEMS.length} tool categories, ` +
+    `${DEPTH.length} depth rows.`,
 );

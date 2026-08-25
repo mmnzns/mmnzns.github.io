@@ -41,13 +41,17 @@ beyond that.
   refinement. The design is **light only** — there is deliberately no
   `prefers-color-scheme: dark` block, because this palette inverted is a different design
   rather than the same one at night. Don't add one piecemeal.
-- **The Web Design page (`src/pages/web-design.astro`) looks wrong on purpose.** Its own
-  palette, fonts (Bricolage Grotesque + Caveat, from Google Fonts) and rounded shapes are
-  the point — it separates the offer from the consulting brand while sharing the domain's
-  traffic. It opts out of the site chrome via BaseLayout's `standalone` flag and carries
-  its own nav, footer and motion. Don't "align" it with global.css, and don't move its
-  styles there. Its form POSTs to the same Formspree endpoint with a `service: web-design`
-  field so those leads are tellable apart in the inbox.
+- **The two service pages look wrong on purpose.** `src/pages/web-design.astro` (warm
+  cream, peach/blue, Bricolage Grotesque + Caveat) and, since v9,
+  `src/pages/consulting.astro` (warm cream, terracotta/gold pastels, Cabinet Grotesk +
+  Shantell Sans) each carry their own palette, faces and rounded shapes. That difference is
+  the point: these are the things being sold, and they read as an offer rather than as
+  another chapter of the portfolio. Both opt out of the site chrome via BaseLayout's
+  `standalone` flag and ship their own nav, footer and motion. Don't "align" either with
+  global.css, don't move their styles there, and don't apply the Bold rules above to them —
+  rounded corners and soft shadows are correct *here* and nowhere else. Both forms POST to
+  the same Formspree endpoint with a `service` field (`web-design` / `consulting`) so the
+  leads are tellable apart in the inbox.
 - **Four accents, each bound to a category** — coral/Lifecycle, sky/Leadership &
   Operations, moss/AI & Automation, sun/Web & Analytics. The mapping is declared once in
   `CATEGORY_ACCENT` (`src/data/site.ts`); read it from there rather than picking a colour
@@ -61,10 +65,18 @@ beyond that.
   `hidden` attribute's own rule, which is why global.css forces `[hidden] { display: none }`.
   Both of these shipped broken. When a hover or a toggle "does nothing", check specificity
   before anything else.
-- **The mobile nav is inferred, not designed.** The v8 export's `Monzones-D-Nav-Bold`
+- **The mobile nav is inferred, not designed.** The export's `Monzones-D-Nav-Bold`
   component never shipped — below 900px the export simply has no navigation. SiteHeader's
   toggle-and-panel is this repo's own accessible pattern restyled to match; if a future
-  export ships the real component, replace the panel's look with it.
+  export ships the real component, replace the panel's look with it. (The two service pages
+  are the exception: their designs *do* ship a burger and a panel, so those are ported.)
+- **Check a phone before shipping, and don't trust headless for it.** Two rounds running,
+  the export's own mobile bugs were a row of things that couldn't shrink — a nowrap tab
+  row, a spine label, a heading pinned with `white-space: nowrap`. Desktop Chrome paints
+  over `body { overflow-x: clip }`; a phone widens the layout viewport instead. Measure
+  with a 375px-wide **iframe** (`documentElement.scrollWidth` should equal the viewport)
+  and screenshot through one too — headless Chrome's `--window-size` does *not* give a
+  375px layout viewport, and its screenshots will look broken on pages that are fine.
 - **Components are `.astro` by default and no framework is installed.** Interactive pieces
   are progressively enhanced: every state is rendered server-side, and a small vanilla
   `<script>` toggles `aria-pressed` / `hidden`. Don't reach for React or a `client:*`
