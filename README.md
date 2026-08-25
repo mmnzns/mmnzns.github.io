@@ -129,6 +129,7 @@ Four surfaces, all generated from the same content so none of them can drift:
 | `/robots.txt` | `src/pages/robots.txt.ts`. Allows everything, then names the AI crawlers explicitly. |
 | `/llms.txt` | A plain-text map of the site — pages, work, every article with its excerpt. |
 | `/llms-full.txt` | Every published article's full Markdown in one file, each labelled with its canonical URL. |
+| Legacy paths | `redirects` in `astro.config.mjs` maps the old Wix URLs (`/blog/`, `/post/`, `/systemscales/`, `/aboutme`) onto their current pages. Static output means a meta-refresh page rather than a 301, since Pages has no server. |
 
 `BaseLayout` emits one JSON-LD `@graph` per page with stable `@id`s, so a crawler reads one
 Person who authored every article rather than a new anonymous author each time. Articles add
