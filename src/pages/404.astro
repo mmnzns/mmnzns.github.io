@@ -39,8 +39,11 @@ const destinations = [
 
 <BaseLayout title="Page not found" description="That page doesn't exist.">
   <section class="section--first wrap notfound">
-    <p class="eyebrow notfound__eyebrow">404</p>
-    <h1 class="page-title">This page is not here.</h1>
+    <p class="notfound__kicker">
+      <span class="eyebrow">404</span>
+      <span class="notfound__rule" aria-hidden="true"></span>
+    </p>
+    <h1 class="page-title notfound__title">This page is not here.</h1>
     <p class="lede notfound__lede">
       Either it moved or the link was wrong, and neither of those is your fault. Here is where most
       people are heading anyway.
@@ -69,8 +72,23 @@ const destinations = [
     padding-bottom: clamp(64px, 10vw, 140px);
   }
 
-  .notfound__eyebrow {
+  .notfound__kicker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
     margin-bottom: 26px;
+  }
+
+  .notfound__rule {
+    flex: 1;
+    min-width: 24px;
+    height: 3px;
+    background: var(--ink);
+  }
+
+  .notfound__title {
+    max-width: 860px;
   }
 
   .notfound__report {
@@ -107,7 +125,7 @@ const destinations = [
 
   .notfound__card-title {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: -0.012em;
   }
 

@@ -66,23 +66,34 @@ export const CONTACT = {
 } as const;
 
 /**
- * Primary navigation. Order here is the order rendered in the header, and
- * Consulting sits ahead of Work deliberately: the site now leads with what
- * Miguel is available for rather than with the archive of what he has done.
+ * Primary navigation. The v8 design splits the header in two: these are the
+ * plain site links, and the offerings live in NAV_SERVICES as their own
+ * boxed group, so "what's here" and "what's for sale" read differently.
  */
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'Consulting', href: '/consulting/' },
   { label: 'Work', href: '/work/' },
   { label: 'Writing', href: '/thinking/' },
   { label: 'About', href: '/about/' },
 ] as const;
 
 /**
- * The header's single call to action, kept out of NAV_LINKS so it can be
- * styled and positioned separately.
+ * The services group — rendered inside the sun-outlined box in the header,
+ * and appended to the page list in llms.txt so crawlers see both offerings.
+ * Web Design deliberately looks nothing like the rest of the site (see
+ * src/pages/web-design.astro); it still lives here so it shares the domain's
+ * traffic rather than splitting it.
  */
-export const NAV_CTA = { label: 'Work with me', href: '/consulting/#contact' } as const;
+export const NAV_SERVICES = [
+  { label: 'Consulting', href: '/consulting/' },
+  { label: 'Web Design', href: '/web-design/' },
+] as const;
+
+/**
+ * The header's single call to action. It points at the home page's contact
+ * section — the v8 home carries the primary form — not the consulting page's.
+ */
+export const NAV_CTA = { label: 'Work with me', href: '/#contact' } as const;
 
 /**
  * Formspree endpoint behind every contact form on the site. Forms POST here

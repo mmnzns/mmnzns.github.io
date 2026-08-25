@@ -211,6 +211,99 @@ export const PROOF = [
 ] as const;
 
 /** Headline numbers on the consulting page's dark band. */
+/** The stack section: tool categories, then the platforms known deepest. */
+export const SYSTEMS = [
+  {
+    name: 'Lifecycle & CRM',
+    accent: 'var(--coral)',
+    tools: ['Braze', 'Klaviyo', 'Salesforce Marketing Cloud', 'HubSpot', 'Iterable', 'Marketo', 'ActiveCampaign', 'Intercom', 'Campaign Monitor', 'Mailchimp', 'Omnisend', 'SendGrid', 'SurveyMonkey'],
+  },
+  {
+    name: 'Automation & AI',
+    accent: 'var(--moss)',
+    tools: ['n8n', 'Zapier', 'Make', 'LindyAI', 'Clay', 'OpenAI API', 'Claude', 'Gemini', 'Gumloop', 'Voiceflow'],
+  },
+  {
+    name: 'Analytics & experimentation',
+    accent: 'var(--sky)',
+    tools: ['GA4', 'Google Tag Manager', 'Looker Studio', 'Amplitude', 'Mixpanel', 'Branch Metrics', 'Snowflake', 'BigQuery', 'VWO', 'Optimizely', 'Hotjar'],
+  },
+  {
+    name: 'Web & conversion',
+    accent: 'var(--sun)',
+    tools: ['Webflow', 'WordPress', 'Shopify', 'Figma', 'Instapage', 'Unbounce', 'Squarespace', 'Mouseflow'],
+  },
+  {
+    name: 'Search & visibility',
+    accent: 'var(--sky)',
+    tools: ['Semrush', 'Ahrefs', 'Moz', 'Google Search Console', 'SurferSEO', 'Schema.org', 'PageSpeed Insights'],
+  },
+  {
+    name: 'Data & delivery',
+    accent: 'var(--coral)',
+    tools: ['SQL', 'Snowflake', 'Python (pandas)', 'Segment', 'Hightouch', 'Airtable', 'ClickUp', 'Jira', 'Notion', 'Confluence'],
+  },
+] as const;
+
+export const DEPTH = [
+  {
+    name: 'Braze',
+    level: 'Expert',
+    accent: 'var(--coral)',
+    note:
+      'Rebuilt Mogo’s lifecycle from calendar-based sends to behaviour-triggered journeys across email, push, and SMS. Modular component rebuild cut build time ~75%.',
+  },
+  {
+    name: 'Salesforce Marketing Cloud',
+    level: 'Expert',
+    accent: 'var(--coral)',
+    note:
+      'Journey Builder, AMPscript, and Data Extensions. Built a six-flow lifecycle architecture across 12 markets with regulatory compliance written into the flow logic.',
+  },
+  {
+    name: 'HubSpot',
+    level: 'Expert',
+    accent: 'var(--coral)',
+    note:
+      'Three years running it as a shared platform across two companies — Marketing Hub and CRM — including the AI enrichment pipeline that generated 1–2K sales-ready leads a month.',
+  },
+  {
+    name: 'Marketo',
+    level: 'Advanced',
+    accent: 'var(--moss)',
+    note:
+      'Two years of B2B client consulting through Pilothouse: campaign and program setup, nurture architecture, and lead scoring for longer, multi-touch sales cycles.',
+  },
+  {
+    name: 'n8n',
+    level: 'Advanced',
+    accent: 'var(--moss)',
+    note:
+      'Self-hosted on AWS with 15+ production automations, including AI loan-application routing and compliance validation for lifecycle content.',
+  },
+  {
+    name: 'Zapier',
+    level: 'Advanced',
+    accent: 'var(--moss)',
+    note:
+      'Resident automation lead across two companies: integration architecture, conversion tracking, and the enrichment pipeline behind speed-to-contact.',
+  },
+  {
+    name: 'Webflow',
+    level: 'Expert',
+    accent: 'var(--coral)',
+    note:
+      '40+ builds. Rebuilt five Mogo product sites and moved web ownership from DevOps to Marketing, so the team could ship without a ticket queue.',
+  },
+  {
+    name: 'Other ESPs',
+    level: 'Advanced',
+    accent: 'var(--moss)',
+    note:
+      'Klaviyo, Campaign Monitor, ActiveCampaign, Omnisend, and SurveyMonkey — sender infrastructure, flows, and list operations built across client brands and a 200K-subscriber newsletter.',
+  },
+] as const;
+
 export const CONSULTING_NUMBERS = [
   { value: '24% → 38%', label: 'Activation within two months of the Mogo lifecycle rebuild' },
   { value: '35% → 23%', label: 'First-year churn after the longer-term retention journeys launched' },

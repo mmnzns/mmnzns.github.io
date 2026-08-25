@@ -41,281 +41,287 @@ const accent = CATEGORY_ACCENT[project.category];
   description={study.deck}
   breadcrumbs={[
     { label: 'Work', href: '/work/' },
-    { label: project.title, href: `/work/${project.slug}/` },
+    { label: study.title, href: `/work/${project.slug}/` },
   ]}
 >
-  <div class="wrap case-back">
-    <a href="/work/">← All work</a>
-  </div>
+  <section class="wrap casetop">
+    <a class="casetop__back" href="/work/">← All work</a>
+  </section>
 
-  <article>
-    <header class="wrap case-head">
-      <p class="label-row case-head__meta">
-        <span class="accent-bar" style={`--bar:${accent}`} />
-        <span class="eyebrow">{study.meta}</span>
-      </p>
-      <h1 class="case-head__title">{study.title}</h1>
-      <p class="case-head__deck">{study.deck}</p>
-    </header>
+  <section class="wrap casehead">
+    <p class="label-row casehead__meta">
+      <span class="accent-bar" style={`--bar:${accent}`}></span>
+      <span class="eyebrow eyebrow--muted">{study.meta}</span>
+    </p>
+    <h1 class="page-title casehead__title">{study.title}</h1>
+    <p class="casehead__deck">{study.deck}</p>
+  </section>
 
-    <section class="wrap case-arc">
-      {
-        study.sections.map((section, i) => (
-          <div class="case-arc__row">
-            <div class="case-arc__label">
-              <span class="case-arc__num">{String(i + 1).padStart(2, '0')}</span>
-              <h2 class="case-arc__heading">{section.label}</h2>
-            </div>
-
-            <div class="case-arc__body" data-reveal-group>
-              {section.paras.map((para) => (
-                <p>{para}</p>
-              ))}
-            </div>
-          </div>
-        ))
-      }
-    </section>
-
-    <section class="band case-stats">
-      <div class="wrap">
-        <div class="case-stats__grid">
-          {
-            study.stats.map((stat) => (
-              <div>
-                <p class="stat__value">{stat.value}</p>
-                <p class="stat__label">{stat.label}</p>
-              </div>
-            ))
-          }
-        </div>
-
-        <hr class="band-rule case-stats__rule" />
-
-        <p class="case-stats__outcome">{study.outcome}</p>
-      </div>
-    </section>
-
+  <section class="wrap arcs">
     {
-      study.tech.length > 0 && (
-        <section class="section--tight wrap case-arc">
-          <div class="case-arc__row case-arc__row--flush">
-            <div class="case-arc__label">
-              <h2 class="case-arc__heading">Tech</h2>
-            </div>
-
-            <div class="case-tech">
-              {study.tech.map((tool) => (
-                <div class="case-tech__row">
-                  <p class="case-tech__name">{tool.name}</p>
-                  <p class="case-tech__use">{tool.use}</p>
-                </div>
-              ))}
-            </div>
+      study.sections.map((section, i) => (
+        <div class="arc">
+          <div class="arc__head">
+            <span class="arc__num" aria-hidden="true">
+              0{i + 1}
+            </span>
+            <h2 class="arc__label">{section.label}</h2>
           </div>
-        </section>
-      )
+          <div class="arc__body">
+            {section.paras.map((para) => (
+              <p>{para}</p>
+            ))}
+          </div>
+        </div>
+      ))
     }
-  </article>
+  </section>
 
-  <nav class="section--tight wrap case-nav" aria-label="More work">
-    <a class="card card--interactive case-nav__link" href={`/work/${previous.slug}/`}>
-      <span class="eyebrow">Previous</span>
-      <span class="case-nav__title">{previous.title}</span>
-    </a>
-    <a
-      class="card card--interactive case-nav__link case-nav__link--next"
-      href={`/work/${next.slug}/`}
-    >
-      <span class="eyebrow">Next</span>
-      <span class="case-nav__title">{next.title}</span>
-    </a>
-  </nav>
+  <section class="numbers">
+    <div class="wrap">
+      <div class="numbers__stats">
+        {
+          study.stats.map((stat) => (
+            <div>
+              <p class="numbers__value">{stat.value}</p>
+              <p class="numbers__label">{stat.label}</p>
+            </div>
+          ))
+        }
+      </div>
+      <hr class="band-rule numbers__rule" />
+      <p class="numbers__outcome">{study.outcome}</p>
+    </div>
+  </section>
 
-  <ContactBand />
+  {
+    study.tech.length > 0 && (
+      <section class="wrap techsec">
+        <div class="arc arc--tech">
+          <div class="arc__head">
+            <h2 class="arc__label">Tech</h2>
+          </div>
+          <div class="tech">
+            {study.tech.map((tech) => (
+              <div class="tech__row">
+                <p class="tech__name">{tech.name}</p>
+                <p class="tech__use">{tech.use}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="wrap pn">
+    <a class="card card--interactive pn__link" href={`/work/${previous.slug}/`}>
+      <p class="eyebrow eyebrow--muted">Previous</p>
+      <p class="pn__title">{CASES[previous.slug]?.title ?? previous.title}</p>
+    </a>
+    <a class="card card--interactive pn__link pn__link--next" href={`/work/${next.slug}/`}>
+      <p class="eyebrow eyebrow--muted">Next</p>
+      <p class="pn__title">{CASES[next.slug]?.title ?? next.title}</p>
+    </a>
+  </section>
+
+  <ContactBand variant="panel" />
 </BaseLayout>
 
 <style>
-  .case-back {
+  .casetop {
     padding-top: 48px;
+  }
+
+  .casetop__back {
     font-size: 14px;
+    font-weight: 600;
     color: var(--ink-2);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 
-  .case-head {
-    padding-top: 40px;
+  .casehead {
+    padding-top: 24px;
   }
 
-  .case-head__meta {
+  .casehead__meta {
     margin-bottom: 26px;
   }
 
-  .case-head__title {
+  .casehead__title {
     max-width: 960px;
-    font-size: clamp(36px, 5.6vw, 74px);
-    line-height: 1.03;
-    letter-spacing: -0.02em;
   }
 
-  .case-head__deck {
+  .casehead__deck {
     margin-top: 32px;
     max-width: 660px;
     font-size: clamp(19px, 2.1vw, 24px);
     line-height: 1.5;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.01em;
     color: var(--ink-deck);
   }
 
-  .case-arc {
-    padding-top: clamp(56px, 8vw, 96px);
+  .arcs {
+    padding-top: 96px;
   }
 
-  .case-arc__row {
+  .arc {
+    padding: 46px 0;
+    border-top: var(--border);
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding-block: 46px;
-    border-top: 1px solid var(--rule);
+    gap: 22px;
   }
 
-  .case-arc__row--flush {
-    border-top: 0;
-    padding-top: 0;
-  }
-
-  .case-arc__label {
+  .arc__head {
     display: flex;
     align-items: baseline;
     gap: 14px;
   }
 
-  .case-arc__num {
+  .arc__num {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 700;
     color: #c0b8ae;
     font-variant-numeric: tabular-nums;
   }
 
-  .case-arc__heading {
+  .arc__label {
     font-size: 20px;
-    letter-spacing: -0.008em;
+    letter-spacing: -0.034em;
   }
 
-  .case-arc__body {
+  .arc__body {
     display: flex;
     flex-direction: column;
     gap: 20px;
     max-width: 680px;
   }
 
-  .case-arc__body p {
+  .arc__body p {
     font-size: 18px;
     line-height: 1.66;
   }
 
-  .case-stats {
+  @media (min-width: 800px) {
+    .arc {
+      grid-template-columns: 0.85fr 2fr;
+      gap: 48px;
+    }
+  }
+
+  .numbers {
     margin-top: 90px;
+    background: var(--dark);
+    color: var(--on-dark);
+    padding: clamp(70px, 8vw, 110px) 0;
   }
 
-  .case-stats__grid {
+  .numbers__stats {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 40px;
   }
 
-  .case-stats .stat__value {
+  .numbers__value {
     font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
     letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--on-dark);
   }
 
-  .case-stats .stat__label {
+  .numbers__label {
     margin-top: 14px;
+    font-size: 14px;
+    color: var(--on-dark-3);
+    line-height: 1.5;
+    max-width: 240px;
   }
 
-  .case-stats__rule {
+  .numbers__rule {
     margin-block: clamp(44px, 5vw, 64px);
   }
 
-  .case-stats__outcome {
+  .numbers__outcome {
     max-width: 820px;
     font-size: clamp(19px, 2.2vw, 27px);
     line-height: 1.45;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.012em;
     color: var(--sun);
   }
 
-  .case-tech {
+  .techsec {
+    padding-top: 110px;
+  }
+
+  .arc--tech {
+    padding: 0;
+    border-top: 0;
+  }
+
+  .tech {
     display: flex;
     flex-direction: column;
   }
 
-  .case-tech__row {
+  .tech__row {
+    padding: 18px 0;
+    border-bottom: var(--border);
     display: grid;
     grid-template-columns: 1fr;
-    gap: 6px;
-    padding-block: 18px;
-    border-bottom: 1px solid var(--rule);
+    gap: 4px;
   }
 
-  .case-tech__name {
+  .tech__name {
     font-size: 17px;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.005em;
   }
 
-  .case-tech__use {
+  .tech__use {
     font-size: 15px;
-    line-height: 1.55;
     color: var(--ink-2);
+    line-height: 1.55;
   }
 
-  .case-nav {
+  @media (min-width: 800px) {
+    .tech__row {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 32px;
+    }
+  }
+
+  .pn {
+    padding-top: 100px;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 18px;
   }
 
-  .case-nav__link {
+  .pn__link {
     padding: 28px 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
   }
 
-  .case-nav__link--next {
+  .pn__link--next {
     text-align: right;
   }
 
-  .case-nav__title {
+  .pn__title {
+    margin-top: 10px;
     font-size: 19px;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.25;
   }
 
-  @media (min-width: 720px) {
-    .case-stats__grid {
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 40px;
-    }
-
-    .case-nav {
+  @media (min-width: 700px) {
+    .pn {
       grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (min-width: 900px) {
-    .case-arc__row {
-      grid-template-columns: 250px minmax(0, 1fr);
-      gap: 56px;
-    }
-
-    .case-tech__row {
-      grid-template-columns: 230px 1fr;
-      gap: 24px;
-      align-items: baseline;
     }
   }
 </style>

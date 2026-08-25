@@ -98,6 +98,21 @@ const ROLES = new Function(
 )();
 if (ROLES.length !== 5) throw new Error(`Expected 5 roles, found ${ROLES.length}.`);
 
+/*
+ * v8 adds a skills grid ("What I do, and what I do it in"), declared as a
+ * SKILLS array inside the design's renderVals. Multi-line, so the end anchor
+ * is the closing `];` on its own indentation rather than the first `]`.
+ */
+const skillsStart = html.indexOf('const SKILLS = [');
+if (skillsStart === -1) throw new Error('Could not find `const SKILLS = [` in the design file.');
+const skillsEnd = html.indexOf('\n    ];', skillsStart);
+if (skillsEnd === -1) throw new Error('Could not find the end of the SKILLS array.');
+// eslint-disable-next-line no-new-func
+const SKILLS = new Function(
+  `return [${html.slice(skillsStart + 'const SKILLS = ['.length, skillsEnd)}]`,
+)();
+if (SKILLS.length !== 8) throw new Error(`Expected 8 skill groups, found ${SKILLS.length}.`);
+
 const videoHref = html.match(/href="(https:\/\/youtu\.be\/[^"]+)"/);
 const videoLabel = html.match(/▶<\/span>\s*([^<]+?)\s*<\/a>/);
 if (!videoHref || !videoLabel) throw new Error('Could not find the intro video link.');
@@ -197,6 +212,29 @@ w(' * are used in the `meta` line of every case study in ./cases.ts. If one chan
 w(' * it has to change in both places, or a recruiter reading a case page and a');
 w(' * recruiter reading this list see two different job titles.');
 w(' */');
+w('/**');
+w(' * The skills grid: eight groups, each with a one-line summary and the tools');
+w(" * behind it. Accents reuse the site's category tokens.");
+w(' */');
+w('export const SKILLS = [');
+const ACCENT_TOKEN = {
+  '#F2603F': 'var(--coral)',
+  '#F5B841': 'var(--sun)',
+  '#3E8FD8': 'var(--sky)',
+  '#3FA981': 'var(--moss)',
+};
+for (const g of SKILLS) {
+  const token = ACCENT_TOKEN[g.accent];
+  if (!token) throw new Error(`Unmapped skill accent ${g.accent}`);
+  w('  {');
+  kv('    ', 'name', smart(g.name));
+  w(`    accent: '${token}',`);
+  kv('    ', 'skills', smart(g.skills));
+  w(`    tools: [${g.tools.map((t) => q(smart(t))).join(', ')}],`);
+  w('  },');
+}
+w('] as const;');
+w('');
 w('export const ROLES = [');
 for (const r of ROLES) {
   w('  {');

@@ -8,48 +8,117 @@ import ContactSection from '../components/ContactSection.astro';
 import portrait from '../assets/miguel.png';
 import { SYMPTOMS, FEATURED_CASES, METHOD, RECEIPTS } from '../data/home';
 import { CATEGORY_ACCENT } from '../data/site';
-import { TAGS, tagAccent } from '../data/writing';
+import { tagAccent } from '../data/writing';
 import { formatDate, readingTime } from '../utils/format';
 
 const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
+
+/* The card grid runs six to a page; the chips filter it. Both are enhancements
+   on top of a server-rendered first page. */
+const PER_PAGE = 6;
+const CHIPS = ['All', 'Lifecycle', 'AI & automation', 'Search', 'Positioning'] as const;
+
+const cardData = posts.map((post) => ({
+  slug: post.id,
+  tag: post.data.tag,
+  title: post.data.shortTitle ?? post.data.title,
+  meta: `${formatDate(post.data.date)} · ${readingTime(post.body ?? '')} min read`,
+}));
+
+/* The hero's four service slabs — the same four accents the categories use,
+   but named as disciplines rather than archive groups. */
+const SLABS = [
+  { name: 'Lifecycle', accent: 'var(--coral)' },
+  { name: 'GTM', accent: 'var(--sun)' },
+  { name: 'Automation', accent: 'var(--sky)' },
+  { name: 'Operations', accent: 'var(--moss)' },
+] as const;
+
+/* Career-wide figures. Each one exists elsewhere on the site — the years in
+   the site description, the markets and users in the About page's totals, the
+   activation lift in the Mogo case — so nothing here is claimed only once. */
+const HERO_STATS = [
+  { value: '11', label: 'Years building growth systems', accent: 'var(--coral)' },
+  { value: '14', label: 'Markets shipped into worldwide', accent: 'var(--sun)' },
+  { value: '24 → 38%', label: 'Activation lift in two months', accent: 'var(--sky)' },
+  { value: '1.5M+', label: 'Users managed across lifecycles', accent: 'var(--moss)' },
+] as const;
+
+/* The design opens the numbers band on Retention rather than the first tab. */
+const DEFAULT_RECEIPT = 1;
 ---
 
-<BaseLayout>
+<BaseLayout footerFlush>
   {/* ------------------------------------------------------------- hero -- */}
-  <section class="section--first wrap" id="top">
-    <div class="hero">
+  <section class="section--first wrap--home" id="top">
+    <div class="kicker">
+      <span class="eyebrow">Vancouver, BC</span>
+      <span class="kicker__rule" aria-hidden="true"></span>
+      <span class="kicker__avail eyebrow"
+        ><span class="kicker__dot" aria-hidden="true"></span>Available</span
+      >
+    </div>
+
+    <h1 class="display hero__line">Hi, I’m Miguel.</h1>
+
+    <div class="hero__rule" aria-hidden="true"></div>
+
+    <div class="slabs">
+      {
+        SLABS.map((slab) => (
+          <span class="slabs__item">
+            <span class="slabs__mark" style={`background:${slab.accent}`} aria-hidden="true" />
+            {slab.name}
+          </span>
+        ))
+      }
+    </div>
+
+    <div class="statgrid">
+      {
+        HERO_STATS.map((stat) => (
+          <div class="card statcard">
+            <span class="statcard__mark" style={`background:${stat.accent}`} aria-hidden="true" />
+            <span class="statcard__value">{stat.value}</span>
+            <span class="statcard__label">{stat.label}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="split">
       <div>
-        <p class="eyebrow hero__place">Vancouver, BC</p>
-        <h1 class="display">Hi, I’m Miguel.</h1>
-        <p class="hero__tagline">
+        <p class="split__tagline">
           I work across lifecycle, GTM, and automation—usually where the real problem is a little
           upstream from the obvious one.
         </p>
 
-        <div class="hero__id">
-          {/*
-            The source is 1024x1536. Asking for a square here would make Astro
-            resize it to a square first, squashing the photo — and the CSS crop
-            below would then frame the wrong part of a distorted image, which
-            is why the face sat too low. Keep the 2:3 ratio and let
-            `object-fit: cover` with `object-position` do the cropping, exactly
-            as the design does.
-          */}
-          <Image
-            src={portrait}
-            alt="Miguel Monzones"
-            width={264}
-            height={396}
-            loading="eager"
-            fetchpriority="high"
-          />
-          <p class="hero__where">Consulting and open to the right senior role</p>
+        <div class="split__id">
+          <div class="split__photo">
+            {/*
+              The source is 1024x1536. Keep the ratio and let `object-fit:
+              cover` with `object-position` do the cropping, exactly as the
+              design does — resizing to a square first would squash the face.
+            */}
+            <Image
+              src={portrait}
+              alt="Miguel Monzones"
+              width={336}
+              height={504}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+          <div class="split__status">
+            <span class="eyebrow eyebrow--muted">Status</span>
+            <p>Consulting, and open to the right senior role.</p>
+          </div>
         </div>
       </div>
 
-      <div class="hero__intro" data-reveal-group>
+      <div class="split__intro" data-reveal-group>
         <p>
           I’ve spent the last eleven years helping teams understand why customers stall, drop off,
           or walk away—and building the systems that help them move forward.
@@ -65,20 +134,27 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
           data behind the journey, or the way the systems connect.
         </p>
         <p>
-          Lately, much of that work has involved automation: building lifecycle systems that respond
-          to what people actually do, stay reliable under real conditions, and are straightforward
-          for teams to own.
+          Lately, much of that work has involved automation: building lifecycle systems that
+          respond to what people actually do, stay reliable under real conditions, and are
+          straightforward for teams to own.
         </p>
       </div>
     </div>
+  </section>
 
-    {/* ------------------------------------------------ the symptom card -- */}
-    <div class="symptom">
-      <p class="symptom__rail eyebrow">What that looks like in practice</p>
+  {/* ------------------------------------------- 01 · the symptom card -- */}
+  <section class="band band--terracotta symptom-band">
+    <div class="wrap--home">
+      <div class="numbered">
+        <span class="numbered__n" aria-hidden="true">01</span>
+        <h2 class="symptom-band__title">What that looks like in practice</h2>
+      </div>
 
-      <div class="card card--raised symptom__card" data-symptom>
+      <div class="card card--raised symptom" data-symptom>
         <div class="symptom__body">
-          <p class="eyebrow" data-symptom-label>What we were seeing</p>
+          <p class="eyebrow eyebrow--muted symptom__label" data-symptom-label>
+            What we were seeing
+          </p>
           <p class="symptom__text" data-symptom-text>{SYMPTOMS[0].ask}</p>
         </div>
 
@@ -87,7 +163,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
             Look underneath
           </button>
           <button type="button" class="btn btn--ghost" data-symptom-next>Show me another</button>
-          <p class="symptom__count" data-symptom-count>1 of {SYMPTOMS.length}</p>
+          <p class="symptom__count" data-symptom-count>1 / {SYMPTOMS.length}</p>
         </div>
       </div>
     </div>
@@ -116,9 +192,9 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
         // The flipped answer is prose, not a headline, so it renders at body
         // size rather than the front's larger, tighter-set question.
         root.dataset.flipped = String(flipped);
-        flip.textContent = flipped ? '← Back to the starting point' : 'Look underneath';
+        flip.textContent = flipped ? '← Back to the start' : 'Look underneath';
         flip.setAttribute('aria-pressed', String(flipped));
-        count.textContent = `${index + 1} of ${SYMPTOMS.length}`;
+        count.textContent = `${index + 1} / ${SYMPTOMS.length}`;
       }
 
       flip.addEventListener('click', () => {
@@ -136,31 +212,34 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
   <LogoMarquee />
 
-  {/* ------------------------------------------------------------- work -- */}
+  {/* -------------------------------------------------------- 02 · work -- */}
   <section class="section" id="work">
-    <div class="wrap work__head">
-      <div>
-        <p class="eyebrow">Work</p>
-        <h2 class="section-title">A few things I’ve helped build.</h2>
+    <div class="wrap--home">
+      <div class="numbered">
+        <span class="numbered__n" aria-hidden="true">02</span>
+        <h2 class="work__title">A few things I’ve helped build.</h2>
+      </div>
+
+      <div class="work__head">
         <p class="lede work__sub">
           Each one started with a real business problem. The useful part was understanding what sat
           underneath it—and working with the people closest to the problem to build something
           better.
         </p>
-      </div>
 
-      <div class="segmented segmented--bare" role="group" aria-label="Layout">
-        <button type="button" class="segmented__btn" data-view="shelf" aria-pressed="true">
-          ☰ Shelf
-        </button>
-        <button type="button" class="segmented__btn" data-view="grid" aria-pressed="false">
-          ⊞ Grid
-        </button>
+        <div class="segmented" role="group" aria-label="Layout">
+          <button type="button" class="segmented__btn" data-view="shelf" aria-pressed="true">
+            Shelf
+          </button>
+          <button type="button" class="segmented__btn" data-view="grid" aria-pressed="false">
+            Grid
+          </button>
+        </div>
       </div>
     </div>
 
     {/* Shelf: one case open, the rest collapsed to spines beside it. */}
-    <div class="wrap wrap--wide shelf" data-view-panel="shelf">
+    <div class="shelf" data-view-panel="shelf">
       {
         FEATURED_CASES.map((item, i) => (
           <article class="card card--raised shelf__case" data-case-panel={i} hidden={i !== 0}>
@@ -180,7 +259,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
               <div class="segmented" role="group" aria-label="Which part of the story">
                 <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
-                  The starting point
+                  Starting point
                 </button>
                 <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
                   What we learned
@@ -188,15 +267,19 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
               </div>
 
               <div class="shelf__copy" data-copy="ask">
-                {item.brief.map((para) => <p>{para}</p>)}
+                {item.brief.map((para) => (
+                  <p>{para}</p>
+                ))}
               </div>
               <div class="shelf__copy" data-copy="found" hidden>
-                {item.read.map((para) => <p>{para}</p>)}
+                {item.read.map((para) => (
+                  <p>{para}</p>
+                ))}
               </div>
 
               <p class="shelf__metric">
                 <span class="shelf__metric-value">{item.metric}</span>
-                <span class="meta">{item.note}</span>
+                <span class="shelf__metric-note">{item.note}</span>
               </p>
             </div>
           </article>
@@ -214,7 +297,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
               style={`--bar:${CATEGORY_ACCENT[item.category]}`}
               title={item.client}
             >
-              <span>{item.client} · {item.title}</span>
+              <span>{item.title}</span>
             </button>
           ))
         }
@@ -222,10 +305,10 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     </div>
 
     {/* Grid: all four at once, for anyone who'd rather scan than click. */}
-    <div class="wrap grid-view" data-view-panel="grid" hidden>
+    <div class="wrap--home grid-view" data-view-panel="grid" hidden>
       {
         FEATURED_CASES.map((item) => (
-          <article class="card card--raised grid-view__card">
+          <article class="card grid-view__card">
             <p class="label-row">
               <span class="accent-bar" style={`--bar:${CATEGORY_ACCENT[item.category]}`} />
               <span class="eyebrow">{item.client}</span>
@@ -237,7 +320,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
             <div class="segmented" role="group" aria-label="Which part of the story">
               <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
-                The starting point
+                Starting point
               </button>
               <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
                 What we learned
@@ -245,15 +328,19 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
             </div>
 
             <div class="grid-view__copy" data-copy="ask">
-              {item.brief.map((para) => <p>{para}</p>)}
+              {item.brief.map((para) => (
+                <p>{para}</p>
+              ))}
             </div>
             <div class="grid-view__copy" data-copy="found" hidden>
-              {item.read.map((para) => <p>{para}</p>)}
+              {item.read.map((para) => (
+                <p>{para}</p>
+              ))}
             </div>
 
             <p class="shelf__metric">
               <span class="grid-view__metric-value">{item.metric}</span>
-              <span class="meta">{item.note}</span>
+              <span class="shelf__metric-note">{item.note}</span>
             </p>
           </article>
         ))
@@ -261,76 +348,80 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     </div>
   </section>
 
-  {/* ----------------------------------------------------------- method -- */}
-  <section class="section wrap" id="method">
-    <div class="method">
-      <div class="method__intro">
-        <p class="eyebrow">How I work</p>
-        <h2 class="section-title">Understand first. Then build.</h2>
-        <p class="method__sub">
-          The problems change, but the rhythm is usually the same: listen to the people closest to
-          the work, trace what’s happening, agree on what success looks like, build, and learn from
-          the result.
-        </p>
-      </div>
-
-      <div class="method__panel" data-method>
-        <div class="method__tabs" role="tablist" aria-label="Method steps">
-          {
-            METHOD.map((step, i) => (
-              <button
-                type="button"
-                role="tab"
-                class="method__tab"
-                id={`method-tab-${i}`}
-                aria-controls={`method-panel-${i}`}
-                aria-selected={i === 0 ? 'true' : 'false'}
-                tabindex={i === 0 ? 0 : -1}
-                data-step={i}
-              >
-                <span class="method__num">0{i + 1}</span>
-                {step.name}
-              </button>
-            ))
-          }
-          <span
-            class="method__indicator"
-            aria-hidden="true"
-            style={`width:${100 / METHOD.length}%`}
-            data-method-indicator></span>
+  {/* ------------------------------------------------------ 03 · method -- */}
+  <section class="band band--sun method-band" id="method">
+    <div class="wrap--home">
+      <div class="method">
+        <div class="method__intro">
+          <div class="numbered">
+            <span class="numbered__n" aria-hidden="true">03</span>
+            <span class="eyebrow">How I work</span>
+          </div>
+          <h2 class="method__title">Understand first. Then build.</h2>
+          <p class="method__sub">
+            The problems change, but the rhythm is usually the same: listen to the people closest
+            to the work, trace what’s happening, agree on what success looks like, build, and learn
+            from the result.
+          </p>
         </div>
 
-        <div class="card card--raised method__body">
-          {
-            METHOD.map((step, i) => (
-              <div
-                role="tabpanel"
-                id={`method-panel-${i}`}
-                aria-labelledby={`method-tab-${i}`}
-                data-step-panel={i}
-                hidden={i !== 0}
-              >
-                <p class="eyebrow">{step.source}</p>
-                <p class="method__example">{step.example}</p>
-              </div>
-            ))
-          }
+        <div class="method__panel" data-method>
+          <div class="method__tabs" role="tablist" aria-label="Method steps">
+            {
+              METHOD.map((step, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  class="method__tab"
+                  id={`method-tab-${i}`}
+                  aria-controls={`method-panel-${i}`}
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  tabindex={i === 0 ? 0 : -1}
+                  data-step={i}
+                >
+                  <span class="method__num">0{i + 1}</span>
+                  {step.name}
+                </button>
+              ))
+            }
+            <span
+              class="method__indicator"
+              aria-hidden="true"
+              style={`width:${100 / METHOD.length}%`}
+              data-method-indicator></span>
+          </div>
+
+          <div class="card card--raised method__body">
+            {
+              METHOD.map((step, i) => (
+                <div
+                  role="tabpanel"
+                  id={`method-panel-${i}`}
+                  aria-labelledby={`method-tab-${i}`}
+                  data-step-panel={i}
+                  hidden={i !== 0}
+                >
+                  <p class="eyebrow eyebrow--muted method__source">{step.source}</p>
+                  <p class="method__example">{step.example}</p>
+                </div>
+              ))
+            }
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  {/* --------------------------------------------------------- receipts -- */}
-  <section class="band" id="numbers">
-    <div class="wrap">
+  {/* -------------------------------------------------- 04 · receipts -- */}
+  <section class="band receipts" id="numbers">
+    <div class="wrap--home">
+      <div class="numbered">
+        <span class="numbered__n numbered__n--on-dark" aria-hidden="true">04</span>
+        <h2 class="receipts__title">A few numbers—and the work behind them.</h2>
+      </div>
+
       <div class="receipts__head">
-        <div>
-          <p class="eyebrow">Numbers</p>
-          <h2 class="section-title">A few numbers—and the work behind them.</h2>
-          <p class="lede receipts__sub">
-            The result matters. So does the context that explains why it moved.
-          </p>
-        </div>
+        <p class="receipts__sub">The result matters. So does the context that explains why it moved.</p>
 
         <div class="receipts__tabs" role="tablist" aria-label="Numbers">
           {
@@ -338,11 +429,12 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
               <button
                 type="button"
                 role="tab"
-                class="receipts__tab"
+                class="chip"
                 id={`receipt-tab-${i}`}
                 aria-controls={`receipt-panel-${i}`}
-                aria-selected={i === 0 ? 'true' : 'false'}
-                tabindex={i === 0 ? 0 : -1}
+                aria-selected={i === DEFAULT_RECEIPT ? 'true' : 'false'}
+                aria-pressed={i === DEFAULT_RECEIPT ? 'true' : 'false'}
+                tabindex={i === DEFAULT_RECEIPT ? 0 : -1}
                 data-receipt={i}
               >
                 {r.name}
@@ -361,7 +453,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
               aria-labelledby={`receipt-tab-${i}`}
               class="receipts__panel"
               data-receipt-panel={i}
-              hidden={i !== 0}
+              hidden={i !== DEFAULT_RECEIPT}
             >
               <div>
                 {r.bars ? (
@@ -372,7 +464,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
                         <span>{r.bars.beforeLabel}</span>
                       </p>
                       <div class="bars__track">
-                        <div class="bars__fill" data-bar style={`--w:${r.bars.before}%`} />
+                        <div class="bars__fill" style={`width:${r.bars.before}%`} />
                       </div>
                     </div>
                     <div class="bars__row">
@@ -381,11 +473,7 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
                         <span>{r.bars.afterLabel}</span>
                       </p>
                       <div class="bars__track">
-                        <div
-                          class="bars__fill bars__fill--accent"
-                          data-bar
-                          style={`--w:${r.bars.after}%`}
-                        />
+                        <div class="bars__fill bars__fill--accent" style={`width:${r.bars.after}%`} />
                       </div>
                     </div>
                   </div>
@@ -409,491 +497,546 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     </div>
   </section>
 
-  {/* ---------------------------------------------------------- writing -- */}
-  <section class="section wrap" id="writing">
-    <div class="writing">
-      <div class="writing__rail">
-        <p class="eyebrow">Writing</p>
-        <h2 class="section-title--sm writing__title">Things I’ve written.</h2>
-        <p class="writing__sub">
-          Mostly lifecycle, AI, and how search is changing. I write to work out what I actually
-          think—and to share what I’ve learned while doing the work.
-        </p>
+  {/* --------------------------------------------------- 05 · writing -- */}
+  <section class="section wrap--home" id="writing">
+    <div class="numbered">
+      <span class="numbered__n" aria-hidden="true">05</span>
+      <h2 class="work__title">Things I’ve written.</h2>
+    </div>
 
-        <div class="writing__chips" role="group" aria-label="Filter writing by topic">
-          <button type="button" class="chip" data-tag="All" aria-pressed="true">All</button>
-          {
-            TAGS.map((tag) => (
-              <button type="button" class="chip" data-tag={tag} aria-pressed="false">
-                {tag}
-              </button>
-            ))
-          }
-        </div>
+    <div class="writing__head">
+      <p class="lede writing__sub">
+        Mostly lifecycle, AI, and how search is changing. I write to work out what I actually
+        think—and to share what I’ve learned while doing the work.
+      </p>
 
-        <p class="meta writing__count" data-writing-count aria-live="polite">
-          {posts.length} pieces
-        </p>
-
-        <a class="writing__all" href="/thinking/">All writing <span aria-hidden="true">→</span></a>
+      <div class="writing__chips" data-writing-chips>
+        {
+          CHIPS.map((chip) => (
+            <button type="button" class="chip" data-chip={chip} aria-pressed={chip === 'All' ? 'true' : 'false'}>
+              {chip}
+            </button>
+          ))
+        }
       </div>
+    </div>
 
-      <div class="writing__col">
-        <div class="writing__grid" data-writing-grid>
-          {
-            posts.map((post) => (
-              <a
-                class="card card--interactive post-card"
-                href={`/thinking/${post.id}/`}
-                data-post-tag={post.data.tag}
-              >
-                <span class="eyebrow" style={`color:${tagAccent(post.data.tag)}`}>
-                  {post.data.tag}
-                </span>
-                <span class="post-card__title">{post.data.title}</span>
-                <span class="meta">
-                  {formatDate(post.data.date)} · {readingTime(post.body ?? '')} min read
-                </span>
-              </a>
-            ))
-          }
-          <p class="writing__empty" data-writing-empty hidden>Nothing here for that yet.</p>
-        </div>
+    <div class="postgrid" data-postgrid>
+      {
+        cardData.map((post, i) => (
+          <a
+            class="card card--interactive postcard"
+            href={`/thinking/${post.slug}/`}
+            data-post-tag={post.tag}
+            hidden={i >= PER_PAGE}
+          >
+            <span class="postcard__tag" style={`background:${tagAccent(post.tag)}`}>
+              {post.tag}
+            </span>
+            <span class="postcard__title">{post.title}</span>
+            <span class="postcard__meta">{post.meta}</span>
+          </a>
+        ))
+      }
+    </div>
 
-        {/*
-          Hidden until the script takes over. Paging is a JavaScript affordance,
-          so without it the honest fallback is every piece on one page rather
-          than a pager whose buttons do nothing.
-        */}
-        <nav class="pager" aria-label="Writing pages" data-pager hidden>
-          <button type="button" class="pager__step" data-page-prev>
-            <span aria-hidden="true">←</span> Newer
-          </button>
-          <div class="pager__numbers" data-page-numbers></div>
-          <button type="button" class="pager__step" data-page-next>
-            Older <span aria-hidden="true">→</span>
-          </button>
-        </nav>
-      </div>
+    <div class="writing__foot">
+      <p class="writing__showing" data-writing-showing aria-live="polite">
+        Showing 1–{Math.min(PER_PAGE, cardData.length)} of {cardData.length}
+      </p>
+      <div class="writing__pager" data-writing-pager></div>
     </div>
   </section>
 
+  <script is:inline define:vars={{ PER_PAGE }}>
+    // Filter chips and pagination for the card grid. The first page renders
+    // server-side; this only re-slices what's visible.
+    (() => {
+      const grid = document.querySelector('[data-postgrid]');
+      const chipsWrap = document.querySelector('[data-writing-chips]');
+      const showing = document.querySelector('[data-writing-showing]');
+      const pagerWrap = document.querySelector('[data-writing-pager]');
+      if (!grid || !chipsWrap || !showing || !pagerWrap) return;
+
+      const cards = Array.from(grid.querySelectorAll('[data-post-tag]'));
+      const chips = Array.from(chipsWrap.querySelectorAll('[data-chip]'));
+      let chip = 'All';
+      let page = 0;
+
+      function render() {
+        const filtered = cards.filter(
+          (card) => chip === 'All' || card.dataset.postTag === chip,
+        );
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+        page = Math.min(page, totalPages - 1);
+        const from = page * PER_PAGE;
+        const shown = filtered.slice(from, from + PER_PAGE);
+
+        for (const card of cards) card.hidden = !shown.includes(card);
+
+        showing.textContent = filtered.length
+          ? `Showing ${from + 1}–${from + shown.length} of ${filtered.length}`
+          : 'Nothing here for that yet.';
+
+        for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.chip === chip));
+
+        pagerWrap.replaceChildren();
+        if (totalPages <= 1) return;
+
+        const btn = (label, cls, disabled, go) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = label;
+          b.className = cls;
+          b.disabled = disabled;
+          b.addEventListener('click', () => {
+            page = go;
+            render();
+          });
+          return b;
+        };
+
+        pagerWrap.append(btn('← Newer', 'chip', page === 0, Math.max(0, page - 1)));
+        for (let i = 0; i < totalPages; i++) {
+          const b = btn(String(i + 1), 'chip writing__page', false, i);
+          b.setAttribute('aria-current', String(i === page));
+          if (i === page) b.setAttribute('aria-pressed', 'true');
+          pagerWrap.append(b);
+        }
+        pagerWrap.append(
+          btn('Older →', 'chip', page === totalPages - 1, Math.min(totalPages - 1, page + 1)),
+        );
+      }
+
+      for (const c of chips) {
+        c.addEventListener('click', () => {
+          chip = c.dataset.chip;
+          page = 0;
+          render();
+        });
+      }
+
+      render();
+    })();
+  </script>
+
+  {/* --------------------------------------------------- 06 · contact -- */}
   <ContactSection
+    number="06"
     title="Let’s talk."
     intro="If you’re working through a difficult customer journey, building something new, or hiring for a role you think might fit, I’d love to hear about it."
+    submitLabel="Send it"
+    vancouverBox="sun"
   />
 </BaseLayout>
 
 <script>
-  /* ---------------------------------------------------- shelf / grid -- */
+  /* ------------------------------------------------- shelf / grid view -- */
   const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-view]');
   const viewPanels = document.querySelectorAll<HTMLElement>('[data-view-panel]');
 
   for (const button of viewButtons) {
     button.addEventListener('click', () => {
       const view = button.dataset.view;
-      for (const other of viewButtons) {
-        other.setAttribute('aria-pressed', String(other === button));
-      }
-      for (const panel of viewPanels) {
-        panel.toggleAttribute('hidden', panel.dataset.viewPanel !== view);
-      }
+      for (const b of viewButtons) b.setAttribute('aria-pressed', String(b === button));
+      for (const panel of viewPanels) panel.hidden = panel.dataset.viewPanel !== view;
     });
   }
 
-  /* --------------------------------------------------- case selection -- */
-  const casePanels = document.querySelectorAll<HTMLElement>('[data-case-panel]');
+  /* ----------------------------------------------------------- spines -- */
   const spines = document.querySelectorAll<HTMLButtonElement>('[data-spine]');
+  const casePanels = document.querySelectorAll<HTMLElement>('[data-case-panel]');
 
   for (const spine of spines) {
     spine.addEventListener('click', () => {
       const index = spine.dataset.spine;
-      for (const panel of casePanels) {
-        panel.toggleAttribute('hidden', panel.dataset.casePanel !== index);
-      }
-      for (const other of spines) {
-        other.toggleAttribute('hidden', other.dataset.spine === index);
-      }
+      for (const panel of casePanels) panel.hidden = panel.dataset.casePanel !== index;
+      for (const s of spines) s.hidden = s === spine;
     });
   }
 
-  /* --------------------------------------------- ask / found toggles -- */
-  // Scoped to the card the buttons live in, so the shelf and each grid card
-  // keep their own state.
-  for (const group of document.querySelectorAll<HTMLElement>('[data-mode]')) {
-    group.addEventListener('click', () => {
-      const card = group.closest('article');
-      if (!card) return;
-      const mode = group.dataset.mode;
-
-      for (const button of card.querySelectorAll<HTMLElement>('[data-mode]')) {
-        button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
-      }
-      for (const copy of card.querySelectorAll<HTMLElement>('[data-copy]')) {
-        copy.toggleAttribute('hidden', copy.dataset.copy !== mode);
-      }
-    });
+  /* -------------------------------------------- ask / found switchers -- */
+  // Scoped per card: the shelf panels and the grid cards each carry their own
+  // pair of buttons and copy blocks.
+  for (const scope of document.querySelectorAll<HTMLElement>(
+    '[data-case-panel], .grid-view__card',
+  )) {
+    const buttons = scope.querySelectorAll<HTMLButtonElement>('[data-mode]');
+    const copies = scope.querySelectorAll<HTMLElement>('[data-copy]');
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        const mode = button.dataset.mode;
+        for (const b of buttons) b.setAttribute('aria-pressed', String(b === button));
+        for (const copy of copies) copy.hidden = copy.dataset.copy !== mode;
+      });
+    }
   }
 
-  /* --------------------------------------------------------- method -- */
-  const method = document.querySelector<HTMLElement>('[data-method]');
+  /* ------------------------------------------------------ method tabs -- */
+  const methodRoot = document.querySelector<HTMLElement>('[data-method]');
 
-  if (method) {
-    const tabs = Array.from(method.querySelectorAll<HTMLButtonElement>('[data-step]'));
-    const panels = Array.from(method.querySelectorAll<HTMLElement>('[data-step-panel]'));
-    const indicator = method.querySelector<HTMLElement>('[data-method-indicator]');
-    let timer: number | undefined;
+  if (methodRoot) {
+    const tabs = [...methodRoot.querySelectorAll<HTMLButtonElement>('[data-step]')];
+    const panels = methodRoot.querySelectorAll<HTMLElement>('[data-step-panel]');
+    const indicator = methodRoot.querySelector<HTMLElement>('[data-method-indicator]');
+    let current = 0;
+    let touched = false;
 
-    function show(index: number, focus = false) {
+    function select(index: number) {
+      current = index;
       tabs.forEach((tab, i) => {
         tab.setAttribute('aria-selected', String(i === index));
         tab.tabIndex = i === index ? 0 : -1;
       });
-      panels.forEach((panel, i) => panel.toggleAttribute('hidden', i !== index));
+      for (const panel of panels) panel.hidden = panel.dataset.stepPanel !== String(index);
       if (indicator) indicator.style.transform = `translateX(${index * 100}%)`;
-      if (focus) tabs[index]?.focus();
     }
 
-    function stop() {
-      if (timer) window.clearInterval(timer);
-      timer = undefined;
-    }
-
-    tabs.forEach((tab, i) => {
+    tabs.forEach((tab, index) => {
       tab.addEventListener('click', () => {
-        stop();
-        show(i);
+        touched = true;
+        select(index);
       });
-
-      // Arrow-key navigation, which is what makes a tablist a tablist.
+      // Standard tablist keyboard behaviour: arrows move, Home/End jump.
       tab.addEventListener('keydown', (event) => {
-        const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
-        if (!delta) return;
+        const moves: Record<string, number> = {
+          ArrowRight: index + 1,
+          ArrowLeft: index - 1,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        const to = moves[event.key];
+        if (to === undefined) return;
         event.preventDefault();
-        stop();
-        show((i + delta + tabs.length) % tabs.length, true);
+        touched = true;
+        const next = ((to % tabs.length) + tabs.length) % tabs.length;
+        select(next);
+        tabs[next].focus();
       });
     });
 
-    // Advances on its own until someone takes over, and never when the visitor
-    // has asked for reduced motion.
+    /* The steps advance on their own until the reader takes over. Reduced
+       motion means no autoplay at all — an interface changing by itself is
+       exactly what that setting asks to stop. */
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      let current = 0;
-      timer = window.setInterval(() => {
-        current = (current + 1) % tabs.length;
-        show(current);
+      const timer = window.setInterval(() => {
+        if (touched) {
+          window.clearInterval(timer);
+          return;
+        }
+        select((current + 1) % tabs.length);
       }, 5000);
-      method.addEventListener('pointerdown', stop, { once: true });
-      method.addEventListener('focusin', stop, { once: true });
     }
   }
 
-  /* ------------------------------------------------------- receipts -- */
-  const receiptTabs = document.querySelectorAll<HTMLButtonElement>('[data-receipt]');
+  /* ----------------------------------------------------- receipt tabs -- */
+  const receiptTabs = [...document.querySelectorAll<HTMLButtonElement>('[data-receipt]')];
   const receiptPanels = document.querySelectorAll<HTMLElement>('[data-receipt-panel]');
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  receiptTabs.forEach((tab, index) => {
+    const select = (i: number) => {
+      receiptTabs.forEach((t, n) => {
+        t.setAttribute('aria-selected', String(n === i));
+        t.setAttribute('aria-pressed', String(n === i));
+        t.tabIndex = n === i ? 0 : -1;
+      });
+      for (const panel of receiptPanels) panel.hidden = panel.dataset.receiptPanel !== String(i);
+    };
 
-  /* Draw the bars up from zero as you land on a tab. Done here rather than in
-     CSS because the resting state has to stay the true width — see the note on
-     `.bars__fill`. Nothing here is load-bearing: skip it and the bars are
-     simply already the right length. */
-  function growBars(panel: HTMLElement) {
-    if (reduceMotion) return;
-    const bars = panel.querySelectorAll<HTMLElement>('[data-bar]');
-    for (const bar of bars) bar.style.width = '0%';
-    // Flush layout so the zero width is committed as the transition's starting
-    // point, then hand the bars straight back to the stylesheet. Doing both in
-    // one synchronous pass — rather than clearing inside requestAnimationFrame
-    // — means there is no moment where an unfired callback could leave a bar
-    // reading 0%.
-    void panel.offsetWidth;
-    for (const bar of bars) bar.style.width = '';
-  }
-
-  function showReceipt(index: string, focus = false) {
-    for (const tab of receiptTabs) {
-      const selected = tab.dataset.receipt === index;
-      tab.setAttribute('aria-selected', String(selected));
-      tab.tabIndex = selected ? 0 : -1;
-      if (selected && focus) tab.focus();
-    }
-    for (const panel of receiptPanels) {
-      const active = panel.dataset.receiptPanel === index;
-      panel.toggleAttribute('hidden', !active);
-      if (active) growBars(panel);
-    }
-  }
-
-  receiptTabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => showReceipt(tab.dataset.receipt ?? '0'));
+    tab.addEventListener('click', () => select(index));
     tab.addEventListener('keydown', (event) => {
-      const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
-      if (!delta) return;
+      const moves: Record<string, number> = {
+        ArrowRight: index + 1,
+        ArrowLeft: index - 1,
+        Home: 0,
+        End: receiptTabs.length - 1,
+      };
+      const to = moves[event.key];
+      if (to === undefined) return;
       event.preventDefault();
-      showReceipt(String((i + delta + receiptTabs.length) % receiptTabs.length), true);
+      const next = ((to % receiptTabs.length) + receiptTabs.length) % receiptTabs.length;
+      select(next);
+      receiptTabs[next].focus();
     });
   });
-
-  /* ------------------------------------------ writing filter + paging -- */
-  const writingChips = [...document.querySelectorAll<HTMLButtonElement>('[data-tag]')];
-  const writingCards = [...document.querySelectorAll<HTMLElement>('[data-post-tag]')];
-  const writingCount = document.querySelector<HTMLElement>('[data-writing-count]');
-  const writingEmpty = document.querySelector<HTMLElement>('[data-writing-empty]');
-  const pager = document.querySelector<HTMLElement>('[data-pager]');
-  const pageNumbers = document.querySelector<HTMLElement>('[data-page-numbers]');
-  const prevPage = document.querySelector<HTMLButtonElement>('[data-page-prev]');
-  const nextPage = document.querySelector<HTMLButtonElement>('[data-page-next]');
-
-  const PER_PAGE = 6;
-  let activeTag = 'All';
-  let page = 0;
-
-  function renderWriting() {
-    const matching = writingCards.filter(
-      (card) => activeTag === 'All' || card.dataset.postTag === activeTag,
-    );
-    const pageCount = Math.max(1, Math.ceil(matching.length / PER_PAGE));
-    page = Math.min(page, pageCount - 1);
-    const from = page * PER_PAGE;
-    const visible = new Set(matching.slice(from, from + PER_PAGE));
-
-    for (const card of writingCards) card.toggleAttribute('hidden', !visible.has(card));
-    writingEmpty?.toggleAttribute('hidden', matching.length > 0);
-
-    if (writingCount) {
-      writingCount.textContent = matching.length
-        ? `Showing ${from + 1}–${from + visible.size} of ${matching.length}`
-        : 'Nothing under that tag';
-    }
-
-    if (!pager || !pageNumbers) return;
-    pager.hidden = pageCount < 2;
-    if (prevPage) prevPage.disabled = page === 0;
-    if (nextPage) nextPage.disabled = page === pageCount - 1;
-
-    // Rebuilt rather than toggled: filtering changes how many pages exist, so
-    // the number of buttons is part of the state.
-    pageNumbers.replaceChildren(
-      ...Array.from({ length: pageCount }, (_, i) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'pager__number';
-        button.textContent = String(i + 1);
-        if (i === page) button.setAttribute('aria-current', 'true');
-        button.setAttribute('aria-label', `Page ${i + 1} of ${pageCount}`);
-        button.addEventListener('click', () => {
-          page = i;
-          renderWriting();
-        });
-        return button;
-      }),
-    );
-  }
-
-  for (const chip of writingChips) {
-    chip.addEventListener('click', () => {
-      activeTag = chip.dataset.tag ?? 'All';
-      page = 0;
-      for (const other of writingChips) {
-        other.setAttribute('aria-pressed', String(other === chip));
-      }
-      renderWriting();
-    });
-  }
-
-  prevPage?.addEventListener('click', () => {
-    page = Math.max(0, page - 1);
-    renderWriting();
-  });
-
-  nextPage?.addEventListener('click', () => {
-    page += 1;
-    renderWriting();
-  });
-
-  if (writingCards.length) renderWriting();
 </script>
 
 <style>
-  /* ------------------------------------------------------------- hero -- */
-  .hero {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: clamp(40px, 6vw, 72px);
-    align-items: start;
-  }
-
-  .hero__place {
-    margin-bottom: 22px;
-  }
-
-  .hero__tagline {
-    margin-top: 26px;
-    max-width: 520px;
-    font-size: 19px;
-    line-height: 1.6;
-    color: var(--ink-2);
-  }
-
-  .hero__id {
-    margin-top: 40px;
+  /* ---------------------------------------------------------------- hero -- */
+  .kicker {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 16px;
     flex-wrap: wrap;
   }
 
-  .hero__id :global(img) {
-    width: 132px;
-    height: 132px;
+  .kicker__rule {
+    flex: 1;
+    min-width: 24px;
+    height: 3px;
+    background: var(--ink);
+  }
+
+  .kicker__avail {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .kicker__dot {
+    width: 10px;
+    height: 10px;
+    background: var(--moss);
     flex: none;
-    border-radius: 18px;
+  }
+
+  .hero__line {
+    margin-top: clamp(48px, 5.6vw, 76px);
+  }
+
+  .hero__rule {
+    margin-top: clamp(52px, 6vw, 84px);
+    height: 8px;
+    background: var(--ink);
+  }
+
+  .slabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 44px;
+    padding-top: 26px;
+  }
+
+  .slabs__item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .slabs__mark {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+
+  .statgrid {
+    margin-top: clamp(56px, 7vw, 92px);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .statcard {
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: clamp(20px, 2.4vw, 30px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition:
+      transform var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .statcard:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 11px 11px 0 var(--ink);
+  }
+
+  .statcard__mark {
+    width: 26px;
+    height: 12px;
+  }
+
+  .statcard__value {
+    font-size: clamp(32px, 3.4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+
+  .statcard__label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+
+  .split {
+    margin-top: clamp(72px, 9vw, 124px);
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(46px, 6vw, 92px);
+    align-items: start;
+  }
+
+  .split__tagline {
+    font-size: clamp(23px, 2.5vw, 34px);
+    line-height: 1.24;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+  }
+
+  .split__id {
+    margin-top: 44px;
+    display: flex;
+    align-items: stretch;
+    gap: 26px;
+    flex-wrap: wrap;
+  }
+
+  .split__photo {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    flex: none;
+    border: var(--border);
+    box-shadow: 10px 10px 0 var(--coral);
+    overflow: hidden;
+  }
+
+  .split__photo :global(img) {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     object-position: 50% 18%;
     display: block;
-    box-shadow: var(--shadow);
   }
 
-  .hero__where {
-    max-width: 230px;
-    color: var(--ink-3);
-    font-size: 14px;
-    line-height: 1.6;
-    letter-spacing: 0.01em;
-  }
-
-  .hero__intro {
+  .split__status {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    color: var(--ink-2);
-    padding-top: 10px;
+    justify-content: flex-end;
+    gap: 10px;
+    max-width: 250px;
   }
 
-  /* ---------------------------------------------------------- symptom -- */
-  .symptom {
-    margin-top: clamp(56px, 8vw, 88px);
-    display: grid;
-    grid-template-columns: 1fr;
+  .split__status p {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  .split__intro {
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    align-items: center;
+    font-size: 17px;
+    line-height: 1.64;
+    color: var(--ink-2);
+    border-left: var(--border);
+    padding-left: clamp(20px, 2.4vw, 34px);
   }
 
-  .symptom__rail {
-    display: none;
+  /* --------------------------------------------------------- symptom -- */
+  .symptom-band {
+    margin-top: clamp(80px, 10.5vw, 148px);
+    padding-block: clamp(74px, 9.6vw, 130px);
   }
 
-  .symptom__card {
-    padding: clamp(28px, 4vw, 38px) clamp(24px, 4vw, 40px);
+  .symptom-band__title {
+    font-size: clamp(30px, 4.4vw, 66px);
+    line-height: 0.98;
+    letter-spacing: -0.032em;
+  }
+
+  .symptom {
+    margin-top: clamp(42px, 5vw, 68px);
+    padding: clamp(30px, 4.4vw, 56px);
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-columns: 1fr auto;
+    gap: clamp(32px, 4.2vw, 58px);
     align-items: center;
   }
 
-  .symptom__body .eyebrow {
-    margin-bottom: 16px;
+  .symptom__label {
+    margin-bottom: 18px;
   }
 
   .symptom__text {
-    font-size: clamp(20px, 2.3vw, 29px);
-    line-height: 1.35;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    min-height: 2.7em;
-    transition: font-size var(--dur) var(--ease);
+    font-size: clamp(24px, 2.9vw, 40px);
+    line-height: 1.14;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+    min-height: 6.4em;
   }
 
-  /* Flipped side reads as an explanation rather than a headline, so it drops
-     to a body size with room to breathe rather than the front's large,
-     tightly-set question. */
   [data-flipped='true'] .symptom__text {
-    font-size: clamp(16px, 1.4vw, 18px);
-    line-height: 1.62;
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.6;
   }
 
   .symptom__controls {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     align-items: stretch;
-    min-width: 196px;
+    min-width: min(100%, 226px);
   }
 
   .symptom__controls .btn {
-    padding: 13px 20px;
-    font-size: 14px;
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .symptom__count {
-    font-size: 12px;
-    color: var(--ink-3);
-    text-align: center;
-    letter-spacing: 0.04em;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
   }
 
-  @media (min-width: 900px) {
-    .symptom {
-      grid-template-columns: auto 1fr;
-      gap: 36px;
-    }
-
-    .symptom__rail {
-      display: block;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-    }
-
-    .symptom__card {
-      grid-template-columns: 1fr auto;
-      gap: 40px;
-    }
+  /* ------------------------------------------------------------ work -- */
+  .work__title {
+    font-size: clamp(34px, 5.6vw, 86px);
+    line-height: 0.94;
+    letter-spacing: -0.036em;
   }
 
-  /* ------------------------------------------------------------- work -- */
   .work__head {
+    margin-top: 36px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 40px;
+    gap: 32px;
     flex-wrap: wrap;
-  }
-
-  .work__head > div:first-child {
-    max-width: 640px;
-  }
-
-  .work__head .eyebrow {
-    margin-bottom: 20px;
+    border-top: var(--border);
+    padding-top: 30px;
   }
 
   .work__sub {
-    margin-top: 18px;
-    max-width: 520px;
+    max-width: 620px;
   }
 
   .shelf {
-    margin-top: 56px;
+    max-width: var(--wrap-wide);
+    margin: clamp(42px, 5vw, 66px) auto 0;
+    padding-inline: 28px;
     display: flex;
-    gap: 14px;
+    gap: 16px;
     align-items: stretch;
   }
 
   .shelf__case {
     flex: 1;
     min-width: 0;
-    overflow: hidden;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
   }
 
   .shelf__visual {
+    position: relative;
     min-width: 0;
-    width: 100%;
-    min-height: 320px;
+    min-height: 340px;
     background: var(--wash);
-    padding: 30px 28px;
+    border-right: var(--border);
+    padding: 40px 34px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -901,245 +1044,248 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
 
   .shelf__text {
     min-width: 0;
-    padding: clamp(28px, 3vw, 40px);
+    padding: clamp(30px, 4.4vw, 52px);
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 26px;
   }
 
   .shelf__title {
-    font-size: 29px;
-    line-height: 1.14;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.02;
+    letter-spacing: -0.028em;
   }
 
   .shelf__copy {
-    font-size: 17px;
-    line-height: 1.68;
-    color: var(--ink-2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 13em;
   }
 
-  /* Both panels hold several paragraphs now, so they space themselves. */
-  .shelf__copy p + p,
-  .grid-view__copy p + p {
-    margin-top: 0.85em;
+  .shelf__copy p {
+    font-size: 17px;
+    line-height: 1.64;
+    color: var(--ink-2);
   }
 
   .shelf__metric {
     margin-top: auto;
-    padding-top: 24px;
-    border-top: 1px solid var(--rule);
+    padding-top: 22px;
+    border-top: var(--border);
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    gap: 16px;
     flex-wrap: wrap;
   }
 
   .shelf__metric-value {
-    font-size: 27px;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-size: clamp(34px, 3.6vw, 50px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+
+  .shelf__metric-note {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink-2);
+    max-width: 280px;
   }
 
   .shelf__spines {
-    display: none;
-    flex-direction: row;
+    display: flex;
     gap: 14px;
+    align-items: stretch;
   }
 
   .shelf__spine {
-    width: 58px;
+    width: 64px;
     flex: none;
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-left: 4px solid var(--bar);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
+    background: var(--bar, var(--wash));
+    border: var(--border);
+    box-shadow: 6px 6px 0 var(--ink);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-block: 22px;
-    transition:
-      transform var(--dur) var(--ease),
-      border-color var(--dur) var(--ease);
+    padding: 22px 0;
+    transition: transform var(--dur) var(--ease);
   }
 
   .shelf__spine:hover {
-    transform: translateY(-2px);
-    border-color: var(--ink);
-    border-left-color: var(--bar);
+    transform: translate(-3px, -3px);
   }
 
   .shelf__spine span {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    color: var(--ink-2);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: 340px;
   }
 
   .grid-view {
-    margin-top: 56px;
+    margin-top: clamp(42px, 5vw, 66px);
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
   }
 
   .grid-view__card {
-    padding: clamp(26px, 3vw, 34px);
+    box-shadow: var(--shadow);
+    padding: clamp(22px, 3vw, 34px);
     display: flex;
     flex-direction: column;
     gap: 18px;
   }
 
   .grid-view__title {
-    font-size: 22px;
-    line-height: 1.2;
+    font-size: clamp(24px, 2.2vw, 30px);
+    line-height: 1.06;
+    letter-spacing: -0.024em;
   }
 
   .grid-view__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 14em;
+  }
+
+  .grid-view__copy p {
     font-size: 16px;
-    line-height: 1.66;
+    line-height: 1.62;
     color: var(--ink-2);
   }
 
   .grid-view__metric-value {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-size: clamp(28px, 2.6vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
   }
 
-  @media (min-width: 760px) {
-    .grid-view {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (min-width: 1100px) {
-    .shelf__case {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .shelf__spines {
-      display: flex;
-    }
-  }
-
-  /* ----------------------------------------------------------- method -- */
-
-  /* Method and the dark band sit a step wider apart than the site's default
-     section rhythm — they're the pivot from "what I built" to "what it did". */
-  #method {
-    padding-top: clamp(100px, 17.9vw, 200px);
-  }
-
-  #numbers {
-    margin-top: clamp(100px, 17.9vw, 200px);
+  /* ---------------------------------------------------------- method -- */
+  .method-band {
+    padding-block: clamp(74px, 9.6vw, 134px);
   }
 
   .method {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(36px, 5vw, 56px);
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(36px, 5vw, 68px);
     align-items: start;
   }
 
-  .method__intro .eyebrow {
-    margin-bottom: 20px;
+  .method__title {
+    margin-top: 24px;
+    font-size: clamp(34px, 4.6vw, 68px);
+    line-height: 0.94;
+    letter-spacing: -0.036em;
   }
 
   .method__sub {
-    margin-top: 22px;
-    font-size: 16px;
-    line-height: 1.65;
-    color: var(--ink-3);
-    max-width: 330px;
+    margin-top: 28px;
+    font-size: 17px;
+    line-height: 1.58;
+    color: var(--sun-ink);
+    max-width: 380px;
   }
 
   .method__tabs {
     display: flex;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 5px solid var(--ink);
     position: relative;
   }
 
   .method__tab {
     flex: 1;
-    padding: 0 0 16px;
+    padding: 0 22px 20px 0;
     border: 0;
     background: transparent;
     text-align: left;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: -0.005em;
-    color: var(--ink-3);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgb(31 28 25 / 74%);
     transition: color var(--dur-fast) var(--ease);
   }
 
-  .method__tab[aria-selected='true'],
-  .method__tab:hover {
+  .method__tab[aria-selected='true'] {
     color: var(--ink);
   }
 
   .method__num {
     display: block;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.14em;
-    color: var(--ink-3);
     margin-bottom: 8px;
+    color: rgb(31 28 25 / 72%);
+  }
+
+  .method__tab[aria-selected='true'] .method__num {
+    color: #7a3312;
   }
 
   .method__indicator {
     position: absolute;
-    bottom: -1px;
+    bottom: -5px;
     left: 0;
-    height: 2px;
-    background: var(--accent);
-    transition: transform 340ms var(--ease);
+    height: 5px;
+    background: var(--coral);
+    transition: transform 320ms var(--ease);
   }
 
   .method__body {
-    margin-top: 34px;
-    padding: clamp(28px, 3.5vw, 36px);
+    margin-top: 40px;
+    padding: clamp(28px, 3.6vw, 46px);
   }
 
-  .method__body .eyebrow {
+  .method__source {
     margin-bottom: 16px;
   }
 
   .method__example {
-    font-size: 19px;
-    line-height: 1.6;
-    letter-spacing: -0.005em;
-    min-height: 6.4em;
+    font-size: clamp(19px, 1.7vw, 22px);
+    line-height: 1.5;
+    letter-spacing: -0.012em;
+    font-weight: 500;
+    min-height: 7.2em;
   }
 
-  @media (min-width: 900px) {
-    .method {
-      grid-template-columns: 0.8fr 1.2fr;
-    }
+  /* -------------------------------------------------------- receipts -- */
+  .receipts {
+    margin-top: 0;
+    padding-block: clamp(78px, 10.5vw, 150px);
   }
 
-  /* --------------------------------------------------------- receipts -- */
+  .receipts__title {
+    font-size: clamp(32px, 5vw, 78px);
+    line-height: 0.94;
+    letter-spacing: -0.036em;
+    color: var(--on-dark);
+  }
+
   .receipts__head {
+    margin-top: 36px;
+    border-top: 3px solid var(--on-dark);
+    padding-top: 30px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 40px;
+    gap: 32px;
     flex-wrap: wrap;
   }
 
-  .receipts__head .eyebrow {
-    margin-bottom: 20px;
-  }
-
   .receipts__sub {
-    margin-top: 18px;
-    max-width: 520px;
+    font-size: 17px;
+    line-height: 1.56;
     color: var(--on-dark-2);
+    max-width: 460px;
   }
 
   .receipts__tabs {
@@ -1148,259 +1294,267 @@ const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
     flex-wrap: wrap;
   }
 
-  .receipts__tab {
-    padding: 10px 17px;
-    border-radius: var(--pill);
-    border: 1px solid var(--on-dark-rule-2);
-    background: transparent;
-    color: var(--on-dark-2);
-    font-size: 13px;
-    white-space: nowrap;
-    transition:
-      background var(--dur-fast) var(--ease),
-      border-color var(--dur-fast) var(--ease),
-      color var(--dur-fast) var(--ease);
-  }
-
-  .receipts__tab:hover {
-    border-color: var(--on-dark);
-    color: var(--on-dark);
-  }
-
-  .receipts__tab[aria-selected='true'] {
-    background: var(--on-dark);
-    border-color: var(--on-dark);
-    color: var(--ink);
-  }
-
   .receipts__body {
-    margin-top: clamp(40px, 6vw, 64px);
+    margin-top: clamp(54px, 6.4vw, 94px);
   }
 
   .receipts__panel {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(36px, 5vw, 64px);
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(36px, 5vw, 68px);
     align-items: center;
   }
 
   .bars {
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 30px;
   }
 
   .bars__legend {
     display: flex;
     justify-content: space-between;
     font-size: 13px;
-    color: var(--on-dark-3);
-    margin-bottom: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--on-dark-2);
+    margin-bottom: 11px;
   }
 
   .bars__track {
-    height: 12px;
-    border-radius: var(--pill);
-    background: rgb(251 249 246 / 9%);
-    overflow: hidden;
+    height: 26px;
+    border: 3px solid var(--on-dark);
   }
 
-  /* A transition, deliberately, and not a keyframe animation.
-
-     An animation with `from { width: 0 }` holds that zero width for as long as
-     its clock is stopped, and the clock is stopped whenever the page isn't
-     producing frames — a background tab, a browser that throttles hidden
-     documents. The bar then reads as "0%", which is a wrong number rather than
-     a missing effect. A transition has no such state: its resting value is the
-     real width, and the grow only happens if something moves it off that. */
+  /* A transition rather than an animation, on purpose: an animation's
+     `from { width: 0 }` holds zero width while a background tab's clock is
+     stopped, which reads as a wrong number rather than a missing effect. */
   .bars__fill {
-    height: 12px;
-    border-radius: var(--pill);
+    height: 20px;
     background: var(--ink-2);
-    width: var(--w);
     transition: width var(--dur-slow) var(--ease);
   }
 
   .bars__fill--accent {
-    background: var(--accent);
+    background: var(--coral);
   }
 
   .receipts__single {
-    font-size: clamp(56px, 7vw, 96px);
-    line-height: 0.94;
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    color: var(--accent);
+    font-size: clamp(64px, 9vw, 148px);
+    line-height: 0.86;
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    color: var(--coral);
   }
 
   .receipts__single-sub {
-    margin-top: 14px;
-    font-size: 17px;
+    margin-top: 16px;
+    font-size: 18px;
+    line-height: 1.5;
     color: var(--on-dark-2);
+    max-width: 400px;
   }
 
   .receipts__window {
-    margin-top: 26px;
+    margin-top: 28px;
     font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: var(--on-dark-3);
-    letter-spacing: 0.02em;
   }
 
   .receipts__headline {
-    font-size: clamp(38px, 4.4vw, 58px);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1;
+    font-size: clamp(44px, 5.6vw, 86px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--on-dark);
   }
 
   .receipts__read {
-    margin-top: 20px;
+    margin-top: 24px;
     font-size: 17px;
-    line-height: 1.7;
+    line-height: 1.66;
     color: var(--on-dark-2);
-    max-width: 460px;
+    max-width: 480px;
+    min-height: 15em;
   }
 
-  @media (min-width: 900px) {
-    .receipts__panel {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  /* ---------------------------------------------------------- writing -- */
-  .writing {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(36px, 5vw, 64px);
-    align-items: start;
-  }
-
-  .writing__rail .eyebrow {
-    margin-bottom: 20px;
-  }
-
-  .writing__title {
-    margin-bottom: 18px;
+  /* --------------------------------------------------------- writing -- */
+  .writing__head {
+    margin-top: 36px;
+    border-top: var(--border);
+    padding-top: 30px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
   }
 
   .writing__sub {
-    margin-bottom: 26px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-2);
+    max-width: 520px;
   }
 
   .writing__chips {
     display: flex;
+    gap: 8px;
     flex-wrap: wrap;
-    gap: 8px;
   }
 
-  .writing__count {
-    margin-top: 22px;
+  .postgrid {
+    margin-top: clamp(42px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 28px;
   }
 
-  .writing__all {
-    display: inline-flex;
-    gap: 8px;
-    margin-top: 18px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .writing__col {
+  .postcard {
+    box-shadow: none;
+    padding: 30px;
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 16px;
   }
 
-  .writing__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-    align-content: start;
+  .postcard:hover {
+    box-shadow: var(--shadow);
   }
 
-  /* -------------------------------------------------------- the pager -- */
-  .pager {
+  .postcard__tag {
+    align-self: flex-start;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .postcard__title {
+    font-size: 22px;
+    line-height: 1.14;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+  }
+
+  .postcard__meta {
+    margin-top: auto;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .writing__foot {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .writing__showing {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .writing__pager {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
   }
 
-  .pager__numbers {
-    display: flex;
-    gap: 8px;
-  }
-
-  .pager__step,
-  .pager__number {
-    min-width: 38px;
-    padding: 9px 15px;
-    border-radius: 10px;
-    border: 1px solid var(--rule);
-    background: var(--card);
-    color: var(--ink-2);
-    font-size: 13px;
-    white-space: nowrap;
-    transition:
-      border-color var(--dur-fast) var(--ease),
-      color var(--dur-fast) var(--ease);
-  }
-
-  .pager__step:hover:not(:disabled),
-  .pager__number:hover:not([aria-current]) {
-    border-color: var(--ink);
-    color: var(--ink);
-  }
-
-  /* Kept in the flow rather than hidden: the row shouldn't reflow when you
-     reach the first or last page. */
-  .pager__step:disabled {
-    color: var(--ink-3);
-    opacity: 0.55;
+  .writing__pager :global(button[disabled]) {
+    color: #b5ada3;
     cursor: default;
   }
 
-  .pager__number[aria-current] {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
+  .writing__pager :global(button[disabled]:hover) {
+    background: transparent;
+    color: #b5ada3;
   }
 
-  .post-card {
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  .writing__pager :global(.writing__page) {
+    min-width: 44px;
+    padding: 11px 12px;
   }
 
-  .post-card__title {
-    font-size: 19px;
-    line-height: 1.28;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  .writing__empty {
-    color: var(--ink-3);
-    padding-block: 32px;
-  }
-
-  @media (min-width: 1000px) {
-    .writing {
-      grid-template-columns: 280px 1fr;
+  /* ------------------------------------------------------ responsive -- */
+  @media (max-width: 1120px) {
+    .statgrid {
+      grid-template-columns: 1fr 1fr;
     }
 
-    .writing__rail {
-      position: sticky;
-      top: calc(var(--header-h) + 40px);
+    .split,
+    .grid-view,
+    .method,
+    .receipts__panel {
+      grid-template-columns: 1fr;
     }
 
-    .writing__chips {
+    .shelf {
       flex-direction: column;
-      align-items: flex-start;
+    }
+
+    .shelf__spines {
+      flex-wrap: wrap;
+    }
+
+    .shelf__spine {
+      width: auto;
+      flex: 1 1 0;
+      padding: 16px 10px;
+    }
+
+    .shelf__spine span {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+
+    .receipts__read {
+      min-height: 0;
+    }
+
+    .shelf__copy,
+    .grid-view__copy {
+      min-height: 0;
+    }
+
+    .symptom {
+      grid-template-columns: 1fr;
+    }
+
+    .symptom__text {
+      min-height: 0;
+    }
+
+    .method__example {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .shelf__spine {
+      flex: 1 1 100%;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .statgrid {
+      grid-template-columns: 1fr;
+    }
+
+    .slabs {
+      gap: 12px 26px;
     }
   }
 </style>

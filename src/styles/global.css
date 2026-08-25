@@ -1,9 +1,15 @@
 /*
- * Design system — "Paper"
+ * Design system — "Bold"
  *
- * Warm paper, near-black ink, white cards floating on top with a soft two-layer
- * shadow. One typeface (General Sans) does all the interface work; Newsreader is
- * held back for article body copy only, so long-form reads differently from the
+ * The same warm paper and near-black ink as before, but the surface language is
+ * the opposite of the old soft-card look: 3px ink borders, hard offset shadows
+ * with no blur, no border radius anywhere, uppercase micro-labels with wide
+ * tracking, and 700-weight display type set tight. Sections are numbered, and
+ * several run as full-bleed colour bands (terracotta, sun, sky, dark) with a
+ * 3px ink rule top and bottom.
+ *
+ * One typeface (General Sans) does all the interface work; Newsreader is held
+ * back for article body copy only, so long-form reads differently from the
  * rest of the site on purpose.
  *
  * Four accents, and each one means something: coral = lifecycle, sky =
@@ -11,8 +17,11 @@
  * carries category rather than decoration, so a reader learns the mapping
  * without being told it.
  *
- * The design is committed to light. There is no dark override block: a paper
+ * The design is committed to light. There is no dark override block: this
  * palette inverted is a different design, not the same one at night.
+ *
+ * The Web Design page (src/pages/web-design.astro) deliberately uses none of
+ * this — its own palette, fonts and shapes live in that file. Don't "align" it.
  */
 
 /* Newsreader is only ever used inside article prose, so it comes from a
@@ -45,17 +54,25 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Paper & ink */
   --paper: #fbf9f6;
   --wash: #f4f1ec;
-  --card: #ffffff;
+  --card: #fbf9f6;
   --ink: #1f1c19;
   --ink-deck: #3d3833;
   --ink-2: #6b6560;
   --ink-3: #9a938b;
-  --rule: #eae4dc;
-  --rule-2: #d9d1c6;
+  --rule: var(--ink);
+  --rule-soft: #eae4dc;
 
   /* On the dark bands */
   --dark: #1f1c19;
@@ -63,8 +80,7 @@
   --on-dark-2: #c8c0b7;
   --on-dark-3: #9a938b;
   --on-dark-rule: rgb(251 249 246 / 12%);
-  --on-dark-rule-2: rgb(251 249 246 / 22%);
-  --on-dark-fill: rgb(251 249 246 / 6%);
+  --on-dark-rule-2: rgb(251 249 246 / 35%);
 
   /* The four accents. Each is bound to a category — see CATEGORY_ACCENT in
      src/data/site.ts, which is the single place the mapping is declared. */
@@ -74,28 +90,31 @@
   --moss: #3fa981;
   /* Moss darkened enough to carry small text on paper without going grey. */
   --moss-deep: #2e8567;
+  /* Ink shades for text sitting on the sun and sky bands. */
+  --sun-ink: #5a4614;
+  --sky-ink: #0f2c46;
+  /* The terracotta band behind section 01 on the home page. */
+  --terracotta: #d9a183;
   /* The interaction accent: links, focus, selection, active indicators. */
   --accent: var(--coral);
 
   --font-sans: 'General Sans', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
   --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
 
-  /* Surfaces */
-  --radius: 18px;
-  --radius-lg: 22px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
-  --pill: 999px;
-  --shadow-sm: 0 1px 2px rgb(31 28 25 / 4%);
-  --shadow: 0 1px 2px rgb(31 28 25 / 4%), 0 12px 28px -8px rgb(31 28 25 / 10%);
-  --shadow-lg: 0 1px 2px rgb(31 28 25 / 4%), 0 16px 34px -10px rgb(31 28 25 / 16%);
+  /* Surfaces. The border is structural in this design — 3px of ink — and the
+     shadow is a hard offset in solid ink, never blurred. */
+  --border: 3px solid var(--ink);
+  --shadow-sm: 6px 6px 0 var(--ink);
+  --shadow: 10px 10px 0 var(--ink);
+  --shadow-lg: 12px 12px 0 var(--ink);
 
   /* Layout */
   --wrap: 1120px;
   --wrap-wide: 1440px;
+  --wrap-home: 1320px;
   --wrap-prose: 680px;
   --gutter: 24px;
-  --header-h: 69px;
+  --header-h: 62px;
 
   /* Motion. One curve everywhere; consistency is what makes it read as
      deliberate rather than as whatever each component felt like. */
@@ -158,7 +177,7 @@ main {
 
 ::selection {
   background: var(--accent);
-  color: #fff;
+  color: var(--paper);
 }
 
 a {
@@ -190,9 +209,8 @@ video {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
 h1,
@@ -200,15 +218,29 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.012em;
-  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  line-height: 1.06;
   text-wrap: balance;
 }
 
 p {
   margin: 0;
   text-wrap: pretty;
+}
+
+/* Oversized display type tightens further on narrow screens or it wraps into
+   a wall. Matches the design's own mobile overrides. */
+@media (max-width: 719px) {
+  h1 {
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+  }
+
+  h2 {
+    line-height: 1.04;
+    letter-spacing: -0.026em;
+  }
 }
 
 /* ---------------------------------------------------------------- layout -- */
@@ -223,10 +255,14 @@ p {
   max-width: var(--wrap-wide);
 }
 
-/* Vertical rhythm between major page sections. The design runs generous —
-   ~190px between sections on desktop, tightening hard on small screens. */
+.wrap--home {
+  max-width: var(--wrap-home);
+  padding-inline: 28px;
+}
+
+/* Vertical rhythm between major page sections. */
 .section {
-  padding-top: clamp(95px, 17vw, 190px);
+  padding-top: clamp(75px, 13.4vw, 150px);
 }
 
 .section--tight {
@@ -234,45 +270,53 @@ p {
 }
 
 .section--first {
-  padding-top: clamp(56px, 8vw, 104px);
+  padding-top: clamp(60px, 8vw, 104px);
 }
 
 /* ------------------------------------------------------------ typography -- */
 
 .eyebrow {
   display: block;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--ink);
+}
+
+.eyebrow--muted {
   color: var(--ink-3);
+  font-size: 12px;
+  letter-spacing: 0.14em;
 }
 
 .display {
-  font-size: clamp(52px, 9.4vw, 128px);
-  line-height: 0.94;
-  letter-spacing: -0.022em;
+  font-size: clamp(58px, 9.6vw, 152px);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
 }
 
 .page-title {
-  font-size: clamp(38px, 6.2vw, 84px);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
+  font-size: clamp(40px, 6.2vw, 88px);
+  line-height: 0.96;
+  letter-spacing: -0.042em;
 }
 
 .section-title {
-  font-size: clamp(30px, 3.6vw, 48px);
-  line-height: 1.07;
+  font-size: clamp(34px, 4.8vw, 71px);
+  line-height: 0.95;
+  letter-spacing: -0.034em;
 }
 
 .section-title--sm {
-  font-size: clamp(26px, 3vw, 38px);
-  line-height: 1.1;
+  font-size: clamp(29px, 4vw, 52px);
+  line-height: 0.95;
+  letter-spacing: -0.034em;
 }
 
 .lede {
-  font-size: 18px;
-  line-height: 1.65;
+  font-size: 17px;
+  line-height: 1.6;
   color: var(--ink-2);
 }
 
@@ -285,69 +329,145 @@ p {
   color: var(--ink-3);
 }
 
-/* The little coloured rule that prefixes a category or client label. */
+/* The numbered section heading: a big outlined figure beside the title. */
+.numbered {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.numbered__n {
+  font-size: clamp(44px, 6vw, 86px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+}
+
+.numbered__n--on-dark {
+  -webkit-text-stroke: 2px var(--on-dark);
+}
+
+/* The little solid colour slab that prefixes a category or client label. */
 .accent-bar {
   display: block;
-  width: 26px;
-  height: 3px;
-  border-radius: 2px;
+  width: 34px;
+  height: 13px;
   background: var(--bar, var(--accent));
   flex: none;
 }
 
 .accent-bar--sm {
-  width: 22px;
+  width: 30px;
 }
 
 .label-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
+}
+
+.label-row .eyebrow {
+  letter-spacing: 0.14em;
+  font-size: 12px;
+}
+
+/* Section heading with a 3px rule running off to the right. */
+.rule-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.rule-heading::after {
+  content: '';
+  flex: 1;
+  height: 3px;
+  background: var(--ink);
+}
+
+.band .rule-heading::after {
+  background: var(--on-dark);
 }
 
 /* --------------------------------------------------------------- surface -- */
 
 .card {
   background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
+  border: var(--border);
   box-shadow: var(--shadow-sm);
 }
 
 .card--raised {
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Cards that are themselves links or buttons get the lift on hover. */
+.card--flat {
+  box-shadow: none;
+}
+
+/* Cards that are themselves links or buttons lift against their shadow. */
 .card--interactive {
   display: block;
   transition:
     transform var(--dur) var(--ease),
-    border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
 
 .card--interactive:hover {
-  transform: translateY(-2px);
-  border-color: var(--rule-2);
-  box-shadow: var(--shadow-lg);
+  transform: translate(-4px, -4px);
   color: var(--ink);
 }
 
-/* Full-bleed dark band. Used for the numbers sections and the big pull quotes,
-   where the contrast switch is doing the work of a section break. */
-/* A dark band is a hard edge against the paper, so it needs air above it or it
-   reads as the previous section's floor rather than as a new one. Pages that
-   want a different gap override this; none of them should leave it at zero. */
+/* Full-bleed colour band: a hard 3px rule top and bottom, content inside. */
 .band {
   margin-top: clamp(85px, 15.2vw, 170px);
   background: var(--dark);
   color: var(--on-dark);
-  padding-block: clamp(65px, 11.6vw, 130px);
+  padding-block: clamp(66px, 9.6vw, 130px);
 }
 
 .band a:hover {
   color: var(--sun);
+}
+
+.band--terracotta {
+  background: var(--terracotta);
+  color: var(--ink);
+  border-top: var(--border);
+  border-bottom: var(--border);
+}
+
+.band--sun {
+  background: var(--sun);
+  color: var(--ink);
+  border-top: var(--border);
+  border-bottom: var(--border);
+}
+
+.band--sky {
+  background: var(--sky);
+  color: var(--ink);
+  border-top: var(--border);
+  border-bottom: var(--border);
+}
+
+.band--coral {
+  background: var(--coral);
+  color: var(--ink);
+  border-top: var(--border);
+  border-bottom: var(--border);
+}
+
+/* Links and hovers on the light bands go ink, not sun. */
+.band--terracotta a:hover,
+.band--sun a:hover,
+.band--sky a:hover,
+.band--coral a:hover {
+  color: var(--ink);
 }
 
 .band-rule {
@@ -364,13 +484,14 @@ p {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 22px;
-  border-radius: var(--pill);
-  border: 1px solid var(--ink);
+  padding: 16px 26px;
+  border: var(--border);
   background: var(--ink);
   color: var(--paper);
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   white-space: nowrap;
   transition:
     background var(--dur-fast) var(--ease),
@@ -381,20 +502,18 @@ p {
 .btn:hover {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--paper);
 }
 
 .btn--ghost {
-  background: var(--card);
-  border-color: var(--rule);
+  background: transparent;
   color: var(--ink);
-  box-shadow: var(--shadow-sm);
 }
 
 .btn--ghost:hover {
-  background: var(--card);
+  background: var(--ink);
   border-color: var(--ink);
-  color: var(--ink);
+  color: var(--paper);
 }
 
 .btn--on-dark {
@@ -411,51 +530,43 @@ p {
 
 .btn--outline-dark {
   background: transparent;
-  border-color: var(--on-dark-rule-2);
-  color: var(--on-dark);
-}
-
-.btn--outline-dark:hover {
-  background: transparent;
   border-color: var(--on-dark);
   color: var(--on-dark);
 }
 
-/* Segmented control — "The ask / What I found", "Shelf / Grid". */
+.btn--outline-dark:hover {
+  background: var(--on-dark);
+  border-color: var(--on-dark);
+  color: var(--ink);
+}
+
+/* Segmented control — "The starting point / What we learned", "Shelf / Grid".
+   Joined buttons inside one 3px frame; the active one inverts. */
 .segmented {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 4px;
-  background: var(--wash);
-  border-radius: var(--radius-md);
-  align-self: flex-start;
   max-width: 100%;
-}
-
-.segmented--bare {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 12px;
-  padding: 5px;
-  gap: 6px;
+  border: var(--border);
+  align-self: flex-start;
 }
 
 .segmented__btn {
-  padding: 9px 16px;
+  padding: 12px 18px;
   border: 0;
-  border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--ink-2);
-  font-size: 13px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   white-space: nowrap;
   transition:
     background var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
 }
 
-.segmented__btn:hover {
-  color: var(--ink);
+.segmented__btn + .segmented__btn {
+  border-left: var(--border);
 }
 
 .segmented__btn[aria-pressed='true'] {
@@ -463,67 +574,66 @@ p {
   color: var(--paper);
 }
 
-/* Filter chip — writing tags, work category jumps. */
+/* Filter chip — writing tags, work category jumps. Square, 3px border. */
 .chip {
-  padding: 9px 15px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--rule);
-  background: var(--card);
-  color: var(--ink-2);
-  font-size: 13px;
+  padding: 11px 16px;
+  border: var(--border);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
   white-space: nowrap;
   transition:
     background var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
 }
 
 .chip:hover {
-  border-color: var(--ink);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .chip[aria-pressed='true'] {
   background: var(--ink);
-  border-color: var(--ink);
   color: var(--paper);
 }
 
-.chip--pill {
-  border-radius: var(--pill);
-  font-weight: 500;
-  padding: 9px 16px;
+/* Chips on the dark band invert. */
+.band .chip {
+  border-color: var(--on-dark);
+  color: var(--on-dark);
+}
+
+.band .chip:hover,
+.band .chip[aria-pressed='true'] {
+  background: var(--on-dark);
+  color: var(--ink);
 }
 
 .field {
   display: block;
-  font-size: 13px;
-  color: var(--ink-3);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
 .field input,
 .field textarea {
-  margin-top: 8px;
+  margin-top: 10px;
   width: 100%;
-  padding: 13px 15px;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
+  padding: 15px 16px;
+  border: var(--border);
   font-size: 16px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
   background: var(--paper);
   color: var(--ink);
-  transition:
-    border-color var(--dur-fast) var(--ease),
-    background var(--dur-fast) var(--ease);
-}
-
-.field input:hover,
-.field textarea:hover {
-  border-color: var(--rule-2);
-}
-
-.field input:focus,
-.field textarea:focus {
-  background: var(--card);
+  transition: border-color var(--dur-fast) var(--ease);
 }
 
 .field textarea {
@@ -533,7 +643,7 @@ p {
 /* A stat: big figure, small caption underneath. */
 .stat__value {
   font-size: clamp(30px, 3.4vw, 44px);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -589,19 +699,23 @@ p {
   }
 }
 
-/* Section heading with a hairline running off to the right. */
-.rule-heading {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 22px;
+/* The dotted accent square that decorates page heroes. */
+.dotacc {
+  position: absolute;
+  top: 88px;
+  right: var(--gutter);
+  width: 128px;
+  height: 128px;
+  background-image: radial-gradient(var(--ink) 2.4px, transparent 2.4px);
+  background-size: 14px 14px;
+  opacity: 0.4;
+  pointer-events: none;
 }
 
-.rule-heading::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--rule);
+@media (max-width: 1120px) {
+  .dotacc {
+    display: none;
+  }
 }
 
 .skip-link {
@@ -612,7 +726,6 @@ p {
   padding: 12px 20px;
   background: var(--ink);
   color: var(--paper);
-  border-radius: 0 0 var(--radius-sm) 0;
 }
 
 .skip-link:focus {

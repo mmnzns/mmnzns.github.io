@@ -13,6 +13,7 @@ import {
   BELIEFS,
   OUTSIDE_WORK,
   TO_WORK_WITH,
+  SKILLS,
   ROLES,
   INTRO_VIDEO,
 } from '../data/about';
@@ -20,51 +21,51 @@ import {
 
 <BaseLayout
   title="About"
-  description="Miguel Monzones — eleven years on lifecycle and GTM across fintech, SaaS and ecommerce. Canada, then a farm in the Philippines, then newsrooms, then marketing systems."
+  description="Lifecycle, GTM, and automation across fintech, SaaS, and ecommerce — who I am, how I work, and where I've worked."
+  breadcrumbs={[{ label: 'About', href: '/about/' }]}
+  footerFlush
 >
-  <section class="section--first wrap" id="top">
-    <p class="eyebrow about-hero__eyebrow">About</p>
-    <h1 class="page-title">A bit more about me.</h1>
+  {/* ------------------------------------------------------------- hero -- */}
+  <section class="section--first wrap abhero" id="top">
+    <div class="dotacc" aria-hidden="true"></div>
 
-    <div class="about-hero__intro">
-      {INTRO.map((para, i) => <p class={i === 0 ? 'about-hero__hello' : undefined}>{para}</p>)}
+    <p class="eyebrow">About</p>
+    <h1 class="page-title abhero__title">A bit more about me.</h1>
+    <div class="abhero__intro">
+      {INTRO.map((para, i) => <p class:list={[{ 'abhero__lead': i === 0 }]}>{para}</p>)}
     </div>
   </section>
 
-  {/* ------------------------------------------------------ what I do -- */}
-  <section class="section--tight wrap">
-    <div class="portrait-split">
-      <figure class="portrait">
-        <Image src={poster} alt="Miguel Monzones" width={880} height={1100} loading="lazy" />
-        <a class="portrait__play" href={INTRO_VIDEO.href} target="_blank" rel="noopener">
-          <span class="portrait__icon" aria-hidden="true">▶</span>
-          {INTRO_VIDEO.label}
-        </a>
-      </figure>
-
-      <div class="portrait-split__body">
-        <p class="eyebrow prose-block__eyebrow">What I do</p>
-        <div class="prose-block" data-reveal-group>
-          {WHAT_I_DO.map((para) => <p>{para}</p>)}
-        </div>
-        <p class="portrait-split__sign">Miguel Monzones</p>
+  {/* -------------------------------------------------- photo + what I do -- */}
+  <section class="section--tight wrap whatido">
+    <div class="whatido__media">
+      <div class="whatido__frame">
+        <Image src={poster} alt="Portrait of Miguel Monzones" width={680} height={850} loading="eager" />
       </div>
+      <a class="whatido__video" href={INTRO_VIDEO.href} target="_blank" rel="noopener">
+        <span class="whatido__play" aria-hidden="true">▶</span>
+        {INTRO_VIDEO.label}
+      </a>
+    </div>
+
+    <div class="whatido__text" data-reveal-group>
+      <p class="eyebrow eyebrow--muted whatido__label">What I do</p>
+      {WHAT_I_DO.map((para) => <p>{para}</p>)}
+      <p class="whatido__sign">Miguel Monzones</p>
     </div>
   </section>
 
-  {/* --------------------------------------------------- how I got here -- */}
-  {/* ------------------------------------------------------ scope band -- */}
-  <section class="band about-band">
+  {/* ------------------------------------------------------------ scope -- */}
+  <section class="band scope">
     <div class="wrap">
-      <blockquote class="about-band__quote">{SCOPE_QUOTE}</blockquote>
+      <blockquote class="scope__quote">{SCOPE_QUOTE}</blockquote>
+      <p class="scope__intro">{SCOPE_INTRO}</p>
 
-      <p class="about-band__intro">{SCOPE_INTRO}</p>
-
-      <div class="about-band__proof">
+      <div class="scope__proof">
         {SCOPE_PROOF.map((para) => <p>{para}</p>)}
       </div>
 
-      <hr class="band-rule about-band__rule" />
+      <hr class="band-rule scope__rule" />
 
       <div class="stat-row">
         {
@@ -85,135 +86,214 @@ import {
     </div>
   </section>
 
-  {/* --------------------------------------------------- what I believe -- */}
-  <section class="section wrap">
-    <div class="split">
-      <div>
-        <p class="eyebrow split__eyebrow">What I believe</p>
-        <h2 class="split__title">A few principles I’ve picked up—and held onto—along the way.</h2>
-      </div>
-      <div class="beliefs" data-reveal-group>
-        {
-          BELIEFS.map((item) => (
-            <div class="beliefs__item">
-              <p class="belief">{item.claim}</p>
-              <p class="beliefs__body">
-                {typeof item.body === 'string' ? (
-                  item.body
-                ) : (
-                  <Fragment>
-                    <em>{item.body.phrase}</em>
-                    {item.body.after}
-                  </Fragment>
-                )}
-              </p>
-            </div>
-          ))
-        }
-      </div>
+  {/* ---------------------------------------------------------- beliefs -- */}
+  <section class="section wrap twocol">
+    <div>
+      <p class="eyebrow">What I believe</p>
+      <h2 class="section-title twocol__title">
+        A few principles I’ve picked up and held onto along the way.
+      </h2>
+    </div>
+
+    <div class="beliefs" data-reveal-group>
+      {
+        BELIEFS.map((belief) => (
+          <div class="beliefs__item">
+            <p class="beliefs__claim">{belief.claim}</p>
+            <p class="beliefs__body">
+              {typeof belief.body === 'string' ? (
+                belief.body
+              ) : (
+                <>
+                  <em>{belief.body.phrase}</em>
+                  {belief.body.after}
+                </>
+              )}
+            </p>
+          </div>
+        ))
+      }
     </div>
   </section>
 
   {/* ---------------------------------------------------- outside work -- */}
-  <section class="section wrap">
-    <div class="split">
+  <section class="band band--sun outside">
+    <div class="wrap twocol">
       <div>
-        <p class="eyebrow split__eyebrow">Outside work</p>
-        <h2 class="split__title">Food, stories, music, and one very opinionated cat.</h2>
+        <p class="eyebrow">Outside work</p>
+        <h2 class="section-title twocol__title">Food, stories, music, and one very opinionated cat.</h2>
       </div>
-      <div class="prose-block" data-reveal-group>
+
+      <div class="outside__text" data-reveal-group>
         {OUTSIDE_WORK.map((para) => <p>{para}</p>)}
       </div>
     </div>
   </section>
 
-  {/* ----------------------------------------------------------- roles -- */}
-  <section class="section wrap">
-    <div class="split">
-      <div>
-        <p class="eyebrow split__eyebrow">Career</p>
-        <h2 class="split__title">Where I’ve worked.</h2>
-      </div>
+  {/* ---------------------------------------------------- to work with -- */}
+  <section class="section wrap twocol">
+    <div>
+      <p class="eyebrow">What I’m like to work with</p>
+      <h2 class="section-title twocol__title">I care more about the right answer than having it.</h2>
+    </div>
 
-      <div class="roles">
-        {
-          ROLES.map((role) => (
-            <div class="roles__row">
-              <div>
-                <p class="roles__org">{role.org}</p>
-                <p class="roles__title">{role.title}</p>
-                <p class="roles__what">{role.what}</p>
-              </div>
-              <p class="roles__years">{role.years}</p>
+    <div class="towork" data-reveal-group>
+      {TO_WORK_WITH.map((para) => <p>{para}</p>)}
+    </div>
+  </section>
+
+  {/* ----------------------------------------------------------- career -- */}
+  <section class="section wrap twocol">
+    <div>
+      <p class="eyebrow">Career</p>
+      <h2 class="section-title twocol__title">Where I’ve worked.</h2>
+    </div>
+
+    <div class="roles">
+      {
+        ROLES.map((role) => (
+          <div class="roles__row">
+            <div>
+              <p class="roles__org">{role.org}</p>
+              <p class="roles__role">{role.title}</p>
+              <p class="roles__what">{role.what}</p>
             </div>
-          ))
-        }
-      </div>
+            <p class="roles__years">{role.years}</p>
+          </div>
+        ))
+      }
     </div>
   </section>
 
-  {/* -------------------------------------------------- to work with -- */}
-  <section class="section wrap">
-    <div class="split">
-      <div>
-        <p class="eyebrow split__eyebrow">What I’m like to work with</p>
-      </div>
-      <div class="prose-block" data-reveal-group>
-        {TO_WORK_WITH.map((para) => <p>{para}</p>)}
-      </div>
+  {/* ----------------------------------------------------------- skills -- */}
+  <section class="section wrap" id="systems">
+    <p class="eyebrow">Skills and systems</p>
+    <h2 class="section-title skills__title">What I do, and what I do it in.</h2>
+    <p class="lede skills__sub">
+      I decide what a system needs to do before choosing what to run it on—but most teams already
+      have a stack, so here’s what I can pick up without a ramp.
+    </p>
+
+    <div class="skillgrid">
+      {
+        SKILLS.map((group) => (
+          <div class="card skillcard">
+            <p class="label-row">
+              <span class="accent-bar accent-bar--sm" style={`--bar:${group.accent}`} />
+              <span class="skillcard__name">{group.name}</span>
+            </p>
+            <p class="skillcard__skills">{group.skills}</p>
+            <div class="skillcard__tools">
+              {group.tools.map((tool) => (
+                <span class="skillcard__tool">{tool}</span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
     </div>
+
+    <p class="skills__note">
+      Listed by current working fluency rather than everything I’ve ever opened. Braze, Salesforce
+      Marketing Cloud, HubSpot, and Webflow are the platforms I’d call expert-level; my last
+      hands-on SFMC production build was 2021, kept current through a live vendor evaluation.
+    </p>
   </section>
 
+  {/* ----------------------------------------------------------- contact -- */}
   <ContactSection
     title="Get in touch."
-    intro="Want to work together, talk through something you’re building, or simply say hello? I’d be happy to hear from you."
-    aside="If you’re ever in Vancouver, coffee’s on me. I’d rather hear it out loud anyway."
+    intro="Want to work together, talk through something you're building, or simply say hello? I'd be happy to hear from you."
+    aside="If you're ever in Vancouver, coffee's on me. I'd rather hear it out loud anyway."
   />
 </BaseLayout>
 
-{/* The `data-count` totals are animated by Motion.astro, along with every other
-    scroll-driven effect on the site. There is no page-local script here on
-    purpose: two observers watching the same elements would count twice. */}
-
 <style>
-  .about-hero__eyebrow {
-    margin-bottom: 26px;
+  .abhero {
+    position: relative;
   }
 
-  .about-hero__intro {
+  .abhero__title {
+    margin-top: 26px;
+    max-width: 960px;
+  }
+
+  .abhero__intro {
     margin-top: 44px;
     max-width: 680px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    font-size: clamp(18px, 2vw, 21px);
+    font-size: 21px;
     line-height: 1.6;
     color: var(--ink-2);
   }
 
-  .about-hero__hello {
+  .abhero__lead {
     color: var(--ink);
   }
 
-  /* ------------------------------------------------------------ split -- */
-  .split {
+  .whatido {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: clamp(32px, 5vw, 56px);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 72px;
     align-items: start;
   }
 
-  .split__eyebrow {
-    margin-bottom: 20px;
+  .whatido__media {
+    position: relative;
   }
 
-  .split__title {
-    font-size: clamp(28px, 3.2vw, 42px);
-    line-height: 1.08;
+  .whatido__frame {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    box-shadow: var(--shadow);
   }
 
-  .prose-block {
-    max-width: 680px;
+  .whatido__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .whatido__video {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px 9px 12px;
+    background: rgb(251 249 246 / 94%);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    transition:
+      background var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+
+  .whatido__video:hover,
+  .whatido__video:focus-visible {
+    background: var(--paper);
+    transform: translateY(-1px);
+    color: var(--ink);
+  }
+
+  .whatido__play {
+    width: 22px;
+    height: 22px;
+    background: var(--coral);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+  }
+
+  .whatido__text {
+    padding-top: 6px;
     display: flex;
     flex-direction: column;
     gap: 22px;
@@ -221,15 +301,74 @@ import {
     line-height: 1.66;
   }
 
-  .prose-block__eyebrow {
-    margin-bottom: 22px;
+  .whatido__label {
+    margin-bottom: 0;
   }
 
-  /* Each belief is a claim followed by the reason it's held. The reason is what
-     keeps the claim from reading as a slogan, so the two stay paired and the
-     rule between items separates pairs rather than lines. */
+  .whatido__sign {
+    margin-top: 12px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* ------------------------------------------------------------ scope -- */
+  .scope {
+    padding-block: clamp(90px, 9vw, 130px);
+  }
+
+  .scope__quote {
+    margin: 0;
+    max-width: 880px;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    color: var(--sun);
+  }
+
+  .scope__intro {
+    margin-top: 28px;
+    max-width: 760px;
+    font-size: 17px;
+    line-height: 1.66;
+    color: var(--on-dark-2);
+  }
+
+  .scope__proof {
+    margin-top: clamp(44px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 28px;
+    align-items: start;
+  }
+
+  .scope__proof p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--on-dark-2);
+  }
+
+  .scope__rule {
+    margin-block: clamp(52px, 6vw, 76px) clamp(44px, 5vw, 60px);
+  }
+
+  /* --------------------------------------------------------- two-col -- */
+  .twocol {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 56px;
+    align-items: start;
+  }
+
+  .twocol__title {
+    margin-top: 20px;
+  }
+
   .beliefs {
     max-width: 680px;
+    display: flex;
+    flex-direction: column;
   }
 
   .beliefs__item {
@@ -241,132 +380,34 @@ import {
   .beliefs__item + .beliefs__item {
     margin-top: 32px;
     padding-top: 32px;
-    border-top: 1px solid var(--rule);
+    border-top: var(--border);
   }
 
-  .belief {
+  .beliefs__claim {
     font-size: clamp(22px, 2.4vw, 29px);
     line-height: 1.22;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.012em;
-    text-wrap: pretty;
   }
 
   .beliefs__body {
     font-size: 17px;
     line-height: 1.66;
     color: var(--ink-2);
-    text-wrap: pretty;
   }
 
-  /* -------------------------------------------------------- portrait -- */
-  .portrait-split {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: clamp(40px, 6vw, 72px);
-    align-items: start;
+  .outside {
+    padding-block: clamp(66px, 8.4vw, 116px);
   }
 
-  .portrait {
-    position: relative;
-    margin: 0;
-  }
-
-  .portrait :global(img) {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    border-radius: var(--radius);
-    display: block;
-    box-shadow: var(--shadow);
-  }
-
-  .portrait__play {
-    position: absolute;
-    bottom: 18px;
-    left: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 16px 9px 12px;
-    background: rgb(251 249 246 / 94%);
-    border-radius: var(--pill);
-    font-size: 13px;
-    font-weight: 500;
-    transition:
-      background var(--dur-fast) var(--ease),
-      transform var(--dur-fast) var(--ease);
-  }
-
-  .portrait__play:hover {
-    background: var(--card);
-    transform: translateY(-1px);
-    color: var(--ink);
-  }
-
-  .portrait__icon {
-    display: grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border-radius: var(--pill);
-    background: var(--accent);
-    color: #fff;
-    font-size: 9px;
-  }
-
-  .portrait-split__body {
-    padding-top: 6px;
-  }
-
-  .portrait-split__sign {
-    margin-top: 34px;
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  /* ------------------------------------------------------------- band -- */
-  .about-band {
-    margin-top: clamp(96px, 14vw, 170px);
-  }
-
-  .about-band__quote {
-    margin: 0;
-    max-width: 880px;
-    font-size: clamp(28px, 4vw, 52px);
-    font-weight: 500;
-    letter-spacing: -0.015em;
-    line-height: 1.12;
-    color: var(--sun);
-    text-wrap: balance;
-  }
-
-  .about-band__intro {
-    margin-top: 26px;
+  .outside__text,
+  .towork {
     max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
     font-size: 18px;
     line-height: 1.66;
-    color: var(--on-dark-2);
-  }
-
-  .about-band__proof {
-    margin-top: clamp(44px, 5vw, 64px);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 28px;
-    align-items: start;
-  }
-
-  .about-band__proof p {
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--on-dark-2);
-  }
-
-  .about-band__rule {
-    margin-block: clamp(52px, 6vw, 76px) clamp(44px, 5vw, 60px);
   }
 
   /* ------------------------------------------------------------ roles -- */
@@ -380,28 +421,28 @@ import {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 24px;
     align-items: baseline;
-    padding-block: 22px;
-    border-bottom: 1px solid var(--rule);
+    padding: 22px 0;
+    border-bottom: var(--border);
   }
 
   .roles__org {
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.005em;
   }
 
-  .roles__title {
+  .roles__role {
     margin-top: 3px;
     font-size: 16px;
-    line-height: 1.4;
     color: var(--ink-3);
+    line-height: 1.4;
   }
 
   .roles__what {
     margin-top: 5px;
     font-size: 15px;
-    line-height: 1.55;
     color: var(--ink-2);
+    line-height: 1.55;
   }
 
   .roles__years {
@@ -410,10 +451,63 @@ import {
     white-space: nowrap;
   }
 
-  @media (min-width: 860px) {
-    .about-band__proof {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
-    }
+  /* ----------------------------------------------------------- skills -- */
+  .skills__title {
+    margin-top: 20px;
+    max-width: 780px;
+  }
+
+  .skills__sub {
+    margin: 18px 0 44px;
+    max-width: 620px;
+  }
+
+  .skillgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 18px;
+  }
+
+  .skillcard {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .skillcard__name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.008em;
+  }
+
+  .skillcard__skills {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .skillcard__tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  .skillcard__tool {
+    font-size: 13.5px;
+    line-height: 1.3;
+    padding: 6px 12px;
+    border: var(--border);
+    color: var(--ink-2);
+  }
+
+  .skills__note {
+    margin-top: 26px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-3);
+    max-width: 680px;
   }
 </style>

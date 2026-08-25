@@ -22,56 +22,70 @@ const groups = CATEGORY_ORDER.map((category) => ({
 
 <BaseLayout
   title="The Work"
-  description="Thirteen systems I diagnosed, decided on, and built — lifecycle, AI automation, web operations and team building across fintech, SaaS and ecommerce."
+  description="Systems, journeys, and teams I've helped bring to life — lifecycle rebuilds, AI automation, web and analytics, and the operations behind them."
+  breadcrumbs={[{ label: 'Work', href: '/work/' }]}
+  footerFlush
 >
-  <section class="section--first wrap">
-    <p class="eyebrow work-hero__eyebrow">What I’ve built</p>
-    <h1 class="page-title work-hero__title">
+  <section class="section--first wrap workhero" id="top">
+    <div class="dotacc" aria-hidden="true"></div>
+
+    <p class="eyebrow">What I’ve built</p>
+    <h1 class="page-title workhero__title">
       A collection of systems, journeys, and teams I’ve helped bring to life.
     </h1>
-    <p class="lede work-hero__lede">
+    <p class="lede workhero__sub">
       Most of these projects began with a business problem that crossed more than one team. I’ve
       written each case around the same questions: What were we seeing? What did we learn? What did
       we decide to build? And how did we know whether it worked? Browse by area, or open any project
       for the full story.
     </p>
 
-    <nav class="work-hero__jump" aria-label="Jump to a category">
-      {groups.map((group) => <a class="chip chip--pill" href={`#${group.id}`}>{group.category}</a>)}
-    </nav>
+    <div class="jump">
+      {
+        groups.map((group) => (
+          <a class="jump__link" href={`#${group.id}`}>
+            <span class="jump__mark" style={`background:${group.accent}`} aria-hidden="true" />
+            <span>{group.category}</span>
+          </a>
+        ))
+      }
+    </div>
   </section>
 
-  <div class="work-groups">
-    {
-      groups.map((group) => (
-        <section class="wrap work-group" id={group.id}>
-          <div class="work-group__head">
-            <p class="label-row work-group__count">
+  <div class="spacer" aria-hidden="true"></div>
+
+  {
+    groups.map((group) => (
+      <section class="wrap group" id={group.id}>
+        <div class="group__rule" aria-hidden="true" />
+        <div class="group__grid">
+          <div>
+            <p class="label-row group__label">
               <span class="accent-bar" style={`--bar:${group.accent}`} />
-              <span class="eyebrow">
+              <span class="eyebrow eyebrow--muted">
                 {group.items.length} {group.items.length === 1 ? 'case' : 'cases'}
               </span>
             </p>
-            <h2 class="work-group__title">{group.category}</h2>
+            <h2 class="section-title--sm">{group.category}</h2>
           </div>
 
-          <div class="work-group__list">
+          <div class="group__cases">
             {group.items.map((project) => (
-              <a class="card card--interactive work-card" href={`/work/${project.slug}/`}>
-                <div class="work-card__inner">
+              <a class="card card--interactive workcard" href={`/work/${project.slug}/`}>
+                <div class="workcard__grid">
                   <div>
-                    <p class="eyebrow work-card__tags">{project.tags.join(' / ')}</p>
-                    <h3 class="work-card__title">{project.title}</h3>
-                    <p class="work-card__summary">{project.problem}</p>
+                    <p class="workcard__tags">{project.tags.join(' / ')}</p>
+                    <h3 class="workcard__title">{project.title}</h3>
+                    <p class="workcard__summary">{project.problem}</p>
                   </div>
 
-                  <div class="work-card__metrics">
-                    {project.metrics.slice(0, 2).map((metric) => (
+                  <div class="workcard__metrics">
+                    {project.metrics.map((metric) => (
                       <div>
-                        <p class="work-card__metric">
+                        <p class="workcard__value">
                           {metric.value ?? `${metric.from} → ${metric.to}`}
                         </p>
-                        <p class="work-card__metric-label">{metric.label}</p>
+                        <p class="workcard__label">{metric.label}</p>
                       </div>
                     ))}
                   </div>
@@ -79,84 +93,123 @@ const groups = CATEGORY_ORDER.map((category) => ({
               </a>
             ))}
           </div>
-        </section>
-      ))
-    }
-  </div>
+        </div>
+      </section>
+    ))
+  }
 
   <ContactBand />
 </BaseLayout>
 
 <style>
-  .work-hero__eyebrow {
-    margin-bottom: 26px;
+  .workhero {
+    position: relative;
   }
 
-  .work-hero__title {
+  .workhero__title {
+    margin-top: 26px;
     max-width: 1000px;
   }
 
-  .work-hero__lede {
+  .workhero__sub {
     margin-top: 30px;
     max-width: 620px;
+    font-size: 18px;
+    line-height: 1.65;
   }
 
-  .work-hero__jump {
+  .jump {
     margin-top: 44px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
   }
 
-  .work-groups {
-    margin-top: clamp(64px, 9vw, 110px);
+  .jump__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 18px;
+    border: var(--border);
+    background: var(--paper);
+    transition:
+      background var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
   }
 
-  .work-group {
-    padding-bottom: clamp(64px, 8vw, 96px);
-    scroll-margin-top: calc(var(--header-h) + 40px);
+  .jump__link:hover,
+  .jump__link:focus-visible {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .jump__mark {
+    width: 22px;
+    height: 11px;
+    flex: none;
+  }
+
+  .spacer {
+    height: clamp(70px, 8vw, 110px);
+  }
+
+  .group {
+    padding-bottom: 96px;
+    scroll-margin-top: 110px;
+  }
+
+  .group__rule {
+    height: 6px;
+    background: var(--ink);
+    margin-bottom: 34px;
+  }
+
+  .group__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 34px;
   }
 
-  .work-group__count {
+  .group__label {
     margin-bottom: 14px;
   }
 
-  .work-group__title {
-    font-size: clamp(24px, 2.8vw, 32px);
-    line-height: 1.1;
-  }
-
-  .work-group__list {
+  .group__cases {
     display: flex;
     flex-direction: column;
     gap: 18px;
   }
 
-  .work-card {
-    padding: clamp(26px, 3vw, 32px) clamp(26px, 3vw, 34px);
+  .workcard {
+    padding: 32px clamp(17px, 4.5vw, 34px);
   }
 
-  .work-card__inner {
+  .workcard__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 22px;
-    align-items: start;
+    gap: 24px;
   }
 
-  .work-card__tags {
-    font-size: 11px;
+  .workcard__tags {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
   }
 
-  .work-card__title {
+  .workcard__title {
     margin-top: 12px;
     font-size: 23px;
     line-height: 1.2;
+    letter-spacing: -0.012em;
   }
 
-  .work-card__summary {
+  .workcard__summary {
     margin-top: 12px;
     max-width: 560px;
     font-size: 16px;
@@ -164,43 +217,35 @@ const groups = CATEGORY_ORDER.map((category) => ({
     color: var(--ink-2);
   }
 
-  .work-card__metrics {
+  .workcard__metrics {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  .work-card__metric {
+  .workcard__value {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: -0.015em;
     line-height: 1.1;
   }
 
-  .work-card__metric-label {
+  .workcard__label {
     margin-top: 3px;
     font-size: 13px;
-    line-height: 1.4;
     color: var(--ink-3);
+    line-height: 1.4;
   }
 
-  @media (min-width: 900px) {
-    .work-group {
-      grid-template-columns: 210px 1fr;
-      gap: 44px;
-    }
-  }
-
-  @media (min-width: 1100px) {
-    .work-group {
-      grid-template-columns: 250px 1fr;
-      gap: 56px;
+  @media (min-width: 800px) {
+    .group__grid {
+      grid-template-columns: 0.62fr 1.38fr;
+      gap: 48px;
     }
 
-    .work-card__inner {
-      grid-template-columns: minmax(0, 1fr) 210px;
-      gap: 36px;
-      align-items: center;
+    .workcard__grid {
+      grid-template-columns: 1fr 220px;
+      gap: 40px;
     }
   }
 </style>

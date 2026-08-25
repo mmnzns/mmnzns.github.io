@@ -2,7 +2,8 @@
  * Regenerates src/data/home.ts from the design's home page.
  *
  * Everything home.ts holds lives in the design as JS arrays (CASES, SYMPTOMS,
- * STEPS, RECEIPTS, LOGOS), so they are evaluated rather than scraped. Two
+ * STEPS, RECEIPTS), so they are evaluated rather than scraped; the marquee
+ * logo list is read out of its markup. Two
  * fields the design doesn't carry are reattached here: the featured cases'
  * `slug` (kept as a positional ORDER list, which throws if the count changes)
  * and `category`, which is read from PROJECTS in src/data/site.ts by slug.
@@ -29,11 +30,19 @@ const SYMPTOMS = evalArray(html, 'SYMPTOMS');
 const STEPS = evalArray(html, 'STEPS');
 const RECEIPTS = evalArray(html, 'RECEIPTS');
 
-// LOGOS is written as a name list piped through .map() — take just the names.
-const logosStart = html.indexOf('const LOGOS = [');
-const logosEnd = html.indexOf(']', logosStart);
-// eslint-disable-next-line no-new-func
-const LOGOS = new Function(`return [${html.slice(logosStart + 'const LOGOS = ['.length, logosEnd)}]`)();
+/*
+ * The v8 export dropped the LOGOS array: the marquee is plain markup with one
+ * <img alt="Name"> per brand, then an alt-less duplicate run for the seamless
+ * loop. The alts of the first run are the list.
+ */
+// class= specifically: a bare indexOf would anchor on the .marquee-track CSS rule.
+const marqueeStart = html.indexOf('class="marquee-track"');
+if (marqueeStart === -1) throw new Error('Could not find the marquee-track in the design file.');
+const marqueeEnd = html.indexOf('</section>', marqueeStart);
+const LOGOS = [...html.slice(marqueeStart, marqueeEnd).matchAll(/alt="([^"]+)"/g)].map((m) =>
+  m[1].replace(/&amp;/g, '&'),
+);
+if (!LOGOS.length) throw new Error('No alt-texted logos found in the marquee.');
 
 /**
  * Slugs for the featured cases, in the design's order. The design identifies

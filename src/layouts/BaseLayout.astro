@@ -38,6 +38,14 @@ interface Props {
    * and scripts/build-og-image.mjs is what guarantees the geometry.
    */
   ogImage?: string;
+  /** Set when the page's last section is a full-bleed band — see SiteFooter. */
+  footerFlush?: boolean;
+  /**
+   * The Web Design page opts out of the site chrome: it ships its own nav,
+   * footer and motion, deliberately unlike the rest of the site. Analytics
+   * and the consent banner stay — GA runs site-wide either way.
+   */
+  standalone?: boolean;
 }
 
 const {
@@ -48,6 +56,8 @@ const {
   article,
   breadcrumbs,
   ogImage,
+  footerFlush = false,
+  standalone = false,
 } = Astro.props;
 
 const pageTitle = title
@@ -158,9 +168,11 @@ const schema = {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.title} — Writing`} href="/rss.xml" />
 
-    {/* The two weights above the fold. 600 is the display weight, 400 the body. */}
+    {/* The two weights above the fold. 700 is the display weight, 400 the body. */}
     <link rel="preload" href="/fonts/general-sans-400.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/general-sans-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/general-sans-700.woff2" as="font" type="font/woff2" crossorigin />
+
+    <slot name="head" />
 
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
@@ -200,15 +212,15 @@ const schema = {
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <SiteHeader progress={progress} />
+    {!standalone && <SiteHeader progress={progress} />}
 
     <main id="main">
       <slot />
     </main>
 
-    <SiteFooter />
+    {!standalone && <SiteFooter flush={footerFlush} />}
 
-    <Motion />
+    {!standalone && <Motion />}
     <ConsentBanner />
   </body>
 </html>

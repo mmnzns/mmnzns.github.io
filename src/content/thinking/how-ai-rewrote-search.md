@@ -1,5 +1,6 @@
 ---
 title: "How AI Rewrote Search (and What That Means for SEO)"
+shortTitle: "How AI rewrote search"
 date: 2025-08-25
 tag: "Search"
 excerpt: "AI search changes SEO from ranking for links to becoming a credible source answer engines can cite. SEO vs GEO, how each generates results, and what earns a citation."

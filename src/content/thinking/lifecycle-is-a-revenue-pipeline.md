@@ -1,5 +1,6 @@
 ---
 title: "Lifecycle Marketing Is Not a Traffic Strategy. It’s a Revenue Pipeline."
+shortTitle: "Lifecycle marketing is not a traffic strategy"
 date: 2026-02-24
 tag: "Lifecycle"
 featured: false

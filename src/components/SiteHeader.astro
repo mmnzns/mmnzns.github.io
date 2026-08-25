@@ -1,7 +1,18 @@
 ---
 import { Image } from 'astro:assets';
-import { SITE, NAV_LINKS, NAV_CTA } from '../config';
+import { SITE, NAV_LINKS, NAV_SERVICES, NAV_CTA } from '../config';
 import logoMark from '../assets/logo-mark.png';
+
+/**
+ * The v8 header: a dark bar with the plain site links, then the two offerings
+ * boxed together behind a small "Services" tab, then the coral CTA.
+ *
+ * The design export's own mobile nav (`Monzones-D-Nav-Bold`) never shipped —
+ * at 899px and below the export simply has no navigation. The panel below is
+ * therefore inferred, not ported: the same accessible toggle-and-panel this
+ * site has always had, restyled in the Bold language (dark panel, 3px rules,
+ * the services pair labelled as such).
+ */
 
 interface Props {
   /** Renders the article reading-progress bar along the bottom edge. */
@@ -22,7 +33,7 @@ function isCurrent(href: string) {
 ---
 
 <header class="header">
-  <nav class="header__bar wrap" aria-label="Primary">
+  <nav class="header__bar" aria-label="Primary">
     <a class="brand" href="/">
       <Image src={logoMark} alt="" width={34} height={26} loading="eager" />
       <span>{SITE.title.replace('N. ', '')}</span>
@@ -44,7 +55,22 @@ function isCurrent(href: string) {
       }
     </ul>
 
-    <a class="btn btn--ghost header__cta" href={NAV_CTA.href}>{NAV_CTA.label}</a>
+    <div class="services" aria-label="Services">
+      <span class="services__label">Services</span>
+      {
+        NAV_SERVICES.map((link) => (
+          <a
+            class="services__link"
+            href={link.href}
+            aria-current={isCurrent(link.href) ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <a class="header__cta" href={NAV_CTA.href}>{NAV_CTA.label}</a>
 
     <button
       type="button"
@@ -59,7 +85,7 @@ function isCurrent(href: string) {
   </nav>
 
   <div class="mobilenav" id="mobile-nav" hidden data-nav-panel>
-    <ul class="mobilenav__list wrap">
+    <ul class="mobilenav__list">
       {
         NAV_LINKS.map((link) => (
           <li>
@@ -69,7 +95,21 @@ function isCurrent(href: string) {
           </li>
         ))
       }
-      <li><a href={NAV_CTA.href}>{NAV_CTA.label}</a></li>
+      <li class="mobilenav__services-label" aria-hidden="true">Services</li>
+      {
+        NAV_SERVICES.map((link) => (
+          <li>
+            <a
+              class="mobilenav__service"
+              href={link.href}
+              aria-current={isCurrent(link.href) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+      <li><a class="mobilenav__cta" href={NAV_CTA.href}>{NAV_CTA.label}</a></li>
     </ul>
   </div>
 
@@ -101,114 +141,153 @@ function isCurrent(href: string) {
     position: sticky;
     top: 0;
     z-index: 40;
-    background: color-mix(in srgb, var(--paper) 82%, transparent);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--rule);
-    transition:
-      box-shadow 320ms ease,
-      background-color 320ms ease;
-  }
-
-  /* Set by Motion.astro past the first few pixels of scroll: the bar reads as
-     sitting above the page rather than printed on it. */
-  .header--lifted {
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
-    box-shadow: 0 10px 30px -22px rgb(31 28 25 / 50%);
+    background: var(--dark);
+    border-bottom: var(--border);
   }
 
   .header__bar {
+    max-width: var(--wrap-home);
+    margin-inline: auto;
     display: flex;
     align-items: center;
-    gap: 32px;
-    padding-block: 18px;
+    gap: 34px;
+    padding: 14px 28px;
   }
 
   .brand {
     display: flex;
     align-items: center;
-    gap: 9px;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--on-dark);
     margin-right: auto;
     white-space: nowrap;
   }
 
+  /* The mark is ink on transparent; inverted it reads on the dark bar. */
   .brand :global(img) {
-    height: 26px;
+    height: 24px;
     width: auto;
     flex: none;
     display: block;
+    filter: invert(1);
+  }
+
+  .brand:hover,
+  .brand:focus-visible {
+    color: var(--on-dark);
   }
 
   .navlinks {
     display: none;
-    gap: 26px;
+    gap: 24px;
     list-style: none;
     margin: 0;
     padding: 0;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
   }
 
   .navlinks__link {
-    position: relative;
-    color: var(--ink-2);
+    color: rgb(251 249 246 / 62%);
+    white-space: nowrap;
     padding-block: 4px;
   }
 
   /* Restated here on purpose. Astro scopes component styles with an attribute
      selector, so `.navlinks__link` outweighs the global `a:hover` and the link
-     would otherwise never change colour — only the underline would move, which
-     reads as nothing happening. Any component that sets its own link colour has
-     to set its own hover colour too. */
+     would otherwise never change colour. Any component that sets its own link
+     colour has to set its own hover colour too. */
   .navlinks__link:hover,
   .navlinks__link:focus-visible {
-    color: var(--accent);
+    color: var(--sun);
   }
 
   .navlinks__link[aria-current='page'] {
+    color: var(--on-dark);
+  }
+
+  /* The boxed services pair: a sun outline with a solid sun label tab. */
+  .services {
+    display: none;
+    align-items: stretch;
+    border: 2px solid var(--sun);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .services__label {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    background: var(--sun);
     color: var(--ink);
-    font-weight: 500;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
   }
 
-  /* Underline grows from the left on hover. Directional motion reads as
-     intentional where a fade reads as a default. */
-  .navlinks__link::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    bottom: 0;
-    height: 1px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform var(--dur) var(--ease);
+  .services__link {
+    display: flex;
+    align-items: center;
+    padding: 6px 14px;
+    color: rgb(251 249 246 / 62%);
+    white-space: nowrap;
   }
 
-  .navlinks__link:hover::after {
-    transform: scaleX(1);
+  .services__link + .services__link {
+    border-left: 2px solid rgb(245 184 65 / 40%);
+  }
+
+  .services__link:hover,
+  .services__link:focus-visible {
+    color: var(--sun);
+  }
+
+  .services__link[aria-current='page'] {
+    color: var(--on-dark);
   }
 
   .header__cta {
     display: none;
-    padding: 9px 18px;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    background: var(--coral);
+    color: var(--ink);
+    white-space: nowrap;
+    box-shadow: 4px 4px 0 var(--paper);
+    transition: background var(--dur-fast) var(--ease);
+  }
+
+  .header__cta:hover,
+  .header__cta:focus-visible {
+    background: var(--sun);
+    color: var(--ink);
   }
 
   .header__toggle {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     margin-right: -8px;
-    border: 1px solid var(--rule);
-    border-radius: var(--pill);
-    background: var(--card);
+    border: 2px solid var(--on-dark);
+    background: transparent;
     transition: border-color var(--dur-fast) var(--ease);
   }
 
   .header__toggle:hover {
-    border-color: var(--ink);
+    border-color: var(--sun);
   }
 
   /* Three lines drawn from one element: the bar itself plus two shadows. */
@@ -216,10 +295,9 @@ function isCurrent(href: string) {
   .header__bars::before,
   .header__bars::after {
     display: block;
-    width: 16px;
-    height: 1.5px;
-    background: var(--ink);
-    border-radius: 2px;
+    width: 18px;
+    height: 2.5px;
+    background: var(--on-dark);
     transition: transform var(--dur) var(--ease);
   }
 
@@ -230,11 +308,11 @@ function isCurrent(href: string) {
   }
 
   .header__bars::before {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
   }
 
   .header__bars::after {
-    transform: translateY(5px);
+    transform: translateY(6px);
   }
 
   [aria-expanded='true'] .header__bars {
@@ -250,35 +328,65 @@ function isCurrent(href: string) {
   }
 
   .mobilenav {
-    border-top: 1px solid var(--rule);
-    background: var(--paper);
+    border-top: 1px solid rgb(251 249 246 / 25%);
+    background: var(--dark);
   }
 
   .mobilenav__list {
     list-style: none;
     margin: 0;
-    padding-block: 8px 16px;
+    padding: 8px 28px 20px;
     display: flex;
     flex-direction: column;
   }
 
   .mobilenav__list a {
     display: block;
-    padding: 12px 0;
-    font-size: 17px;
-    color: var(--ink-2);
-    border-bottom: 1px solid var(--rule);
+    padding: 13px 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgb(251 249 246 / 62%);
+    border-bottom: 1px solid rgb(251 249 246 / 18%);
   }
 
-  .mobilenav__list li:last-child a {
-    border-bottom: 0;
-    color: var(--ink);
-    font-weight: 500;
+  .mobilenav__list a:hover,
+  .mobilenav__list a:focus-visible {
+    color: var(--sun);
   }
 
   .mobilenav__list a[aria-current='page'] {
+    color: var(--on-dark);
+  }
+
+  .mobilenav__services-label {
+    padding: 16px 0 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sun);
+  }
+
+  .mobilenav__service {
+    border-color: rgb(245 184 65 / 30%) !important;
+  }
+
+  .mobilenav__list .mobilenav__cta {
+    margin-top: 18px;
+    border: 0;
+    background: var(--coral);
     color: var(--ink);
-    font-weight: 500;
+    text-align: center;
+    font-weight: 700;
+    padding: 15px 20px;
+  }
+
+  .mobilenav__list .mobilenav__cta:hover,
+  .mobilenav__list .mobilenav__cta:focus-visible {
+    background: var(--sun);
+    color: var(--ink);
   }
 
   .header__progress {
@@ -288,14 +396,49 @@ function isCurrent(href: string) {
     transition: width 120ms linear;
   }
 
-  @media (min-width: 860px) {
+  /* The desktop bar needs more room than before — six links, the boxed pair
+     and the CTA — so the breakpoint sits higher than the old 860px. Between
+     900 and 1080px the design tightens tracking and hides the Services tab
+     label rather than dropping to the burger. */
+  @media (min-width: 900px) {
     .navlinks,
-    .header__cta {
+    .services {
       display: flex;
+    }
+
+    .header__cta {
+      display: inline-flex;
     }
 
     .header__toggle {
       display: none;
+    }
+  }
+
+  @media (min-width: 900px) and (max-width: 1080px) {
+    .header__bar {
+      gap: 14px;
+      padding-inline: 16px;
+    }
+
+    .navlinks {
+      gap: 12px;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .services__label {
+      display: none;
+    }
+
+    .services__link {
+      padding: 6px 8px;
+    }
+
+    .header__cta {
+      padding: 10px 13px;
+      font-size: 12px;
+      letter-spacing: 0.05em;
     }
   }
 </style>

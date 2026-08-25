@@ -1,5 +1,6 @@
 ---
 title: "Seizing Opportunities: Mastering the Art of Conveying Your Value"
+shortTitle: "Conveying your value"
 date: 2025-08-27
 tag: "Positioning"
 excerpt: "A personal reflection on rejection, learning, and communicating your value with more clarity — written after losing an opportunity I was qualified for."

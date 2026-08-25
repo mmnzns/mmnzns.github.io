@@ -29,6 +29,9 @@ const PROOF = evalArray(html, 'PROOF');
 const FIT_YES = evalArray(html, 'FIT_YES');
 const FIT_NO = evalArray(html, 'FIT_NO');
 const START = evalArray(html, 'START');
+// v8 adds the stack section: six tool-category cards and the depth rows.
+const SYSTEMS = evalArray(html, 'SYSTEMS');
+const DEPTH = evalArray(html, 'DEPTH');
 
 const accent = (hex) => {
   const token = ACCENT_TOKEN[hex];
@@ -164,6 +167,28 @@ for (const p of PROOF) {
 w('] as const;');
 w('');
 w("/** Headline numbers on the consulting page's dark band. */");
+w('/** The stack section: tool categories, then the platforms known deepest. */');
+w('export const SYSTEMS = [');
+for (const c of SYSTEMS) {
+  w('  {');
+  kv('    ', 'name', smart(c.name));
+  w(`    accent: '${accent(c.accent)}',`);
+  w(`    tools: [${c.tools.map((t) => q(smart(t))).join(', ')}],`);
+  w('  },');
+}
+w('] as const;');
+w('');
+w('export const DEPTH = [');
+for (const d of DEPTH) {
+  w('  {');
+  kv('    ', 'name', smart(d.name));
+  kv('    ', 'level', smart(d.level));
+  w(`    accent: '${accent(d.accent)}',`);
+  kv('    ', 'note', smart(d.note));
+  w('  },');
+}
+w('] as const;');
+w('');
 w('export const CONSULTING_NUMBERS = [');
 for (const n of NUMBERS) {
   w(`  { value: ${q(smart(n.value))}, label: ${q(smart(n.label))} },`);

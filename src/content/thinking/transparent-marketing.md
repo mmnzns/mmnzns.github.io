@@ -1,5 +1,6 @@
 ---
 title: "Steal This Strategy: How High-Trust SaaS Companies Practice Transparent Marketing"
+shortTitle: "How high-trust SaaS teams market transparently"
 date: 2025-10-09
 tag: "Positioning"
 excerpt: "Transparency is a growth strategy, steal 5 proven moves top SaaS teams use, pricing clarity, honest comparisons, public roadmaps, “we’re not for you” filters, and privacy that passes the Grandma Test."

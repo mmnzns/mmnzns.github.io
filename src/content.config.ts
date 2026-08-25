@@ -15,6 +15,12 @@ const thinking = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/thinking' }),
   schema: z.object({
     title: z.string(),
+    /**
+     * Shorter headline for the home page's card grid, where the full title
+     * would wrap into a wall. Falls back to `title` when absent; the article
+     * page and the writing index always use the full title.
+     */
+    shortTitle: z.string().optional(),
     date: z.coerce.date(),
     excerpt: z.string(),
     /** Drives the filter chips and the card's accent colour. */

@@ -8,6 +8,10 @@
  * loading GA, so a returning visitor's choice is applied on the very first
  * request rather than after a flicker of tracking.
  *
+ * Copy and layout are the v8 export's `Monzones-D-Cookies-Bold` component —
+ * the first round that actually shipped one — including the expandable
+ * "what exactly gets set" panel and clearing GA's cookies on decline.
+ *
  * Two details worth not "tidying" later:
  *
  *  - **It ships hidden and is revealed by script**, not the reverse. A banner
@@ -17,11 +21,7 @@
  *    that only JavaScript can undo.
  *  - **The `hidden` attribute does the hiding**, backed by the
  *    `[hidden] { display: none !important }` rule in global.css, because the
- *    scoped `display: flex` below would otherwise outrank the UA rule.
- *
- * The banner's own copy is not from the design export: v7 references a
- * `Monzones-D-Cookies` component that was not included in it, so this wording
- * is deliberately plain and safe to replace with the design's when it lands.
+ *    scoped `display: block` below would otherwise outrank the UA rule.
  */
 import { CONSENT_STORAGE_KEY } from '../config';
 ---
@@ -35,30 +35,66 @@ import { CONSENT_STORAGE_KEY } from '../config';
   data-consent
   hidden
 >
-  <div class="consent__card">
-    <div class="consent__copy">
-      <p class="consent__title" id="consent-title">A quick note about cookies.</p>
-      <p class="consent__body">
-        I use Google Analytics to see which pages people actually read. It sets cookies. Nothing here
-        is used for advertising, and declining does not change how the site works.
+  <p class="label-row consent__kicker">
+    <span class="consent__slab" aria-hidden="true"></span>
+    <span class="consent__label">Cookies</span>
+  </p>
+
+  <h2 class="consent__title" id="consent-title">
+    Only if you're <span class="consent__nowrap">comfortable with it</span>
+  </h2>
+
+  <p class="consent__body">
+    I run Google Analytics here so I can see which pieces people actually read and write better
+    ones. That's the whole reason — nothing is sold, shared with advertisers, or used to identify
+    you. Decline and no analytics cookies are set; the site works the same either way.
+  </p>
+
+  <div class="consent__details" data-consent-details hidden>
+    <div class="consent__detail">
+      <p class="consent__detail-head">
+        <span>Essential</span>
+        <span class="consent__detail-status">Always on</span>
+      </p>
+      <p class="consent__detail-body">
+        One local entry that remembers this choice, so you aren't asked again. No tracking.
       </p>
     </div>
-
-    <div class="consent__actions">
-      <button type="button" class="consent__btn consent__btn--ghost" data-consent-decline>
-        Decline
-      </button>
-      <button type="button" class="consent__btn consent__btn--solid" data-consent-accept>
-        Accept
-      </button>
+    <div class="consent__detail">
+      <p class="consent__detail-head">
+        <span>Analytics</span>
+        <span class="consent__detail-status" data-consent-status>Off</span>
+      </p>
+      <p class="consent__detail-body">
+        Google Analytics 4 (<code>_ga</code>, <code>_ga_*</code>) — page views, referrer,
+        approximate region, device type. Aggregate only, kept up to two years. No advertising or
+        remarketing tags run on this site.
+      </p>
     </div>
   </div>
+
+  <div class="consent__actions">
+    <button type="button" class="consent__btn consent__btn--solid" data-consent-accept>
+      Accept analytics
+    </button>
+    <button type="button" class="consent__btn consent__btn--ghost" data-consent-decline>
+      Decline
+    </button>
+  </div>
+
+  <button type="button" class="consent__more" data-consent-toggle aria-expanded="false">
+    What exactly gets set
+  </button>
 </div>
 
 <script is:inline define:vars={{ storageKey: CONSENT_STORAGE_KEY }}>
   (function () {
     var banner = document.querySelector('[data-consent]');
     if (!banner) return;
+
+    var details = banner.querySelector('[data-consent-details]');
+    var toggle = banner.querySelector('[data-consent-toggle]');
+    var status = banner.querySelector('[data-consent-status]');
 
     /* Storage can throw outright in private mode or when a browser blocks it.
        Every access goes through these two so a throw degrades to "no answer
@@ -84,6 +120,30 @@ import { CONSENT_STORAGE_KEY } from '../config';
       }
     }
 
+    /* Declining after accepting should also remove what was already set —
+       consent update stops new writes, but the existing cookies would
+       otherwise sit there until they expire. */
+    function clearAnalyticsCookies() {
+      var host = location.hostname;
+      var domains = ['', host, '.' + host];
+      var parts = host.split('.');
+      if (parts.length > 2) domains.push('.' + parts.slice(-2).join('.'));
+      document.cookie.split(';').forEach(function (c) {
+        var name = c.split('=')[0].trim();
+        if (!/^(_ga|_gid|_gat)/.test(name)) return;
+        domains.forEach(function (d) {
+          document.cookie =
+            name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (d ? '; domain=' + d : '');
+        });
+      });
+    }
+
+    function setStatus(granted) {
+      if (!status) return;
+      status.textContent = granted ? 'On' : 'Off';
+      status.classList.toggle('consent__detail-status--on', granted);
+    }
+
     function show() {
       banner.hidden = false;
     }
@@ -94,6 +154,7 @@ import { CONSENT_STORAGE_KEY } from '../config';
 
     function answer(analytics) {
       write(analytics);
+      if (!analytics) clearAnalyticsCookies();
       /* Tell GA within the wait_for_update window set in Analytics.astro, so
          this pageview is attributed correctly rather than the next one. */
       if (typeof window.gtag === 'function') {
@@ -101,6 +162,7 @@ import { CONSENT_STORAGE_KEY } from '../config';
           analytics_storage: analytics ? 'granted' : 'denied',
         });
       }
+      setStatus(analytics);
       hide();
     }
 
@@ -108,6 +170,7 @@ import { CONSENT_STORAGE_KEY } from '../config';
     /* Only a stored boolean counts as an answer. Anything else — no entry,
        corrupt JSON, an older shape — means ask. */
     if (!stored || typeof stored.analytics !== 'boolean') show();
+    else setStatus(stored.analytics);
 
     banner.querySelector('[data-consent-accept]').addEventListener('click', function () {
       answer(true);
@@ -115,6 +178,15 @@ import { CONSENT_STORAGE_KEY } from '../config';
     banner.querySelector('[data-consent-decline]').addEventListener('click', function () {
       answer(false);
     });
+
+    if (toggle && details) {
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!open));
+        details.hidden = open;
+        toggle.textContent = open ? 'What exactly gets set' : 'Hide the details';
+      });
+    }
 
     /* "Cookie settings" in the footer reopens the banner so a choice can be
        changed without clearing site data. */
@@ -132,64 +204,116 @@ import { CONSENT_STORAGE_KEY } from '../config';
   .consent {
     position: fixed;
     z-index: 60;
-    inset: auto 0 0;
-    padding: 0 var(--gutter) clamp(16px, 3vw, 28px);
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
+    bottom: 24px;
+    left: 24px;
+    width: calc(100vw - 48px);
+    max-width: 432px;
+    background: var(--paper);
+    border: var(--border);
+    box-shadow: var(--shadow-lg);
+    padding: 26px 28px 24px;
+    color: var(--ink);
   }
 
-  .consent__card {
-    pointer-events: auto;
-    width: min(100%, 720px);
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: clamp(18px, 3vw, 24px) clamp(20px, 3.4vw, 28px);
-    display: flex;
-    align-items: center;
-    gap: clamp(16px, 3vw, 32px);
-    flex-wrap: wrap;
+  .consent__kicker {
+    gap: 10px;
   }
 
-  .consent__copy {
-    flex: 1 1 320px;
-    min-width: 0;
+  .consent__slab {
+    display: block;
+    width: 26px;
+    height: 12px;
+    background: var(--coral);
+    flex: none;
+  }
+
+  .consent__label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
   .consent__title {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.008em;
+    margin-top: 14px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.026em;
+    line-height: 1.1;
+  }
+
+  .consent__nowrap {
+    white-space: nowrap;
   }
 
   .consent__body {
-    margin-top: 6px;
-    font-size: 14px;
+    margin-top: 12px;
+    font-size: 14.5px;
     line-height: 1.6;
     color: var(--ink-2);
   }
 
-  .consent__actions {
+  .consent__details {
+    margin-top: 18px;
+    border-top: var(--border);
+    padding-top: 16px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .consent__detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .consent__detail-status {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--ink-2);
+  }
+
+  .consent__detail-status--on {
+    color: var(--moss);
+  }
+
+  .consent__detail-body {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .consent__detail-body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+
+  .consent__actions {
+    margin-top: 18px;
+    display: flex;
     gap: 10px;
-    flex: 0 0 auto;
+    flex-wrap: wrap;
   }
 
   .consent__btn {
-    font-size: 14px;
-    font-weight: 500;
-    padding: 11px 22px;
-    border-radius: 999px;
-    border: 1px solid var(--ink);
-    /* 44px tall including the border, so it is a comfortable tap target. */
-    min-height: 44px;
+    flex: 1;
+    min-width: 132px;
+    padding: 15px 20px;
+    border: var(--border);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     white-space: nowrap;
     transition:
       background var(--dur-fast) var(--ease),
-      border-color var(--dur-fast) var(--ease),
       color var(--dur-fast) var(--ease);
   }
 
@@ -200,27 +324,75 @@ import { CONSENT_STORAGE_KEY } from '../config';
 
   .consent__btn--solid:hover {
     background: var(--coral);
-    border-color: var(--coral);
+    color: var(--ink);
   }
 
   .consent__btn--ghost {
     background: transparent;
-    color: var(--ink-2);
-    border-color: var(--rule);
+    color: var(--ink);
   }
 
   .consent__btn--ghost:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .consent__more {
+    margin-top: 14px;
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .consent__more:hover {
     color: var(--ink);
-    border-color: var(--ink);
   }
 
   @media (max-width: 560px) {
-    .consent__actions {
-      width: 100%;
+    .consent {
+      left: 10px;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      width: calc(100vw - 20px);
+      max-width: none;
+      padding: 22px 22px 20px;
+      max-height: calc(100vh - 20px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .consent__btn {
-      flex: 1;
+      padding: 14px;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .consent__title {
+      font-size: 19px;
+    }
+
+    .consent__body {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .consent__actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .consent__btn {
+      width: 100%;
     }
   }
 </style>

@@ -1,37 +1,60 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { TAGS, tagAccent } from '../../data/writing';
+import { tagAccent } from '../../data/writing';
 import { formatDate, readingTime } from '../../utils/format';
 
 const all = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 
-/* The featured flag wins; otherwise the newest piece leads. */
-const featured = all.find((post) => post.data.featured) ?? all[0];
-const rest = all.filter((post) => post.id !== featured?.id);
+/* The v8 design's featured slot is literally "Latest" — the newest piece, not
+   a curated flag. The `featured` frontmatter field still exists but this page
+   no longer reads it. */
+const featured = all[0];
+const rest = all.slice(1);
 
 /* Recent work gets cards; everything older collapses into a compact list, so
-   the page stays scannable as the archive grows. */
+   the page stays scannable as the archive grows. Filtering or searching
+   flattens the split and searches everything. */
 const CARD_COUNT = 6;
 const cards = rest.slice(0, CARD_COUNT);
 const archive = rest.slice(CARD_COUNT);
 
 const meta = (post: (typeof all)[number]) =>
   `${formatDate(post.data.date)} · ${readingTime(post.body ?? '')} min read`;
+
+/* A hero image published with the article doubles as the featured panel's
+   visual. Resolved at build time; a post without one gets the plain panel. */
+const heroImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/thinking/*-hero.jpg',
+  { eager: true },
+);
+const featuredHero = featured
+  ? heroImages[`../../assets/thinking/${featured.id}-hero.jpg`]?.default
+  : undefined;
+
+/* Everything the client-side filter needs, mirrored from the server render. */
+const searchIndex = all.map((post) => ({
+  slug: post.id,
+  tag: post.data.tag,
+  text: `${post.data.title} ${post.data.excerpt} ${post.data.tag}`.toLowerCase(),
+}));
+
+const CHIPS = ['All', 'Lifecycle', 'Search', 'AI & automation', 'Positioning'] as const;
 ---
 
 <BaseLayout
-  title="The Thinking"
-  description="Writing on lifecycle, AI, search and automation — working things out until they make sense."
+  title="Writing"
+  description="Lifecycle, AI, search, automation, and the occasional detour into doing the work better. Mostly me thinking through something until it makes sense."
+  breadcrumbs={[{ label: 'Writing', href: '/thinking/' }]}
 >
-  <section class="section--first wrap">
-    <p class="eyebrow writing-hero__eyebrow">The Thinking</p>
-
-    <div class="writing-hero">
-      <h1 class="writing-hero__title">Things I’ve written.</h1>
-      <div class="writing-hero__intro">
+  <section class="section--first wrap whero">
+    <p class="eyebrow">Writing</p>
+    <div class="whero__grid">
+      <h1 class="page-title">Things I’ve written.</h1>
+      <div class="whero__intro">
         <p>
           Lifecycle, AI, search, automation, and the occasional detour into doing the work better.
           Mostly me thinking through something until it makes sense.
@@ -46,334 +69,353 @@ const meta = (post: (typeof all)[number]) =>
 
   {
     featured && (
-      <section class="section--tight wrap" data-feature-section>
-        <p class="eyebrow rule-heading">Latest</p>
-
-        <a
-          class="card card--raised card--interactive feature"
-          href={`/thinking/${featured.id}/`}
-          style={`--feature-accent:${tagAccent(featured.data.tag)}`}
-          data-post
-          data-tag-value={featured.data.tag}
-          data-text={`${featured.data.title} ${featured.data.excerpt} ${featured.data.tag}`.toLowerCase()}
-        >
-          <div class="feature__panel">
-            <span class="eyebrow feature__tag">{featured.data.tag}</span>
-
-            <svg class="feature__art" viewBox="0 0 260 150" aria-hidden="true">
-              <path d="M12 128 L248 128" class="axis" />
-              <path d="M12 128 L12 18" class="axis" />
-              <path
-                d="M12 128 C60 126, 92 120, 128 104 C168 86, 200 52, 248 30"
-                class="curve"
-              />
-              <circle cx="128" cy="104" r="3.6" class="dot" />
-              <circle cx="248" cy="30" r="3.6" class="dot" />
-            </svg>
-
-            <span class="feature__badge">Most recent</span>
-          </div>
-
-          <div class="feature__body">
-            <h2 class="feature__title">{featured.data.title}</h2>
-            <p class="feature__dek">{featured.data.excerpt}</p>
-            <p class="feature__foot">
-              <span class="meta">{meta(featured)}</span>
-              <span class="feature__read">Read →</span>
-            </p>
-          </div>
-        </a>
+      <section class="band band--sun latest" data-latest>
+        <div class="wrap">
+          <p class="rule-heading latest__label">
+            <span class="eyebrow">Latest</span>
+          </p>
+          <a class="card featured" href={`/thinking/${featured.id}/`}>
+            <div class="featured__visual">
+              <span class="featured__tag" style={`color:${tagAccent(featured.data.tag)}`}>
+                {featured.data.tag}
+              </span>
+              {featuredHero ? (
+                <div class="featured__photo">
+                  <Image
+                    src={featuredHero}
+                    alt=""
+                    width={720}
+                    height={480}
+                    loading="eager"
+                    densities={[1, 2]}
+                  />
+                </div>
+              ) : (
+                <svg viewBox="0 0 260 150" aria-hidden="true" class="featured__chart">
+                  <path
+                    d="M12 128 C60 126, 92 120, 128 104 C168 86, 200 52, 248 30"
+                    stroke="#F2603F"
+                    stroke-opacity=".9"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-linecap="round"
+                  />
+                  <path d="M12 128 L248 128" stroke="#1F1C19" stroke-opacity=".22" stroke-width="1.5" />
+                  <path d="M12 128 L12 18" stroke="#1F1C19" stroke-opacity=".22" stroke-width="1.5" />
+                  <circle cx="128" cy="104" r="3.6" fill="#F2603F" />
+                  <circle cx="248" cy="30" r="3.6" fill="#F2603F" />
+                  <text x="22" y="34" font-size="11" fill="#6B6560">revenue events</text>
+                  <text x="140" y="146" font-size="11" fill="#6B6560">the journey, mapped</text>
+                </svg>
+              )}
+              <span class="featured__recency">Most recent</span>
+            </div>
+            <div class="featured__text">
+              <h2 class="featured__title">{featured.data.title}</h2>
+              <p class="featured__dek">{featured.data.excerpt}</p>
+              <p class="featured__meta">
+                <span>{meta(featured)}</span>
+                <span class="featured__read">Read →</span>
+              </p>
+            </div>
+          </a>
+        </div>
       </section>
     )
   }
 
   <section class="section--tight wrap">
     <div class="filters">
-      <div class="filters__chips" role="group" aria-label="Filter writing by topic">
-        <button type="button" class="chip" data-tag="All" aria-pressed="true">All</button>
+      <div class="filters__chips" data-writing-chips>
         {
-          TAGS.map((tag) => (
-            <button type="button" class="chip" data-tag={tag} aria-pressed="false">
-              {tag}
+          CHIPS.map((chip) => (
+            <button
+              type="button"
+              class="chip"
+              data-chip={chip}
+              aria-pressed={chip === 'All' ? 'true' : 'false'}
+            >
+              {chip}
             </button>
           ))
         }
       </div>
 
-      <div class="filters__search">
-        <label class="visually-hidden" for="writing-search">Search writing</label>
-        <input id="writing-search" type="search" placeholder="Search writing" data-search />
-        <span class="meta" data-result-count aria-live="polite">{all.length} pieces</span>
+      <div class="filters__side">
+        <input
+          type="search"
+          class="filters__search"
+          placeholder="Search writing"
+          aria-label="Search writing"
+          data-writing-search
+        />
+        <span class="filters__count" data-writing-count aria-live="polite">
+          {all.length} pieces
+        </span>
       </div>
     </div>
 
-    {/*
-      Filtering spans all three views — the featured card above, these cards,
-      and the compact archive list — so a search reaches every piece rather
-      than only the ones in this grid. Each view hides itself when nothing in
-      it matches.
-    */}
-    <div class="post-grid" data-grid>
+    <div class="wgrid" data-writing-grid>
       {
-        cards.map((post) => (
+        rest.map((post, i) => (
           <a
-            class="card card--interactive post"
+            class="card card--interactive wcard"
             href={`/thinking/${post.id}/`}
-            data-post
-            data-tag-value={post.data.tag}
-            data-text={`${post.data.title} ${post.data.excerpt} ${post.data.tag}`.toLowerCase()}
+            data-post-slug={post.id}
+            hidden={i >= CARD_COUNT}
           >
-            <span class="label-row">
+            <p class="label-row">
               <span class="accent-bar accent-bar--sm" style={`--bar:${tagAccent(post.data.tag)}`} />
-              <span class="eyebrow">{post.data.tag}</span>
-            </span>
-            <span class="post__title">{post.data.title}</span>
-            <span class="post__dek">{post.data.excerpt}</span>
-            <span class="post__foot meta">{meta(post)}</span>
+              <span class="eyebrow eyebrow--muted">{post.data.tag}</span>
+            </p>
+            <span class="wcard__title">{post.data.title}</span>
+            <span class="wcard__dek">{post.data.excerpt}</span>
+            <span class="wcard__meta">{meta(post)}</span>
           </a>
         ))
       }
+      {/* The featured piece re-enters the grid when a filter or search runs. */}
+      {
+        featured && (
+          <a
+            class="card card--interactive wcard"
+            href={`/thinking/${featured.id}/`}
+            data-post-slug={featured.id}
+            data-post-featured
+            hidden
+          >
+            <p class="label-row">
+              <span
+                class="accent-bar accent-bar--sm"
+                style={`--bar:${tagAccent(featured.data.tag)}`}
+              />
+              <span class="eyebrow eyebrow--muted">{featured.data.tag}</span>
+            </p>
+            <span class="wcard__title">{featured.data.title}</span>
+            <span class="wcard__dek">{featured.data.excerpt}</span>
+            <span class="wcard__meta">{meta(featured)}</span>
+          </a>
+        )
+      }
     </div>
 
-    <p class="no-results" data-empty hidden>
-      Nothing here for that yet. <button type="button" class="link-button" data-clear>Clear filters</button>
-    </p>
+    <div class="noresults" data-writing-empty hidden>
+      Nothing here for that yet.
+      <button type="button" class="noresults__clear" data-writing-clear>Clear filters</button>
+    </div>
   </section>
 
   {
     archive.length > 0 && (
-      <section class="section--tight wrap" data-archive-section>
-        <p class="eyebrow rule-heading">Earlier writing</p>
-
-        <div class="card archive">
-          {archive.map((post) => (
-            <a
-              class="archive__row"
-              href={`/thinking/${post.id}/`}
-              data-post
-              data-tag-value={post.data.tag}
-              data-text={`${post.data.title} ${post.data.excerpt} ${post.data.tag}`.toLowerCase()}
-            >
-              <span class="archive__title">{post.data.title}</span>
-              <span class="archive__tag">{post.data.tag}</span>
-              <span class="archive__year">{post.data.date.getUTCFullYear()}</span>
-            </a>
-          ))}
+      <section class="band earlier" data-archive>
+        <div class="wrap">
+          <p class="rule-heading earlier__label">
+            <span class="eyebrow earlier__eyebrow">Earlier writing</span>
+          </p>
+          <div class="earlier__list">
+            {archive.map((post) => (
+              <a class="earlier__row" href={`/thinking/${post.id}/`}>
+                <span class="earlier__title">{post.data.title}</span>
+                <span class="earlier__tag">{post.data.tag}</span>
+                <span class="earlier__year">{post.data.date.getUTCFullYear()}</span>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
     )
   }
-
 </BaseLayout>
 
-<script>
-  const chips = document.querySelectorAll<HTMLButtonElement>('[data-tag]');
-  const search = document.querySelector<HTMLInputElement>('[data-search]');
-  const posts = document.querySelectorAll<HTMLElement>('[data-post]');
-  const count = document.querySelector<HTMLElement>('[data-result-count]');
-  const empty = document.querySelector<HTMLElement>('[data-empty]');
-  const grid = document.querySelector<HTMLElement>('[data-grid]');
-  const archiveSection = document.querySelector<HTMLElement>('[data-archive-section]');
-  const featureSection = document.querySelector<HTMLElement>('[data-feature-section]');
-  const clear = document.querySelector<HTMLButtonElement>('[data-clear]');
+<script is:inline define:vars={{ searchIndex, CARD_COUNT }}>
+  // Filtering and search re-slice what the server rendered. With no filter
+  // active, the page keeps its shape: featured on top, six cards, the rest
+  // collapsed into the archive band. Any filter flattens that split.
+  (() => {
+    const grid = document.querySelector('[data-writing-grid]');
+    const chipsWrap = document.querySelector('[data-writing-chips]');
+    const search = document.querySelector('[data-writing-search]');
+    const count = document.querySelector('[data-writing-count]');
+    const empty = document.querySelector('[data-writing-empty]');
+    const clear = document.querySelector('[data-writing-clear]');
+    const latest = document.querySelector('[data-latest]');
+    const archiveBand = document.querySelector('[data-archive]');
+    if (!grid || !chipsWrap || !count) return;
 
-  let tag = 'All';
-  let query = '';
+    const cards = new Map(
+      Array.from(grid.querySelectorAll('[data-post-slug]')).map((el) => [el.dataset.postSlug, el]),
+    );
+    const chips = Array.from(chipsWrap.querySelectorAll('[data-chip]'));
+    const total = searchIndex.length;
+    let chip = 'All';
+    let query = '';
 
-  function apply() {
-    let shown = 0;
-    let gridShown = 0;
-    let archiveShown = 0;
-    let featureShown = 0;
+    function render() {
+      const active = chip !== 'All' || query.length > 0;
 
-    for (const post of posts) {
-      const matchesTag = tag === 'All' || post.dataset.tagValue === tag;
-      const matchesQuery = !query || (post.dataset.text ?? '').includes(query);
-      const match = matchesTag && matchesQuery;
+      for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.chip === chip));
+      if (latest) latest.hidden = active;
+      if (archiveBand) archiveBand.hidden = active;
 
-      post.toggleAttribute('hidden', !match);
-      if (!match) continue;
+      let shown = 0;
+      searchIndex.forEach((post, i) => {
+        const card = cards.get(post.slug);
+        if (!card) return;
+        let visible;
+        if (!active) {
+          // The resting shape: no featured card, first six of the rest.
+          visible = i > 0 && i <= CARD_COUNT;
+        } else {
+          visible = (chip === 'All' || post.tag === chip) && (!query || post.text.includes(query));
+        }
+        card.hidden = !visible;
+        if (visible) shown += 1;
+      });
 
-      shown += 1;
-      if (post.closest('[data-feature-section]')) featureShown += 1;
-      else if (post.closest('[data-archive-section]')) archiveShown += 1;
-      else gridShown += 1;
+      count.textContent = active ? `${shown} of ${total} pieces` : `${total} pieces`;
+      if (empty) empty.hidden = !(active && shown === 0);
     }
 
-    // Hide a section that has been filtered down to nothing, so the page never
-    // shows an empty card or a heading with no rows under it.
-    featureSection?.toggleAttribute('hidden', featureShown === 0);
-    grid?.toggleAttribute('hidden', gridShown === 0);
-    archiveSection?.toggleAttribute('hidden', archiveShown === 0);
-    empty?.toggleAttribute('hidden', shown > 0);
-
-    if (count) {
-      const filtering = tag !== 'All' || query !== '';
-      count.textContent = filtering
-        ? `${shown} of ${posts.length} pieces`
-        : `${posts.length} pieces`;
+    for (const c of chips) {
+      c.addEventListener('click', () => {
+        chip = c.dataset.chip;
+        render();
+      });
     }
-  }
 
-  for (const chip of chips) {
-    chip.addEventListener('click', () => {
-      tag = chip.dataset.tag ?? 'All';
-      for (const other of chips) other.setAttribute('aria-pressed', String(other === chip));
-      apply();
+    search?.addEventListener('input', () => {
+      query = search.value.trim().toLowerCase();
+      render();
     });
-  }
 
-  search?.addEventListener('input', () => {
-    query = search.value.trim().toLowerCase();
-    apply();
-  });
-
-  clear?.addEventListener('click', () => {
-    tag = 'All';
-    query = '';
-    if (search) search.value = '';
-    for (const chip of chips) chip.setAttribute('aria-pressed', String(chip.dataset.tag === 'All'));
-    apply();
-  });
+    clear?.addEventListener('click', () => {
+      chip = 'All';
+      query = '';
+      if (search) search.value = '';
+      render();
+    });
+  })();
 </script>
 
 <style>
-  .writing-hero__eyebrow {
-    margin-bottom: 24px;
-  }
-
-  .writing-hero {
+  .whero__grid {
+    margin-top: 24px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: clamp(32px, 5vw, 64px);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 40px 64px;
     align-items: end;
   }
 
-  .writing-hero__title {
-    font-size: clamp(44px, 7vw, 96px);
-    line-height: 0.98;
-    letter-spacing: -0.022em;
-  }
-
-  .writing-hero__intro {
+  .whero__intro {
     display: flex;
     flex-direction: column;
     gap: 18px;
+    font-size: 17px;
+    line-height: 1.65;
     color: var(--ink-2);
     padding-bottom: 10px;
   }
 
-  /* --------------------------------------------------------- featured -- */
-  /* This card sits on the same paper as the grid below it and used to wear the
-     same chrome, so the only thing marking it as the latest piece was its size
-     — which is not much of a signal once you have scrolled past it. Three
-     things promote it now: a rail in the post's own topic colour, a badge, and
-     more lift than a grid card gets. `--feature-accent` is set inline from
-     tagAccent() so all three stay bound to the category mapping. */
-  .feature {
+  .latest {
+    margin-top: clamp(72px, 9vw, 120px);
+    padding-block: clamp(56px, 7vw, 96px);
+  }
+
+  .latest__label {
+    margin-bottom: 26px;
+  }
+
+  .featured {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     overflow: hidden;
-    padding: 0;
-    border-top: 6px solid var(--feature-accent, var(--accent));
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow);
+    transition: transform var(--dur) var(--ease);
   }
 
-  /* .card--interactive already lifts to --shadow-lg on hover, which is where
-     this one rests — so it needs its own deeper hover or the lift reads as
-     nothing happening. */
-  .feature:hover {
-    box-shadow:
-      0 1px 2px rgb(31 28 25 / 4%),
-      0 24px 48px -14px rgb(31 28 25 / 24%);
+  .featured:hover {
+    transform: translate(-4px, -4px);
+    color: var(--ink);
   }
 
-  .feature__tag {
-    color: var(--feature-accent, var(--accent));
-  }
-
-  .feature__panel {
+  .featured__visual {
     min-height: 300px;
     background: var(--wash);
-    padding: 34px;
+    padding: clamp(17px, 4.5vw, 34px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 24px;
   }
 
-  /* Ink on the accent rather than the accent on white: at this size the label
-     has to hold its own against the rail above it. */
-  .feature__badge {
-    align-self: flex-start;
-    padding: 6px 13px;
-    border-radius: var(--pill);
-    background: var(--feature-accent, var(--accent));
-    color: var(--ink);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+  .featured__tag {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
-  .feature__art {
+  .featured__photo {
+    overflow: hidden;
+    border: var(--border);
+  }
+
+  .featured__photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .featured__chart {
     width: 100%;
     height: auto;
+    font-family: var(--font-sans);
   }
 
-  .feature__art .axis {
-    stroke: rgb(31 28 25 / 22%);
-    stroke-width: 1.5;
-    fill: none;
+  .featured__recency {
+    font-size: 12px;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
   }
 
-  .feature__art .curve {
-    stroke: var(--accent);
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-  }
-
-  .feature__art .dot {
-    fill: var(--accent);
-  }
-
-  .feature__body {
-    padding: clamp(28px, 4vw, 42px);
+  .featured__text {
+    padding: clamp(21px, 5.6vw, 42px);
     display: flex;
     flex-direction: column;
     gap: 18px;
   }
 
-  .feature__title {
-    font-size: clamp(28px, 3.2vw, 42px);
-    line-height: 1.1;
-    letter-spacing: -0.016em;
+  .featured__title {
+    font-size: clamp(32px, 4vw, 58px);
+    line-height: 0.95;
+    letter-spacing: -0.034em;
   }
 
-  .feature__dek {
+  .featured__dek {
     font-size: 17px;
     line-height: 1.68;
     color: var(--ink-2);
   }
 
-  .feature__foot {
+  .featured__meta {
     margin-top: auto;
     padding-top: 24px;
-    border-top: 1px solid var(--rule);
+    border-top: var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--ink-3);
   }
 
-  .feature__read {
+  .featured__read {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
+    color: var(--ink);
   }
 
-  /* ---------------------------------------------------------- filters -- */
   .filters {
     display: flex;
     align-items: flex-end;
@@ -389,135 +431,156 @@ const meta = (post: (typeof all)[number]) =>
     flex-wrap: wrap;
   }
 
-  .filters__search {
+  .filters__side {
     display: flex;
     align-items: center;
     gap: 16px;
-    flex-wrap: wrap;
   }
 
-  .filters__search input {
+  .filters__search {
     width: 210px;
     padding: 10px 14px;
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-sm);
-    background: var(--card);
+    border: var(--border);
+    background: var(--paper);
     font-size: 14px;
-    transition: border-color var(--dur-fast) var(--ease);
+    color: var(--ink);
   }
 
-  .filters__search input:hover {
-    border-color: var(--rule-2);
+  .filters__count {
+    font-size: 13px;
+    color: var(--ink-3);
+    white-space: nowrap;
   }
 
-  /* ------------------------------------------------------------ posts -- */
-  .post-grid {
+  .wgrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
     gap: 20px;
   }
 
-  .post {
+  .wcard {
     padding: 30px;
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
 
-  .post__title {
+  .wcard:hover {
+    box-shadow: var(--shadow);
+  }
+
+  .wcard__title {
     font-size: 20px;
     line-height: 1.24;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: -0.012em;
     text-wrap: pretty;
   }
 
-  .post__dek {
+  .wcard__dek {
     font-size: 15px;
     line-height: 1.62;
     color: var(--ink-2);
-    /* Excerpts vary a lot in length; clamping keeps the card grid even. */
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
-  .post__foot {
+  .wcard__meta {
     margin-top: auto;
     padding-top: 20px;
-    border-top: 1px solid var(--rule);
+    border-top: var(--border);
+    font-size: 13px;
+    color: var(--ink-3);
   }
 
-  .no-results {
-    padding-block: 56px;
+  .noresults {
+    padding: 56px 0;
     text-align: center;
     color: var(--ink-3);
     font-size: 16px;
   }
 
-  .link-button {
+  .noresults__clear {
     border: 0;
     background: transparent;
-    color: var(--accent);
+    color: var(--coral);
     font-size: 16px;
     padding: 0;
     text-decoration: underline;
   }
 
-  /* ---------------------------------------------------------- archive -- */
-  .archive {
-    overflow: hidden;
-    padding: 0;
+  .earlier {
+    margin-top: clamp(88px, 11vw, 150px);
+    padding-block: clamp(64px, 8vw, 110px);
   }
 
-  .archive__row {
+  .earlier__label {
+    margin-bottom: 26px;
+  }
+
+  .earlier__eyebrow {
+    color: var(--on-dark);
+  }
+
+  .earlier__list {
+    border: 3px solid var(--on-dark);
+  }
+
+  .earlier__row {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px 24px;
+    grid-template-columns: 1fr auto auto;
+    gap: 24px;
     align-items: baseline;
     padding: 20px 28px;
-    border-top: 1px solid #f1ede7;
-    transition: background var(--dur-fast) var(--ease);
+    color: var(--on-dark);
+    transition:
+      background var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
   }
 
-  .archive__row:first-child {
-    border-top: 0;
+  .earlier__row + .earlier__row {
+    border-top: 3px solid var(--on-dark-rule-2);
   }
 
-  .archive__row:hover {
-    background: var(--paper);
+  .earlier__row:hover,
+  .earlier__row:focus-visible {
+    background: var(--sun);
     color: var(--ink);
   }
 
-  .archive__title {
-    font-size: 17px;
-    line-height: 1.4;
-    letter-spacing: -0.005em;
-    grid-column: 1;
+  .earlier__title {
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.014em;
   }
 
-  .archive__tag {
+  .earlier__tag {
     font-size: 12px;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--ink-3);
+    color: var(--on-dark-3);
   }
 
-  .archive__year {
+  .earlier__row:hover .earlier__tag,
+  .earlier__row:hover .earlier__year {
+    color: var(--ink);
+  }
+
+  .earlier__year {
     font-size: 13px;
-    color: var(--ink-3);
-    text-align: right;
+    font-weight: 700;
+    color: var(--on-dark-3);
     min-width: 38px;
+    text-align: right;
   }
 
-  @media (min-width: 720px) {
-    .archive__row {
-      grid-template-columns: 1fr auto auto;
+  @media (max-width: 640px) {
+    .earlier__row {
+      grid-template-columns: 1fr auto;
     }
 
-    .archive__tag {
-      grid-column: 2;
+    .earlier__tag {
+      display: none;
     }
   }
 </style>

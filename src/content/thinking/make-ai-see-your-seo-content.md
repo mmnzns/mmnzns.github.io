@@ -1,5 +1,6 @@
 ---
 title: "Your SEO Content Already Works. Here's How to Make AI See It Too."
+shortTitle: "Your SEO content already works. Make AI see it too."
 date: 2026-02-14
 tag: "Search"
 excerpt: "Why AI ignores high-ranking content: it is not structured for extraction. Zero-click search, LLM behaviour, and a six-step retrofit that makes pages citation-worthy."

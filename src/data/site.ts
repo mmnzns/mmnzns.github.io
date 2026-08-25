@@ -23,12 +23,12 @@ export interface Project {
   category: Category;
 }
 
-export type Category = 'Leadership & Operations' | 'Lifecycle' | 'AI Automation' | 'Web Operations';
+export type Category = 'Leadership & Operations' | 'Lifecycle' | 'AI & Automation' | 'Web & Analytics';
 
 export const CATEGORY_ORDER: readonly Category[] = [
   'Lifecycle',
-  'AI Automation',
-  'Web Operations',
+  'AI & Automation',
+  'Web & Analytics',
   'Leadership & Operations',
 ];
 
@@ -39,8 +39,8 @@ export const CATEGORY_ORDER: readonly Category[] = [
  */
 export const CATEGORY_ACCENT: Record<Category, string> = {
   Lifecycle: 'var(--coral)',
-  'AI Automation': 'var(--moss)',
-  'Web Operations': 'var(--sun)',
+  'AI & Automation': 'var(--moss)',
+  'Web & Analytics': 'var(--sun)',
   'Leadership & Operations': 'var(--sky)',
 };
 
@@ -111,7 +111,7 @@ export const PROJECTS: readonly Project[] = [
       { value: '~30%', label: 'underwriter close rate' },
       { value: '15+', label: 'workflows in production' },
     ],
-    category: 'AI Automation',
+    category: 'AI & Automation',
   },
   {
     slug: 'lead-enrichment',
@@ -120,7 +120,7 @@ export const PROJECTS: readonly Project[] = [
       'DTC Newsletter signups were reaching HubSpot without enough context for Sales to know which ones needed immediate attention. I built a workflow that researched each company and contact, classified and validated the information, populated the CRM, and alerted Sales when a high-value lead appeared.',
     tags: ['AI', 'RevOps', 'Lead enrichment'],
     metrics: [{ value: '~70%', label: 'lead data pre-populated' }],
-    category: 'AI Automation',
+    category: 'AI & Automation',
   },
   {
     slug: 'compliance-workflow',
@@ -129,7 +129,7 @@ export const PROJECTS: readonly Project[] = [
       'The early workflow functioned technically, but it didn’t yet reflect how Compliance evaluated content. I brought the reviewers into the design process, documented their criteria, and translated that judgement into a validation system Marketing could use while drafting.',
     tags: ['AI', 'Quality assurance', 'Compliance'],
     metrics: [{ value: '−50%', label: 'review cycles: 4–5 rounds → 1–2' }],
-    category: 'AI Automation',
+    category: 'AI & Automation',
   },
   {
     slug: 'mogo-web',
@@ -141,7 +141,7 @@ export const PROJECTS: readonly Project[] = [
       { value: '+15%', label: 'lifecycle conversion' },
       { from: '~5%', to: '~14%', label: 'organic traffic share in 90 days' },
     ],
-    category: 'Web Operations',
+    category: 'Web & Analytics',
   },
   {
     slug: 'dtc-newsletter',
@@ -153,7 +153,7 @@ export const PROJECTS: readonly Project[] = [
       { from: '70%', to: '38%', label: 'bounce rate' },
       { value: '+27%', label: 'signups' },
     ],
-    category: 'Web Operations',
+    category: 'Web & Analytics',
   },
   {
     slug: 'analytics-rebuild',
@@ -165,7 +165,7 @@ export const PROJECTS: readonly Project[] = [
       { from: '40%', to: '80%', label: 'data accuracy' },
       { value: '~$18K', label: 'annual stack savings' },
     ],
-    category: 'Web Operations',
+    category: 'Web & Analytics',
   },
   {
     slug: 'sportserve-payments-division',

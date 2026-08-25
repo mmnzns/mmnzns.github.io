@@ -1,0 +1,2849 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT, FORM_ENDPOINT } from '../config';
+import logoM from '../assets/logo-m-transparent.png';
+import shotII from '../assets/webdesign/intelligent-investing.jpg';
+import shotDTC from '../assets/webdesign/dtc-newsletter.jpg';
+import shotKatty from '../assets/webdesign/kattyco.jpg';
+import shotSLP from '../assets/webdesign/east-van-slp.jpg';
+
+/**
+ * The web design service page — deliberately nothing like the rest of the
+ * site. Its own palette (warm cream, peach, powder blue), its own faces
+ * (Bricolage Grotesque + Caveat, from Google Fonts), its own nav and footer.
+ * That difference is the point: it separates the offer from the lifecycle
+ * consulting brand while still living on the same domain for the traffic.
+ * Don't restyle it to match global.css — see the note there.
+ *
+ * The page opts out of the site chrome via BaseLayout's `standalone` flag and
+ * carries everything itself. Only Analytics and the consent banner come from
+ * the shared layout, because GA runs site-wide.
+ *
+ * One deliberate departure from the design export: its "Start a project" form
+ * assembled a mailto: link. Here it POSTs to Formspree like every other form
+ * on the site, so it works from devices with no mail client configured — and
+ * the small line under the button says so instead of promising an email
+ * window.
+ */
+
+const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+
+const WHO = [
+  {
+    title: 'Local small businesses',
+    color: '#D8501A',
+    backBg: '#FCEBE1',
+    tilt: '-.5deg',
+    front: 'Clinics, trades, restaurants, salons, studios. The site is ten years old — or doesn’t exist.',
+    back: '46% of Google searches are looking for something local — and most people check a business online before calling. If the site is broken or missing, they call the next one on the list. A current site with real hours, services and a working form quietly wins you the customers your competitors lose.',
+  },
+  {
+    title: 'Independent professionals',
+    color: '#2A82BE',
+    backBg: '#EBF4FB',
+    tilt: '.5deg',
+    front: 'Consultants, therapists, coaches, designers. One credible page that isn’t LinkedIn.',
+    back: 'Referrals still get googled. When a warm lead looks you up and finds only a LinkedIn profile, some of that trust leaks away. One well-written page — who you help, how it works, how to book — turns “I’ve heard of them” into “I’ve booked a call.”',
+  },
+  {
+    title: 'Companies & startups',
+    color: '#D8501A',
+    backBg: '#FCEBE1',
+    tilt: '-.5deg',
+    front: 'Real CMS, conversion tracking, structured content. Quoted properly, not priced off a menu.',
+    back: 'Your website is usually the first thing an investor, partner or serious buyer checks — before they reply to the email. A site with real structure, tracking and content that answers their questions does diligence for you while you sleep.',
+  },
+  {
+    title: 'Agencies',
+    color: '#2A82BE',
+    backBg: '#EBF4FB',
+    tilt: '.5deg',
+    front: 'White-label builds. You bring the design, I build it fast and quietly.',
+    back: 'Overflow happens. When your dev bench is full, I build to your designs, in your client’s stack, under your name — clean handoff, no client contact unless you want it. You keep the margin and the relationship.',
+  },
+] as const;
+
+const WORKS = [
+  {
+    name: 'Intelligent Investing',
+    tag: 'Fintech platform · Webflow',
+    tapeText: 'fintech',
+    tape: '#FADFA6',
+    tilt: '-1.2deg',
+    img: shotII,
+    blurb:
+      'Five product websites rebuilt in Webflow for a publicly traded fintech — SEO and tracking built into the structure, not added afterwards.',
+    stat: 'qualified organic traffic doubled in 90 days',
+    href: 'https://www.intelligentinvesting.ai/',
+    link: 'intelligentinvesting.ai',
+  },
+  {
+    name: 'DTC Newsletter',
+    tag: 'Daily publication · Webflow CMS',
+    tapeText: 'media',
+    tape: '#C3DFF1',
+    tilt: '1.1deg',
+    img: shotDTC,
+    blurb:
+      'Three rebuilds of a five-times-a-week media brand, treated as a conversion system rather than a place to put articles.',
+    stat: 'bounce rate 70% → 38% · organic signups +27%',
+    href: 'https://www.directtoconsumer.co/',
+    link: 'directtoconsumer.co',
+  },
+  {
+    name: 'Katty & Co',
+    tag: 'Pet care, Vancouver · hand-built',
+    tapeText: 'local biz',
+    tape: '#FADFA6',
+    tilt: '1.3deg',
+    img: shotKatty,
+    blurb:
+      'A small local business with real personality, built to take bookings directly — every route leads to a free meet and greet.',
+    stat: 'mobile-first, fast, no platform subscription',
+    href: 'https://kattyco.ca/',
+    link: 'kattyco.ca',
+  },
+  {
+    name: 'East Van SLP',
+    tag: 'Speech-language pathology · hand-built, 5 pages',
+    tapeText: 'clinic',
+    tape: '#C3DFF1',
+    tilt: '-1.1deg',
+    img: shotSLP,
+    blurb:
+      'A twenty-year private practice given a site that explains the work clearly to worried parents — seven service areas, structured.',
+    stat: 'hosted free — the $0/month option, live',
+    href: 'https://east-van-slp.github.io/',
+    link: 'east-van-slp.github.io',
+  },
+] as const;
+
+const FAQS = [
+  {
+    q: 'How much does a website cost?',
+    a: 'It depends on two things: how much site you need, and whether you want to edit it yourself. A single page is $295. A five-to-seven page site for a local business is $2,400. An online store is $3,900. Bigger company sites start at $9,500 and get properly quoted.\nIf none of that quite describes you, tell me what you’re trying to do and I’ll tell you what it should cost.',
+  },
+  {
+    q: 'Why is the hand-built option so much cheaper?',
+    a: 'There’s no platform behind it. No Squarespace or Webflow subscription, no monthly fee for as long as the site exists. I write it by hand and host it free, so the only thing you ever pay for is the build itself.\nThe trade-off is you can’t log in and change it yourself. If that matters to you — and for a lot of people it does — a platform build is the better fit, and it costs more because it genuinely does more.',
+  },
+  {
+    q: 'Can I edit it myself?',
+    a: 'On the platform builds, absolutely — that’s a good part of what you’re paying extra for. I’ll walk you through it and record the session so you can watch it back when you inevitably forget a step. Everyone does.\nOn the hand-built ones, no — changes come through me: $30 an hour with a one-hour minimum, or the $49/mo Care plan.',
+  },
+  {
+    q: 'Do I own my website?',
+    a: 'Yes. All of it, once the final payment’s in. Files, code, design, the lot. On the hand-built sites I’ll hand you the actual files — what you do with them after that is entirely up to you.',
+  },
+  {
+    q: 'Who owns my domain?',
+    a: 'You do, always. It’s registered in your name and you’re the legal owner. If I’m looking after it, I keep it in my registrar account so renewals, DNS and the security certificate get handled without you thinking about it — $50 a year, free on any care plan. Want to take it over? A few days and it’s done. No fee, no argument.',
+  },
+  {
+    q: 'How long does it take?',
+    a: 'A single page is around ten days. A local business site is about four weeks. A store is closer to five. Bigger builds run eight to ten weeks.\nWorth knowing up front: those timelines start the day I have your content, not the day you sign. That catches people out, so I’d rather say it early.',
+  },
+  {
+    q: 'Will I show up on Google?',
+    a: 'Every site gets the technical groundwork — proper structure, tags, sitemap, submitted to Google the right way, and your Google Business Profile sorted if you’re a local business. That’s the part actually in my control.\nWhat I won’t do is promise a specific ranking. Anyone who does is guessing.',
+  },
+  {
+    q: 'What happens once it launches?',
+    a: 'I’ll record a full walkthrough so you’ve got it to refer back to, and for the first 30 days I’ll fix anything that isn’t working properly, free. After that: care plans from $49/mo, or pay-as-you-go changes — $30/hr on sites I host, $95/hr on platform builds.',
+  },
+  {
+    q: 'You’re one person. What if something happens to you?',
+    a: 'Fair thing to wonder about. Your domain is registered in your name, so it stays yours no matter what. You own your files. Nothing about your site depends on me still being around — any competent developer can pick it up, and I keep things documented and tidy specifically so they can.',
+  },
+] as const;
+
+const NEEDS = [
+  'A new website',
+  'A rebuild of an existing site',
+  'Fixes or improvements to my current site',
+  'Ongoing management of a site I already have',
+  'Not sure yet',
+] as const;
+
+const EDIT_OPTIONS = [
+  'Yes, I’d want to edit it myself',
+  'No, I’d rather someone else handled that',
+  'Not sure — what’s the difference?',
+] as const;
+
+const BUDGETS = [
+  'Under $500',
+  '$500–1,500',
+  '$1,500–3,000',
+  '$3,000–6,000',
+  '$6,000+',
+  'I genuinely don’t know — tell me what this should cost',
+] as const;
+---
+
+<BaseLayout
+  title="Web Design"
+  description="A website that gets you paid. For small businesses and independent professionals — hand-built and hosted free forever, or on a platform you can edit yourself. Fixed prices in CAD, Vancouver & the Lower Mainland."
+  breadcrumbs={[{ label: 'Web Design', href: '/web-design/' }]}
+  standalone
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+  </Fragment>
+
+  <div class="wd">
+    <div class="wd__grain" aria-hidden="true"></div>
+
+    {/* --------------------------------------------------------------- nav -- */}
+    <nav class="wdnav" aria-label="Web design page">
+      <a class="wdnav__brand" href="/">
+        <Image src={logoM} alt="" width={84} height={84} loading="eager" />
+        <span class="wdnav__brandtext">
+          <span class="wdnav__brandname">Sites that sell.</span>
+          <span class="wdnav__brandsub">by Miguel Monzones</span>
+        </span>
+      </a>
+
+      <div class="wdnav__list">
+        <a class="wdnav__hq" href="/" title="Back to mnmonzones.com">← back to HQ</a>
+        <span class="wdnav__div" aria-hidden="true"></span>
+        <a class="wdnav__sec" href="#work"
+          ><span class="wdnav__dot" style="background:#F5C0A4" aria-hidden="true"></span>Work</a
+        >
+        <a class="wdnav__sec" href="#pricing"
+          ><span class="wdnav__dot" style="background:#ADD4EE" aria-hidden="true"></span>Pricing</a
+        >
+        <a class="wdnav__sec" href="#faq"
+          ><span class="wdnav__dot" style="background:#FADFA6" aria-hidden="true"></span>FAQ</a
+        >
+        <a class="wdnav__cta" href="#start">Start a project</a>
+        <button
+          type="button"
+          class="wdnav__burger"
+          aria-expanded="false"
+          aria-controls="wd-mobile-nav"
+          data-wd-nav-toggle
+        >
+          <span class="visually-hidden">Menu</span>
+          <span class="wdnav__burgerlines" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </button>
+      </div>
+
+      <div class="wdnav__panel" id="wd-mobile-nav" hidden data-wd-nav-panel>
+        <a href="#work">Work</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a class="wdnav__panelhq" href="/">← back to HQ</a>
+        <a class="wdnav__panelcta" href="#start">Start a project</a>
+      </div>
+    </nav>
+
+    {/* -------------------------------------------------------------- hero -- */}
+    <header class="hero" id="top">
+      <div class="hero__floatA" aria-hidden="true"></div>
+      <div class="hero__floatB" aria-hidden="true"></div>
+      <div class="deco hero__spin" aria-hidden="true">✳</div>
+      <div class="deco hero__dot1" aria-hidden="true"></div>
+      <div class="deco hero__dot2" aria-hidden="true"></div>
+      <div class="deco hero__dot3" aria-hidden="true"></div>
+
+      <div class="hero__inner">
+        <div class="hero__badges">
+          <span class="hero__badge">Vancouver &amp; the Lower Mainland</span>
+          <span class="hero__badge hero__badge--tilt">One person, not an agency</span>
+        </div>
+
+        <h1 class="hero__h1">
+          <span class="hero__line">A website that</span>
+          <span class="hero__line"
+            >gets you <span class="hero__word-wrap"
+              ><span class="hero__word" data-wd-word>paid.</span><svg
+                viewBox="0 0 220 24"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                class="hero__underline"
+                ><path
+                  d="M6 15 C 32 8, 56 19, 86 13 S 140 7, 164 15 S 198 18, 214 11"
+                  fill="none"
+                  stroke="#ADD4EE"
+                  stroke-width="7"
+                  stroke-linecap="round"
+                  vector-effect="non-scaling-stroke"></path></svg
+              ></span
+            ></span
+          >
+        </h1>
+
+        <div class="hero__row">
+          <p class="hero__lede">
+            For small businesses and independent professionals. Eleven years of building sites
+            inside companies — fintech, ecommerce, agency — now available directly.
+          </p>
+          <div class="hero__ctas">
+            <span class="hero__scribble">hand-built or on Webflow — your call ↓</span>
+            <div class="hero__buttons">
+              <span class="starwrap">
+                <a class="wdbtn wdbtn--peach wdbtn--wiggle" href="#start">Start a project</a>
+                <span class="star star--tr" aria-hidden="true">✦</span>
+                <span class="star star--bl" aria-hidden="true">✦</span>
+              </span>
+              <a class="wdbtn wdbtn--outline" href="#work">See the work</a>
+            </div>
+          </div>
+        </div>
+
+        <p class="hero__platforms">
+          <span>Webflow</span><span class="hero__ast">✳</span><span>Shopify</span><span
+            class="hero__ast">✳</span
+          ><span>WordPress</span><span class="hero__ast">✳</span><span>Squarespace</span><span
+            class="hero__ast">✳</span
+          ><span>or hand-coded &amp; hosted free, forever</span>
+        </p>
+      </div>
+    </header>
+
+    {/* ------------------------------------------------------- who it's for -- */}
+    <section class="who">
+      <div class="wd__inner">
+        <p class="scribble" data-wd-reveal="up">who this is for</p>
+        <h2 class="who__title" data-wd-reveal="up">
+          People with better things to do than websites.
+        </h2>
+        <div class="who__grid" data-wd-stagger="pop">
+          {
+            WHO.map((card, i) => (
+              <button
+                type="button"
+                class="flip"
+                style={`--tilt:${card.tilt}`}
+                aria-pressed="false"
+                data-wd-flip={i}
+              >
+                <span class="flip__inner">
+                  <span class="flip__front">
+                    <span class="flip__title" style={`color:${card.color}`}>
+                      {card.title}
+                    </span>
+                    <span class="flip__copy">{card.front}</span>
+                    <span class="flip__hint" style={`color:${card.color}`}>
+                      tap to flip — why bother? ↻
+                    </span>
+                  </span>
+                  <span class="flip__back" style={`background:${card.backBg}`}>
+                    <span class="flip__backcopy">{card.back}</span>
+                    <span class="flip__backhint">↻ flip back</span>
+                  </span>
+                </span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* --------------------------------------------------- discovery call -- */}
+    <section class="disc">
+      <div class="wd__inner ctabox" data-wd-reveal="pop">
+        <div class="ctabox__badge" aria-hidden="true">Free · no commitment</div>
+        <div class="ctabox__text">
+          <p class="scribble scribble--coral">not ready to start anything?</p>
+          <h2 class="ctabox__title">A 30-minute discovery call</h2>
+          <p class="ctabox__body">
+            Bring your questions — about your current site, what a build would cost, whether you
+            even need one. You’ll leave with a straight answer either way. No deck, no follow-up
+            sequence, no obligation.
+          </p>
+        </div>
+        <span class="starwrap">
+          <a
+            class="wdbtn wdbtn--blue wdbtn--wiggle"
+            href={`mailto:${CONTACT.email}?subject=Discovery call — 30 minutes&body=Hi Miguel — I'd like to book a free 30-minute discovery call.%0A%0AMy business: %0AA few times that work for me: `}
+            >Book a free call →</a
+          >
+          <span class="star star--tr" aria-hidden="true">✦</span>
+          <span class="star star--bl star--coral" aria-hidden="true">✦</span>
+        </span>
+      </div>
+    </section>
+
+    {/* ------------------------------------------------------- the ladder -- */}
+    <section class="ladder">
+      <div class="deco ladder__dot1" aria-hidden="true"></div>
+      <div class="deco ladder__dot2" aria-hidden="true"></div>
+      <div class="wd__inner">
+        <h2 class="wd__h2" data-wd-reveal="up">How it works</h2>
+        <p class="ladder__sub" data-wd-reveal="up">
+          Not four services to scope yourself. One ladder — start wherever your site actually is.
+        </p>
+        <div class="ladder__grid" data-wd-stagger="tilt">
+          <div class="rung" style="--rung:#F5C0A4">
+            <p class="rung__num" style="color:#F0621F">01</p>
+            <h3 class="rung__title">Audit</h3>
+            <p class="rung__body">
+              A Site Check: recorded walkthrough of your site, written findings, a prioritized fix
+              list, and a call to go through it. Five business days.
+            </p>
+            <p class="rung__price">$395 — fully credited toward a build</p>
+            <p class="rung__scribble">book a build within 60 days and the audit ends up free</p>
+          </div>
+          <div class="rung" style="--rung:#ADD4EE">
+            <p class="rung__num" style="color:#2F9BDB">02</p>
+            <h3 class="rung__title">Build</h3>
+            <p class="rung__body">
+              Hand-built and hosted free forever, or on a platform you can edit yourself — Webflow,
+              Shopify, WordPress, Squarespace. I recommend; you decide.
+            </p>
+            <p class="rung__price">$295 – $9,500+</p>
+            <p class="rung__scribble">routed by one question — it’s just below</p>
+          </div>
+          <div class="rung" style="--rung:#FADFA6">
+            <p class="rung__num" style="color:#E8A317">03</p>
+            <h3 class="rung__title">Manage</h3>
+            <p class="rung__body">
+              Care plans: updates, backups, monitoring, small changes, and your domain and SSL
+              handled — so you never think about any of it.
+            </p>
+            <p class="rung__price">from $49 / month</p>
+            <p class="rung__scribble">domain &amp; SSL included free on every plan</p>
+          </div>
+        </div>
+        <p class="ladder__note" data-wd-reveal="up">
+          SEO and AEO aren’t a fourth thing to buy — they’re inside the audit and inside every
+          build. Structure, metadata, schema, sitemap, Search Console, Google Business Profile.
+          Standard, not extra.
+        </p>
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------- the fork -- */}
+    <section class="fork">
+      <div class="wd__inner">
+        <p class="scribble" data-wd-reveal="up">the only question that decides the price</p>
+        <h2 class="fork__title" data-wd-reveal="up">Do you want to edit the site yourself?</h2>
+        <div class="fork__grid" data-wd-stagger="pop">
+          <div class="forkcard" style="--tilt:-.7deg;--forkshadow:#F5C0A4">
+            <p class="forkcard__chip" style="background:#F5C0A4">No — just make it work</p>
+            <h3 class="forkcard__title">Hand-built. Hosted free, forever.</h3>
+            <p class="forkcard__body">
+              No Squarespace, no Webflow, no monthly platform fee for the life of the site. I write
+              it by hand, and you own the files.
+            </p>
+            <p class="forkcard__body">
+              The trade: you can’t log in and change it. Changes come through me at
+              <strong>$30/hr</strong> — or the $49/mo Care plan.
+            </p>
+            <p class="forkcard__price" style="color:#D8501A">$295 – $650</p>
+          </div>
+          <div class="forkcard" style="--tilt:.7deg;--forkshadow:#FADFA6">
+            <p class="forkcard__chip" style="background:#FADFA6">Yes — I want the keys</p>
+            <h3 class="forkcard__title">Built on a platform you log into.</h3>
+            <p class="forkcard__body">
+              Webflow, Shopify, WordPress, Squarespace — I recommend based on who’s maintaining it
+              after launch, and you make the call.
+            </p>
+            <p class="forkcard__body">
+              Real CMS, you edit anything, recorded handover. The platform costs
+              <strong>$25–50/mo</strong>, paid to them, not me.
+            </p>
+            <p class="forkcard__price" style="color:#2A82BE">from $2,400</p>
+          </div>
+        </div>
+        <p class="fork__note" data-wd-reveal="up">
+          Selling online, publishing weekly, taking bookings with accounts? That’s a platform build
+          — and I’ll say so plainly rather than pretend the cheap option can do it.
+        </p>
+      </div>
+    </section>
+
+    {/* ------------------------------------------------------------ pricing -- */}
+    <section class="pricing" id="pricing">
+      <div class="wd__inner">
+        <h2 class="wd__h2" data-wd-reveal="up">Plain pricing</h2>
+        <p class="pricing__sub" data-wd-reveal="up">
+          Fixed prices in CAD, agreed before anything starts. Two families — same split as the
+          question above.
+        </p>
+        <div class="pricing__founding" data-wd-reveal="up">
+          <strong>Founding-client pricing — first five projects.</strong>
+          <span>
+            These rates are in exchange for a testimonial and permission to feature the work.
+            Regular prices shown struck through.
+          </span>
+        </div>
+
+        <div class="pricing__grid" data-wd-stagger="pop">
+          <div class="pricecard">
+            <div class="pricecard__head" style="background:#F5C0A4">
+              <h3>Hand-built</h3>
+              <p>Hosted free forever · no monthly fee · changes come through me</p>
+            </div>
+            <div class="pricecard__body">
+              <div class="pricerow">
+                <div>
+                  <strong>One-Page Site</strong>
+                  <p>Just the page — a single page, designed and built. 1 week.</p>
+                </div>
+                <div class="pricerow__price">
+                  <strong>$295</strong>
+                  <span class="pricerow__was">$450</span>
+                </div>
+              </div>
+              <div class="pricerow">
+                <div>
+                  <strong>Get Found</strong>
+                  <span class="pricerow__rec">recommended</span>
+                  <p>
+                    The one-page site plus the launch work AI won’t do: domain configured, Google
+                    Business Profile verified, form tested end to end, indexed. 10 days.
+                  </p>
+                </div>
+                <div class="pricerow__price">
+                  <strong>$450</strong>
+                  <span class="pricerow__was">$750</span>
+                </div>
+              </div>
+              <div class="pricerow pricerow--last">
+                <div>
+                  <strong>Portfolio Site</strong>
+                  <p>Up to 3 pages, two revision rounds, everything in Get Found included. 2 weeks.</p>
+                </div>
+                <div class="pricerow__price">
+                  <strong>$650</strong>
+                  <span class="pricerow__was">$1,200</span>
+                </div>
+              </div>
+              <p class="pricecard__foot">
+                After launch: changes $30/hr, or the $49/mo Care plan. Best for sites that rarely
+                change.
+              </p>
+            </div>
+          </div>
+
+          <div class="pricecard">
+            <div class="pricecard__head" style="background:#C3DFF1">
+              <h3>Platform builds</h3>
+              <p>Webflow, Shopify, WordPress, Squarespace · you edit it yourself</p>
+            </div>
+            <div class="pricecard__body">
+              <div class="pricerow">
+                <div>
+                  <strong>Small Business Site</strong>
+                  <p>
+                    5–7 pages, content plan written for you, booking flow, Google Business Profile,
+                    local SEO, GA4, recorded handover. 4 weeks.
+                  </p>
+                </div>
+                <div class="pricerow__price">
+                  <strong>$2,400</strong>
+                  <span class="pricerow__was">$3,800</span>
+                </div>
+              </div>
+              <div class="pricerow">
+                <div>
+                  <strong>Shop</strong>
+                  <p>
+                    Everything above plus store setup, 25 products, checkout and shipping,
+                    abandoned-cart and welcome emails, training. 5 weeks.
+                  </p>
+                </div>
+                <div class="pricerow__price">
+                  <strong>$3,900</strong>
+                  <span class="pricerow__was">$6,500</span>
+                </div>
+              </div>
+              <div class="pricerow pricerow--last">
+                <div>
+                  <strong>Company Site</strong>
+                  <p>
+                    CMS architecture, conversion tracking, technical SEO and AEO from the start, 60
+                    days of support. Quoted. 8–10 weeks.
+                  </p>
+                </div>
+                <div class="pricerow__price">
+                  <strong>from $9,500</strong>
+                </div>
+              </div>
+              <p class="pricecard__foot">
+                The platform subscription ($25–50/mo) is paid to the platform, not me. Best for
+                sites that change often.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pricing__extras" data-wd-stagger="up">
+          <div class="extra">
+            <h4>Not sure? Site Check — $395</h4>
+            <p>
+              A paid diagnostic of your current site: recorded walkthrough, written findings,
+              prioritized fixes. Fully credited toward any build within 60 days.
+            </p>
+          </div>
+          <div class="extra">
+            <h4>Website Care — $49 / $199 / $499 a month</h4>
+            <p>
+              Monitoring, backups, updates and a monthly allowance of changes — up to SEO
+              monitoring and quarterly conversion reviews on Growth.
+            </p>
+          </div>
+          <div class="extra">
+            <h4>Domain &amp; SSL — $50 a year</h4>
+            <p>
+              Registered in your name, always — I just handle renewals, DNS and the certificate.
+              Included free on any Care plan.
+            </p>
+          </div>
+        </div>
+
+        <p class="pricing__fine" data-wd-reveal="up">
+          The fine print, said early: 50% deposit to start, 50% at launch · two revision rounds
+          (one on single-pagers) · timelines start the day your content is in hand, not the day you
+          sign · copywriting is an add-on at $150/page.
+        </p>
+      </div>
+    </section>
+
+    {/* ------------------------------------------------------------ mid CTA -- */}
+    <section class="midcta-wrap">
+      <div class="wd__inner ctabox ctabox--solid midcta" data-wd-reveal="pop">
+        <div class="deco midcta__star1" aria-hidden="true">✦</div>
+        <div class="deco midcta__star2" aria-hidden="true">✦</div>
+        <div class="ctabox__text">
+          <p class="scribble scribble--coral">already know the price fits?</p>
+          <h2 class="ctabox__title">Skip ahead — start a project</h2>
+          <p class="ctabox__body">
+            Five questions, two minutes, and you’ll usually get a price — not a pitch — within two
+            business days.
+          </p>
+        </div>
+        <span class="starwrap">
+          <a class="wdbtn wdbtn--peach wdbtn--wiggle" href="#start">Go to the form ↓</a>
+          <span class="star star--tr" aria-hidden="true">✦</span>
+          <span class="star star--bl" aria-hidden="true">✦</span>
+        </span>
+      </div>
+    </section>
+
+    {/* --------------------------------------------------------------- work -- */}
+    <section class="work" id="work">
+      <div class="wd__inner">
+        <p class="scribble" data-wd-reveal="up">proof, not promises</p>
+        <h2 class="work__title" data-wd-reveal="up">The work</h2>
+        <div class="work__grid" data-wd-stagger="tilt">
+          {
+            WORKS.map((work) => (
+              <article class="workpiece" style={`--tilt:${work.tilt}`}>
+                <div class="workpiece__tape" style={`background:${work.tape}`}>
+                  {work.tapeText}
+                </div>
+                <div class="workpiece__img">
+                  <Image src={work.img} alt={`${work.name} website`} width={860} height={580} loading="lazy" />
+                </div>
+                <h3 class="workpiece__name">{work.name}</h3>
+                <p class="workpiece__tag">{work.tag}</p>
+                <p class="workpiece__blurb">{work.blurb}</p>
+                <p class="workpiece__stat">{work.stat}</p>
+                <a class="workpiece__link" href={work.href} target="_blank" rel="noopener">
+                  {work.link} ↗
+                </a>
+              </article>
+            ))
+          }
+        </div>
+        <p class="work__note" data-wd-reveal="up">
+          Four builds, written up honestly instead of padded to twelve. The live sites are the real
+          proof — click through.
+        </p>
+      </div>
+    </section>
+
+    {/* --------------------------------------------------- the awkward one -- */}
+    <section class="awkward">
+      <div class="deco awkward__dot1" aria-hidden="true"></div>
+      <div class="deco awkward__dot2" aria-hidden="true"></div>
+      <div class="awkward__inner">
+        <h2 class="awkward__title" data-wd-reveal="tilt">“Couldn’t I just use AI for this?”</h2>
+        <p data-wd-reveal="up">
+          Honestly? You might. With a free weekend, some patience, and clear ideas about what your
+          site should say, you can get something decent up on your own.
+        </p>
+        <p data-wd-reveal="up">
+          But making the page was never the hard part. It’s buying the domain and pointing it at
+          the right place. The certificate. The contact form that actually sends somewhere you’ll
+          see it. Claiming and verifying your Google listing. Getting indexed. Most DIY sites end
+          their lives as a nice page in a browser tab that never quite goes live.
+        </p>
+        <p data-wd-reveal="up">
+          And I use these tools too — that’s part of why I’m not charging agency prices.
+        </p>
+        <p class="awkward__punch" data-wd-reveal="pop">
+          Nobody is asking ChatGPT to verify their Google Business Profile.
+        </p>
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------- ownership -- */}
+    <section class="own">
+      <div class="wd__inner">
+        <h2 class="own__title" data-wd-reveal="up">You own everything. Every tier.</h2>
+        <div class="own__grid" data-wd-stagger="up">
+          <div class="owncard">
+            <h3 style="color:#D8501A">Your files</h3>
+            <p>
+              Code, design, content — handed over at launch, transferred in writing on final
+              payment. On hand-built sites you get the actual files.
+            </p>
+          </div>
+          <div class="owncard">
+            <h3 style="color:#2A82BE">Your domain</h3>
+            <p>
+              Registered in your name, always. If I manage it — $50 a year, free on Care — I hold
+              the account, never the asset.
+            </p>
+          </div>
+          <div class="owncard">
+            <h3 style="color:#A67D14">Your exit</h3>
+            <p>
+              Want to take the domain or the site elsewhere? Say the word and I’ll transfer it
+              across. No fee, no argument.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------- faq -- */}
+    <section class="faq" id="faq">
+      <div class="faq__inner">
+        <h2 class="wd__h2" data-wd-reveal="up">Fair questions</h2>
+        <div class="faq__list">
+          {
+            FAQS.map((faq) => (
+              <details class="faq__item">
+                <summary class="faq__q">
+                  <span>{faq.q}</span>
+                  <span class="faq__icon" aria-hidden="true">+</span>
+                </summary>
+                <div class="faq__a">{faq.a}</div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    {/* -------------------------------------------------------------- start -- */}
+    <section class="start" id="start">
+      <div class="start__inner">
+        <div class="start__grid">
+          <div data-wd-reveal="up">
+            <h2 class="start__title">Start a project</h2>
+            <p class="start__lede">
+              Five questions, two minutes. Enough that I can usually come back with a price — not a
+              pitch — within two business days.
+            </p>
+            <p class="scribble start__scribble">
+              one build at a time — you get a real start date before you pay anything
+            </p>
+            <p class="scribble start__scribble">or skip the form entirely —</p>
+
+            <div class="start__routes">
+              <a
+                class="startroute"
+                style="--tilt:-.6deg"
+                href={`mailto:${CONTACT.email}?subject=New website project`}
+              >
+                <span class="startroute__icon" style="background:#F5C0A4" aria-hidden="true">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#1C1B19"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect><path
+                      d="M3 6.5 L12 13 L21 6.5"></path></svg
+                  >
+                </span>
+                <span class="startroute__text">
+                  <span class="startroute__label">Write me</span>
+                  <span class="startroute__value">{CONTACT.email}</span>
+                </span>
+              </a>
+              <a class="startroute" style="--tilt:.6deg" href={phoneHref}>
+                <span class="startroute__icon" style="background:#ADD4EE" aria-hidden="true">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#1C1B19"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><path
+                      d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.9z"
+                    ></path></svg
+                  >
+                </span>
+                <span class="startroute__text">
+                  <span class="startroute__label">Call or text</span>
+                  <span class="startroute__value">{CONTACT.phone}</span>
+                </span>
+              </a>
+              <p class="start__real">
+                Real person, real phone — if I’m mid-build I’ll call you back the same day.
+              </p>
+            </div>
+          </div>
+
+          <form
+            class="startform"
+            action={FORM_ENDPOINT}
+            method="POST"
+            data-wd-reveal="pop"
+            data-contact-form
+          >
+            {/* Routes web-design leads apart from consulting notes in the inbox. */}
+            <input type="hidden" name="_subject" value="New website project" />
+            <input type="hidden" name="service" value="web-design" />
+
+            <label class="startform__field">
+              Your name
+              <input type="text" name="name" required placeholder="Jane from Jane's Clinic" autocomplete="name" />
+            </label>
+
+            <label class="startform__field">
+              What do you need?
+              <select name="need">
+                {NEEDS.map((need) => <option>{need}</option>)}
+              </select>
+            </label>
+
+            <label class="startform__field">
+              What’s not working right now?
+              <textarea
+                name="problem"
+                rows="4"
+                required
+                placeholder={'"People find us but nobody books." · "We\'re invisible on Google." · "Embarrassing on a phone."'}
+              ></textarea>
+            </label>
+
+            <label class="startform__field">
+              Once it’s live, do you want to make changes yourself?
+              <select name="edit_yourself">
+                {EDIT_OPTIONS.map((option) => <option>{option}</option>)}
+              </select>
+            </label>
+
+            <label class="startform__field">
+              Budget range
+              <select name="budget">
+                {BUDGETS.map((budget) => <option>{budget}</option>)}
+              </select>
+            </label>
+
+            {/* Formspree discards any submission that fills this in. */}
+            <input
+              type="text"
+              name="_gotcha"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+              class="startform__honeypot"
+            />
+
+            <button type="submit" class="wdbtn wdbtn--peach startform__submit">Send it over →</button>
+
+            <p class="startform__status" role="status" aria-live="polite" data-form-status></p>
+            <p class="startform__note">
+              Goes straight to my inbox — I read every one myself and reply within two business
+              days.
+            </p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    {/* ------------------------------------------------------------- footer -- */}
+    <footer class="wdfoot">
+      <div class="wdfoot__inner">
+        <span>{CONTACT.entity} · Vancouver, BC</span>
+        <span class="wdfoot__scribble">this page is the hand-built option — practice what you sell</span>
+        <span class="wdfoot__links">
+          <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          <a href="/">mnmonzones.com ↗</a>
+        </span>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  /* ----------------------------------------------------------- mobile nav -- */
+  const toggle = document.querySelector<HTMLButtonElement>('[data-wd-nav-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-wd-nav-panel]');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    panel?.toggleAttribute('hidden', open);
+  });
+
+  panel?.addEventListener('click', (event) => {
+    if ((event.target as HTMLElement).closest('a')) {
+      toggle?.setAttribute('aria-expanded', 'false');
+      panel.setAttribute('hidden', '');
+    }
+  });
+
+  /* ---------------------------------------------------------- word rotor -- */
+  const word = document.querySelector<HTMLElement>('[data-wd-word]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (word && !reduced) {
+    const words = ['found.', 'booked.', 'called.', 'paid.'];
+    let index = words.length - 1; // starts on the server-rendered "paid."
+    window.setInterval(() => {
+      index = (index + 1) % words.length;
+      word.textContent = words[index];
+      word.style.animation = 'none';
+      // Restart the entrance animation by forcing a reflow between writes.
+      void word.offsetWidth;
+      word.style.animation = `${index % 2 === 0 ? 'wd-in-a' : 'wd-in-b'} .55s cubic-bezier(.2,.8,.2,1) both`;
+    }, 2400);
+  }
+
+  /* ----------------------------------------------------------- flip cards -- */
+  for (const flip of document.querySelectorAll<HTMLButtonElement>('[data-wd-flip]')) {
+    flip.addEventListener('click', () => {
+      const pressed = flip.getAttribute('aria-pressed') === 'true';
+      flip.setAttribute('aria-pressed', String(!pressed));
+    });
+  }
+
+  /* -------------------------------------------------------------- reveals -- */
+  // Same discipline as Motion.astro: starting states written here, never in
+  // CSS, with a failsafe that shows everything if the observer goes quiet.
+  const canObserve = typeof IntersectionObserver === 'function';
+
+  if (!reduced && canObserve) {
+    const initial: Record<string, string> = {
+      up: 'translateY(30px)',
+      pop: 'translateY(20px) scale(.94)',
+      tilt: 'translateY(26px) rotate(-2.5deg)',
+    };
+
+    const pending = new Set<HTMLElement>();
+
+    const prep = (el: HTMLElement, kind: string, delay: number) => {
+      el.style.opacity = '0';
+      el.style.transform = initial[kind] ?? initial.up;
+      el.style.transition = `opacity .7s ease ${delay}ms, transform .8s cubic-bezier(.2,.8,.2,1) ${delay}ms`;
+      pending.add(el);
+    };
+
+    const showEl = (el: HTMLElement) => {
+      if (!pending.delete(el)) return;
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    };
+
+    const targets: HTMLElement[] = [];
+
+    for (const el of document.querySelectorAll<HTMLElement>('[data-wd-reveal]')) {
+      prep(el, el.dataset.wdReveal ?? 'up', 0);
+      targets.push(el);
+    }
+
+    for (const parent of document.querySelectorAll<HTMLElement>('[data-wd-stagger]')) {
+      const kind = parent.dataset.wdStagger ?? 'up';
+      [...parent.children].forEach((child, i) => prep(child as HTMLElement, kind, i * 110));
+      targets.push(parent);
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          if (el.hasAttribute('data-wd-stagger')) {
+            [...el.children].forEach((child) => showEl(child as HTMLElement));
+          } else {
+            showEl(el);
+          }
+          io.unobserve(el);
+        }
+      },
+      { threshold: 0.12 },
+    );
+    targets.forEach((el) => io.observe(el));
+
+    const flush = () => {
+      for (const el of [...pending]) {
+        el.style.transition = '';
+        showEl(el);
+      }
+    };
+    window.setTimeout(flush, 2600);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && pending.size) flush();
+    });
+  }
+
+  /* ----------------------------------------------------------------- form -- */
+  // Same in-place submit as the site's other forms; a failure falls through
+  // to Formspree's own page, so nothing is ever swallowed.
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = form?.querySelector<HTMLElement>('[data-form-status]');
+  const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+  form?.addEventListener('submit', async (event) => {
+    if (!form.checkValidity()) return;
+    event.preventDefault();
+
+    const original = submit?.textContent ?? 'Send it over →';
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = 'Sending…';
+    }
+    if (status) status.textContent = '';
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      form.reset();
+      if (status) {
+        status.textContent = 'Got it — that’s with me. You’ll hear back within two business days.';
+        status.dataset.state = 'ok';
+      }
+    } catch {
+      if (status) {
+        status.textContent = `That didn’t send. Email me directly at miguel@mnmonzones.com and I’ll pick it up.`;
+        status.dataset.state = 'error';
+      }
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = original;
+      }
+    }
+  });
+</script>
+
+<style>
+  /* The page's own design system. Cream paper, ink, peach/blue/butter pastels,
+     rounded everything — nothing shared with global.css on purpose. */
+  .wd {
+    --wd-paper: #f2ebdf;
+    --wd-card: #fbf3e4;
+    --wd-bright: #fffdf7;
+    --wd-ink: #1c1b19;
+    --wd-muted: #55503f;
+    --wd-faint: #8a8168;
+    --wd-peach: #f5c0a4;
+    --wd-blue: #add4ee;
+    --wd-blueband: #c3dff1;
+    --wd-butter: #fadfa6;
+    --wd-coral: #f0621f;
+    --wd-coral-deep: #d8501a;
+    --wd-scribble: #e0561b;
+    --wd-bluelink: #2a82be;
+    --wd-gold: #e8a317;
+    --wd-font: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+    --wd-hand: 'Caveat', cursive;
+
+    font-family: var(--wd-font);
+    background: var(--wd-paper);
+    color: var(--wd-ink);
+    min-width: 320px;
+    overflow-x: clip;
+  }
+
+  .wd :global(a) {
+    transition: color var(--dur-fast, 220ms) ease;
+  }
+
+  .wd__grain {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  }
+
+  .wd__inner {
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  .wd__h2 {
+    margin: 0 0 8px;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .scribble {
+    margin: 0 0 12px;
+    font-family: var(--wd-hand);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--wd-ink);
+  }
+
+  .scribble--coral {
+    color: var(--wd-scribble);
+    font-size: 26px;
+    transform: rotate(-1deg);
+  }
+
+  .deco {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  /* ------------------------------------------------------------ buttons -- */
+  .wdbtn {
+    position: relative;
+    display: inline-block;
+    border: 2px solid var(--wd-ink);
+    color: var(--wd-ink);
+    font-weight: 800;
+    font-size: 18px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .wdbtn--peach {
+    background: var(--wd-peach);
+    box-shadow: 4px 4px 0 var(--wd-ink);
+  }
+
+  .wdbtn--blue {
+    background: var(--wd-blue);
+    box-shadow: 4px 4px 0 var(--wd-ink);
+    font-size: 19px;
+    padding: 16px 32px;
+  }
+
+  .wdbtn--peach:hover,
+  .wdbtn--peach:focus-visible,
+  .wdbtn--blue:hover,
+  .wdbtn--blue:focus-visible {
+    background: var(--wd-butter);
+    color: var(--wd-ink);
+    animation: none;
+    transform: scale(1.04);
+  }
+
+  .wdbtn--outline {
+    background: transparent;
+  }
+
+  .wdbtn--outline:hover,
+  .wdbtn--outline:focus-visible {
+    background: var(--wd-ink);
+    color: var(--wd-paper);
+  }
+
+  .wdbtn--wiggle {
+    animation: wd-wiggle 5s ease-in-out 2s infinite;
+  }
+
+  .starwrap {
+    position: relative;
+    display: inline-block;
+    flex: none;
+  }
+
+  .star {
+    position: absolute;
+    pointer-events: none;
+    color: var(--wd-gold);
+    text-shadow: 1.5px 1.5px 0 var(--wd-ink);
+    animation: wd-star 5s ease-in-out 2s infinite;
+  }
+
+  .star--tr {
+    top: -16px;
+    right: -12px;
+    font-size: 26px;
+  }
+
+  .star--bl {
+    bottom: -14px;
+    left: -14px;
+    font-size: 20px;
+    color: #2f9bdb;
+    text-shadow: 1px 1px 0 var(--wd-ink);
+    animation-delay: 2.25s;
+  }
+
+  .star--coral {
+    color: var(--wd-coral);
+  }
+
+  @keyframes wd-wiggle {
+    0%,
+    82%,
+    100% {
+      transform: rotate(0deg) scale(1);
+      box-shadow: 4px 4px 0 var(--wd-ink);
+    }
+
+    84% {
+      transform: rotate(-2.5deg) scale(1.04);
+    }
+
+    87% {
+      transform: rotate(2deg) scale(1.05);
+      box-shadow: 6px 6px 0 var(--wd-ink);
+    }
+
+    90% {
+      transform: rotate(-1.5deg) scale(1.04);
+    }
+
+    93% {
+      transform: rotate(1deg) scale(1.03);
+    }
+
+    96% {
+      transform: rotate(0deg) scale(1);
+      box-shadow: 4px 4px 0 var(--wd-ink);
+    }
+  }
+
+  @keyframes wd-star {
+    0%,
+    80%,
+    100% {
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+    }
+
+    86% {
+      opacity: 1;
+      transform: scale(1.15) rotate(40deg);
+    }
+
+    94% {
+      opacity: 0;
+      transform: scale(0.4) rotate(90deg);
+    }
+  }
+
+  /* ---------------------------------------------------------------- nav -- */
+  .wdnav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 24px;
+    background: rgb(242 235 223 / 94%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1.5px solid var(--wd-ink);
+  }
+
+  .wdnav__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--wd-ink);
+  }
+
+  .wdnav__brand :global(img) {
+    width: 42px;
+    height: 42px;
+    display: block;
+  }
+
+  .wdnav__brandtext {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+
+  .wdnav__brandname {
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+  }
+
+  .wdnav__brandsub {
+    font-family: var(--wd-hand);
+    font-size: 16px;
+    color: var(--wd-scribble);
+    transform: rotate(-1deg);
+  }
+
+  .wdnav__list {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .wdnav__hq {
+    display: inline-block;
+    font-family: var(--wd-hand);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--wd-muted);
+    transform: rotate(-2deg);
+    white-space: nowrap;
+    transition:
+      transform 0.2s,
+      color 0.2s;
+  }
+
+  .wdnav__hq:hover,
+  .wdnav__hq:focus-visible {
+    color: var(--wd-coral-deep);
+    transform: rotate(0deg);
+  }
+
+  .wdnav__div {
+    width: 1.5px;
+    height: 18px;
+    background: rgb(28 27 25 / 25%);
+    flex: none;
+  }
+
+  .wdnav__sec {
+    color: var(--wd-ink);
+    text-underline-offset: 6px;
+  }
+
+  .wdnav__sec:hover,
+  .wdnav__sec:focus-visible {
+    color: var(--wd-coral-deep);
+    text-decoration: underline wavy #2f9bdb 2px;
+  }
+
+  .wdnav__dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 7px;
+    vertical-align: 2px;
+  }
+
+  .wdnav__cta {
+    background: var(--wd-peach);
+    color: var(--wd-ink);
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--wd-ink);
+  }
+
+  .wdnav__cta:hover,
+  .wdnav__cta:focus-visible {
+    background: var(--wd-butter);
+    color: var(--wd-ink);
+  }
+
+  .wdnav__burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 2px solid var(--wd-ink);
+    border-radius: 12px;
+    padding: 0;
+  }
+
+  .wdnav__burgerlines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 20px;
+  }
+
+  .wdnav__burgerlines span {
+    display: block;
+    height: 2.5px;
+    background: var(--wd-ink);
+  }
+
+  .wdnav__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--wd-paper);
+    border-bottom: 1.5px solid var(--wd-ink);
+    padding: 6px 16px 16px;
+  }
+
+  .wdnav__panel a {
+    display: block;
+    padding: 13px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--wd-ink);
+    text-align: center;
+    border-bottom: 1.5px solid #e4dcc9;
+  }
+
+  .wdnav__panelhq {
+    color: var(--wd-muted) !important;
+  }
+
+  .wdnav__panel .wdnav__panelcta {
+    margin-top: 14px;
+    background: var(--wd-peach);
+    font-weight: 800;
+    padding: 14px 20px;
+    border-radius: 999px;
+    border: 2px solid var(--wd-ink);
+    box-shadow: 3px 3px 0 var(--wd-ink);
+  }
+
+  @media (max-width: 760px) {
+    .wdnav__hq,
+    .wdnav__div,
+    .wdnav__sec,
+    .wdnav__brandsub,
+    .wdnav__cta {
+      display: none;
+    }
+
+    .wdnav__burger {
+      display: flex;
+    }
+  }
+
+  /* ---------------------------------------------------------------- hero -- */
+  .hero {
+    position: relative;
+    padding: 96px 24px 0;
+    overflow: hidden;
+  }
+
+  .hero__floatA,
+  .hero__floatB {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero__floatA {
+    top: -120px;
+    right: -140px;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, rgb(245 192 164 / 55%), rgb(245 192 164 / 0%) 65%);
+    animation: wd-float-a 9s ease-in-out infinite;
+  }
+
+  .hero__floatB {
+    bottom: -160px;
+    left: -120px;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgb(173 212 238 / 55%), rgb(173 212 238 / 0%) 65%);
+    animation: wd-float-b 11s ease-in-out infinite;
+  }
+
+  @keyframes wd-float-a {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+
+    50% {
+      transform: translate(30px, -24px);
+    }
+  }
+
+  @keyframes wd-float-b {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+
+    50% {
+      transform: translate(-26px, 20px);
+    }
+  }
+
+  .hero__spin {
+    top: 120px;
+    left: 56%;
+    font-size: 44px;
+    color: var(--wd-coral);
+    animation: wd-spin 14s linear infinite;
+    line-height: 1;
+  }
+
+  @keyframes wd-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .hero__dot1 {
+    top: 230px;
+    left: 8%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--wd-blue);
+  }
+
+  .hero__dot2 {
+    top: 80px;
+    left: 30%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--wd-gold);
+  }
+
+  .hero__dot3 {
+    bottom: 64px;
+    left: 22%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--wd-peach);
+  }
+
+  .hero__inner {
+    position: relative;
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  .hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .hero__badge {
+    background: var(--wd-peach);
+    border: 1.5px solid var(--wd-ink);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 999px;
+  }
+
+  .hero__badge--tilt {
+    background: var(--wd-butter);
+    transform: rotate(-1.5deg);
+  }
+
+  .hero__h1 {
+    margin: 0;
+    font-size: clamp(54px, 9vw, 142px);
+    line-height: 0.96;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .hero__line {
+    display: block;
+  }
+
+  .hero__word-wrap {
+    position: relative;
+    display: inline-block;
+    color: var(--wd-coral);
+    min-width: 4.6ch;
+  }
+
+  .hero__word {
+    display: inline-block;
+  }
+
+  @keyframes wd-in-a {
+    from {
+      opacity: 0;
+      transform: translateY(0.5em) rotate(2deg);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+
+  @keyframes wd-in-b {
+    from {
+      opacity: 0;
+      transform: translateY(0.5em) rotate(-2deg);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+
+  .hero__underline {
+    position: absolute;
+    left: 0;
+    bottom: -0.1em;
+    width: 100%;
+    height: 0.2em;
+    overflow: visible;
+  }
+
+  .hero__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 44px;
+  }
+
+  .hero__lede {
+    margin: 0;
+    max-width: 540px;
+    font-size: clamp(19px, 2vw, 23px);
+    line-height: 1.5;
+    color: var(--wd-muted);
+  }
+
+  .hero__ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .hero__scribble {
+    font-family: var(--wd-hand);
+    font-size: 26px;
+    color: var(--wd-scribble);
+    transform: rotate(-3deg);
+  }
+
+  .hero__buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .hero__platforms {
+    margin: 56px 0 0;
+    padding: 20px 0 28px;
+    border-top: 1.5px solid #d9cdb8;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--wd-faint);
+  }
+
+  .hero__ast {
+    color: var(--wd-coral);
+  }
+
+  /* ----------------------------------------------------------------- who -- */
+  .who {
+    background: var(--wd-peach);
+    border-top: 2px solid var(--wd-ink);
+    border-bottom: 2px solid var(--wd-ink);
+    padding: 100px 24px;
+  }
+
+  .who__title {
+    margin: 0 0 48px;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    max-width: 820px;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--wd-card);
+    text-wrap: balance;
+  }
+
+  .who__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .flip {
+    perspective: 1000px;
+    cursor: pointer;
+    min-height: 330px;
+    transform: rotate(var(--tilt, 0deg));
+    border: 0;
+    background: none;
+    padding: 0;
+    text-align: left;
+    font-family: inherit;
+    transition: transform 0.25s ease;
+  }
+
+  .flip:hover {
+    transform: rotate(0deg) translateY(-5px);
+  }
+
+  .flip__inner {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 330px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.3, 1);
+  }
+
+  .flip[aria-pressed='true'] .flip__inner {
+    transform: rotateY(180deg);
+  }
+
+  .flip__front,
+  .flip__back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    background: var(--wd-card);
+    border: 2px solid var(--wd-ink);
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: 5px 5px 0 var(--wd-ink);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .flip__back {
+    transform: rotateY(180deg);
+  }
+
+  .flip__title {
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .flip__copy {
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .flip__hint {
+    margin-top: auto;
+    font-family: var(--wd-hand);
+    font-size: 21px;
+    transform: rotate(-1deg);
+  }
+
+  .flip__backcopy {
+    font-size: 15.5px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  .flip__backhint {
+    margin-top: auto;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ------------------------------------------------------------ ctaboxes -- */
+  .disc {
+    padding: 90px 24px 0;
+  }
+
+  .ctabox {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 48px;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px dashed var(--wd-ink);
+    border-radius: 28px;
+    background: var(--wd-card);
+    padding: 44px 40px;
+  }
+
+  .ctabox--solid {
+    border-style: solid;
+    background: var(--wd-bright);
+    box-shadow: 8px 8px 0 var(--wd-ink);
+    padding: 56px 40px;
+  }
+
+  .ctabox__badge {
+    position: absolute;
+    top: -16px;
+    right: 52px;
+    background: var(--wd-blue);
+    border: 1.5px solid var(--wd-ink);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 999px;
+    transform: rotate(2deg);
+  }
+
+  .ctabox__text {
+    max-width: 600px;
+  }
+
+  .ctabox__title {
+    margin: 0 0 10px;
+    font-size: clamp(28px, 3.6vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .ctabox__body {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--wd-muted);
+  }
+
+  .midcta-wrap {
+    padding: 0 24px;
+  }
+
+  .midcta {
+    margin-bottom: 110px;
+  }
+
+  .midcta__star1 {
+    top: -14px;
+    left: 48px;
+    font-size: 30px;
+    color: var(--wd-coral);
+    text-shadow: 1.5px 1.5px 0 var(--wd-ink);
+    transform: rotate(-12deg);
+  }
+
+  .midcta__star2 {
+    bottom: -12px;
+    right: 64px;
+    font-size: 24px;
+    color: #2f9bdb;
+    text-shadow: 1px 1px 0 var(--wd-ink);
+    transform: rotate(15deg);
+  }
+
+  /* --------------------------------------------------------------- ladder -- */
+  .ladder {
+    position: relative;
+    padding: 110px 24px;
+    overflow: hidden;
+  }
+
+  .ladder__dot1 {
+    top: 70px;
+    right: 8%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--wd-peach);
+  }
+
+  .ladder__dot2 {
+    bottom: 120px;
+    left: 5%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--wd-blue);
+  }
+
+  .ladder__sub {
+    margin: 0 0 44px;
+    font-size: 19px;
+    max-width: 560px;
+    line-height: 1.5;
+  }
+
+  .ladder__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .rung {
+    background: var(--wd-bright);
+    border: 2.5px solid var(--wd-ink);
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 8px 8px 0 var(--rung, var(--wd-peach));
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .rung:hover {
+    transform: translate(-4px, -7px) rotate(-0.6deg);
+    box-shadow: 14px 16px 0 var(--rung, var(--wd-peach));
+  }
+
+  .rung__num {
+    margin: 0;
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .rung__title {
+    margin: 14px 0 8px;
+    font-size: 28px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .rung__body {
+    margin: 0 0 14px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .rung__price {
+    margin: 0;
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .rung__scribble {
+    margin: 8px 0 0;
+    font-family: var(--wd-hand);
+    font-size: 22px;
+    color: var(--wd-bluelink);
+    transform: rotate(-1.5deg);
+  }
+
+  .ladder__note {
+    margin: 32px 0 0;
+    font-size: 16px;
+    max-width: 640px;
+    line-height: 1.55;
+  }
+
+  /* ----------------------------------------------------------------- fork -- */
+  .fork {
+    background: var(--wd-blueband);
+    border-top: 2px solid var(--wd-ink);
+    border-bottom: 2px solid var(--wd-ink);
+    padding: 110px 24px;
+  }
+
+  .fork__title {
+    margin: 0 0 48px;
+    font-size: clamp(36px, 5.6vw, 72px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    max-width: 900px;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--wd-card);
+    text-wrap: balance;
+  }
+
+  .fork__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .forkcard {
+    background: var(--wd-card);
+    border: 2px solid var(--wd-ink);
+    border-radius: 24px;
+    padding: 34px;
+    transform: rotate(var(--tilt, 0deg));
+    box-shadow: 6px 6px 0 var(--wd-ink);
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .forkcard:hover {
+    transform: rotate(0deg) translate(-4px, -6px);
+    box-shadow: 12px 14px 0 var(--forkshadow, var(--wd-peach));
+  }
+
+  .forkcard__chip {
+    display: inline-block;
+    border: 1.5px solid var(--wd-ink);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 999px;
+    margin: 0 0 18px;
+  }
+
+  .forkcard__title {
+    margin: 0 0 12px;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.05;
+  }
+
+  .forkcard__body {
+    margin: 0 0 14px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--wd-muted);
+  }
+
+  .forkcard__price {
+    margin: 4px 0 0;
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .fork__note {
+    margin: 36px auto 0;
+    max-width: 760px;
+    font-size: 18px;
+    line-height: 1.55;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* -------------------------------------------------------------- pricing -- */
+  .pricing {
+    padding: 110px 24px;
+  }
+
+  .pricing__sub {
+    margin: 0 0 26px;
+    font-size: 19px;
+    max-width: 620px;
+    line-height: 1.5;
+  }
+
+  .pricing__founding {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: var(--wd-butter);
+    border: 2px solid var(--wd-ink);
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 36px;
+    font-size: 16px;
+  }
+
+  .pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 22px;
+    margin-bottom: 22px;
+  }
+
+  .pricecard {
+    background: var(--wd-bright);
+    border: 2.5px solid var(--wd-ink);
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 6px 6px 0 var(--wd-ink);
+  }
+
+  .pricecard__head {
+    border-bottom: 2px solid var(--wd-ink);
+    padding: 22px 28px;
+  }
+
+  .pricecard__head h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .pricecard__head p {
+    margin: 6px 0 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .pricecard__body {
+    padding: 8px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .pricerow {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1.5px solid #e4dcc9;
+  }
+
+  .pricerow--last {
+    border-bottom: 0;
+  }
+
+  .pricerow strong {
+    font-size: 18px;
+  }
+
+  .pricerow p {
+    margin: 4px 0 0;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: #6b6555;
+  }
+
+  .pricerow__rec {
+    background: var(--wd-butter);
+    border: 1px solid var(--wd-ink);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-left: 6px;
+  }
+
+  .pricerow__price {
+    text-align: right;
+    flex: none;
+  }
+
+  .pricerow__price strong {
+    font-size: 22px;
+  }
+
+  .pricerow__was {
+    display: block;
+    font-size: 13px;
+    color: #8a8672;
+    text-decoration: line-through;
+  }
+
+  .pricecard__foot {
+    margin: auto 0 0;
+    padding-top: 12px;
+    border-top: 1.5px solid #e4dcc9;
+    font-size: 13.5px;
+    color: #6b6555;
+    line-height: 1.5;
+  }
+
+  .pricing__extras {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .extra {
+    background: var(--wd-bright);
+    border: 2px dashed var(--wd-ink);
+    border-radius: 20px;
+    padding: 24px 28px;
+  }
+
+  .extra h4 {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 800;
+  }
+
+  .extra p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .pricing__fine {
+    margin: 0;
+    font-size: 14px;
+    color: #6b6555;
+    line-height: 1.6;
+    max-width: 820px;
+  }
+
+  /* ----------------------------------------------------------------- work -- */
+  .work {
+    background: var(--wd-peach);
+    border-top: 2px solid var(--wd-ink);
+    border-bottom: 2px solid var(--wd-ink);
+    padding: 110px 24px;
+  }
+
+  .work__title {
+    margin: 0 0 48px;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--wd-card);
+  }
+
+  .work__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr));
+    gap: 30px;
+  }
+
+  .workpiece {
+    position: relative;
+    background: var(--wd-card);
+    border: 2px solid var(--wd-ink);
+    border-radius: 22px;
+    padding: 18px 18px 26px;
+    transform: rotate(var(--tilt, 0deg));
+    display: flex;
+    flex-direction: column;
+    box-shadow: 6px 6px 0 var(--wd-ink);
+    transition: transform 0.25s ease;
+  }
+
+  .workpiece:hover {
+    transform: rotate(0deg) translateY(-4px);
+  }
+
+  .workpiece__tape {
+    position: absolute;
+    top: -13px;
+    left: 34px;
+    min-width: 92px;
+    height: 28px;
+    padding: 0 12px;
+    border: 1.5px solid var(--wd-ink);
+    transform: rotate(-4deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--wd-hand);
+    font-size: 19px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .workpiece__img {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #e4dcc9;
+    border: 1.5px solid var(--wd-ink);
+    height: 290px;
+  }
+
+  .workpiece__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+
+  .workpiece__name {
+    margin: 20px 0 2px;
+    font-size: 26px;
+    font-weight: 800;
+  }
+
+  .workpiece__tag {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--wd-faint);
+  }
+
+  .workpiece__blurb {
+    margin: 0 0 12px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .workpiece__stat {
+    margin: 0 0 16px;
+    font-family: var(--wd-hand);
+    font-size: 23px;
+    color: var(--wd-bluelink);
+  }
+
+  .workpiece__link {
+    margin-top: auto;
+    align-self: flex-start;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--wd-ink);
+    border-bottom: 3px solid var(--wd-gold);
+  }
+
+  .workpiece__link:hover,
+  .workpiece__link:focus-visible {
+    color: var(--wd-ink);
+    border-bottom-color: var(--wd-bluelink);
+  }
+
+  .work__note {
+    margin: 40px 0 0;
+    font-size: 16px;
+    max-width: 640px;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  /* -------------------------------------------------------------- awkward -- */
+  .awkward {
+    position: relative;
+    padding: 110px 24px;
+    overflow: hidden;
+  }
+
+  .awkward__dot1 {
+    top: 90px;
+    right: 10%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--wd-butter);
+  }
+
+  .awkward__dot2 {
+    bottom: 100px;
+    left: 7%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--wd-peach);
+  }
+
+  .awkward__inner {
+    position: relative;
+    max-width: 900px;
+    margin-inline: auto;
+  }
+
+  .awkward__title {
+    margin: 0 0 28px;
+    font-family: var(--wd-hand);
+    font-size: clamp(44px, 7vw, 84px);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--wd-scribble);
+    transform: rotate(-1.2deg);
+  }
+
+  .awkward__inner > p {
+    margin: 0 0 18px;
+    font-size: 20px;
+    line-height: 1.6;
+    color: #3e3a2f;
+  }
+
+  .awkward__punch {
+    display: inline-block;
+    background: var(--wd-butter);
+    border: 2px solid var(--wd-ink);
+    color: var(--wd-ink) !important;
+    font-size: clamp(20px, 2.6vw, 28px) !important;
+    font-weight: 800;
+    line-height: 1.35 !important;
+    padding: 16px 24px;
+    border-radius: 14px;
+    transform: rotate(-0.8deg);
+    box-shadow: 5px 5px 0 var(--wd-ink);
+    margin-top: 10px !important;
+  }
+
+  /* ------------------------------------------------------------ ownership -- */
+  .own {
+    background: var(--wd-blueband);
+    border-top: 2px solid var(--wd-ink);
+    border-bottom: 2px solid var(--wd-ink);
+    padding: 96px 24px;
+  }
+
+  .own__title {
+    margin: 0 0 44px;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--wd-card);
+  }
+
+  .own__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .owncard {
+    background: var(--wd-card);
+    border: 2px solid var(--wd-ink);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 5px 5px 0 var(--wd-ink);
+  }
+
+  .owncard h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .owncard p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  /* ------------------------------------------------------------------ faq -- */
+  .faq {
+    padding: 110px 24px;
+  }
+
+  .faq__inner {
+    max-width: 820px;
+    margin-inline: auto;
+  }
+
+  .faq__list {
+    border-top: 2px solid var(--wd-ink);
+    margin-top: 40px;
+  }
+
+  .faq__item {
+    border-bottom: 2px solid var(--wd-ink);
+  }
+
+  .faq__q {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 4px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq__q::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__icon {
+    flex: none;
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--wd-scribble);
+    transition: transform 0.25s ease;
+  }
+
+  .faq__item[open] .faq__icon {
+    transform: rotate(45deg);
+  }
+
+  .faq__a {
+    padding: 0 4px 22px;
+    font-size: 16.5px;
+    line-height: 1.65;
+    max-width: 700px;
+    white-space: pre-line;
+  }
+
+  /* ---------------------------------------------------------------- start -- */
+  .start {
+    background: var(--wd-butter);
+    border-top: 2px solid var(--wd-ink);
+    padding: 110px 24px 100px;
+  }
+
+  .start__inner {
+    max-width: 1080px;
+    margin-inline: auto;
+  }
+
+  .start__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 48px;
+    align-items: start;
+  }
+
+  .start__title {
+    margin: 0 0 20px;
+    font-size: clamp(44px, 6.5vw, 88px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    text-transform: uppercase;
+  }
+
+  .start__lede {
+    margin: 0 0 12px;
+    font-size: 19px;
+    line-height: 1.55;
+    font-weight: 500;
+    max-width: 440px;
+  }
+
+  .start__scribble {
+    font-size: 26px;
+    transform: rotate(-1deg);
+    margin-bottom: 14px;
+  }
+
+  .start__routes {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 400px;
+  }
+
+  .startroute {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--wd-bright);
+    border: 2px solid var(--wd-ink);
+    border-radius: 16px;
+    padding: 16px 20px;
+    color: var(--wd-ink);
+    box-shadow: 4px 4px 0 var(--wd-ink);
+    transform: rotate(var(--tilt, 0deg));
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .startroute:hover,
+  .startroute:focus-visible {
+    transform: rotate(0deg) translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--wd-ink);
+    background: var(--wd-card);
+    color: var(--wd-ink);
+  }
+
+  .startroute__icon {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid var(--wd-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .startroute__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .startroute__label {
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--wd-faint);
+  }
+
+  .startroute__value {
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .start__real {
+    margin: 2px 0 0;
+    font-size: 13.5px;
+    color: var(--wd-muted);
+    line-height: 1.5;
+  }
+
+  .startform {
+    background: var(--wd-bright);
+    border: 2.5px solid var(--wd-ink);
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: 10px 10px 0 var(--wd-ink);
+  }
+
+  .startform__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .startform__field input,
+  .startform__field select,
+  .startform__field textarea {
+    border: 2px solid var(--wd-ink);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-family: var(--wd-font);
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    background: #fff;
+    color: var(--wd-ink);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .startform__field textarea {
+    resize: vertical;
+  }
+
+  .startform__honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .startform__submit {
+    margin-top: 4px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .startform__status:empty {
+    display: none;
+  }
+
+  .startform__status {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .startform__status[data-state='error'] {
+    color: var(--wd-coral-deep);
+  }
+
+  .startform__note {
+    margin: 0;
+    font-size: 13px;
+    color: #6b6555;
+    line-height: 1.5;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  /* --------------------------------------------------------------- footer -- */
+  .wdfoot {
+    background: var(--wd-ink);
+    color: #a39c88;
+    padding: 40px 24px;
+  }
+
+  .wdfoot__inner {
+    max-width: 1180px;
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .wdfoot__scribble {
+    font-family: var(--wd-hand);
+    font-size: 20px;
+    color: var(--wd-gold);
+    transform: rotate(-1deg);
+  }
+
+  .wdfoot__links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .wdfoot__links a {
+    color: var(--wd-paper);
+  }
+
+  .wdfoot__links a:hover,
+  .wdfoot__links a:focus-visible {
+    color: var(--wd-butter);
+  }
+
+  /* ----------------------------------------------------------- responsive -- */
+  @media (max-width: 1060px) {
+    .who__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .deco {
+      display: none;
+    }
+
+    .hero {
+      padding: 56px 18px 0;
+    }
+
+    .hero__h1 {
+      font-size: clamp(32px, 9.6vw, 142px);
+    }
+
+    .hero__platforms {
+      justify-content: center;
+      text-align: center;
+      gap: 8px 12px;
+      font-size: 12.5px;
+      letter-spacing: 0.07em;
+      margin-top: 40px;
+      padding-bottom: 24px;
+    }
+
+    .who,
+    .ladder,
+    .fork,
+    .pricing,
+    .work,
+    .awkward,
+    .own,
+    .faq {
+      padding-left: 18px;
+      padding-right: 18px;
+      padding-top: 66px;
+      padding-bottom: 66px;
+    }
+
+    .disc {
+      padding: 62px 18px 0;
+    }
+
+    .start {
+      padding: 70px 18px 74px;
+    }
+
+    .start__title {
+      font-size: clamp(34px, 9vw, 88px);
+    }
+
+    .ctabox {
+      padding: 30px 20px;
+    }
+
+    .midcta {
+      margin-bottom: 72px;
+    }
+
+    .ctabox__badge {
+      right: 14px;
+    }
+
+    .workpiece__img {
+      height: 200px;
+    }
+
+    .pricecard__head {
+      padding: 18px;
+    }
+
+    .pricecard__body {
+      padding: 6px 18px 18px;
+    }
+
+    .pricerow {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .pricerow__price {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .who__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wd :global(*) {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>

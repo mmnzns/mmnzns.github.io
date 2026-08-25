@@ -26,14 +26,16 @@ Run from the repo root. The `&` in this repo's absolute path breaks `npm run` on
 so invoke Astro directly.
 
 ```bash
-D="../MAIN WEBSITE FILES/mnmonzones v7"                    # plain export, or:
-D="../MAIN WEBSITE FILES/mnmonzones v7/Website standalone" # standalone export
-node scripts/gen-cases.mjs      "$D/Monzones-D-Case.dc.html"
-node scripts/gen-home.mjs       "$D/Monzones-D-Paper.dc.html"
-node scripts/gen-consulting.mjs "$D/Monzones-D-Consulting.dc.html"
-node scripts/gen-about.mjs      "$D/Monzones-D-About.dc.html"
-node scripts/sync-projects.mjs  "$D/Monzones-D-Work.dc.html"          # report only
-node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work.dc.html"     # then apply
+# v8 lives in "Website - Main Site/" and suffixes every page with -Bold;
+# earlier rounds lived in "MAIN WEBSITE FILES/" without the suffix. The
+# scripts take paths, so only these variables change between rounds.
+D="../Website - Main Site/mnmonzones v8"
+node scripts/gen-cases.mjs      "$D/Monzones-D-Case-Bold.dc.html"
+node scripts/gen-home.mjs       "$D/Monzones-D-Bold.dc.html"
+node scripts/gen-consulting.mjs "$D/Monzones-D-Consulting-Bold.dc.html"
+node scripts/gen-about.mjs      "$D/Monzones-D-About-Bold.dc.html"
+node scripts/sync-projects.mjs  "$D/Monzones-D-Work-Bold.dc.html"          # report only
+node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work-Bold.dc.html"     # then apply
 ```
 
 1. **Read the export's own `CLAUDE.md`** if it ships one (v6 did, v7 didn't) — it carries
@@ -50,7 +52,7 @@ node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work.dc.html"     # then app
 ```bash
 node ./node_modules/astro/bin/astro.mjs check
 node ./node_modules/astro/bin/astro.mjs build
-node scripts/check-copy.mjs "../MAIN WEBSITE FILES/mnmonzones v7" dist
+node scripts/check-copy.mjs "../Website - Main Site/mnmonzones v8" dist
 ```
 
 5. Browser sanity pass (the dev server, or `dist/` served locally): home shelf tabs, the
@@ -110,12 +112,16 @@ One-off prose living in templates. Check these by eye against the design (and tr
 
 ## Verification baseline
 
-`check-copy.mjs` currently reports **2 missing** on a clean port, both intentional:
+`check-copy.mjs` currently reports **3 missing** on a clean port (v8), all intentional:
 
 1. The Case page's "case not found" fallback — unreachable here, because a project
    without a case body fails the build instead of rendering an empty page.
-2. "Your SEO content already works. Make AI see it too." — a design-side article title
-   the repo's content collection words slightly differently.
+2. "… Twelve pieces so far." on the 404 — the count is computed from the collection
+   (and was already thirteen by the time v8 shipped), so the sentence renders with
+   the live number instead of the design's stale one.
+3. "Opens as an email from your own address …" on the Web Design page — its form was
+   redesigned to POST to Formspree like every other form on the site instead of
+   assembling a mailto: link, so the line under the button says that instead.
 
 More than the expected leftovers means something didn't land — find it before shipping.
 If a leftover turns out to be intentional, update this list in the same commit.

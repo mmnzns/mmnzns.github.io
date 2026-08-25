@@ -1,5 +1,6 @@
 ---
 title: "Your Buyer's Brain Has Changed: Why SEO Now Means 'Solution Engine Optimization'"
+shortTitle: "Your buyer's brain has changed"
 date: 2025-10-08
 tag: "Search"
 excerpt: "AI answer engines are replacing search clicks. How B2B teams redesign sites for AEO and GEO using authority, problem-led content, and conversion-first architecture."

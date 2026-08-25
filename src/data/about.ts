@@ -105,6 +105,68 @@ export const TO_WORK_WITH = [
  * it has to change in both places, or a recruiter reading a case page and a
  * recruiter reading this list see two different job titles.
  */
+/**
+ * The skills grid: eight groups, each with a one-line summary and the tools
+ * behind it. Accents reuse the site's category tokens.
+ */
+export const SKILLS = [
+  {
+    name: 'Lifecycle marketing & CRM',
+    accent: 'var(--coral)',
+    skills:
+      'Journey design, segmentation, activation, retention, reactivation, email/SMS/push strategy, deliverability governance, lead scoring.',
+    tools: ['Braze', 'Salesforce Marketing Cloud', 'HubSpot', 'Marketo', 'Klaviyo', 'Iterable', 'Intercom', 'ActiveCampaign', 'Campaign Monitor', 'Mailchimp', 'Omnisend', 'SendGrid'],
+  },
+  {
+    name: 'AI & automation',
+    accent: 'var(--moss)',
+    skills:
+      'AI workflow design, enrichment pipelines, intelligent routing, agent-based workflows, deterministic and generative hybrid design, validation and safeguards.',
+    tools: ['n8n', 'Zapier', 'Make', 'LindyAI', 'Clay', 'OpenAI API', 'Claude', 'Gemini', 'Gumloop', 'Voiceflow'],
+  },
+  {
+    name: 'Analytics & experimentation',
+    accent: 'var(--sky)',
+    skills:
+      'Tracking architecture, tagging, attribution modelling, funnel diagnostics, experiment design, reporting.',
+    tools: ['GA4', 'Google Tag Manager', 'Looker Studio', 'Amplitude', 'Mixpanel', 'Branch Metrics', 'Snowflake', 'BigQuery', 'VWO', 'Optimizely', 'Hotjar'],
+  },
+  {
+    name: 'Web, UX & CRO',
+    accent: 'var(--sun)',
+    skills:
+      'Web strategy, information architecture, conversion optimisation, landing-page and funnel systems, web ownership and governance.',
+    tools: ['Webflow', 'WordPress', 'Shopify', 'Figma', 'Instapage', 'Unbounce', 'Squarespace', 'Mouseflow'],
+  },
+  {
+    name: 'SEO, AEO & GEO',
+    accent: 'var(--sky)',
+    skills:
+      'Technical SEO, schema markup, Core Web Vitals, answer- and generative-engine optimisation, entity and knowledge-graph work, internal linking.',
+    tools: ['Semrush', 'Ahrefs', 'Moz', 'Google Search Console', 'SurferSEO', 'Schema.org', 'PageSpeed Insights'],
+  },
+  {
+    name: 'Data & scripting',
+    accent: 'var(--coral)',
+    skills: 'SQL querying, data modelling basics, data hygiene, ETL logic, measurement frameworks.',
+    tools: ['SQL', 'Snowflake', 'BigQuery', 'Python (pandas)', 'Segment', 'Hightouch', 'Airtable'],
+  },
+  {
+    name: 'Marketing ops & delivery',
+    accent: 'var(--moss)',
+    skills:
+      'PM systems, Agile/Scrum/Kanban, sprint planning, process design, cross-functional alignment, documentation governance, RACI models.',
+    tools: ['ClickUp', 'Jira', 'Asana', 'Wrike', 'Monday.com', 'Notion', 'Confluence', 'Trello', 'Airtable'],
+  },
+  {
+    name: 'Acquisition & creative',
+    accent: 'var(--sun)',
+    skills:
+      'Campaign performance and UTM governance, content production oversight, copywriting, visual direction, template systems.',
+    tools: ['Google Ads', 'Meta Business Suite', 'LinkedIn Ads', 'Canva', 'Figma', 'Photoshop', 'Illustrator', 'Hootsuite', 'Buffer', 'Sprout Social'],
+  },
+] as const;
+
 export const ROLES = [
   {
     org: 'Mogo',

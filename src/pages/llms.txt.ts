@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
-import { SITE, CONTACT, NAV_LINKS } from '../config';
+import { SITE, CONTACT, NAV_LINKS, NAV_SERVICES } from '../config';
 import { PROJECTS } from '../data/site';
 
 /**
@@ -39,7 +39,7 @@ export async function GET(context: APIContext) {
     '',
     '## Pages',
     '',
-    ...NAV_LINKS.map((link) => `- [${link.label}](${url(link.href)})`),
+    ...[...NAV_LINKS, ...NAV_SERVICES].map((link) => `- [${link.label}](${url(link.href)})`),
     '',
     '## Work',
     '',

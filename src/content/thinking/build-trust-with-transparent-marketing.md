@@ -1,5 +1,6 @@
 ---
 title: "SaaS Success: This is How You Can Build Trust with Transparent Marketing"
+shortTitle: "Building trust with transparent marketing"
 date: 2024-05-01
 tag: "Positioning"
 excerpt: "Why transparent marketing matters in SaaS and how clarity can strengthen customer trust — including the dark patterns that quietly erode it."

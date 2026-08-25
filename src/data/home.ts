@@ -104,7 +104,7 @@ export const FEATURED_CASES: readonly FeaturedCase[] = [
     slug: 'lead-enrichment',
     client: 'DTC Newsletter / Pilothouse · AI Automation',
     title: 'From newsletter signup to sales-ready lead',
-    category: 'AI Automation',
+    category: 'AI & Automation',
     brief: [
       'The CFO wanted to automatically enrich people who signed up for DTC Newsletter. At the time, signups were reaching HubSpot as raw contact records, leaving Sales to research and qualify each one manually.',
     ],

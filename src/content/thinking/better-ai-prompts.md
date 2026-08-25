@@ -1,5 +1,6 @@
 ---
 title: "How to Write Better AI Prompts: A Simple Framework for Powerful Results"
+shortTitle: "How to write better AI prompts: a simple framework"
 date: 2025-09-08
 tag: "AI & automation"
 excerpt: "Getting mediocre ChatGPT outputs? Learn the T-C-R-E-I prompt framework and iteration tactics to turn vague prompts into professional results across writing, images, and responsible AI use."

@@ -1,55 +1,118 @@
 ---
 import { CONTACT } from '../config';
+
+/**
+ * The dark "Tell me what you're working on." band that closes the work index
+ * and every case page. On the index it runs full-bleed; on a case page it sits
+ * as a panel inside the wrap — same content either way.
+ */
+
+interface Props {
+  /** `band` is full-bleed (work index); `panel` is an inset block (cases). */
+  variant?: 'band' | 'panel';
+}
+
+const { variant = 'band' } = Astro.props;
 ---
 
-<section class="section wrap" id="contact">
-  <div class="band-panel">
-    <div>
-      <h2 class="band-panel__title">Tell me what you’re working on.</h2>
-      <p class="band-panel__body">
-        If you’re working through a customer journey, system, or operational problem and think my
-        experience might help, I’d like to hear about it.
-      </p>
-    </div>
+{
+  variant === 'band' ? (
+    <section class="cband" id="contact">
+      <div class="wrap cband__grid">
+        <div>
+          <h2 class="cband__title">Tell me what you’re working on.</h2>
+          <p class="cband__body">
+            If you’re working through a customer journey, system, or operational problem and think
+            my experience might help, I’d like to hear about it.
+          </p>
+        </div>
 
-    <div class="band-panel__actions">
-      {/*
-        This band states availability as a sentence rather than reusing
-        SITE.availability, which is the short status-line form used beside the
-        green dot on the contact panels.
-      */}
-      <p class="band-panel__avail">
-        Consulting on lifecycle, conversion, and automation—and open to the right senior role.
-      </p>
-      <div class="band-panel__buttons">
-        <a class="btn btn--on-dark" href={CONTACT.linkedin} target="_blank" rel="noopener">
-          LinkedIn
-        </a>
-        <a class="btn btn--outline-dark" href={`mailto:${CONTACT.email}`}>Email</a>
+        <div class="cband__actions">
+          {/*
+            This band states availability as a sentence rather than reusing
+            SITE.availability, which is the short status-line form used beside
+            the green dot on the contact panels.
+          */}
+          <p class="cband__avail">
+            Consulting on lifecycle, conversion, and automation—and open to the right senior role.
+          </p>
+          <div class="cband__buttons">
+            <a class="cband__primary" href={CONTACT.linkedin} target="_blank" rel="noopener">
+              LinkedIn
+            </a>
+            <a class="btn btn--outline-dark" href={`mailto:${CONTACT.email}`}>Email</a>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
+  ) : (
+    <section class="section wrap" id="contact">
+      <div class="cband cband--panel">
+        <div class="cband__grid">
+          <div>
+            <h2 class="cband__title">Tell me what you’re working on.</h2>
+            <p class="cband__body">
+              If you’re working through a customer journey, system, or operational problem and
+              think my experience might help, I’d like to hear about it.
+            </p>
+          </div>
+
+          <div class="cband__actions">
+            <p class="cband__avail">
+              Consulting on lifecycle, conversion, and automation—and open to the right senior
+              role.
+            </p>
+            <div class="cband__buttons">
+              <a class="btn btn--on-dark" href={CONTACT.linkedin} target="_blank" rel="noopener">
+                LinkedIn
+              </a>
+              <a class="btn btn--outline-dark" href={`mailto:${CONTACT.email}`}>Email</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 <style>
-  .band-panel {
+  .cband {
+    margin-top: clamp(75px, 13.4vw, 150px);
     background: var(--dark);
     color: var(--on-dark);
-    border-radius: var(--radius-lg);
-    padding: clamp(40px, 6vw, 78px);
+    padding: clamp(66px, 8.4vw, 116px) var(--gutter);
+  }
+
+  .cband--panel {
+    margin-top: 0;
+    padding: clamp(44px, 6vw, 78px);
+  }
+
+  section.section {
+    padding-top: clamp(60px, 8vw, 80px);
+  }
+
+  .cband__grid {
+    max-width: var(--wrap);
+    margin-inline: auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 44px;
     align-items: end;
   }
 
-  .band-panel__title {
-    font-size: clamp(30px, 4vw, 50px);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+  .cband--panel .cband__grid {
+    max-width: none;
   }
 
-  .band-panel__body {
+  .cband__title {
+    font-size: clamp(37px, 5.7vw, 81px);
+    line-height: 0.95;
+    letter-spacing: -0.034em;
+    color: var(--on-dark);
+  }
+
+  .cband__body {
     margin-top: 20px;
     max-width: 440px;
     font-size: 17px;
@@ -57,20 +120,55 @@ import { CONTACT } from '../config';
     color: var(--on-dark-2);
   }
 
-  .band-panel__actions {
+  .cband__actions {
     display: flex;
     flex-direction: column;
     gap: 18px;
   }
 
-  .band-panel__avail {
+  .cband__avail {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--on-dark-2);
+  }
+
+  .cband--panel .cband__avail {
     font-size: 14px;
+    font-weight: 400;
+    letter-spacing: normal;
     color: var(--on-dark-3);
   }
 
-  .band-panel__buttons {
+  .cband__buttons {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+  }
+
+  /* The index band's coral LinkedIn button lifts against a paper shadow. */
+  .cband__primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px 24px;
+    background: var(--coral);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 5px 5px 0 var(--on-dark);
+    transition:
+      background var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+  }
+
+  .cband__primary:hover,
+  .cband__primary:focus-visible {
+    background: var(--sun);
+    color: var(--ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--on-dark);
   }
 </style>

@@ -27,19 +27,32 @@ beyond that.
 ## Conventions
 
 - **Site metadata lives in `src/config.ts`.** Title, description, nav, contact details and
-  the Formspree endpoint are read from there. Don't hardcode them in pages or components —
-  the footer builds its links from `NAV_LINKS` and `CONTACT`.
+  the Formspree endpoint are read from there. Don't hardcode them in pages or components.
+  The nav is split on purpose: `NAV_LINKS` is the plain site links, `NAV_SERVICES` is the
+  boxed Consulting/Web Design pair in the header, and llms.txt lists both.
 - **`BaseLayout.astro` owns `<head>`.** Pages pass `title` and `description` as props rather
   than writing their own meta tags. Canonical URL, Open Graph, Twitter tags and the Person
   JSON-LD are derived.
 - **Styling is plain CSS with tokens** in `src/styles/global.css` (`--paper`, `--ink`,
   `--coral`, …). When adding a colour, define a token rather than inlining a hex value.
-  The design is **light only** — there is deliberately no `prefers-color-scheme: dark`
-  block, because a paper palette inverted is a different design rather than the same one
-  at night. Don't add one piecemeal.
-- **Four accents, each bound to a category** — coral/lifecycle, sky/leadership, moss/AI,
-  sun/web. The mapping is declared once in `CATEGORY_ACCENT` (`src/data/site.ts`); read it
-  from there rather than picking a colour by eye.
+  The v8 "Bold" language is structural: 3px ink borders (`--border`), hard offset shadows
+  with no blur (`--shadow*`), no border radius, uppercase micro-labels, 700-weight display
+  type. A rounded corner or a soft blurred shadow is a regression to the old design, not a
+  refinement. The design is **light only** — there is deliberately no
+  `prefers-color-scheme: dark` block, because this palette inverted is a different design
+  rather than the same one at night. Don't add one piecemeal.
+- **The Web Design page (`src/pages/web-design.astro`) looks wrong on purpose.** Its own
+  palette, fonts (Bricolage Grotesque + Caveat, from Google Fonts) and rounded shapes are
+  the point — it separates the offer from the consulting brand while sharing the domain's
+  traffic. It opts out of the site chrome via BaseLayout's `standalone` flag and carries
+  its own nav, footer and motion. Don't "align" it with global.css, and don't move its
+  styles there. Its form POSTs to the same Formspree endpoint with a `service: web-design`
+  field so those leads are tellable apart in the inbox.
+- **Four accents, each bound to a category** — coral/Lifecycle, sky/Leadership &
+  Operations, moss/AI & Automation, sun/Web & Analytics. The mapping is declared once in
+  `CATEGORY_ACCENT` (`src/data/site.ts`); read it from there rather than picking a colour
+  by eye. The category strings themselves are display copy (they appear as the work
+  index's group headings), so renaming one is a design decision, not a refactor.
 - **A scoped rule beats a global one, so restate what it cancels.** Astro compiles component
   styles with an attribute selector, so `.thing { color }` inside a component scores higher
   than a bare `a:hover { color }` in global.css. Any component that sets its own link colour
@@ -48,6 +61,10 @@ beyond that.
   `hidden` attribute's own rule, which is why global.css forces `[hidden] { display: none }`.
   Both of these shipped broken. When a hover or a toggle "does nothing", check specificity
   before anything else.
+- **The mobile nav is inferred, not designed.** The v8 export's `Monzones-D-Nav-Bold`
+  component never shipped — below 900px the export simply has no navigation. SiteHeader's
+  toggle-and-panel is this repo's own accessible pattern restyled to match; if a future
+  export ships the real component, replace the panel's look with it.
 - **Components are `.astro` by default and no framework is installed.** Interactive pieces
   are progressively enhanced: every state is rendered server-side, and a small vanilla
   `<script>` toggles `aria-pressed` / `hidden`. Don't reach for React or a `client:*`
@@ -108,8 +125,12 @@ beyond that.
 - `src/data/home.ts`, `consulting.ts`, `about.ts` — page-specific copy, kept out of the
   templates so wording stays reviewable in one place.
 - `src/content/thinking/*.md` — articles. Frontmatter is `title`, `date`, `tag`, `excerpt`,
-  plus optional `featured` and `draft`; the schema in `src/content.config.ts` validates it
-  at build time. Reading time is computed from word count, never typed by hand.
+  plus optional `shortTitle`, `featured` and `draft`; the schema in `src/content.config.ts`
+  validates it at build time. `shortTitle` is the home page card's headline where the full
+  title would wrap into a wall — the article page and writing index always use `title`.
+  Since v8 the writing index's top slot is literally the **newest** post ("Latest"), so
+  `featured` is currently read by nothing; it stays in the schema in case a curated slot
+  returns. Reading time is computed from word count, never typed by hand.
 
 Contact forms POST to Formspree (`FORM_ENDPOINT` in `src/config.ts`). The plain HTML POST is
 the fallback; a script upgrades it to submit in place. Keep it working without JavaScript.

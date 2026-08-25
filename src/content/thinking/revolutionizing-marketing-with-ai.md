@@ -1,5 +1,6 @@
 ---
 title: "Revolutionizing Marketing with Artificial Intelligence"
+shortTitle: "Revolutionizing marketing with AI"
 date: 2023-11-14
 tag: "AI & automation"
 excerpt: "An early perspective on how AI supports personalization, predictive analytics, CRM, and marketing operations — and the ethical questions that come with it."

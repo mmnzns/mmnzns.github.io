@@ -1,5 +1,6 @@
 ---
 title: "Exploring the Top 10 Digital Marketing Trends for 2024 (Q1)"
+shortTitle: "Marketing trends for 2024"
 date: 2024-04-25
 tag: "Lifecycle"
 excerpt: "A Q1 2024 view of the trends shaping how businesses reach and serve customers, from AI and voice search to social commerce and data privacy."
