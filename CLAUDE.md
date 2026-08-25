@@ -7,6 +7,8 @@ Personal portfolio site — Astro 7 (static output) + TypeScript, deployed to Gi
 - `npm run dev` — dev server on port 4321
 - `npm run build` — static build into `dist/`
 - `npm run check` — Astro/TypeScript diagnostics; this is what CI gates on
+- `npm run og` — regenerate the link-preview cards; needed after adding an article.
+  Output is deterministic, so running it with nothing new leaves the tree clean
 
 **Porting a new design export: follow `docs/PORTING.md`.** It is the playbook — the
 script-per-file table, the recipe, the surfaces no script covers, and the verification
@@ -152,7 +154,7 @@ the fallback; a script upgrades it to submit in place. Keep it working without J
 - **Publishing an article requires one manual step.** The sitemap, both `llms` files and the
   RSS feed all read the `thinking` collection, so a new Markdown file appears in all of them
   by itself — if you find yourself hand-listing an article somewhere, that's a bug. The
-  exception is its link-preview card: run `node scripts/build-og-image.mjs` and commit
+  exception is its link-preview card: run `npm run og` and commit
   `public/og/<slug>.png`. The article template throws when a card is missing, so this cannot
   ship broken, but the build does stop until you run it.
 - **Every article has its own preview card, so don't point one at the site card.** The card
