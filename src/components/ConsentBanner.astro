@@ -302,10 +302,17 @@ import { CONSENT_STORAGE_KEY } from '../config';
     flex-wrap: wrap;
   }
 
+  /* The design's own numbers don't fit its own label: two `flex: 1` buttons
+     in a 432px card come out 180px wide, and "Accept analytics" needs 184 at
+     20px padding — so the line overflowed to the right and sat visibly
+     off-centre. 16px padding brings it inside while keeping the two buttons
+     equal, and max-content is the floor for anywhere the text renders wider
+     still (a fallback font, a phone-sized card): the button grows or the row
+     wraps rather than pushing the label off its axis. */
   .consent__btn {
     flex: 1;
-    min-width: 132px;
-    padding: 15px 20px;
+    min-width: max-content;
+    padding: 15px 16px;
     border: var(--border);
     font-size: 12px;
     font-weight: 700;
@@ -358,13 +365,19 @@ import { CONSENT_STORAGE_KEY } from '../config';
   }
 
   @media (max-width: 560px) {
+    /* Sized off the two gutters rather than 100vw: `100vw` counts a scrollbar
+       the card then hangs behind. The offset shadow is part of the card's
+       footprint too, so it drops to 6px — small enough to land inside the
+       10px gutter instead of bleeding off the screen. */
     .consent {
       left: 10px;
+      right: 10px;
       bottom: calc(10px + env(safe-area-inset-bottom));
-      width: calc(100vw - 20px);
+      width: auto;
       max-width: none;
+      box-shadow: var(--shadow-sm);
       padding: 22px 22px 20px;
-      max-height: calc(100vh - 20px);
+      max-height: calc(100dvh - 20px);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -377,6 +390,7 @@ import { CONSENT_STORAGE_KEY } from '../config';
       padding: 14px;
       min-width: max-content;
     }
+
   }
 
   @media (max-width: 380px) {
