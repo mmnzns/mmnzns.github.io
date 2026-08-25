@@ -1,0 +1,28 @@
+{
+  // Cloudflare's git integration runs `npx wrangler deploy` after the build.
+  // With no config file present, wrangler falls into auto-configuration: it
+  // detects Astro, answers its own prompts (the non-interactive fallback for
+  // "Proceed with setup?" is *yes*), runs `astro add cloudflare`, and rebuilds.
+  //
+  // That is what broke the first deploy. @astrojs/cloudflare is an SSR adapter,
+  // so the rebuild generated pages through a miniflare worker and died on
+  // `TypeError: Invalid URL string` — after the plain static build had already
+  // succeeded. This file exists mainly so that never happens again: wrangler
+  // skips auto-config entirely when a config is present.
+  //
+  // There is no `main`, and there must not be. Nothing here runs on a server;
+  // this deploys `dist/` as static assets and nothing else. The same constraint
+  // that rules out SSR on GitHub Pages still applies — see CLAUDE.md.
+  "name": "mmnzns-github-io",
+  "compatibility_date": "2026-08-25",
+  "assets": {
+    "directory": "./dist",
+    // Astro's `build.format: 'directory'` writes /about/index.html. The default
+    // "auto-trailing-slash" serves that for both /about and /about/, which keeps
+    // the trailing-slash URLs the canonical tags and sitemap already use.
+    "html_handling": "auto-trailing-slash",
+    // Without this a missing path returns a bare 404 with no page. The site has
+    // a real 404.html; serve it, still with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}

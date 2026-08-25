@@ -80,6 +80,14 @@ beyond that.
 - Output must stay fully static. GitHub Pages has no server runtime, so SSR adapters,
   API routes and on-demand rendering are not options.
 - `main` is the deploy branch: pushing to it publishes the live site.
+- **`wrangler.jsonc` must stay, even though nothing in it looks necessary.** Cloudflare's
+  git integration ends with `npx wrangler deploy`, and with no config file wrangler
+  auto-configures: it detects Astro, answers its own prompts (non-interactively,
+  "Proceed with setup?" defaults to *yes*), runs `astro add cloudflare` and rebuilds. The
+  adapter it installs is an SSR adapter, so the rebuild renders through miniflare and
+  fails — after the plain static build has already succeeded. Deleting the file as
+  redundant reintroduces that. It must never gain a `main` entry either; assets-only is
+  the point.
 
 ## Where content lives
 
