@@ -127,17 +127,34 @@
       // The hero doesn't wait for a scroll — its parts rise in sequence on load.
       if (!heroDone && index === 0 && aboveFold) {
         heroDone = true;
-        const parts = [...section.children].flatMap((child) => {
+        /* A row laid out as grid or flex is split into its children so they
+           arrive one after another. The stagger is capped, because six beats at
+           80ms already means 480ms before the last one starts moving.
+           
+           A row is only split if the whole of it fits inside what's left of that
+           cap. Splitting one across the boundary is what broke the work page:
+           its four category chips are a single flex row, the first three landed
+           inside the cap and the fourth fell outside, so "Leadership &
+           Operations" sat at full opacity from the start while its three
+           neighbours rose in beside it. A row arriving together is fine; half a
+           row arriving is a bug you can see. */
+        const MAX_PARTS = 6;
+        const parts: HTMLElement[] = [];
+
+        for (const child of [...section.children] as HTMLElement[]) {
+          if (parts.length >= MAX_PARTS) break;
           const display = getComputedStyle(child).display;
-          return child.children.length > 1 && (display === 'grid' || display === 'flex')
-            ? [...child.children]
-            : [child];
-        }) as HTMLElement[];
+          const row =
+            child.children.length > 1 && (display === 'grid' || display === 'flex')
+              ? ([...child.children] as HTMLElement[])
+              : [child];
+          parts.push(...(parts.length + row.length <= MAX_PARTS ? row : [child]));
+        }
 
         const arrive = armImage(section);
-        for (const part of parts.slice(0, 6)) hide(part, 15);
+        for (const part of parts) hide(part, 15);
         requestAnimationFrame(() => {
-          parts.slice(0, 6).forEach((part, i) => show(part, 720, 70 + i * 80));
+          parts.forEach((part, i) => show(part, 720, 70 + i * 80));
           arrive?.();
         });
         continue;
