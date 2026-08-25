@@ -369,9 +369,13 @@ import { CONSENT_STORAGE_KEY } from '../config';
       -webkit-overflow-scrolling: touch;
     }
 
+    /* `min-width: 0` here used to let flex shrink both buttons to an equal
+       half of the card — which cut "Accept analytics" to "Accept analytic"
+       on a 375px phone. max-content is the floor that can't happen below:
+       each button keeps its label, and the row wraps rather than clipping. */
     .consent__btn {
       padding: 14px;
-      min-width: 0;
+      min-width: max-content;
     }
   }
 
