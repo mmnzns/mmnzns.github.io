@@ -181,6 +181,14 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     background: var(--wd-paper);
     color: var(--wd-ink);
     font-family: var(--wd-font);
+    /* The export's body sets neither size nor leading, so it runs on the
+       browser defaults. Without this reset the section inherits global.css's
+       17px/1.65, which is why every line box here sat taller than the design —
+       the nav pill measured 45px against the export's 41px, and the same drift
+       ran through anything that doesn't declare its own line-height. Both
+       `.wd` blocks must carry this. */
+    font-size: 16px;
+    line-height: normal;
     overflow-x: clip;
   }
 

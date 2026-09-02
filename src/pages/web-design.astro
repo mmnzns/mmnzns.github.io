@@ -1016,6 +1016,14 @@ const BUDGETS = [
     background: var(--wd-paper);
     color: var(--wd-ink);
     min-width: 320px;
+    /* The export's body sets neither size nor leading, so it runs on the
+       browser defaults. Without this reset the section inherits global.css's
+       17px/1.65, which is why every line box here sat taller than the design —
+       the nav pill measured 45px against the export's 41px, and the same drift
+       ran through anything that doesn't declare its own line-height. Both
+       `.wd` blocks must carry this. */
+    font-size: 16px;
+    line-height: normal;
     overflow-x: clip;
   }
 
@@ -1234,16 +1242,20 @@ const BUDGETS = [
   /* Every heading accent in v13 is italic coral — all four W files agree, and
      it is the main reason the section reads as its own brand. The exception is
      the closing CTA, whose heading sits on the coral band and takes ink. */
-  .wd__h2 em,
-  .work__title em,
-  .awkward__title em,
-  .faq__title em {
+  /* Every heading accent, matched on the element rather than on a list of
+     heading classes — the list version silently missed `.who__title` and that
+     accent rendered in the band's cream instead of coral. The closing CTA is
+     the one exception: its heading sits on the coral band and takes ink. */
+  .wd h1 em,
+  .wd h2 em,
+  .wd h3 em {
     font-style: italic;
     color: var(--wd-coral);
   }
 
-  .start__title em {
-    font-style: italic;
+  /* Needs the extra class to outrank `.wd h2 em` above: (0,2,1) beats
+     (0,1,2), classes being compared before elements. */
+  .wd .start__title em {
     color: var(--wd-ink);
   }
 
@@ -1652,15 +1664,16 @@ const BUDGETS = [
     color: var(--wd-yellow);
   }
 
+  /* No text-shadow: that was the previous design's, and on the near-black band
+     it draws a cream ghost behind every letter. */
   .who__title {
-    margin: 0 0 48px;
-    font-size: clamp(36px, 5vw, 64px);
-    font-weight: 800;
+    margin: 0 0 52px;
+    font-size: clamp(38px, 5vw, 68px);
+    font-weight: 900;
     letter-spacing: -0.02em;
-    line-height: 1;
-    max-width: 820px;
+    line-height: 0.98;
+    max-width: 980px;
     text-transform: uppercase;
-    text-shadow: 3px 3px 0 var(--wd-card);
     text-wrap: balance;
   }
 
