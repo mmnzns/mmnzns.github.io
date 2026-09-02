@@ -12,6 +12,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "check:copy": "node scripts/check-copy.mjs",
+    "check:design": "node scripts/check-design.mjs",
+    "check:live": "node scripts/check-live.mjs",
     "og": "node scripts/build-og-image.mjs",
     "astro": "astro"
   },
@@ -23,6 +26,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "puppeteer-core": "^25.9.0",
     "typescript": "^5.9.3"
   }
 }

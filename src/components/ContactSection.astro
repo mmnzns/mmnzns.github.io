@@ -10,8 +10,12 @@ import { SITE, CONTACT, FORM_ENDPOINT } from '../config';
 interface Props {
   title: string;
   intro: string;
-  /** The outlined section number — the home page passes "06". */
-  number?: string;
+  /**
+   * The home page sets its title at display size (the export's 164px "Let's
+   * talk."); About and Consulting use the section size. This used to ride on
+   * the outlined section number, which v14 removed from the home page.
+   */
+  display?: boolean;
   /** Label above the message box — the ask differs per page. */
   messageLabel?: string;
   /** The line at the bottom of the details card. */
@@ -32,7 +36,7 @@ interface Props {
 const {
   title,
   intro,
-  number,
+  display = false,
   messageLabel = 'What’s on your mind?',
   aside = 'If you’re in Vancouver, coffee’s on me. I’d rather hear it out loud anyway.',
   submitLabel = 'Send',
@@ -55,18 +59,7 @@ const routes = [
 
 <section class="band band--sky contact" id={id}>
   <div class:list={['contact__inner', width === 'home' ? 'wrap--home' : 'wrap']}>
-    {
-      number ? (
-        <div class="numbered">
-          <span class="numbered__n" aria-hidden="true">
-            {number}
-          </span>
-          <h2 class="contact__title contact__title--display">{title}</h2>
-        </div>
-      ) : (
-        <h2 class="contact__title">{title}</h2>
-      )
-    }
+    <h2 class:list={['contact__title', display && 'contact__title--display']}>{title}</h2>
     <p class="contact__intro">{intro}</p>
 
     <div class="contact__grid">
@@ -224,7 +217,7 @@ const routes = [
     letter-spacing: -0.034em;
   }
 
-  /* The home page's numbered variant runs bigger still. */
+  /* The home page's title runs at display size. */
   .contact__title--display {
     font-size: clamp(52px, 10vw, 164px);
     line-height: 0.84;

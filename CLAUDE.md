@@ -1,6 +1,8 @@
 # Working in this repository
 
-Personal portfolio site — Astro 7 (static output) + TypeScript, deployed to GitHub Pages.
+Personal portfolio site — Astro 7 (static output) + TypeScript, served by a Cloudflare
+Worker as static assets. Cloudflare's git integration builds and deploys every push to
+`main`; there is no deploy workflow in this repo (GitHub Pages was retired 2026-08-26).
 
 ## Commands
 
@@ -12,14 +14,23 @@ Personal portfolio site — Astro 7 (static output) + TypeScript, deployed to Gi
 
 **Porting a new design export: follow `docs/PORTING.md`.** It is the playbook — the
 script-per-file table, the recipe, the surfaces no script covers, and the verification
-baseline. The short version: `scripts/gen-{cases,home,consulting,about}.mjs` regenerate
-their data file wholesale from the design (never hand-edit prose in a generated file),
-`scripts/sync-projects(-apply).mjs` patch `site.ts`, and `scripts/check-copy.mjs` proves
-the port by reporting design sentences missing from `dist/`.
+baselines. The short version: `scripts/gen-{cases,home,about}.mjs` regenerate their data
+file wholesale from the design (never hand-edit prose in a generated file),
+`scripts/sync-projects(-apply).mjs` patch `site.ts`, and two verifiers prove the port:
+`scripts/check-copy.mjs` reports design sentences missing from `dist/`, and
+`scripts/check-design.mjs` renders each export beside its built page in Chrome and
+reports where they *look* different — type, colour, background, alignment, overflow,
+contrast. **Words matching is not the port being done.** Every visual regression that
+has shipped passed check-copy; check-design is what would have caught them.
 
 **Diff against the design, not against the previous export.** This repo has drifted from
 what was shipped before, so a small vN-1 → vN diff can hide a page's worth of divergence.
-`check-copy.mjs` is the tool for this.
+The two check scripts are the tool for this.
+
+**After pushing, run `node scripts/check-live.mjs dist --wait 600`** and believe nothing
+else about whether a deploy landed. It compares the hashed asset names every live page
+references with the ones in `dist/`. Ad-hoc checks (grepping one CSS bundle, eyeballing
+a screenshot) have reported both false "not live" and false "live" before.
 
 Run `npm run check && npm run build` before committing. There is no test suite or linter
 beyond that.
@@ -124,8 +135,8 @@ beyond that.
 
 - This is a **user site** served from the domain root — never set `base` in
   `astro.config.mjs`.
-- Output must stay fully static. GitHub Pages has no server runtime, so SSR adapters,
-  API routes and on-demand rendering are not options.
+- Output must stay fully static. The Worker is assets-only (see `wrangler.jsonc`), so SSR
+  adapters, API routes and on-demand rendering are not options.
 - `main` is the deploy branch: pushing to it publishes the live site.
 - **`wrangler.jsonc` must stay, even though nothing in it looks necessary.** Cloudflare's
   git integration ends with `npx wrangler deploy`, and with no config file wrangler

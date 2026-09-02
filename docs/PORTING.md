@@ -31,7 +31,7 @@ so invoke Astro directly.
 # top level of a version folder is current — the nested "Website bold/",
 # "Website standalone/" and "mnmonzones-site/" directories are older
 # snapshots of the same pages. The scripts take paths, so only D changes.
-D="../Website - Main Site/mnmonzones v13"
+D="../Website - Main Site/mnmonzones v14"
 node scripts/gen-cases.mjs      "$D/Monzones-D-Case-Bold.dc.html"
 node scripts/gen-home.mjs       "$D/Monzones-D-Bold.dc.html"
 node scripts/gen-about.mjs      "$D/Monzones-D-About-Bold.dc.html"
@@ -62,13 +62,22 @@ passed through a `<slot />`.
 2. Run the six commands above, then **review `git diff`** — that diff *is* the content
    change; read it like a copy review, not like code.
 3. **Hand-check the surfaces no generator covers** (list below) against the design pages.
-4. Build and verify:
+4. Build and verify — words first, then looks:
 
 ```bash
 node ./node_modules/astro/bin/astro.mjs check
 node ./node_modules/astro/bin/astro.mjs build
 node scripts/check-copy.mjs "$D" dist
+node scripts/check-design.mjs "$D" dist            # all pages, 375 and 1440
+node scripts/check-design.mjs "$D" dist --pages web-design,web-design-pricing --widths 1440 --all
 ```
+
+   `check-copy` proves the sentences landed. `check-design` renders each export next
+   to its built page in the machine's Chrome and reports where they *look* different
+   — see "Reading check-design" below. **A port is not done at check-copy green.**
+   Every visual regression this site has shipped (the old nav on the web design page,
+   body text inheriting 17px/1.65, coral headings rendering ink, the homepage sitting
+   flush left) passed check-copy and would have been a HIGH finding in check-design.
 
 5. Browser sanity pass (the dev server, or `dist/` served locally): home shelf tabs and
    method tabs, the case page's brief/read toggle, the consulting practice tabs, the
@@ -80,7 +89,20 @@ node scripts/check-copy.mjs "$D" dist
    iframe and assert `documentElement.scrollWidth === innerWidth`; screenshot through the
    same iframe. Headless Chrome's `--window-size=375` lays the page out wider and crops,
    so it reports overflow on pages that are fine and hides the real thing.
-6. Commit and push — `main` deploys the live site.
+6. Commit and push — `main` deploys the live site. Then **prove it landed**:
+
+```bash
+node scripts/check-live.mjs dist --wait 600
+```
+
+   It fetches every page in `dist/` from mnmonzones.com and compares the hashed
+   `/_astro/*` asset names each references. Same names, same build. It polls every
+   15 s until they match or the wait runs out, and it is the only deploy check to
+   trust — one-off greps of a single CSS bundle have said "not live" about a change
+   that was live, and "live" about one that wasn't.
+
+7. Post-deploy QA is still a person looking at the live site. The scripts shrink the
+   list of things left to find; they don't empty it.
 
 ## What each script owns
 
@@ -91,6 +113,12 @@ node scripts/check-copy.mjs "$D" dist
 | `gen-about.mjs` | `Monzones-D-About.dc.html` | `src/data/about.ts` (wholesale) |
 | `sync-projects(-apply).mjs` | `Monzones-D-Work.dc.html` | `title`/`problem`/`tags` in `src/data/site.ts` only |
 | `check-copy.mjs` | every `*.dc.html` + `dist/` | nothing — reports design sentences missing from the built site |
+| `check-design.mjs` | every `*.dc.html` + `dist/`, rendered in Chrome | nothing — reports visual differences per page and width (`--json` for the full data) |
+| `check-live.mjs` | `dist/` + the live origin | nothing — reports pages whose live asset hashes differ from the build |
+
+`check-design` and `build-og-image` drive the Chrome (or Edge) already installed on
+the machine through `puppeteer-core`; set `CHROME=/path/to/binary` if it isn't found.
+The design export loads its fonts from Google, so `check-design` needs network access.
 
 Never hand-edit prose in a generated file; edit the design and re-run. Notes worth knowing:
 
@@ -131,6 +159,51 @@ One-off prose living in templates. Check these by eye against the design (and tr
   re-scoped case needs its diagram ported by hand
 - `src/content/thinking/*.md` — article frontmatter (`title`, `excerpt`, `tag`, dates)
 - `src/config.ts` — site metadata, nav, contact details
+
+## Reading check-design
+
+Each page is rendered at each width with `prefers-reduced-motion: reduce` emulated —
+both the export's `motion.js` and this site's reveal scripts skip every scroll
+animation under it, so pages are measured finished rather than half-faded. Every
+visible text node is paired with its counterpart by normalised text (the same rules
+as check-copy) and compared. Findings are grouped by signature, so "38 `<p>` at 17px
+where the design has 16px" is one line, and ranked:
+
+- **HIGH** — a different font family; a size off by 4px or more; a weight off by 200;
+  a colour or background more than ~80 RGB-distance away (paper vs dark band, ink vs
+  coral); a heading or paragraph starting 40px+ from where the design puts it; text
+  at opacity 0; horizontal overflow; contrast under 3:1. The exit code is 1 while any
+  HIGH remains, so it can gate a commit.
+- **MED** — smaller versions of the above; line-height off by 0.1+; text-transform or
+  style differences; a long design sentence with no visible counterpart; contrast
+  between 3:1 and AA.
+- **LOW** — letter-spacing, block widths, spacing rhythm, page height, and anything
+  the export itself does (a sub-AA pair the design also has, a `<button>` the design
+  left in the UA font) — those are its decisions, not porting errors.
+
+Read HIGH top to bottom; it is the list of things a visitor would notice. Reordered
+cards (the site has an article the export doesn't) show up as MED `left-edge` on
+spans — that's the pairing, not a layout bug. Two things it cannot see: images, and
+anything behind an interaction (a tab panel that isn't the default, a hover state).
+
+### check-design baseline (v14, after `Remove the homepage section numbers`)
+
+| Page | 375 | 1440 | Notes |
+| --- | --- | --- | --- |
+| home | 2 | 0 | — |
+| about | 13 | 17 | the roles/years column, Switzer vs Clash Display on one label |
+| work | 2 | 40 | card grid columns 59px right of the design's |
+| thinking | 16 | 20 | — |
+| 404 | 3 | 2 | — |
+| case | 2 | 18 | tech table columns |
+| article | 24 | 30 | author block, TOC |
+| consulting (4 pages) | 52–112 | 80–165 | **not yet ported to v14** — dark green engagement band, cream cards |
+| web-design | 33 | 27 | flip-card hint on yellow, hero carousel |
+| web-design work/process/pricing | 59–221 | 82–280 | **not yet ported to v14** — dark tiers, yellow table heads, Plex Mono labels |
+
+Numbers are HIGH counts. Anything above the baseline on a page you touched is
+something that didn't land. When a page is re-ported, bring its row down and update
+this table in the same commit.
 
 ## Verification baseline
 

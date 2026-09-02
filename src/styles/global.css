@@ -84,7 +84,11 @@
   --ink: #1f1c19;
   --ink-deck: #3d3833;
   --ink-2: #6b6560;
-  --ink-3: #9a938b;
+  /* The export's quietest ink on paper is #6b6560 — the same as --ink-2. The
+     lighter #9a938b it used to be measures 2.89:1 on paper, and the design
+     never pairs the two; it only uses #9a938b on the dark bands, where it
+     lives on as --on-dark-3. */
+  --ink-3: #6b6560;
   --rule: var(--ink);
   --rule-soft: #eae4dc;
 
@@ -347,27 +351,6 @@ p {
 .meta {
   font-size: 13px;
   color: var(--ink-3);
-}
-
-/* The numbered section heading: a big outlined figure beside the title. */
-.numbered {
-  display: flex;
-  align-items: baseline;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.numbered__n {
-  font-size: clamp(44px, 6vw, 86px);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
-  color: transparent;
-  -webkit-text-stroke: 2px var(--ink);
-}
-
-.numbered__n--on-dark {
-  -webkit-text-stroke: 2px var(--on-dark);
 }
 
 /* The little solid colour slab that prefixes a category or client label. */

@@ -37,6 +37,7 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { findChrome } from './lib/browser.mjs';
 
 const run = promisify(execFile);
 const root = new URL('../', import.meta.url);
@@ -51,11 +52,11 @@ const CONTENT = 'src/content/thinking/';
 const OUT_DIR = 'public/og/';
 
 /**
- * Chrome is the renderer. Override with CHROME=/path/to/binary if it lives
- * somewhere other than the macOS default.
+ * Chrome is the renderer — the installed one, found by lib/browser.mjs on
+ * macOS, Windows and Linux. Override with CHROME=/path/to/binary if it lives
+ * somewhere else.
  */
-const CHROME =
-  process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME = findChrome();
 
 const PAPER = '#fbf9f6';
 const INK = '#1f1c19';
