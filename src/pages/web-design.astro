@@ -35,32 +35,28 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 const WHO = [
   {
     title: 'Local small businesses',
-    color: '#D8400C',
-    backBg: '#FCFBF7',
+    bg: '#FCFBF7',
     tilt: '-1deg',
     front: 'Clinics, trades, restaurants, salons, studios. The site is ten years old — or doesn’t exist.',
     back: '46% of Google searches are looking for something local — and most people check a business online before calling. If the site is broken or missing, they call the next one on the list. A current site with real hours, services and a working form quietly wins you the customers your competitors lose.',
   },
   {
     title: 'Independent professionals',
-    color: '#171310',
-    backBg: '#F5D44A',
+    bg: '#F5D44A',
     tilt: '1deg',
     front: 'Consultants, therapists, coaches, designers. One credible page that isn’t LinkedIn.',
     back: 'Referrals still get googled. When a warm lead looks you up and finds only a LinkedIn profile, some of that trust leaks away. One well-written page — who you help, how it works, how to book — turns “I’ve heard of them” into “I’ve booked a call.”',
   },
   {
     title: 'Companies & startups',
-    color: '#D8400C',
-    backBg: '#FCFBF7',
+    bg: '#FCFBF7',
     tilt: '-1deg',
     front: 'Real CMS, conversion tracking, structured content. Quoted properly, not priced off a menu.',
     back: 'Your website is usually the first thing an investor, partner or serious buyer checks, often before they reply to the email. A site with structure, tracking and content that answers their questions does diligence for you while you sleep.',
   },
   {
     title: 'Agencies',
-    color: '#D8400C',
-    backBg: '#FCFBF7',
+    bg: '#FCFBF7',
     tilt: '1deg',
     front: 'White-label builds. You bring the design, I build it fast and quietly.',
     back: 'Overflow happens. When your dev bench is full, I build to your designs, in your client’s stack, under your name — clean handoff, no client contact unless you want it. You keep the margin and the relationship.',
@@ -402,16 +398,15 @@ const BUDGETS = [
                 data-wd-flip={i}
               >
                 <span class="flip__inner">
-                  <span class="flip__front">
-                    <span class="flip__title" style={`color:${card.color}`}>
-                      {card.title}
+                  <span class="flip__front" style={`background:${card.bg}`}>
+                    <span class="flip__ast" aria-hidden="true">
+                      ✳
                     </span>
+                    <span class="flip__title">{card.title}</span>
                     <span class="flip__copy">{card.front}</span>
-                    <span class="flip__hint" style={`color:${card.color}`}>
-                      tap to flip — why bother? ↻
-                    </span>
+                    <span class="flip__hint">tap to flip: why bother? ↻</span>
                   </span>
-                  <span class="flip__back" style={`background:${card.backBg}`}>
+                  <span class="flip__back" style={`background:${card.bg}`}>
                     <span class="flip__backcopy">{card.back}</span>
                     <span class="flip__backhint">↻ flip back</span>
                   </span>
@@ -480,15 +475,13 @@ const BUDGETS = [
             sequence, no obligation.
           </p>
         </div>
-        <span class="starwrap">
-          <a
-            class="wdbtn wdbtn--blue wdbtn--wiggle"
-            href={`mailto:${CONTACT.email}?subject=Discovery call — 30 minutes&body=Hi Miguel — I'd like to book a free 30-minute discovery call.%0A%0AMy business: %0AA few times that work for me: `}
-            >Book a free call →</a
-          >
-          <span class="star star--tr" aria-hidden="true">✦</span>
-          <span class="star star--bl star--coral" aria-hidden="true">✦</span>
-        </span>
+        {/* No sparkles: the export has none anywhere, they came from the
+            previous design along with the nav dots. */}
+        <a
+          class="wdbtn wdbtn--ink"
+          href={`mailto:${CONTACT.email}?subject=Discovery call — 30 minutes&body=Hi Miguel — I'd like to book a free 30-minute discovery call.%0A%0AMy business: %0AA few times that work for me: `}
+          >Book a free call ↗</a
+        >
       </div>
     </section>
 
@@ -756,7 +749,7 @@ const BUDGETS = [
               class="startform__honeypot"
             />
 
-            <button type="submit" class="wdbtn wdbtn--peach startform__submit">Send it over →</button>
+            <button type="submit" class="wdbtn wdbtn--ink startform__submit">Send it over ↗</button>
 
             <p class="startform__status" role="status" aria-live="polite" data-form-status></p>
             <p class="startform__note">
@@ -982,6 +975,18 @@ const BUDGETS = [
     --wd-peach: #f5d44a;
     --wd-blue: #ddd6c7;
     --wd-blueband: #e5dfd0;
+    /* The rest of v13's palette, by the role each colour plays in the export.
+       Counted across all four Monzones-W files: body #3e3931 (x43), the dark
+       card faces on the near-black bands (x25 between the three), light copy
+       on those bands (x14), and the FAQ's closed-row rule (x3). */
+    --wd-body: #3e3931;
+    --wd-body-soft: #4a443b;
+    --wd-card-dark: #241d13;
+    --wd-card-darker: #201b14;
+    --wd-card-warm: #2a2015;
+    --wd-on-dark: #c7beac;
+    --wd-on-dark-soft: #d5cdbb;
+    --wd-rule-soft: #d9d2c2;
     --wd-bluelink: #d8400c;
     --wd-font: 'Archivo', 'Helvetica Neue', sans-serif;
     --wd-hand: 'Caveat', cursive;
@@ -1174,123 +1179,21 @@ const BUDGETS = [
     white-space: nowrap;
   }
 
-  .wdbtn--peach {
-    background: var(--wd-peach);
-    box-shadow: 4px 4px 0 var(--wd-ink);
-  }
-
-  .wdbtn--blue {
-    background: var(--wd-blue);
-    box-shadow: 4px 4px 0 var(--wd-ink);
-    font-size: 19px;
-    padding: 16px 32px;
-  }
-
-  .wdbtn--peach:hover,
-  .wdbtn--peach:focus-visible,
-  .wdbtn--blue:hover,
-  .wdbtn--blue:focus-visible {
-    background: var(--wd-butter);
-    color: var(--wd-ink);
-    animation: none;
-    transform: scale(1.04);
-  }
-
-  .wdbtn--outline {
-    background: transparent;
-  }
-
-  .wdbtn--outline:hover,
-  .wdbtn--outline:focus-visible {
+  /* v13 runs one filled button everywhere: black, no border, no offset
+     shadow, coral on hover. The yellow and blue variants, the offset shadow
+     and the wiggle all belonged to the previous design. */
+  .wdbtn--ink {
     background: var(--wd-ink);
-    color: var(--wd-paper);
+    color: var(--wd-card);
+    font-size: 17px;
+    padding: 16px 30px;
   }
 
-  .wdbtn--wiggle {
-    animation: wd-wiggle 5s ease-in-out 2s infinite;
-  }
-
-  .starwrap {
-    position: relative;
-    display: inline-block;
-    flex: none;
-  }
-
-  .star {
-    position: absolute;
-    pointer-events: none;
-    color: var(--wd-gold);
-    text-shadow: 1.5px 1.5px 0 var(--wd-ink);
-    animation: wd-star 5s ease-in-out 2s infinite;
-  }
-
-  .star--tr {
-    top: -16px;
-    right: -12px;
-    font-size: 26px;
-  }
-
-  .star--bl {
-    bottom: -14px;
-    left: -14px;
-    font-size: 20px;
-    color: #D8400C;
-    text-shadow: 1px 1px 0 var(--wd-ink);
-    animation-delay: 2.25s;
-  }
-
-  .star--coral {
-    color: var(--wd-coral);
-  }
-
-  @keyframes wd-wiggle {
-    0%,
-    82%,
-    100% {
-      transform: rotate(0deg) scale(1);
-      box-shadow: 4px 4px 0 var(--wd-ink);
-    }
-
-    84% {
-      transform: rotate(-2.5deg) scale(1.04);
-    }
-
-    87% {
-      transform: rotate(2deg) scale(1.05);
-      box-shadow: 6px 6px 0 var(--wd-ink);
-    }
-
-    90% {
-      transform: rotate(-1.5deg) scale(1.04);
-    }
-
-    93% {
-      transform: rotate(1deg) scale(1.03);
-    }
-
-    96% {
-      transform: rotate(0deg) scale(1);
-      box-shadow: 4px 4px 0 var(--wd-ink);
-    }
-  }
-
-  @keyframes wd-star {
-    0%,
-    80%,
-    100% {
-      opacity: 0;
-      transform: scale(0) rotate(0deg);
-    }
-
-    86% {
-      opacity: 1;
-      transform: scale(1.15) rotate(40deg);
-    }
-
-    94% {
-      opacity: 0;
-      transform: scale(0.4) rotate(90deg);
-    }
+  .wdbtn--ink:hover,
+  .wdbtn--ink:focus-visible {
+    background: var(--wd-coral-deep);
+    color: var(--wd-card);
+    transform: translateY(-2px);
   }
 
   /* ---------------------------------------------------------------- hero -- */
@@ -1672,7 +1575,7 @@ const BUDGETS = [
   .flip {
     perspective: 1000px;
     cursor: pointer;
-    min-height: 330px;
+    min-height: 320px;
     transform: rotate(var(--tilt, 0deg));
     border: 0;
     background: none;
@@ -1691,7 +1594,7 @@ const BUDGETS = [
     display: block;
     width: 100%;
     height: 100%;
-    min-height: 330px;
+    min-height: 320px;
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.3, 1);
   }
@@ -1700,54 +1603,68 @@ const BUDGETS = [
     transform: rotateY(180deg);
   }
 
+  /* A hairline border, a small radius and a coral drop — the heavy ink border
+     and ink shadow were the previous design's. Both faces take the card's own
+     background, so a flip doesn't change colour underneath you. */
   .flip__front,
   .flip__back {
     position: absolute;
     inset: 0;
     backface-visibility: hidden;
-    background: var(--wd-card);
-    border: 2px solid var(--wd-ink);
-    border-radius: 20px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 12px;
     padding: 26px;
-    box-shadow: 5px 5px 0 var(--wd-ink);
+    box-shadow: 6px 6px 0 var(--wd-coral);
     display: flex;
     flex-direction: column;
   }
 
   .flip__back {
     transform: rotateY(180deg);
+    padding: 24px;
+  }
+
+  .flip__ast {
+    font-size: 22px;
+    line-height: 1;
+    color: var(--wd-coral);
   }
 
   .flip__title {
-    margin-bottom: 10px;
-    font-size: 22px;
+    margin: 16px 0 10px;
+    font-size: 20px;
     font-weight: 800;
+    color: var(--wd-ink);
   }
 
   .flip__copy {
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.55;
+    color: var(--wd-body-soft);
   }
 
   .flip__hint {
     margin-top: auto;
     font-family: var(--wd-hand);
-    font-size: 21px;
+    font-size: 20px;
+    color: var(--wd-coral-deep);
     transform: rotate(-1deg);
   }
 
   .flip__backcopy {
-    font-size: 15.5px;
+    font-size: 14px;
     line-height: 1.55;
     font-weight: 500;
+    color: var(--wd-ink);
   }
 
   .flip__backhint {
     margin-top: auto;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--wd-ink);
   }
 
   /* ------------------------------------------------------------ ctaboxes -- */
@@ -2112,24 +2029,29 @@ const BUDGETS = [
     gap: 12px 20px;
   }
 
+  /* Paper on the near-black band, and it goes coral on hover. */
   .pricing__link {
     display: inline-flex;
     align-items: center;
+    line-height: 1;
     min-height: 44px;
-    padding: 12px 20px;
-    border: 2px solid var(--wd-ink);
+    padding: 18px 30px 17px;
     border-radius: 999px;
-    background: var(--wd-butter);
+    background: var(--wd-paper);
+    color: var(--wd-ink);
+    font-size: 16.5px;
     font-weight: 800;
     transition:
       transform 0.2s ease,
-      background 0.2s ease;
+      background 0.2s ease,
+      color 0.2s ease;
   }
 
   .pricing__link:hover,
   .pricing__link:focus-visible {
     transform: translateY(-2px);
-    background: var(--wd-peach);
+    background: var(--wd-coral-deep);
+    color: var(--wd-card);
   }
 
   @media (max-width: 760px) {
