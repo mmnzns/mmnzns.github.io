@@ -1,0 +1,465 @@
+---
+import { Image } from 'astro:assets';
+import WebDesignLayout from '../../layouts/WebDesignLayout.astro';
+import {
+  BACKGROUND_LOGOS,
+  BUILDS,
+  JUDGE_TESTS,
+  TESTIMONIAL_SLOTS,
+  WORK_HERO,
+  WORK_JUMPS,
+} from '../../data/web-design';
+import shotII from '../../assets/webdesign/intelligent-investing.jpg';
+import shotDTC from '../../assets/webdesign/dtc-newsletter.jpg';
+import shotKatty from '../../assets/webdesign/kattyco.jpg';
+import shotSLP from '../../assets/webdesign/east-van-slp.jpg';
+
+/**
+ * `/web-design/work/` — ported from the v13 export's `Monzones-W-Work`.
+ *
+ * The screenshots are the ones already committed for the main web design
+ * page, keyed by the build's slug so the data file doesn't have to import
+ * images itself.
+ */
+const SHOTS = {
+  'intelligent-investing': shotII,
+  'dtc-newsletter': shotDTC,
+  kattyco: shotKatty,
+  'east-van-slp': shotSLP,
+} as const;
+---
+
+<WebDesignLayout
+  title="Work · Web Design"
+  description="Four live websites, written up with what was going on, what I built and what happened next — plus how to judge any portfolio, including this one."
+  current="work"
+>
+  <header class="wdwrap wdhero" id="top">
+    <p class="wdhero__tags">
+      {WORK_HERO.tags.map((tag) => <span class="wdtag">{tag}</span>)}
+    </p>
+    <h1 class="wdhero__title">
+      {WORK_HERO.titleLead} <em>{WORK_HERO.titleAccent}</em>
+    </h1>
+    <p class="wdlede wdhero__body">
+      {WORK_HERO.body} <strong>{WORK_HERO.bodyStrong}</strong>
+    </p>
+
+    <nav class="wdjumps" aria-label="On this page">
+      {WORK_JUMPS.map((jump) => <a href={jump.href}>{jump.label}</a>)}
+    </nav>
+  </header>
+
+  <section class="wdsec wdwrap" id="cases">
+    <p class="wdkick" data-reveal>one of four</p>
+
+    {
+      BUILDS.map((build, i) => (
+        <article class={`wdcase ${i % 2 === 1 ? 'wdcase--flip' : ''}`}>
+          <div class="wdcase__text" data-reveal>
+            <p class="wdcase__meta">{build.meta}</p>
+            <h2 class="wdh2 wdcase__title">
+              {build.titleLead} <em>{build.titleAccent}</em>
+            </h2>
+
+            <div class="wdcase__blocks">
+              <div>
+                <p class="wdcase__label">The situation</p>
+                <p class="wdbody">{build.situation}</p>
+              </div>
+              <div>
+                <p class="wdcase__label">What I built</p>
+                <p class="wdbody">{build.built}</p>
+              </div>
+              <div>
+                <p class="wdcase__label">What happened</p>
+                <p class="wdbody">{build.happened}</p>
+              </div>
+            </div>
+
+            <a class="wdcase__link" href={build.href} target="_blank" rel="noopener">
+              {build.linkLabel}
+            </a>
+          </div>
+
+          <div class="wdcase__shot" data-reveal="pop">
+            <a href={build.href} target="_blank" rel="noopener" aria-label={build.alt}>
+              <Image src={SHOTS[build.slug]} alt={build.alt} widths={[420, 760]} loading="lazy" />
+            </a>
+          </div>
+        </article>
+      ))
+    }
+  </section>
+
+  <section class="wdsec wdwrap" id="judge">
+    <p class="wdkick" data-reveal>please be picky</p>
+    <h2 class="wdh2" data-reveal>How to judge these <em>yourself.</em></h2>
+    <p class="wdlede" data-reveal>
+      A portfolio you can’t verify is just a nice grid of pictures. Here’s the four-minute version of
+      what I’d check on any website, mine included. Open one of them on your phone and run through
+      it.
+    </p>
+
+    <div class="wdtwo">
+      {
+        JUDGE_TESTS.map((test) => (
+          <div class="wdcard" data-reveal>
+            <p class="wdcase__q">{test.q}</p>
+            <p class="wdbody">{test.a}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="wdnote" data-reveal>if any of mine fail your test, tell me. I’d like to know</p>
+  </section>
+
+  <section class="wdsec wdwrap" id="background">
+    <p class="wdkick" data-reveal>the longer story</p>
+    <h2 class="wdh2" data-reveal>Where the instincts <em>came from.</em></h2>
+    <p class="wdlede" data-reveal>
+      Building websites is the newer chapter. Before it, a decade-plus of lifecycle and go-to-market
+      work across 14 markets: figuring out why people sign up, why they leave, and which single
+      sentence changes their mind. That’s the part that shows up in the builds.
+    </p>
+
+    <p class="wdlogos" data-reveal>
+      {BACKGROUND_LOGOS.map((logo) => <span class="wdtag">{logo}</span>)}
+    </p>
+
+    <div class="wdtwo">
+      <div class="wdcard" data-reveal>
+        <p class="wdcase__label">To be clear</p>
+        <p class="wdbody">
+          That work was lifecycle, retention and go-to-market, not website builds. I’m listing it
+          because it’s the reason I design pages around what makes a real person act, rather than
+          around what looks good in a mockup.
+        </p>
+      </div>
+      <div class="wdcard" data-reveal>
+        <p class="wdcase__label">The full history</p>
+        <p class="wdbody">
+          The detailed case studies live at HQ: the programs, the markets, the numbers and the parts
+          that didn’t work. And if the site is fine but the funnel behind it isn’t, that’s the
+          consulting practice.
+        </p>
+        <p class="wdcase__links">
+          <a class="wdlink" href="/work/">All 13 case studies ↗</a>
+          <a class="wdlink" href="/consulting/">The consulting practice ↗</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wdsec wdwrap" id="testimonials">
+    <p class="wdkick" data-reveal>the honest bit</p>
+    <h2 class="wdh2" data-reveal>The testimonial wall is <em>empty on purpose.</em></h2>
+    <p class="wdlede" data-reveal>
+      I could have five glowing quotes on this page by dinner. Anyone could. So instead: this
+      practice is new, the founding-client rate is running, and the first five clients are the ones
+      whose words will go here.
+    </p>
+    <p class="wdlede" data-reveal>
+      That’s the trade behind the <a class="wdlink" href="/web-design/pricing/">founding rate</a>: a
+      genuinely lower price, in exchange for an honest testimonial and permission to feature the
+      work. Honest is the operative word. If the experience was a six out of ten, I want the six out
+      of ten, because that’s the feedback that makes the next build better.
+    </p>
+
+    <div class="wdthree">
+      {
+        TESTIMONIAL_SLOTS.map((slot) => (
+          <div class="wdcard wdslot" data-reveal>
+            <span class="wdslot__num">{slot.num}</span>
+            <p class="wdslot__line">{slot.line}</p>
+            <p class="wdnote">{slot.note}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="wdcard wdcard--butter wdmeantime" data-reveal="pop">
+      <p class="wdslot__line">In the meantime, the live sites are the reference.</p>
+      <p class="wdbody">
+        Four of them, up there, all clickable. Judge the work rather than the adjectives, and if
+        you’d like to talk to me about any of it, the call is free and I love these conversations.
+      </p>
+    </div>
+  </section>
+
+  <section class="wdsec wdwrap wdcta" id="start">
+    <h2 class="wdh2" data-reveal>Fancy being <em>number five?</em></h2>
+    <p class="wdlede" data-reveal>
+      Five questions, two minutes, and I can usually come back with a price rather than a pitch
+      within two business days.
+    </p>
+    <p class="wdnote" data-reveal>one build at a time, so you get a real start date</p>
+    <div class="wdctarow" data-reveal>
+      <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
+      <a class="wdbtn wdbtn--ghost" href="/web-design/process/">How the process works</a>
+      <a class="wdbtn wdbtn--ghost" href="/web-design/pricing/">See the prices</a>
+    </div>
+  </section>
+</WebDesignLayout>
+
+<style>
+  .wdhero {
+    padding-block: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 36px);
+  }
+
+  .wdhero__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wdtag {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-bright);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .wdhero__title {
+    margin-top: 22px;
+    font-size: clamp(40px, 6.4vw, 84px);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .wdhero__title em {
+    font-style: normal;
+    color: var(--wd-coral-deep);
+  }
+
+  .wdhero__body {
+    margin-top: 22px;
+  }
+
+  .wdhero__body strong {
+    color: var(--wd-ink);
+  }
+
+  .wdjumps {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wdjumps a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 8px 15px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-bright);
+    font-size: 14px;
+    font-weight: 600;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .wdjumps a:hover,
+  .wdjumps a:focus-visible {
+    transform: translateY(-2px);
+    background: var(--wd-butter);
+  }
+
+  /* -------------------------------------------------------------- cases -- */
+  .wdcase {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: center;
+    padding-block: clamp(36px, 5vw, 64px);
+    border-bottom: 2px solid rgb(28 27 25 / 12%);
+  }
+
+  .wdcase:last-of-type {
+    border-bottom: 0;
+  }
+
+  /* Alternating sides. The image is second in the markup either way, so the
+     reading order stays text-then-picture for a screen reader. */
+  .wdcase--flip .wdcase__text {
+    order: 2;
+  }
+
+  .wdcase__meta {
+    font-family: var(--wd-hand);
+    font-size: clamp(18px, 1.8vw, 22px);
+    color: var(--wd-coral-deep);
+  }
+
+  .wdcase__title {
+    margin-top: 4px;
+  }
+
+  .wdcase__blocks {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .wdcase__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wd-faint);
+  }
+
+  .wdbody {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdbody strong {
+    color: var(--wd-ink);
+  }
+
+  .wdcase__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 20px;
+    font-weight: 700;
+    color: var(--wd-bluelink);
+  }
+
+  .wdcase__link:hover,
+  .wdcase__link:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  .wdcase__shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--wd-ink);
+    border-radius: 20px;
+    box-shadow: 8px 8px 0 var(--wd-ink);
+  }
+
+  .wdcase__q {
+    font-size: clamp(18px, 1.9vw, 22px);
+    font-weight: 800;
+    letter-spacing: -0.014em;
+    line-height: 1.2;
+  }
+
+  .wdcase__links {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  .wdlink {
+    color: var(--wd-bluelink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 600;
+  }
+
+  .wdlink:hover,
+  .wdlink:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  .wdtwo {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+  }
+
+  .wdthree {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+  }
+
+  .wdlogos {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wdslot__num {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--wd-peach);
+  }
+
+  .wdslot__line {
+    margin-top: 10px;
+    font-size: clamp(18px, 1.9vw, 22px);
+    font-weight: 800;
+    letter-spacing: -0.014em;
+    line-height: 1.25;
+  }
+
+  .wdmeantime {
+    margin-top: 26px;
+    text-align: center;
+  }
+
+  .wdmeantime .wdbody {
+    max-width: 62ch;
+    margin-inline: auto;
+  }
+
+  .wdcta {
+    text-align: center;
+  }
+
+  .wdcta .wdlede {
+    margin-inline: auto;
+  }
+
+  .wdcta .wdctarow {
+    justify-content: center;
+  }
+
+  @media (max-width: 860px) {
+    .wdcase {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Stacked, the alternating order would put two pictures back to back. */
+    .wdcase--flip .wdcase__text {
+      order: 0;
+    }
+
+    .wdthree {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .wdtwo,
+    .wdthree {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

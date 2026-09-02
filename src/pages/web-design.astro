@@ -52,7 +52,7 @@ const WHO = [
     backBg: '#FCEBE1',
     tilt: '-.5deg',
     front: 'Real CMS, conversion tracking, structured content. Quoted properly, not priced off a menu.',
-    back: 'Your website is usually the first thing an investor, partner or serious buyer checks — before they reply to the email. A site with real structure, tracking and content that answers their questions does diligence for you while you sleep.',
+    back: 'Your website is usually the first thing an investor, partner or serious buyer checks, often before they reply to the email. A site with structure, tracking and content that answers their questions does diligence for you while you sleep.',
   },
   {
     title: 'Agencies',
@@ -73,7 +73,7 @@ const WORKS = [
     tilt: '-1.2deg',
     img: shotII,
     blurb:
-      'Five product websites rebuilt in Webflow for a publicly traded fintech — SEO and tracking built into the structure, not added afterwards.',
+      'Five product websites rebuilt in Webflow for a publicly traded fintech, with SEO and tracking built into the structure, not added afterwards.',
     stat: 'qualified organic traffic doubled in 90 days',
     href: 'https://www.intelligentinvesting.ai/',
     link: 'intelligentinvesting.ai',
@@ -99,7 +99,7 @@ const WORKS = [
     tilt: '1.3deg',
     img: shotKatty,
     blurb:
-      'A small local business with real personality, built to take bookings directly — every route leads to a free meet and greet.',
+      'A small local business with real personality, built to take bookings directly: every route leads to a free meet and greet.',
     stat: 'mobile-first, fast, no platform subscription',
     href: 'https://kattyco.ca/',
     link: 'kattyco.ca',
@@ -112,7 +112,7 @@ const WORKS = [
     tilt: '-1.1deg',
     img: shotSLP,
     blurb:
-      'A twenty-year private practice given a site that explains the work clearly to worried parents — seven service areas, structured.',
+      'A twenty-year private practice given a site that explains the work clearly to worried parents: seven service areas, structured.',
     stat: 'hosted free — the $0/month option, live',
     href: 'https://east-van-slp.github.io/',
     link: 'east-van-slp.github.io',
@@ -213,15 +213,21 @@ const BUDGETS = [
       <div class="wdnav__list">
         <a class="wdnav__hq" href="/" title="Back to mnmonzones.com">← back to HQ</a>
         <span class="wdnav__div" aria-hidden="true"></span>
-        <a class="wdnav__sec" href="#work"
+        {/*
+          Work, Process and Pricing are their own pages since v13, so these
+          leave the page rather than jumping down it. The section ids they used
+          to target still exist below, and the summaries there link onward.
+        */}
+        <a class="wdnav__sec" href="/web-design/work/"
           ><span class="wdnav__dot" style="background:#F5C0A4" aria-hidden="true"></span>Work</a
         >
-        <a class="wdnav__sec" href="#pricing"
+        <a class="wdnav__sec" href="/web-design/process/"
+          ><span class="wdnav__dot" style="background:#FADFA6" aria-hidden="true"></span>Process</a
+        >
+        <a class="wdnav__sec" href="/web-design/pricing/"
           ><span class="wdnav__dot" style="background:#ADD4EE" aria-hidden="true"></span>Pricing</a
         >
-        <a class="wdnav__sec" href="#faq"
-          ><span class="wdnav__dot" style="background:#FADFA6" aria-hidden="true"></span>FAQ</a
-        >
+        <a class="wdnav__sec" href="#faq">FAQ</a>
         <a class="wdnav__cta" href="#start">Start a project</a>
         <button
           type="button"
@@ -238,8 +244,9 @@ const BUDGETS = [
       </div>
 
       <div class="wdnav__panel" id="wd-mobile-nav" hidden data-wd-nav-panel>
-        <a href="#work">Work</a>
-        <a href="#pricing">Pricing</a>
+        <a href="/web-design/work/">Work</a>
+        <a href="/web-design/process/">Process</a>
+        <a href="/web-design/pricing/">Pricing</a>
         <a href="#faq">FAQ</a>
         <a class="wdnav__panelhq" href="/">← back to HQ</a>
         <a class="wdnav__panelcta" href="#start">Start a project</a>
@@ -284,8 +291,8 @@ const BUDGETS = [
 
         <div class="hero__row">
           <p class="hero__lede">
-            For small businesses and independent professionals. Eleven years of building sites
-            inside companies — fintech, ecommerce, agency — now available directly.
+            For small businesses and independent professionals. Twelve years building sites inside
+            companies (fintech, ecommerce, agency), now available directly.
           </p>
           <div class="hero__ctas">
             <span class="hero__scribble">hand-built or on Webflow — your call ↓</span>
@@ -349,6 +356,91 @@ const BUDGETS = [
       </div>
     </section>
 
+    {/* ---------------------------------------------------- what you get -- */}
+    <section class="keep">
+      <div class="wd__inner">
+        <p class="scribble" data-wd-reveal="up">what you get</p>
+        <h2 class="wd__h2" data-wd-reveal="up">
+          Everything a site needs to <em>earn its keep.</em>
+        </h2>
+
+        <div class="keep__grid" data-wd-stagger="up">
+          <div class="keep__card">
+            <h3 class="keep__title">Design that sells</h3>
+            <p class="keep__body">
+              No templates, no page-builder soup. A site designed around your customers and what
+              they need to see before they reach for their wallet.
+            </p>
+          </div>
+          <div class="keep__card">
+            <h3 class="keep__title">Build: hand-coded or any platform</h3>
+            <p class="keep__body">
+              Fast, accessible, and easy to edit. You pick the stack; I make sure it loads instantly
+              and never breaks on a phone.
+            </p>
+          </div>
+          <div class="keep__card">
+            <h3 class="keep__title">SEO &amp; analytics wired in</h3>
+            <p class="keep__body">
+              People have to find you before they can pay you. Local search setup, clean metadata,
+              and analytics you can actually read.
+            </p>
+          </div>
+          <div class="keep__card">
+            <h3 class="keep__title">Care after launch</h3>
+            <p class="keep__body">
+              Updates, tweaks, and honest advice from the person who built it, not a support ticket
+              queue.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------- process -- */}
+    <section class="steps" id="process">
+      <div class="wd__inner">
+        <p class="scribble" data-wd-reveal="up">how it works</p>
+        <h2 class="wd__h2" data-wd-reveal="up">Three steps. <em>No mystery.</em></h2>
+
+        <ol class="steps__list" data-wd-stagger="up">
+          <li class="steps__row">
+            <span class="steps__num" aria-hidden="true">1</span>
+            <div>
+              <h3 class="keep__title">A real conversation</h3>
+              <p class="keep__body">
+                Thirty minutes about your business, your customers, and what “working” means for the
+                site. No jargon.
+              </p>
+            </div>
+          </li>
+          <li class="steps__row">
+            <span class="steps__num" aria-hidden="true">2</span>
+            <div>
+              <h3 class="keep__title">Design in the open</h3>
+              <p class="keep__body">
+                You see the design early and often. Feedback is a conversation, not a form.
+              </p>
+            </div>
+          </li>
+          <li class="steps__row">
+            <span class="steps__num" aria-hidden="true">3</span>
+            <div>
+              <h3 class="keep__title">Launch &amp; handover</h3>
+              <p class="keep__body">
+                Live, fast, and yours. You get the keys, a walkthrough, and someone to call after.
+              </p>
+            </div>
+          </li>
+        </ol>
+
+        <p class="steps__more" data-wd-reveal="up">
+          That’s the short version. The <a href="/web-design/process/">full process page</a> lays out
+          all ten steps, both approval gates, and exactly what I need from you and when.
+        </p>
+      </div>
+    </section>
+
     {/* --------------------------------------------------- discovery call -- */}
     <section class="disc">
       <div class="wd__inner ctabox" data-wd-reveal="pop">
@@ -357,7 +449,7 @@ const BUDGETS = [
           <p class="scribble scribble--coral">not ready to start anything?</p>
           <h2 class="ctabox__title">A 30-minute discovery call</h2>
           <p class="ctabox__body">
-            Bring your questions — about your current site, what a build would cost, whether you
+            Bring your questions: about your current site, what a build would cost, whether you
             even need one. You’ll leave with a straight answer either way. No deck, no follow-up
             sequence, no obligation.
           </p>
@@ -682,7 +774,7 @@ const BUDGETS = [
           their lives as a nice page in a browser tab that never quite goes live.
         </p>
         <p data-wd-reveal="up">
-          And I use these tools too — that’s part of why I’m not charging agency prices.
+          And I use these tools too. That’s part of why I’m not charging agency prices.
         </p>
         <p class="awkward__punch" data-wd-reveal="pop">
           Nobody is asking ChatGPT to verify their Google Business Profile.
@@ -747,8 +839,8 @@ const BUDGETS = [
           <div data-wd-reveal="up">
             <h2 class="start__title">Start a project</h2>
             <p class="start__lede">
-              Five questions, two minutes. Enough that I can usually come back with a price — not a
-              pitch — within two business days.
+              Five questions, two minutes. Enough that I can usually come back with a price, not a
+              pitch, within two business days.
             </p>
             <p class="scribble start__scribble">
               one build at a time — you get a real start date before you pay anything
@@ -1092,6 +1184,101 @@ const BUDGETS = [
   .wd__inner {
     max-width: 1180px;
     margin-inline: auto;
+  }
+
+  /* ------------------------------------- what you get / three steps (v13) -- */
+  .keep,
+  .steps {
+    padding-block: clamp(48px, 6vw, 88px);
+  }
+
+  .keep__grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .keep__card {
+    padding: 26px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 20px;
+    background: var(--wd-bright);
+    box-shadow: 6px 6px 0 var(--wd-ink);
+  }
+
+  .keep__title {
+    font-size: clamp(18px, 1.8vw, 21px);
+    font-weight: 800;
+    letter-spacing: -0.014em;
+    line-height: 1.2;
+  }
+
+  .keep__body {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .steps__list {
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .steps__row {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+    padding-block: 26px;
+    border-top: 1px solid #c9c2b2;
+  }
+
+  .steps__num {
+    font-size: clamp(34px, 4vw, 54px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--wd-peach);
+  }
+
+  .steps__more {
+    margin-top: 26px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+  }
+
+  .steps__more a {
+    color: var(--wd-bluelink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .steps__more a:hover,
+  .steps__more a:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  @media (max-width: 900px) {
+    .keep__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .keep__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* The number gutter costs room a phone hasn't got. */
+    .steps__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+    }
   }
 
   .wd__h2 {

@@ -26,17 +26,32 @@ Run from the repo root. The `&` in this repo's absolute path breaks `npm run` on
 so invoke Astro directly.
 
 ```bash
-# v8/v9 live in "Website - Main Site/" and suffix every page with -Bold;
-# earlier rounds lived in "MAIN WEBSITE FILES/" without the suffix. The
-# scripts take paths, so only these variables change between rounds.
-D="../Website - Main Site/mnmonzones v9"
+# v8+ live in "Website - Main Site/" and suffix every page with -Bold;
+# earlier rounds lived in "MAIN WEBSITE FILES/" without the suffix. Only the
+# top level of a version folder is current — the nested "Website bold/",
+# "Website standalone/" and "mnmonzones-site/" directories are older
+# snapshots of the same pages. The scripts take paths, so only D changes.
+D="../Website - Main Site/mnmonzones v13"
 node scripts/gen-cases.mjs      "$D/Monzones-D-Case-Bold.dc.html"
 node scripts/gen-home.mjs       "$D/Monzones-D-Bold.dc.html"
-node scripts/gen-consulting.mjs "$D/Monzones-D-Consulting-Bold.dc.html"
 node scripts/gen-about.mjs      "$D/Monzones-D-About-Bold.dc.html"
 node scripts/sync-projects.mjs  "$D/Monzones-D-Work-Bold.dc.html"          # report only
 node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work-Bold.dc.html"     # then apply
 ```
+
+**`gen-consulting.mjs` is no longer part of the recipe.** It read the
+single-page `Monzones-D-Consulting-Bold` export, which v13 replaced with the
+four-file `Monzones-C-*` series. `src/data/consulting.ts` and
+`src/data/web-design.ts` are now maintained by hand from the C- and W-series
+files; they are the only data files without a generator. Run `check-copy`
+rather than trusting a generator to catch drift in them.
+
+**The two service sections are four pages each.** v13's `Monzones-C-*` map to
+`/consulting/{,services,process,results}/` and `Monzones-W-*` to
+`/web-design/{,work,process,pricing}/`. Each section has one layout owning its
+sub-brand (`ConsultingLayout.astro`, `WebDesignLayout.astro`) and shared
+classes in an `is:global` block, because scoped styles can't reach markup
+passed through a `<slot />`.
 
 1. **Read the export's own `CLAUDE.md`** if it ships one (v6 did, v7 didn't) — it carries
    project facts that aren't in `Website MD Repository/`.

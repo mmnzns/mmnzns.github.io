@@ -1,0 +1,634 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { CONTACT } from '../config';
+import logoM from '../assets/logo-m-transparent.png';
+
+/**
+ * The shell for the web design sub-pages — `/web-design/work/`, `/process/`
+ * and `/pricing/`.
+ *
+ * v13 split the web design offer into four pages that share one nav. This
+ * layout carries the sub-brand for the three new ones: the `--wd-*` palette,
+ * Bricolage Grotesque + Caveat, the grain, the nav and the footer.
+ *
+ * `src/pages/web-design.astro` is deliberately *not* migrated onto this
+ * layout. It is 2,800 lines of working, hand-tuned page whose only v13 change
+ * is copy, and rebuilding it to share a shell would risk a great deal to save
+ * a little. It therefore keeps its own scoped copy of the same tokens under
+ * the same `.wd` class — the values here and there must stay in step, and
+ * this is the one place in the repo where that duplication is on purpose.
+ */
+interface Props {
+  title: string;
+  description: string;
+  /** Marks the current item in the section nav. */
+  current?: 'work' | 'process' | 'pricing';
+}
+
+const { title, description, current } = Astro.props;
+
+const NAV = [
+  { label: 'Work', href: '/web-design/work/', key: 'work', dot: '#F5C0A4' },
+  { label: 'Process', href: '/web-design/process/', key: 'process', dot: '#FADFA6' },
+  { label: 'Pricing', href: '/web-design/pricing/', key: 'pricing', dot: '#ADD4EE' },
+] as const;
+
+const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+---
+
+<BaseLayout title={title} description={description} standalone>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+  </Fragment>
+
+  <div class="wd">
+    <div class="wd__grain" aria-hidden="true"></div>
+
+    <nav class="wdnav" aria-label="Web design">
+      <a class="wdnav__brand" href="/web-design/">
+        <img src={logoM.src} alt="" width="84" height="84" />
+        <span class="wdnav__brandtext">
+          <span class="wdnav__brandname">Sites that sell.</span>
+          <span class="wdnav__brandsub">by Miguel Monzones</span>
+        </span>
+      </a>
+
+      <div class="wdnav__list">
+        <a class="wdnav__hq" href="/" title="Back to mnmonzones.com">← back to HQ</a>
+        <span class="wdnav__div" aria-hidden="true"></span>
+        <a class="wdnav__sec" href="/web-design/">Home</a>
+        {
+          NAV.map((item) => (
+            <a
+              class="wdnav__sec"
+              href={item.href}
+              aria-current={current === item.key ? 'page' : undefined}
+            >
+              <span class="wdnav__dot" style={`background:${item.dot}`} aria-hidden="true" />
+              {item.label}
+            </a>
+          ))
+        }
+        <a class="wdnav__sec" href="/web-design/#faq">FAQ</a>
+        <a class="wdnav__cta" href="/web-design/#start">Start a project ↗</a>
+
+        <button
+          class="wdnav__burger"
+          type="button"
+          aria-expanded="false"
+          aria-controls="wd-menu"
+          aria-label="Menu"
+          data-wdnav-toggle
+        >
+          <span class="wdnav__bars" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div class="wdnav__panel" id="wd-menu" hidden data-wdnav-panel>
+        <a href="/web-design/">Home</a>
+        {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+        <a href="/web-design/#faq">FAQ</a>
+        <a href="/">← back to HQ</a>
+        <a href="/web-design/#start">Start a project ↗</a>
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer class="wdfoot">
+      <div class="wdfoot__inner">
+        <span>
+          <strong class="wdfoot__m">M.</strong> Sites that sell.
+          <span class="wdfoot__sub">by Miguel Monzones</span>
+        </span>
+        <span>MNM Alaminos Consulting Ltd.</span>
+        <span class="wdfoot__links">
+          <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          <a href={phoneHref}>{CONTACT.phone}</a>
+          <a href="#cookie-settings" data-cookie-settings>Cookie settings</a>
+          <a href="/">mnmonzones.com ↗</a>
+        </span>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  /* ------------------------------------------------------------- nav ---- */
+  const toggle = document.querySelector<HTMLButtonElement>('[data-wdnav-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-wdnav-panel]');
+
+  if (toggle && panel) {
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+    });
+
+    panel.addEventListener('click', (event) => {
+      if (!(event.target instanceof HTMLAnchorElement)) return;
+      toggle.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      toggle.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+      toggle.focus();
+    });
+  }
+
+  /* --------------------------------------------------------- reveals ---- */
+  /* Starting states are written here, never in CSS, with a failsafe that
+     shows everything if the observer never fires — the same discipline
+     Motion.astro and web-design.astro follow. */
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+
+  if (!reduced && typeof IntersectionObserver === 'function' && targets.length) {
+    const pending = new Set<HTMLElement>(targets);
+
+    for (const el of targets) {
+      el.style.opacity = '0';
+      el.style.transform =
+        el.dataset.reveal === 'pop' ? 'translateY(20px) scale(.96)' : 'translateY(28px)';
+      el.style.transition = 'opacity .7s ease, transform .8s cubic-bezier(.2,.8,.2,1)';
+    }
+
+    const show = (el: HTMLElement) => {
+      if (!pending.delete(el)) return;
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          show(entry.target as HTMLElement);
+          io.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+    );
+
+    targets.forEach((el) => io.observe(el));
+
+    const flush = () => {
+      io.disconnect();
+      for (const el of [...pending]) {
+        el.style.transition = '';
+        show(el);
+      }
+    };
+
+    window.setTimeout(flush, 4000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flush();
+    });
+  }
+</script>
+
+<style is:global>
+  /* Namespaced under `.wd`, and global because scoped rules can't reach the
+     page markup that arrives through <slot />. */
+  .wd {
+    --wd-paper: #fdf9ef;
+    --wd-bright: #fffdf7;
+    --wd-ink: #1c1b19;
+    --wd-muted: #55503f;
+    --wd-faint: #8a8168;
+    --wd-peach: #f5c0a4;
+    --wd-blue: #add4ee;
+    --wd-blueband: #c3dff1;
+    --wd-butter: #fadfa6;
+    --wd-coral: #f0621f;
+    --wd-coral-deep: #d8501a;
+    --wd-bluelink: #2a82be;
+    --wd-gold: #e8a317;
+    --wd-font: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+    --wd-hand: 'Caveat', cursive;
+
+    position: relative;
+    min-width: 320px;
+    background: var(--wd-paper);
+    color: var(--wd-ink);
+    font-family: var(--wd-font);
+    overflow-x: clip;
+  }
+
+  .wd a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 220ms ease;
+  }
+
+  .wd :focus-visible {
+    outline: 2px solid var(--wd-coral);
+    outline-offset: 3px;
+  }
+
+  .wd__grain {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: multiply;
+    background-size: 200px 200px;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85 .4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  /* ----------------------------------------------------------- layout -- */
+  .wd .wdwrap {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: clamp(18px, 4vw, 44px);
+  }
+
+  .wd .wdsec {
+    padding-block: clamp(56px, 7vw, 104px);
+  }
+
+  .wd .wdkick {
+    display: block;
+    font-family: var(--wd-hand);
+    font-size: clamp(20px, 2vw, 26px);
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdh2 {
+    margin-top: 8px;
+    font-size: clamp(30px, 4.2vw, 52px);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.024em;
+    text-wrap: balance;
+  }
+
+  .wd .wdh2 em {
+    font-style: normal;
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdlede {
+    margin-top: 16px;
+    max-width: 66ch;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.65;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wd .wdnote {
+    margin-top: 16px;
+    font-family: var(--wd-hand);
+    font-size: clamp(19px, 1.9vw, 24px);
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdcard {
+    background: var(--wd-bright);
+    border: 2px solid var(--wd-ink);
+    border-radius: 22px;
+    padding: clamp(22px, 2.6vw, 32px);
+    box-shadow: 6px 6px 0 var(--wd-ink);
+  }
+
+  .wd .wdbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 24px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    transition:
+      transform 0.25s ease,
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .wd .wdbtn--solid {
+    background: var(--wd-coral);
+    color: var(--wd-bright);
+  }
+
+  .wd .wdbtn--solid:hover,
+  .wd .wdbtn--solid:focus-visible {
+    transform: translateY(-3px);
+    background: var(--wd-ink);
+    color: var(--wd-bright);
+  }
+
+  .wd .wdbtn--ghost {
+    background: var(--wd-bright);
+  }
+
+  .wd .wdbtn--ghost:hover,
+  .wd .wdbtn--ghost:focus-visible {
+    transform: translateY(-3px);
+    background: var(--wd-butter);
+  }
+
+  .wd .wdctarow {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Wide tables scroll inside their own box rather than the page. */
+  .wd .wdtable {
+    margin-top: 28px;
+    overflow-x: auto;
+    border: 2px solid var(--wd-ink);
+    border-radius: 18px;
+    background: var(--wd-bright);
+  }
+
+  .wd .wdtable table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+
+  .wd .wdtable th,
+  .wd .wdtable td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgb(28 27 25 / 12%);
+    vertical-align: top;
+    min-width: 150px;
+  }
+
+  .wd .wdtable th {
+    font-weight: 700;
+    background: var(--wd-butter);
+  }
+
+  .wd .wdtable tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .wd .wdtable small {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--wd-faint);
+  }
+
+  /* -------------------------------------------------------------- nav -- */
+  .wd .wdnav {
+    position: relative;
+    z-index: 20;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: 14px clamp(18px, 4vw, 44px);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .wd .wdnav__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: auto;
+  }
+
+  .wd .wdnav__brand img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .wd .wdnav__brandtext {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .wd .wdnav__brandname {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+  }
+
+  .wd .wdnav__brandsub {
+    font-family: var(--wd-hand);
+    font-size: 16px;
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdnav__list {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .wd .wdnav__sec {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+  }
+
+  .wd .wdnav__sec:hover,
+  .wd .wdnav__sec:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdnav__sec[aria-current='page'] {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+
+  .wd .wdnav__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+  }
+
+  .wd .wdnav__hq {
+    color: var(--wd-faint);
+    white-space: nowrap;
+  }
+
+  .wd .wdnav__hq:hover,
+  .wd .wdnav__hq:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdnav__div {
+    width: 1px;
+    height: 18px;
+    background: rgb(28 27 25 / 18%);
+  }
+
+  .wd .wdnav__cta {
+    padding: 11px 18px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-butter);
+    font-weight: 700;
+    white-space: nowrap;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .wd .wdnav__cta:hover,
+  .wd .wdnav__cta:focus-visible {
+    transform: translateY(-2px);
+    background: var(--wd-coral);
+    color: var(--wd-bright);
+  }
+
+  .wd .wdnav__burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--wd-ink);
+    border-radius: 12px;
+    background: var(--wd-bright);
+    cursor: pointer;
+  }
+
+  .wd .wdnav__bars,
+  .wd .wdnav__bars::before,
+  .wd .wdnav__bars::after {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--wd-ink);
+  }
+
+  .wd .wdnav__bars::before,
+  .wd .wdnav__bars::after {
+    content: '';
+    position: relative;
+  }
+
+  .wd .wdnav__bars::before {
+    top: -6px;
+  }
+
+  .wd .wdnav__bars::after {
+    top: 4px;
+  }
+
+  .wd .wdnav__panel {
+    display: flex;
+    flex-direction: column;
+    margin: 0 clamp(18px, 4vw, 44px);
+    padding: 6px 18px 14px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 18px;
+    background: var(--wd-bright);
+  }
+
+  .wd .wdnav__panel a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid rgb(28 27 25 / 10%);
+  }
+
+  .wd .wdnav__panel a:last-child {
+    border-bottom: 0;
+  }
+
+  @media (max-width: 900px) {
+    .wd .wdnav__list > *:not(.wdnav__burger) {
+      display: none;
+    }
+
+    .wd .wdnav__burger {
+      display: flex;
+    }
+  }
+
+  @media (min-width: 901px) {
+    .wd .wdnav__panel {
+      display: none;
+    }
+  }
+
+  /* ----------------------------------------------------------- footer -- */
+  .wd .wdfoot {
+    border-top: 2px solid var(--wd-ink);
+    padding-block: clamp(28px, 4vw, 44px);
+  }
+
+  .wd .wdfoot__inner {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: clamp(18px, 4vw, 44px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--wd-muted);
+  }
+
+  .wd .wdfoot__m {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--wd-ink);
+  }
+
+  .wd .wdfoot__sub {
+    font-family: var(--wd-hand);
+    font-size: 16px;
+    color: var(--wd-coral-deep);
+  }
+
+  .wd .wdfoot__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+
+  .wd .wdfoot__links a:hover,
+  .wd .wdfoot__links a:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  @media (max-width: 719px) {
+    .wd .wdfoot__links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wd *,
+    .wd *::before,
+    .wd *::after {
+      transition-duration: 1ms !important;
+      animation: none !important;
+    }
+  }
+</style>

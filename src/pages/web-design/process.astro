@@ -1,0 +1,411 @@
+---
+import WebDesignLayout from '../../layouts/WebDesignLayout.astro';
+import { CONTACT } from '../../config';
+import {
+  GATES,
+  PROCESS_HERO,
+  PROCESS_JUMPS,
+  PROCESS_STEPS,
+  PROMISE,
+  TIMELINE_MOVERS,
+} from '../../data/web-design';
+
+/** `/web-design/process/` — ported from the v13 export's `Monzones-W-Process`. */
+const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discovery call (30 minutes)')}`;
+---
+
+<WebDesignLayout
+  title="Process · Web Design"
+  description="How a website build runs from discovery to launch: ten steps and two explicit gates, including design approval before any development starts."
+  current="process"
+>
+  <header class="wdwrap wdhero" id="top">
+    <p class="wdhero__tags">
+      {PROCESS_HERO.tags.map((tag) => <span class="wdtag">{tag}</span>)}
+    </p>
+    <h1 class="wdhero__title">
+      {PROCESS_HERO.titleLead} <em>{PROCESS_HERO.titleAccent}</em>
+    </h1>
+    <p class="wdlede wdhero__body">{PROCESS_HERO.body}</p>
+
+    <nav class="wdjumps" aria-label="On this page">
+      {PROCESS_JUMPS.map((jump) => <a href={jump.href}>{jump.label}</a>)}
+    </nav>
+  </header>
+
+  <section class="wdsec wdwrap" id="gates">
+    <p class="wdkick" data-reveal>the two moments that matter</p>
+    <h2 class="wdh2" data-reveal>Two gates, and <em>nothing hidden.</em></h2>
+    <p class="wdlede" data-reveal>
+      Most website projects go sideways in one of two places: the clock starting before anyone is
+      ready, or the build starting before the design is agreed. So I’ve made both moments explicit.
+      You’ll always know which side of each gate we’re on.
+    </p>
+
+    <div class="wdtwo">
+      {
+        GATES.map((gate) => (
+          <div class="wdcard wdgate" data-reveal>
+            <span class="wdgate__label">{gate.label}</span>
+            <h3 class="wdh3">{gate.title}</h3>
+            <p class="wdbody">{gate.body}</p>
+            <p class="wdnote">{gate.note}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wdsec wdwrap" id="steps">
+    <p class="wdkick" data-reveal>start to launch</p>
+    <h2 class="wdh2" data-reveal>The <em>process.</em></h2>
+
+    <ol class="wdsteps">
+      {
+        PROCESS_STEPS.map((step) => (
+          <li class="wdstep" id={step.num === '03' ? 'inputs' : undefined} data-reveal>
+            <span class="wdstep__num" aria-hidden="true">
+              {step.num}
+            </span>
+            <div class="wdstep__body">
+              {step.gate ? <span class="wdgate__label">{step.gate}</span> : null}
+              <h3 class="wdh3">{step.title}</h3>
+              {step.paras.map((para) => (
+                <p class="wdbody">{para}</p>
+              ))}
+              {step.listLabel ? <p class="wdstep__label">{step.listLabel}</p> : null}
+              {step.items ? (
+                <ul class="wdlist">
+                  {step.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {step.after?.map((para) => (
+                <p class="wdbody">{para}</p>
+              ))}
+              {/*
+                Step 10's closing paragraph carries the only inline link in the
+                sequence, so it is written here rather than smuggled into the
+                data file as a string of HTML.
+              */}
+              {step.num === '10' ? (
+                <p class="wdbody">
+                  New content, new features, design changes, or anything caused by a third-party
+                  platform aren’t faults in the original build. Those go through{' '}
+                  <a class="wdlink" href="/web-design/pricing/#care">
+                    Website Care
+                  </a>
+                  , a written project quote, or the small-change policy on hand-built sites,
+                  whichever suits you best.
+                </p>
+              ) : null}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="wdsec wdwrap" id="pause">
+    <p class="wdkick" data-reveal>honest about the clock</p>
+    <h2 class="wdh2" data-reveal>What pauses or moves <em>the timeline.</em></h2>
+    <p class="wdlede" data-reveal>
+      The assessed timeline assumes content, access, decisions and consolidated feedback arrive
+      reasonably on time. Life happens, so here’s when the schedule may pause or shift:
+    </p>
+
+    <div class="wdmovers">
+      {TIMELINE_MOVERS.map((mover) => <p class="wdcard wdmover" data-reveal>{mover}</p>)}
+    </div>
+
+    <p class="wdlede" data-reveal>
+      A pause isn’t extra billable time on its own. It can move the project to the next available
+      opening, because I only ever run one active build at a time, and that’s the same reason your
+      build gets my full attention when it’s yours.
+    </p>
+  </section>
+
+  <section class="wdsec wdwrap">
+    <p class="wdkick" data-reveal>{PROMISE.kicker}</p>
+    <div class="wdcard wdcard--butter wdpromise" data-reveal="pop">
+      <p class="wdpromise__line">{PROMISE.headline}</p>
+      <p class="wdbody">{PROMISE.body}</p>
+    </div>
+  </section>
+
+  <section class="wdsec wdwrap wdcta" id="start">
+    <h2 class="wdh2" data-reveal>Ready to start <em>step one?</em></h2>
+    <p class="wdlede" data-reveal>
+      Discovery is free, unhurried, and doesn’t start any clock. Tell me what you’re trying to do and
+      we’ll figure out the rest together.
+    </p>
+    <p class="wdnote" data-reveal>usually replies within a day</p>
+    <div class="wdctarow" data-reveal>
+      <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
+      <a class="wdbtn wdbtn--ghost" href={callHref}>Book a free call ↗</a>
+      <a class="wdbtn wdbtn--ghost" href="/web-design/pricing/">See the prices</a>
+    </div>
+  </section>
+</WebDesignLayout>
+
+<style>
+  .wdhero {
+    padding-block: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 36px);
+  }
+
+  .wdhero__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wdtag {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-bright);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .wdhero__title {
+    margin-top: 22px;
+    font-size: clamp(38px, 5.8vw, 76px);
+    font-weight: 800;
+    line-height: 0.99;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .wdhero__title em {
+    font-style: normal;
+    color: var(--wd-coral-deep);
+  }
+
+  .wdhero__body {
+    margin-top: 22px;
+  }
+
+  .wdjumps {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wdjumps a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 8px 15px;
+    border: 2px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-bright);
+    font-size: 14px;
+    font-weight: 600;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .wdjumps a:hover,
+  .wdjumps a:focus-visible {
+    transform: translateY(-2px);
+    background: var(--wd-butter);
+  }
+
+  .wdtwo {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+  }
+
+  .wdgate__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--wd-peach);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .wdh3 {
+    margin-top: 12px;
+    font-size: clamp(20px, 2vw, 26px);
+    font-weight: 800;
+    letter-spacing: -0.018em;
+    line-height: 1.15;
+  }
+
+  .wdbody {
+    margin-top: 12px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdbody strong {
+    color: var(--wd-ink);
+  }
+
+  .wdlist {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wdlist li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdlist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--wd-coral);
+  }
+
+  /* -------------------------------------------------------------- steps -- */
+  .wdsteps {
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .wdstep {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: clamp(16px, 2.4vw, 32px);
+    padding: clamp(22px, 2.6vw, 32px);
+    border: 2px solid var(--wd-ink);
+    border-radius: 22px;
+    background: var(--wd-bright);
+    box-shadow: 6px 6px 0 var(--wd-ink);
+    /* Step 03 is the target of the "What I need from you" jump link. */
+    scroll-margin-top: 20px;
+  }
+
+  .wdstep__num {
+    font-size: clamp(30px, 3.4vw, 44px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--wd-peach);
+  }
+
+  .wdstep__body > .wdh3:first-child {
+    margin-top: 0;
+  }
+
+  .wdstep__label {
+    margin-top: 18px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--wd-faint);
+  }
+
+  .wdlink {
+    color: var(--wd-bluelink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .wdlink:hover,
+  .wdlink:focus-visible {
+    color: var(--wd-coral-deep);
+  }
+
+  /* ------------------------------------------------------------ movers -- */
+  .wdmovers {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .wdmover {
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .wdpromise {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .wdpromise__line {
+    font-size: clamp(24px, 3.2vw, 40px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.024em;
+    text-wrap: balance;
+  }
+
+  .wdpromise .wdbody {
+    max-width: 62ch;
+    margin-inline: auto;
+  }
+
+  .wdcta {
+    text-align: center;
+  }
+
+  .wdcta .wdlede {
+    margin-inline: auto;
+  }
+
+  .wdcta .wdctarow {
+    justify-content: center;
+  }
+
+  @media (max-width: 900px) {
+    .wdmovers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .wdtwo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* The number column costs room a phone hasn't got, so it becomes a label
+       above the step rather than a gutter beside it. */
+    .wdstep {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .wdmovers {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
