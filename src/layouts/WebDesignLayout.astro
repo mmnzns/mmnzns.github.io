@@ -7,19 +7,23 @@ import { CONTACT } from '../config';
  * The shell for the web design sub-pages — `/web-design/work/`, `/process/`
  * and `/pricing/`.
  *
- * v13 split the web design offer into four pages. This layout carries the
- * sub-brand for the three new ones: the `--wd-*` palette, Archivo
- * + Caveat, the grain and the footer.
+ * v13 split the web design offer into four pages; v14 restyled the three
+ * sub-pages. This layout carries the sub-brand for them: the `--wd-*` palette,
+ * Archivo + Caveat + IBM Plex Mono, the grain, the footer, and every class more
+ * than one of the three pages uses. Those live in an `is:global` block on
+ * purpose — scoped styles cannot reach markup passed through a `<slot />`.
  *
  * The nav is **not** here. `web-design.astro` is deliberately not migrated
- * onto this layout — 2,800 lines of hand-tuned page whose only v13 change was
- * copy — so the nav lives in `WebDesignNav.astro` and both render the same
- * one. It used to exist twice and the copies drifted, which made the header
- * jump on every click between the main page and a sub-page.
+ * onto this layout — 2,700 lines of hand-tuned page — so the nav lives in
+ * `WebDesignNav.astro` and both render the same one. It used to exist twice
+ * and the copies drifted, which made the header jump on every click between
+ * the main page and a sub-page.
  *
  * The `.wd` tokens below are still duplicated in web-design.astro's own scoped
  * block, and the two must stay in step. That is the remaining deliberate
  * duplication in this section.
+ *
+ * Values are the v14 export's (`Monzones-W-Work`, `-Process`, `-Pricing`).
  */
 interface Props {
   title: string;
@@ -29,8 +33,6 @@ interface Props {
 }
 
 const { title, description, current } = Astro.props;
-
-const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 ---
 
 <BaseLayout title={title} description={description} standalone>
@@ -59,17 +61,18 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
     <slot />
 
+    {/* The export's footer has LinkedIn and the HQ link; the cookie link is
+        this site's — it sets analytics cookies and the banner has to stay
+        reachable from every page. Same three links as the main page's footer. */}
     <footer class="wdfoot">
       <div class="wdfoot__inner">
         <span>
           <strong class="wdfoot__m">M.</strong> Sites that sell.
           <span class="wdfoot__sub">by Miguel Monzones</span>
         </span>
-        <span>MNM Alaminos Consulting Ltd.</span>
+        <span>{CONTACT.entity}</span>
         <span class="wdfoot__links">
           <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-          <a href={phoneHref}>{CONTACT.phone}</a>
           <a href="#cookie-settings" data-cookie-settings>Cookie settings</a>
           <a href="/">mnmonzones.com ↗</a>
         </span>
@@ -79,7 +82,6 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 </BaseLayout>
 
 <script>
-
   /* --------------------------------------------------------- reveals ---- */
   /* Starting states are written here, never in CSS, with a failsafe that
      shows everything if the observer never fires — the same discipline
@@ -135,11 +137,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* Namespaced under `.wd`, and global because scoped rules can't reach the
      page markup that arrives through <slot />. */
   .wd {
-    /* v13 palette. The web design section was re-skinned in v13: Archivo
-       replaces Bricolage Grotesque, the paper cools, and the peach/blue pair
-       is gone entirely. `--wd-peach` and `--wd-blue*` are kept as aliases
-       onto their v13 replacements so nothing referencing them renders an
-       invalid colour, but new work should use the named tokens below. */
+    /* The section's palette, by the role each colour plays in the export.
+       `--wd-peach` and `--wd-blue*` are aliases left over from the pre-v13
+       palette so nothing referencing them renders an invalid colour; new work
+       should use the named tokens. */
     --wd-paper: #f4f1ea;
     --wd-card: #fcfbf7;
     --wd-bright: #fcfbf7;
@@ -150,6 +151,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     --wd-faint: #a89f8d;
     --wd-rule: #ddd6c7;
     --wd-rule-strong: #c9c2b2;
+    --wd-rule-soft: #d9d2c2;
     --wd-yellow: #f5d44a;
     --wd-coral: #ee4a11;
     --wd-coral-deep: #d8400c;
@@ -159,10 +161,6 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     --wd-peach: #f5d44a;
     --wd-blue: #ddd6c7;
     --wd-blueband: #e5dfd0;
-    /* The rest of v13's palette, by the role each colour plays in the export.
-       Counted across all four Monzones-W files: body #3e3931 (x43), the dark
-       card faces on the near-black bands (x25 between the three), light copy
-       on those bands (x14), and the FAQ's closed-row rule (x3). */
     --wd-body: #3e3931;
     --wd-body-soft: #4a443b;
     --wd-card-dark: #241d13;
@@ -170,8 +168,13 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     --wd-card-warm: #2a2015;
     --wd-on-dark: #c7beac;
     --wd-on-dark-soft: #d5cdbb;
-    --wd-rule-soft: #d9d2c2;
     --wd-bluelink: #d8400c;
+    /* The accent a kicker, label or note takes; the dark band remaps these. */
+    --wd-kick: #d8400c;
+    --wd-label: #d8400c;
+    --wd-note: #d8400c;
+    --wd-heading: #171310;
+    --wd-link: #171310;
     --wd-font: 'Archivo', 'Helvetica Neue', sans-serif;
     --wd-hand: 'Caveat', cursive;
     --wd-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -183,17 +186,15 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     font-family: var(--wd-font);
     /* The export's body sets neither size nor leading, so it runs on the
        browser defaults. Without this reset the section inherits global.css's
-       17px/1.65, which is why every line box here sat taller than the design —
-       the nav pill measured 45px against the export's 41px, and the same drift
-       ran through anything that doesn't declare its own line-height. Both
-       `.wd` blocks must carry this. */
+       17px/1.65, which is why every line box here sat taller than the design.
+       Both `.wd` blocks must carry this. */
     font-size: 16px;
     line-height: normal;
     overflow-x: clip;
   }
 
-  /* Archivo is a variable font with a width axis, and v13 sets headings wide.
-     This is a large part of why the section reads as its own brand. */
+  /* Archivo is a variable font with a width axis, and the export sets headings
+     wide. This is a large part of why the section reads as its own brand. */
   .wd h1,
   .wd h2,
   .wd h3,
@@ -223,33 +224,177 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85 .4' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
   }
 
-  /* ----------------------------------------------------------- layout -- */
+  /* ------------------------------------------------------------- hero -- */
+  /* 1180 of content inside 24px of side padding; border-box, so the wrapper
+     is 1228 wide. */
   .wd .wdwrap {
+    max-width: 1228px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  .wd .wdhero {
+    padding-block: 96px 84px;
+  }
+
+  .wd .wdhero__tags {
+    margin: 0 0 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .wd .wdtag {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px 7px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .wd .wdtag--butter {
+    background: var(--wd-yellow);
+    border-color: var(--wd-yellow);
+  }
+
+  .wd .wdhero__title {
+    margin: 0;
+    font-size: clamp(40px, 6vw, 92px);
+    font-weight: 900;
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+  }
+
+  .wd .wdhero__title em {
+    font-style: italic;
+    color: var(--wd-coral);
+  }
+
+  .wd .wdhero__body {
+    margin: 26px 0 0;
+    max-width: 680px;
+    font-size: 18.5px;
+    line-height: 1.65;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wd .wdhero__body strong {
+    color: var(--wd-ink);
+  }
+
+  /* On-page jump links: hairline pills in the soft rule colour, coral on hover. */
+  .wd .wdjumps {
+    margin-top: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .wd .wdjumps a {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 17px;
+    border: 1px solid var(--wd-rule-strong);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .wd .wdjumps a:hover,
+  .wd .wdjumps a:focus-visible {
+    border-color: var(--wd-coral);
+    color: var(--wd-coral);
+  }
+
+  /* ------------------------------------------------------------ bands -- */
+  /* Full-bleed bands, paper or near-black, 104px tall by default. A ruled band
+     drops its top padding and draws a hairline above its content instead, so
+     two paper sections read as one page with a divider. */
+  .wd .wdband {
+    padding: 104px 24px;
+  }
+
+  .wd .wdband--112 {
+    padding-block: 112px;
+  }
+
+  .wd .wdband--92 {
+    padding-block: 92px;
+  }
+
+  .wd .wdband--rule {
+    padding-top: 0;
+  }
+
+  .wd .wdband--rule > .wdband__inner {
+    border-top: 1px solid var(--wd-rule-strong);
+    padding-top: 80px;
+  }
+
+  .wd .wdband__inner {
     max-width: 1180px;
     margin-inline: auto;
-    padding-inline: clamp(18px, 4vw, 44px);
   }
 
-  .wd .wdsec {
-    padding-block: clamp(56px, 7vw, 104px);
+  .wd .wdband__inner--1000 {
+    max-width: 1000px;
   }
 
+  .wd .wdband__inner--900 {
+    max-width: 900px;
+  }
+
+  .wd .wdband--paper {
+    background: var(--wd-paper);
+  }
+
+  /* Inside a dark band the inks flip to their light-on-dark counterparts.
+     Remapping the tokens rather than restating every selector means a rule
+     written for paper stays legible here. `--wd-ink` is deliberately NOT
+     remapped: it draws the black CTA pill, not body text. */
+  .wd .wdband--dark {
+    background: var(--wd-ink-deep);
+    --wd-muted: #a89f8d;
+    --wd-body: #c7beac;
+    --wd-body-soft: #c7beac;
+    --wd-heading: #f4f1ea;
+    --wd-kick: #ee4a11;
+    --wd-label: #f5d44a;
+    --wd-note: #f5d44a;
+    --wd-link: #f4f1ea;
+  }
+
+  /* ------------------------------------------------------------- type -- */
   .wd .wdkick {
     display: block;
+    margin: 0 0 14px;
     font-family: var(--wd-hand);
-    font-size: clamp(20px, 2vw, 26px);
-    color: var(--wd-coral-deep);
+    font-size: 27px;
+    font-weight: 400;
+    color: var(--wd-kick);
+    transform: rotate(-1deg);
   }
 
-  /* Uppercase, 900, and much larger than the previous design ran them — the
-     three W sub-pages all use this one scale. */
   .wd .wdh2 {
-    margin-top: 8px;
+    margin: 0 0 18px;
     font-size: clamp(38px, 5vw, 68px);
     font-weight: 900;
     line-height: 0.98;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    color: var(--wd-heading);
     text-wrap: balance;
   }
 
@@ -258,238 +403,243 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--wd-coral);
   }
 
-  /* The closing CTA heading is a step larger again on every sub-page. */
-  .wd .wdcta .wdh2 {
-    font-size: clamp(38px, 5.4vw, 72px);
-    line-height: 0.96;
-    letter-spacing: -0.025em;
+  /* Two smaller scales the export uses for secondary sections. */
+  .wd .wdh2--md {
+    font-size: clamp(34px, 4.6vw, 60px);
+    line-height: 1;
   }
 
-  .wd .wdcta .wdh2 em {
-    color: var(--wd-ink);
+  .wd .wdh2--sm {
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1;
+  }
+
+  /* A heading with a short aside on its baseline ("The smaller three" ·
+     "hand-built or platform"). */
+  .wd .wdhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 18px;
+    margin-bottom: 8px;
+  }
+
+  .wd .wdhead .wdh2 {
+    margin: 0;
+  }
+
+  .wd .wdhead__sub {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--wd-muted);
+  }
+
+  .wd .wdh3 {
+    margin: 0 0 12px;
+    font-size: 25px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: var(--wd-heading);
   }
 
   .wd .wdlede {
-    margin-top: 16px;
-    max-width: 66ch;
-    font-size: clamp(16px, 1.5vw, 19px);
+    margin: 0;
+    max-width: 700px;
+    font-size: 16px;
     line-height: 1.65;
     color: var(--wd-muted);
     text-wrap: pretty;
   }
 
+  .wd .wdlede strong {
+    color: var(--wd-heading);
+  }
+
+  .wd .wdlede--17 {
+    font-size: 17px;
+  }
+
+  .wd .wdlede--18 {
+    font-size: 18px;
+    color: var(--wd-body);
+  }
+
+  .wd .wdbody {
+    margin: 0;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--wd-body);
+    text-wrap: pretty;
+  }
+
+  .wd .wdbody strong {
+    color: var(--wd-heading);
+  }
+
+  .wd .wdbody--sm {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+  }
+
+  /* Small-caps label above a block: coral on paper, yellow on the dark band. */
+  .wd .wdlabel {
+    display: block;
+    margin: 0 0 5px;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wd-label);
+  }
+
+  /* Mono meta line: "Fintech platform · Webflow · five sites". */
+  .wd .wdmono {
+    display: block;
+    margin: 0;
+    font-family: var(--wd-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wd-muted);
+  }
+
+  /* Handwritten aside under a block. */
   .wd .wdnote {
-    margin-top: 16px;
+    display: block;
+    margin: 0;
     font-family: var(--wd-hand);
-    font-size: clamp(19px, 1.9vw, 24px);
+    font-size: 24px;
+    color: var(--wd-note);
+    transform: rotate(-0.6deg);
+  }
+
+  /* The underlined link: heavy, ink (paper on the dark band), a coral rule
+     beneath that carries across both bands. */
+  .wd .wdlink {
+    display: inline-block;
+    padding-bottom: 3px;
+    border-bottom: 2.5px solid var(--wd-coral);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--wd-link);
+  }
+
+  .wd .wdlink:hover,
+  .wd .wdlink:focus-visible {
+    color: var(--wd-coral);
+  }
+
+  /* A link inside running text. */
+  .wd .wdinline {
     color: var(--wd-coral-deep);
+    font-weight: 700;
   }
 
+  .wd .wdinline:hover,
+  .wd .wdinline:focus-visible {
+    color: var(--wd-ink);
+  }
+
+  /* ------------------------------------------------------------ cards -- */
   .wd .wdcard {
-    background: var(--wd-bright);
-    border: 2px solid var(--wd-ink);
-    border-radius: 22px;
-    padding: clamp(22px, 2.6vw, 32px);
-    box-shadow: 6px 6px 0 var(--wd-ink);
+    background: var(--wd-card);
+    border: 1px solid var(--wd-ink);
+    border-radius: 12px;
+    padding: 28px 26px;
   }
 
-  .wd .wdbtn {
+  .wd .wdcard--14 {
+    border-radius: 14px;
+  }
+
+  /* On the dark band a card takes its own darker face and a soft ink border. */
+  .wd .wdband--dark .wdcard {
+    background: var(--wd-card-dark);
+    border-color: var(--wd-ink-soft);
+  }
+
+  /* Outlined pill: a logo or a payment method. */
+  .wd .wdchip {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 15px 24px;
-    border: 2px solid var(--wd-ink);
+    padding: 9px 15px 8px;
+    border: 1px solid var(--wd-ink);
     border-radius: 999px;
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 700;
-    transition:
-      transform 0.25s ease,
-      background 0.2s ease,
-      color 0.2s ease;
+    line-height: 1;
+    white-space: nowrap;
   }
 
-  .wd .wdbtn--solid {
-    background: var(--wd-coral);
-    color: var(--wd-bright);
+  .wd .wdband--dark .wdchip {
+    padding: 11px 18px 10px;
+    border-color: var(--wd-ink-soft);
+    color: var(--wd-paper);
+    font-size: 14.5px;
   }
 
-  .wd .wdbtn--solid:hover,
-  .wd .wdbtn--solid:focus-visible {
-    transform: translateY(-3px);
-    background: var(--wd-ink);
-    color: var(--wd-bright);
+  .wd .wdgrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
   }
 
-  .wd .wdbtn--ghost {
-    background: var(--wd-bright);
-  }
-
-  .wd .wdbtn--ghost:hover,
-  .wd .wdbtn--ghost:focus-visible {
-    transform: translateY(-3px);
-    background: var(--wd-butter);
-  }
-
-  .wd .wdctarow {
-    margin-top: 28px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+  .wd .wdgrid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   /* Wide tables scroll inside their own box rather than the page. */
   .wd .wdtable {
-    margin-top: 28px;
     overflow-x: auto;
-    border: 2px solid var(--wd-ink);
-    border-radius: 18px;
-    background: var(--wd-bright);
+    -webkit-overflow-scrolling: touch;
   }
 
   .wd .wdtable table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px;
-  }
-
-  .wd .wdtable th,
-  .wd .wdtable td {
-    padding: 14px 16px;
-    text-align: left;
-    border-bottom: 1px solid rgb(23 19 16 / 12%);
-    vertical-align: top;
-    min-width: 150px;
   }
 
   .wd .wdtable th {
-    font-weight: 700;
-    background: var(--wd-butter);
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--wd-ink);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wd-ink);
+  }
+
+  .wd .wdtable td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--wd-rule);
+    text-align: left;
+    vertical-align: top;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--wd-muted);
   }
 
   .wd .wdtable tr:last-child td {
     border-bottom: 0;
   }
 
-  .wd .wdtable small {
-    display: block;
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--wd-muted);
-  }
-
-  /* ------------------------------------------------------------- bands -- */
-  /* All three sub-pages alternate near-black and paper full-bleed bands, and
-     all three close on the same coral CTA. Shared by more than one page, so
-     these live here rather than in any one of them — a scoped rule in a page
-     cannot reach the other two. */
-  .wd .wdband {
-    padding-block: clamp(72px, 7vw, 104px);
-    padding-inline: clamp(18px, 4vw, 24px);
-  }
-
-  .wd .wdband__inner {
-    max-width: 1180px;
-    margin-inline: auto;
-  }
-
-  .wd .wdband--paper {
-    background: var(--wd-paper);
-  }
-
-  /* Follows another paper band, so it would otherwise double the gap. */
-  .wd .wdband--tight {
-    padding-top: 0;
-  }
-
-  /* Inside a dark band the text inks flip to their light-on-dark counterparts.
-     Remapping the tokens rather than restating every selector means a rule
-     written for paper stays legible here — the alternative was small labels
-     landing at 2.5–3:1 on the near-black. `--wd-ink` is deliberately NOT
-     remapped: it draws borders and the black CTA pill, not body text. */
-  .wd .wdband--dark {
-    background: var(--wd-ink-deep);
-    --wd-muted: #a89f8d;
-    --wd-body: #c7beac;
-    --wd-body-soft: #c7beac;
-  }
-
-  .wd .wdband--dark .wdh2,
-  .wd .wdband--dark .wdh3 {
-    color: var(--wd-paper);
-  }
-
-  .wd .wdband--dark .wdlede {
-    color: var(--wd-faint);
-  }
-
-  .wd .wdband--dark .wdbody {
-    color: var(--wd-on-dark);
-  }
-
-  /* Cards on a dark band take their own darker face and a soft ink border,
-     rather than the bright card face used on paper. */
-  .wd .wdband--dark .wdcard {
-    background: var(--wd-card-dark);
-    border: 1px solid var(--wd-ink-soft);
-    box-shadow: none;
-    color: var(--wd-on-dark);
-  }
-
-  /* Coral on the dark card face is only 3.7:1, so links there take paper and
-     let the coral underline do the signalling — which is what the export
-     does on this band. */
-  .wd .wdband--dark .wdlink {
-    color: var(--wd-paper);
-    text-decoration: none;
-    border-bottom: 2.5px solid var(--wd-coral);
-    padding-bottom: 3px;
-  }
-
-  .wd .wdband--dark .wdlink:hover,
-  .wd .wdband--dark .wdlink:focus-visible {
-    color: var(--wd-yellow);
-  }
-
-  /* The comparison table is transparent on the dark band in the export, not a
-     bright card dropped onto it — as a card it also re-lit the muted token and
-     put its footnotes at 2.5:1. */
-  .wd .wdband--dark .wdtable {
-    background: transparent;
-    border: 0;
-  }
-
-  .wd .wdband--dark .wdtable th {
-    background: transparent;
-    color: var(--wd-paper);
-    border-bottom: 2px solid var(--wd-paper);
-  }
-
-  .wd .wdband--dark .wdtable td {
-    color: var(--wd-paper);
-    border-bottom-color: var(--wd-ink-soft);
-  }
-
-  /* Tinted card faces take the full ink: muted body copy on yellow or on the
-     rule tint lands at 3.1–3.9:1, and the export writes ink on these anyway.
-     Done by remapping the tokens rather than listing selectors, because a
-     page's own scoped rules carry the cid attribute and outrank a plain
-     global selector — an inherited token sidesteps specificity entirely. */
-  .wd .wdcard--butter,
-  .wd .wdcard--blue {
-    --wd-muted: #171310;
-    --wd-body: #171310;
-    --wd-body-soft: #171310;
+  .wd .wdtable td:first-child {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--wd-ink);
   }
 
   /* ------------------------------------------------------------- the CTA -- */
+  /* All three sub-pages close on the same coral band. */
   .wd .wdcta {
     position: relative;
     overflow: hidden;
     background: var(--wd-coral-deep);
     color: var(--wd-card);
-    padding-block: clamp(72px, 7vw, 104px);
-    padding-inline: clamp(18px, 4vw, 24px);
+    padding: 104px 24px;
     text-align: center;
   }
 
@@ -514,121 +664,169 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .wd .wdcta .wdh2 {
+    margin-bottom: 20px;
+    font-size: clamp(38px, 5.4vw, 72px);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
     color: var(--wd-card);
   }
 
+  .wd .wdcta .wdh2 em {
+    color: var(--wd-ink);
+  }
+
   .wd .wdcta .wdlede {
-    margin-inline: auto;
+    margin: 0 auto 12px;
     max-width: 580px;
     font-size: 18px;
+    line-height: 1.6;
     color: rgb(255 251 247 / 92%);
   }
 
   .wd .wdcta .wdnote {
-    margin-bottom: 32px;
+    margin: 0 0 32px;
     font-size: 25px;
     color: var(--wd-card);
     transform: rotate(-1deg);
   }
 
-  .wd .wdcta .wdctarow {
+  .wd .wdctarow {
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 12px;
   }
 
-  /* On the coral band the buttons drop their ink border: one filled black,
-     the rest outlined in the band's own paper. */
-  .wd .wdcta .wdbtn {
-    border: 0;
+  .wd .wdbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 17px 30px 16px;
+    border-radius: 999px;
     font-size: 16.5px;
     font-weight: 800;
+    white-space: nowrap;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease,
+      color 0.2s ease;
   }
 
-  .wd .wdcta .wdbtn--solid {
+  /* One filled black, the rest outlined in the band's own paper; the third
+     is quieter still. */
+  .wd .wdbtn--solid {
     background: var(--wd-ink);
     color: var(--wd-card);
-    padding: 17px 30px 16px;
   }
 
-  .wd .wdcta .wdbtn--solid:hover,
-  .wd .wdcta .wdbtn--solid:focus-visible {
-    background: var(--wd-ink);
-    color: var(--wd-card);
+  .wd .wdbtn--solid:hover,
+  .wd .wdbtn--solid:focus-visible {
     transform: translateY(-2px);
+    color: var(--wd-card);
   }
 
-  .wd .wdcta .wdbtn--ghost {
-    background: transparent;
+  .wd .wdbtn--ghost {
+    padding: 16px 30px 15px;
     border: 1.5px solid var(--wd-card);
     color: var(--wd-card);
-    padding: 16px 30px 15px;
   }
 
-  .wd .wdcta .wdbtn--ghost:hover,
-  .wd .wdcta .wdbtn--ghost:focus-visible {
-    background: var(--wd-card);
-    color: var(--wd-coral-deep);
-    transform: none;
-  }
-
-  /* The third button is quieter still. */
-  .wd .wdcta .wdbtn--ghost + .wdbtn--ghost {
+  .wd .wdbtn--ghost + .wdbtn--ghost {
     border-color: rgb(252 251 247 / 50%);
   }
 
-  @media (max-width: 760px) {
-    .wd .wdcta .wdctarow {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .wd .wdcta__m {
-      font-size: 300px;
-    }
+  .wd .wdbtn--ghost:hover,
+  .wd .wdbtn--ghost:focus-visible {
+    background: var(--wd-card);
+    color: var(--wd-coral-deep);
   }
 
   /* ----------------------------------------------------------- footer -- */
   .wd .wdfoot {
-    border-top: 2px solid var(--wd-ink);
-    padding-block: clamp(28px, 4vw, 44px);
+    background: var(--wd-ink-deep);
+    color: var(--wd-faint);
+    padding: 36px 24px;
   }
 
   .wd .wdfoot__inner {
     max-width: 1180px;
     margin-inline: auto;
-    padding-inline: clamp(18px, 4vw, 44px);
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 28px;
+    gap: 14px 32px;
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    color: var(--wd-muted);
+    line-height: 1.6;
   }
 
   .wd .wdfoot__m {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--wd-ink);
+    color: var(--wd-paper);
   }
 
   .wd .wdfoot__sub {
     font-family: var(--wd-hand);
-    font-size: 16px;
-    color: var(--wd-coral-deep);
+    font-size: 17px;
+    color: var(--wd-coral);
   }
 
   .wd .wdfoot__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 18px;
+    gap: 20px;
+  }
+
+  .wd .wdfoot__links a {
+    color: var(--wd-paper);
   }
 
   .wd .wdfoot__links a:hover,
   .wd .wdfoot__links a:focus-visible {
-    color: var(--wd-coral-deep);
+    color: var(--wd-butter);
   }
 
-  @media (max-width: 719px) {
+  /* ------------------------------------------------------- responsive -- */
+  @media (max-width: 900px) {
+    .wd .wdgrid,
+    .wd .wdgrid--3 {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .wd .wdwrap {
+      padding-inline: 18px;
+    }
+
+    .wd .wdhero {
+      padding-block: 64px 72px;
+    }
+
+    .wd .wdband,
+    .wd .wdband--112,
+    .wd .wdband--92,
+    .wd .wdcta {
+      padding: 72px 18px;
+    }
+
+    .wd .wdband--rule {
+      padding-top: 0;
+    }
+
+    .wd .wdctarow {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .wd .wdctarow .wdbtn {
+      justify-content: center;
+    }
+
+    .wd .wdcta__m {
+      font-size: 300px;
+    }
+
     .wd .wdfoot__links a {
       display: inline-flex;
       align-items: center;

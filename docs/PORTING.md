@@ -199,7 +199,8 @@ anything behind an interaction (a tab panel that isn't the default, a hover stat
 | article | 24 | 30 | author block, TOC |
 | consulting (4 pages) | 0 | 0–1 | ported to v14 2026-09-02; the 1 is the nav's current-page label kept ink (the export's terracotta measures 3.68:1) |
 | web-design | 0 | 0 | ported; the two design-only MEDs are the Formspree note (deliberate) and the pricing intro's added link |
-| web-design work/process/pricing | 59–221 | 82–280 | **not yet ported to v14** — dark tiers, yellow table heads, Plex Mono labels |
+| web-design work | 0 | 1 | ported; the 1 is the nav's current item (ink + coral rule, not coral text — contrast) |
+| web-design process/pricing | 133–221 | 133–280 | **not yet ported to v14** — dark tiers, yellow table heads, Plex Mono labels |
 
 Numbers are HIGH counts. Anything above the baseline on a page you touched is
 something that didn't land. When a page is re-ported, bring its row down and update
