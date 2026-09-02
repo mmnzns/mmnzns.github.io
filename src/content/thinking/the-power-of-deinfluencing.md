@@ -3,7 +3,7 @@ title: "The Power of Deinfluencing: A New Era in Consumer Behavior"
 shortTitle: "The power of deinfluencing"
 date: 2024-07-10
 tag: "Positioning"
-excerpt: "An exploration of deinfluencing, consumer skepticism, and the growing demand for authenticity — and what brands should do about it."
+excerpt: "Deinfluencing, consumer skepticism, and the growing demand for authenticity, and what brands should do about it."
 ---
 In one of our recent issues ([read more](https://www.directtoconsumer.co/newsletter/how-brands-can-leverage-deinfluencing-trend)) at [DTC Newsletter](https://www.linkedin.com/company/dtc-mediateam/), the team delved into "The Power of Deinfluencing," and it got me thinking about how Gen Z has been bombarded by ads from every angle their entire lives.
 

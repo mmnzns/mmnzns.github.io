@@ -61,7 +61,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'winback',
     title: 'The Intelligent Investing winback and cross-sell',
     problem:
-      'Around 900,000 people had either gone quiet on investing or never started. Separating dormant investors from lending customers—and Manage from Self-directed—turned one broad campaign into four more relevant conversations.',
+      'Around 900,000 people had either gone quiet on investing or never started. Separating dormant investors from lending customers, and Manage from Self-directed, turned one broad campaign into four more relevant conversations.',
     tags: ['Lifecycle', 'Retention', 'Cross-sell'],
     metrics: [{ value: '~54K', label: 'activated or returned across two rounds' }],
     category: 'Lifecycle',

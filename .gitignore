@@ -25,5 +25,15 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
+# AppleDouble sidecars. macOS writes one of these next to every file when the
+# repo is copied or synced onto a non-Mac filesystem, which is how the Windows
+# checkout ends up with 130 of them shadowing real source files. They are
+# resource forks, never source, and `git add src/` will happily commit them.
+._*
+
+# Local dev-server definitions for the Browser pane. Machine-specific: the
+# entries carry absolute Node paths that differ between the Mac and the PC.
+.claude/
+
 # Local miniflare state from `wrangler dev`. Regenerated on demand.
 .wrangler/

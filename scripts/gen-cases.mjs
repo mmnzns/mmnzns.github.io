@@ -119,6 +119,10 @@ w('  /** Headline for the detail page. */');
 w('  title: string;');
 w('  /** The one-line framing under the headline. */');
 w('  deck: string;');
+w('  /** What the work was asked for, in the requester’s own framing. */');
+w('  brief: string;');
+w('  /** What was actually going on — the read that reframed the brief. */');
+w('  read: string;');
 w('  sections: readonly CaseSection[];');
 w('  stats: readonly CaseStat[];');
 w('  /** The closing read — did the diagnosis hold? */');
@@ -130,10 +134,19 @@ w('export const CASES: Record<string, CaseStudy> = {');
 
 for (const slug of ORDER) {
   const c = bySlug.get(slug);
+  /* brief/read arrived in v13. Throw rather than emit the string "undefined"
+     into a data file, which type-checks fine and ships as visible copy. */
+  for (const field of ['brief', 'read']) {
+    if (typeof c[field] !== 'string' || !c[field].trim()) {
+      throw new Error(`${slug} has no ${field} in the design's CASES array.`);
+    }
+  }
   w(`  ${q(slug)}: {`);
   w(`    meta: ${q(c.meta)},`);
   w(`    title: ${q(c.title)},`);
   w(`    deck: ${q(c.deck)},`);
+  w(`    brief: ${q(c.brief)},`);
+  w(`    read: ${q(c.read)},`);
   w('    sections: [');
   for (const s of c.sections) {
     w('      {');

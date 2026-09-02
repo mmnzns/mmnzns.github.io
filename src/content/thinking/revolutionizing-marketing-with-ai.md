@@ -3,7 +3,7 @@ title: "Revolutionizing Marketing with Artificial Intelligence"
 shortTitle: "Revolutionizing marketing with AI"
 date: 2023-11-14
 tag: "AI & automation"
-excerpt: "An early perspective on how AI supports personalization, predictive analytics, CRM, and marketing operations — and the ethical questions that come with it."
+excerpt: "An early perspective on how AI supports personalization, predictive analytics, CRM and marketing operations, and the ethical questions that come with it."
 ---
 In recent years, the digital marketing landscape has experienced a monumental shift, catalyzed mainly by the global pandemic. Central to this transformation is the rapid integration of artificial intelligence, a technological force fundamentally redefining marketing strategies and operations.
 

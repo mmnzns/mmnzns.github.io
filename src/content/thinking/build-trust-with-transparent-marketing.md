@@ -3,7 +3,7 @@ title: "SaaS Success: This is How You Can Build Trust with Transparent Marketing
 shortTitle: "Building trust with transparent marketing"
 date: 2024-05-01
 tag: "Positioning"
-excerpt: "Why transparent marketing matters in SaaS and how clarity can strengthen customer trust — including the dark patterns that quietly erode it."
+excerpt: "Why transparent marketing matters in SaaS and how clarity strengthens customer trust, including the dark patterns that quietly erode it."
 ---
 Have you noticed how everything seems to be getting more expensive? If you're like me, you might find yourself spending money on things that just don't pan out. Case in point: all those SaaS subscriptions piling up, many of which, let's be honest, we hardly use.
 

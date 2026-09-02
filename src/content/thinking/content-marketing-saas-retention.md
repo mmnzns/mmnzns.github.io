@@ -3,7 +3,7 @@ title: "6 Strategies for Leveraging Content Marketing to Boost SaaS Customer Ret
 shortTitle: "6 content strategies to boost SaaS retention"
 date: 2023-11-07
 tag: "Lifecycle"
-excerpt: "Content marketing can support SaaS retention when it helps users realize ongoing product value — six strategies for keeping customers, not just acquiring them."
+excerpt: "Content marketing can support SaaS retention when it helps users realize ongoing product value: six strategies for keeping customers, not just acquiring them."
 ---
 In the competitive sphere of Software as a Service, the battle doesn't end with acquiring new customers. It's equally about keeping them.
 

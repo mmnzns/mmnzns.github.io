@@ -38,6 +38,10 @@ export interface CaseStudy {
   title: string;
   /** The one-line framing under the headline. */
   deck: string;
+  /** What the work was asked for, in the requester’s own framing. */
+  brief: string;
+  /** What was actually going on — the read that reframed the brief. */
+  read: string;
   sections: readonly CaseSection[];
   stats: readonly CaseStat[];
   /** The closing read — did the diagnosis hold? */
@@ -50,6 +54,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'The Mogo lifecycle rebuild',
     deck: 'Activation was stuck, and lifecycle email was the natural first place to look. Following the customer path showed the web experience and the lifecycle running on separate tracks.',
+    brief: 'Activation is stuck around 24%. The lifecycle emails don’t seem to be moving it.',
+    read: 'Engagement was healthy. The web experience and the lifecycle were running as two separate tracks, and the emails were timed to a behaviour that wasn’t happening yet.',
     sections: [
       {
         label: 'The starting point',
@@ -97,6 +103,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'The Intelligent Investing winback and cross-sell',
     deck: 'About 900,000 people had either gone quiet on investing or never started. It was not one audience, and it was never going to be one campaign.',
+    brief: 'Get investing activations out of a dormant base of roughly 900,000 people.',
+    read: 'It wasn’t one audience. Dormant investors needed a way back, lending customers had never invested at all, and two products asked for different behaviours. One list, four conversations.',
     sections: [
       {
         label: 'The starting point',
@@ -146,6 +154,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Building the behavioural trigger layer',
     deck: 'Funded accounts weren’t turning into first trades, and the activation sequence was firing on a schedule rather than on what people had just done.',
+    brief: 'Funded accounts aren’t turning into first trades. Push the case for trading harder.',
+    read: 'The lifecycle was timed, not triggered. Someone who funded yesterday and someone who funded six weeks ago received the same email on the same day.',
     sections: [
       {
         label: 'The starting point',
@@ -191,6 +201,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'DTC Newsletter · Email & Website Operations Manager (MarTech) · 2021 – 2024',
     title: 'ESP migration and deliverability rescue',
     deck: 'Sender score in the low 20s and inbox placement falling, with the cause sitting in the sending infrastructure rather than the content.',
+    brief: 'Open rates are falling. Could the subject lines be the problem?',
+    read: 'The shared sending infrastructure had damaged our sender reputation, so even good emails weren’t reliably reaching the inbox. The only fix that would hold was a migration.',
     sections: [
       {
         label: 'The starting point',
@@ -240,6 +252,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Sportserve (Dafabet) · Senior Marketing Projects and Operations Manager · 2014 – 2021',
     title: 'Salesforce lifecycle automation at Dafabet',
     deck: 'Twelve countries, safer-gambling compliance in every market, and no system connecting user behaviour to messaging.',
+    brief: 'We need lifecycle campaigns running across twelve regulated markets.',
+    read: 'There was no system connecting user behaviour to messaging. The first bet was the activation event everything else depended on, and nothing was built around it.',
     sections: [
       {
         label: 'The starting point',
@@ -290,6 +304,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Agentic ops infrastructure',
     deck: 'Leadership wanted automation before a platform or an owner had been named, and what the Ops teams needed most was the ability to build things themselves.',
+    brief: 'Leadership wants us using AI. Choose a platform and get started.',
+    read: 'The bottleneck wasn’t a missing tool. Ops teams needed a way to build and own their own automations without waiting on Engineering, or on me.',
     sections: [
       {
         label: 'The starting point',
@@ -335,6 +351,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'DTC Newsletter / Pilothouse · Email & Website Operations Manager (MarTech) · 2021–2024',
     title: 'AI-powered lead enrichment and routing',
     deck: 'A request to enrich newsletter signups became a system that gave Sales useful context while a prospective customer’s interest was still fresh.',
+    brief: 'Enrich the newsletter signups reaching HubSpot automatically.',
+    read: 'Enrichment wasn’t the end goal. The larger opportunity was speed-to-contact: useful context in front of Sales while the person’s interest was still fresh.',
     sections: [
       {
         label: 'The starting point',
@@ -386,6 +404,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Email validation and compliance workflow',
     deck: 'The first validation workflow ran fine technically and still nobody leaned on it, because it wasn’t checking what Compliance reviews.',
+    brief: 'Build a spam checker so content is cleaner before it reaches Compliance.',
+    read: 'Compliance wasn’t reviewing spam signals. They were reviewing regulatory language and jurisdiction rules, and the workflow had been designed without them.',
     sections: [
       {
         label: 'The starting point',
@@ -434,6 +454,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Mogo web ecosystem rebuild',
     deck: 'Marketing needed to ship pages in hours while the website sat with DevOps, and that ownership question turned out to be central rather than incidental.',
+    brief: 'Lifecycle conversion is weak. The emails probably need work.',
+    read: 'The emails were performing. The pages they sent people to weren’t, and the site sat with DevOps, so Marketing couldn’t move at campaign speed.',
     sections: [
       {
         label: 'The starting point',
@@ -485,6 +507,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'DTC Newsletter · Email & Website Operations Manager (MarTech) · 2021 – 2024',
     title: 'DTC Newsletter web and SEO rebuild',
     deck: 'The newsletter had a 70% bounce rate. The right people were arriving; the site just wasn’t giving them a reason to stay.',
+    brief: 'Bounce rate is at 70%. The traffic quality must be the problem.',
+    read: 'The right people were arriving and leaving again. The site had been built as a content container, not a conversion system, so it gave them no reason to stay.',
     sections: [
       {
         label: 'The starting point',
@@ -536,6 +560,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Analytics and tracking infrastructure rebuild',
     deck: 'Leadership had stopped trusting the numbers, and the cause sat underneath the campaigns: years of undocumented tag debt.',
+    brief: 'The numbers in the reports look off. Check the dashboards.',
+    read: 'Years of undocumented tag debt sat underneath every report. Leadership hadn’t stopped needing the data; they had stopped trusting it.',
     sections: [
       {
         label: 'The starting point',
@@ -587,6 +613,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'Sportserve · Senior Marketing Projects and Operations Manager · Mar 2014 – Feb 2021',
     title: 'Building the Payments Operations Division',
     deck: 'Payment launches touched eight departments and no single function held them together. I made the case for a dedicated division and built it from scratch.',
+    brief: 'Launches keep slipping. Each delay has its own cause, so keep fixing them one at a time.',
+    read: 'The pattern was structural: no system connected the people who had to work together to ship a launch. Fixing launches one at a time would have meant fixing them forever.',
     sections: [
       {
         label: 'The starting point',
@@ -635,6 +663,8 @@ export const CASES: Record<string, CaseStudy> = {
     meta: 'CraftConcepts · Founder and Growth Strategist · May 2022 – Jan 2025',
     title: 'Founding and scaling CraftConcepts',
     deck: 'Local businesses lost their digital presence after the pandemic and couldn’t afford an agency to fix it. I built a collective to close that gap, and used it to mentor early-career marketers on real client work.',
+    brief: 'Local businesses need their digital presence rebuilt, at budgets no agency will touch.',
+    read: 'The gap wasn’t expertise, it was access. Freelancing solo would only ever help one business at a time, so the answer had to be a structure that scaled past me.',
     sections: [
       {
         label: 'The starting point',

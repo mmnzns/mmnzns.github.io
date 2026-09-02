@@ -57,6 +57,43 @@ const accent = CATEGORY_ACCENT[project.category];
     <p class="casehead__deck">{study.deck}</p>
   </section>
 
+  {/*
+    The brief/read pair, new in the v13 design: what the work was asked for,
+    and what turned out to be underneath it.
+
+    Both paragraphs render, each under its own heading, and the script below
+    collapses them into a two-button toggle. That order matters — writing the
+    "read" state hidden in the markup would lose half the content for anyone
+    whose JavaScript never runs, which is the same rule Motion.astro follows:
+    never write a state in CSS that only JavaScript can undo.
+  */}
+  <section class="wrap framing">
+    <div class="framing__panel" data-framing>
+      {/*
+        The buttons are written here rather than built in the script, because
+        Astro scopes component CSS with a `data-astro-cid-*` attribute that it
+        stamps on markup at build time. An element created with
+        `document.createElement` never carries it, so every rule below would
+        miss and the control would render as two default browser buttons.
+        They ship `hidden`, and the script reveals them — nothing is lost if it
+        never runs, because both framings are already on the page in full.
+      */}
+      <div class="framing__buttons" role="group" aria-label="How this case was framed" hidden>
+        <button type="button" class="framing__btn" data-framing-btn="brief" aria-pressed="true">
+          What they asked for
+        </button>
+        <button type="button" class="framing__btn" data-framing-btn="read" aria-pressed="false">
+          What was underneath
+        </button>
+      </div>
+
+      <h2 class="framing__label" data-framing-label>What they asked for</h2>
+      <p class="framing__text" data-framing-text="brief">{study.brief}</p>
+      <h2 class="framing__label" data-framing-label>What was underneath</h2>
+      <p class="framing__text" data-framing-text="read">{study.read}</p>
+    </div>
+  </section>
+
   <section class="wrap arcs">
     {
       study.sections.map((section, i) => (
@@ -324,4 +361,141 @@ const accent = CATEGORY_ACCENT[project.category];
       grid-template-columns: 1fr 1fr;
     }
   }
+
+  .framing {
+    padding-top: 60px;
+  }
+
+  .framing__panel {
+    background: var(--wash);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: clamp(26px, 3.4vw, 44px);
+  }
+
+  .framing__label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .framing__label + .framing__text {
+    margin-top: 12px;
+  }
+
+  .framing__text {
+    max-width: 780px;
+    font-size: clamp(19px, 2vw, 24px);
+    line-height: 1.5;
+    font-weight: 600;
+    text-wrap: pretty;
+  }
+
+  .framing__text + .framing__label {
+    margin-top: 28px;
+  }
+
+  .framing__buttons {
+    display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    border: var(--border);
+  }
+
+  .framing__btn {
+    padding: 14px 16px;
+    border: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: transparent;
+    color: var(--ink);
+    transition:
+      background var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .framing__btn + .framing__btn {
+    border-left: var(--border);
+  }
+
+  .framing__btn[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  [data-framing-on] .framing__text {
+    margin-top: 24px;
+    /* Holds the panel's height across the swap so the page below it doesn't
+       jump when the shorter of the two lines is showing. */
+    min-height: 3em;
+  }
+
+  [data-framing-on] .framing__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Both labels are too long to sit side by side on a phone, and letting them
+     wrap leaves the filled button ending mid-row with the second one hanging
+     under it. Stacking is the honest version of the same control: full-width
+     rows, and the divider moves from the side to between them. */
+  @media (max-width: 560px) {
+    .framing__buttons {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .framing__btn {
+      width: 100%;
+      text-align: left;
+    }
+
+    .framing__btn + .framing__btn {
+      border-left: 0;
+      border-top: var(--border);
+    }
+  }
 </style>
+
+<script>
+  /* Turns the two labelled paragraphs into a segmented toggle. The markup
+     already reads correctly without any of this, so the failure mode is both
+     framings showing rather than one going missing. */
+  const panel = document.querySelector<HTMLElement>('[data-framing]');
+  const bar = panel?.querySelector<HTMLElement>('.framing__buttons');
+
+  if (panel && bar) {
+    const buttons = [...panel.querySelectorAll<HTMLButtonElement>('[data-framing-btn]')];
+    const texts = [...panel.querySelectorAll<HTMLElement>('[data-framing-text]')];
+
+    if (buttons.length === 2 && texts.length === 2) {
+      const select = (key: string) => {
+        buttons.forEach((b) =>
+          b.setAttribute('aria-pressed', String(b.dataset.framingBtn === key)),
+        );
+        texts.forEach((t) => {
+          t.hidden = t.dataset.framingText !== key;
+        });
+      };
+
+      buttons.forEach((button) =>
+        button.addEventListener('click', () => select(button.dataset.framingBtn ?? 'brief')),
+      );
+
+      /* Only now does the enhanced layout apply: the headings collapse to
+         screen-reader-only text and the buttons take over as the labels. */
+      panel.setAttribute('data-framing-on', '');
+      bar.hidden = false;
+      select('brief');
+    }
+  }
+</script>
