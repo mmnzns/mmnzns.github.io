@@ -62,6 +62,20 @@
   font-display: swap;
 }
 
+/* Caveat is self-hosted rather than pulled from Google, even though it is only
+   used by the web design section. It sets the "back to HQ" link and the other
+   handwritten lines, and the `cursive` fallback renders that string 40% wider
+   (129px against Caveat's 92px), so every page load flashed a different, wider
+   word before the font arrived. One variable file covers the 600 and 700 the
+   section asks for. Preloaded in the two web design heads. */
+@font-face {
+  font-family: 'Caveat';
+  src: url('/fonts/caveat-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Paper & ink */
   --paper: #fbf9f6;

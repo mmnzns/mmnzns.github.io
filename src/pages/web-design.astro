@@ -188,10 +188,19 @@ const BUDGETS = [
   standalone
 >
   <Fragment slot="head">
+    {/* Caveat is self-hosted (see global.css) and preloaded, because the
+        `cursive` fallback is 40% wider and flashed on every navigation. */}
+    <link
+      rel="preload"
+      href="/fonts/caveat-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
   </Fragment>
@@ -635,61 +644,27 @@ const BUDGETS = [
               Five questions, two minutes. Enough that I can usually come back with a price, not a
               pitch, within two business days.
             </p>
-            <p class="scribble start__scribble">
+            <p class="start__scribble">
               one build at a time, and a real start date before you pay anything
             </p>
-            <p class="scribble start__scribble">or skip the form entirely —</p>
 
+            {/*
+              Two pills, not cards. The icon-and-label cards here were the
+              previous design's; v13 runs a filled and an outlined pill with
+              the value on the left and an arrow on the right.
+            */}
             <div class="start__routes">
-              <a
-                class="startroute"
-                style="--tilt:-.6deg"
-                href={`mailto:${CONTACT.email}?subject=New website project`}
-              >
-                <span class="startroute__icon" style="background:#F5D44A" aria-hidden="true">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#171310"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect><path
-                      d="M3 6.5 L12 13 L21 6.5"></path></svg
-                  >
-                </span>
-                <span class="startroute__text">
-                  <span class="startroute__label">Write me</span>
-                  <span class="startroute__value">{CONTACT.email}</span>
-                </span>
+              <a class="startroute startroute--solid" href={`mailto:${CONTACT.email}?subject=New website project`}>
+                <span>{CONTACT.email}</span>
+                <span aria-hidden="true">↗</span>
               </a>
-              <a class="startroute" style="--tilt:.6deg" href={phoneHref}>
-                <span class="startroute__icon" style="background:#DDD6C7" aria-hidden="true">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#171310"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><path
-                      d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.9z"
-                    ></path></svg
-                  >
-                </span>
-                <span class="startroute__text">
-                  <span class="startroute__label">Call or text</span>
-                  <span class="startroute__value">{CONTACT.phone}</span>
-                </span>
+              <a class="startroute startroute--ghost" href={phoneHref}>
+                <span>{CONTACT.phone} · call or text</span>
+                <span aria-hidden="true">↗</span>
               </a>
-              <p class="start__real">
-                Real person, real phone — if I’m mid-build I’ll call you back the same day.
-              </p>
             </div>
+
+            <p class="start__scribble start__replies">usually replies within a day</p>
           </div>
 
           <form
@@ -764,10 +739,16 @@ const BUDGETS = [
     {/* ------------------------------------------------------------- footer -- */}
     <footer class="wdfoot">
       <div class="wdfoot__inner">
-        <span>{CONTACT.entity} · Vancouver, BC</span>
-        <span class="wdfoot__scribble">this page is the hand-built option — practice what you sell</span>
+        <span>
+          <strong class="wdfoot__m">M.</strong> Sites that sell.
+          <span class="wdfoot__sub">by Miguel Monzones</span>
+        </span>
+        <span>{CONTACT.entity}</span>
         <span class="wdfoot__links">
           <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          {/* Not in the export, but the site sets analytics cookies and the
+              banner has to stay reachable from every page. */}
+          <a href="#cookie-settings" data-cookie-settings>Cookie settings</a>
           <a href="/">mnmonzones.com ↗</a>
         </span>
       </div>
@@ -1972,52 +1953,59 @@ const BUDGETS = [
   .pricing__list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 0 56px;
   }
 
+  /* Rows sit directly on the near-black band, divided by a hairline. They
+     used to be bright cards, which meant the names and prices inherited the
+     band's cream text onto a cream face and were invisible (1.09:1). */
   .pricerow {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 18px;
-    padding: 18px 20px;
-    background: var(--wd-bright);
-    border: 2px solid var(--wd-ink);
-    border-radius: 16px;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--wd-ink-soft);
+  }
+
+  .pricerow > div {
+    min-width: 0;
   }
 
   .pricerow__name {
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
-    letter-spacing: -0.012em;
+    color: var(--wd-paper);
   }
 
   .pricerow__tag {
-    margin-left: 8px;
+    margin-left: 6px;
     padding: 3px 9px;
     border-radius: 999px;
-    background: var(--wd-butter);
-    border: 1.5px solid var(--wd-ink);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    background: var(--wd-coral-deep);
+    color: var(--wd-card);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     vertical-align: 2px;
   }
 
   .pricerow__sub {
     display: block;
-    margin-top: 5px;
-    font-size: 14px;
+    font-family: var(--wd-mono);
+    font-size: 12px;
     line-height: 1.45;
-    color: var(--wd-muted);
+    color: var(--wd-faint);
   }
 
   .pricerow__price {
     flex: none;
-    font-size: clamp(19px, 2vw, 24px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-family: var(--wd-mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--wd-paper);
     white-space: nowrap;
   }
 
@@ -2154,7 +2142,7 @@ const BUDGETS = [
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--wd-faint);
+    color: var(--wd-muted);
   }
 
   .workpiece__blurb {
@@ -2363,10 +2351,6 @@ const BUDGETS = [
     padding: 110px 24px 100px;
   }
 
-  .start .scribble {
-    color: var(--wd-yellow);
-  }
-
   .start__inner {
     max-width: 1080px;
     margin-inline: auto;
@@ -2389,92 +2373,78 @@ const BUDGETS = [
   }
 
   .start__lede {
-    margin: 0 0 12px;
-    font-size: 19px;
-    line-height: 1.55;
-    font-weight: 500;
-    max-width: 440px;
+    margin: 0 0 10px;
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 460px;
+    color: rgb(255 251 247 / 92%);
   }
 
+  /* Cream, not yellow: the export runs both scribbles in the band's own
+     paper colour so they read as handwriting on the orange, not a highlight. */
   .start__scribble {
-    font-size: 26px;
+    margin: 0 0 30px;
+    font-family: var(--wd-hand);
+    font-size: 25px;
+    color: var(--wd-card);
     transform: rotate(-1deg);
-    margin-bottom: 14px;
+  }
+
+  .start__replies {
+    margin: 18px 0 0;
   }
 
   .start__routes {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     max-width: 400px;
   }
 
   .startroute {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
-    background: var(--wd-bright);
-    border: 2px solid var(--wd-ink);
-    border-radius: 16px;
-    padding: 16px 20px;
-    color: var(--wd-ink);
-    box-shadow: 4px 4px 0 var(--wd-ink);
-    transform: rotate(var(--tilt, 0deg));
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--wd-card);
+  }
+
+  .startroute--solid {
+    background: var(--wd-ink);
+    padding: 16px 26px;
+    transition: transform 0.2s ease;
+  }
+
+  .startroute--solid:hover,
+  .startroute--solid:focus-visible {
+    transform: translateY(-2px);
+    color: var(--wd-card);
+  }
+
+  .startroute--ghost {
+    border: 1.5px solid var(--wd-card);
+    padding: 15px 26px;
     transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      background 0.2s ease;
+      background 0.2s ease,
+      color 0.2s ease;
   }
 
-  .startroute:hover,
-  .startroute:focus-visible {
-    transform: rotate(0deg) translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--wd-ink);
+  .startroute--ghost:hover,
+  .startroute--ghost:focus-visible {
     background: var(--wd-card);
-    color: var(--wd-ink);
+    color: var(--wd-coral-deep);
   }
 
-  .startroute__icon {
-    flex: none;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    border: 2px solid var(--wd-ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .startroute__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-  }
-
-  .startroute__label {
-    font-size: 12.5px;
-    font-weight: 800;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--wd-faint);
-  }
-
-  .startroute__value {
-    font-size: 17px;
-    font-weight: 800;
-  }
-
-  .start__real {
-    margin: 2px 0 0;
-    font-size: 13.5px;
-    color: var(--wd-muted);
-    line-height: 1.5;
-  }
-
+  /* `color` is set here on purpose: the band sets cream, the card is cream,
+     and without this the field labels inherit cream-on-cream and vanish. */
   .startform {
     background: var(--wd-bright);
-    border: 2.5px solid var(--wd-ink);
-    border-radius: 24px;
+    color: var(--wd-ink);
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
     padding: 32px;
     display: flex;
     flex-direction: column;
@@ -2486,17 +2456,18 @@ const BUDGETS = [
     display: flex;
     flex-direction: column;
     gap: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--wd-ink);
   }
 
   .startform__field input,
   .startform__field select,
   .startform__field textarea {
-    border: 2px solid var(--wd-ink);
-    border-radius: 12px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 8px;
     padding: 12px 14px;
     font-size: 16px;
     font-family: var(--wd-font);
@@ -2556,9 +2527,19 @@ const BUDGETS = [
 
   /* --------------------------------------------------------------- footer -- */
   .wdfoot {
-    background: var(--wd-ink);
-    color: #A89F8D;
-    padding: 40px 24px;
+    background: var(--wd-ink-deep);
+    color: var(--wd-faint);
+    padding: 36px 24px;
+  }
+
+  .wdfoot__m {
+    color: var(--wd-paper);
+  }
+
+  .wdfoot__sub {
+    font-family: var(--wd-hand);
+    font-size: 17px;
+    color: var(--wd-coral);
   }
 
   .wdfoot__inner {
@@ -2566,18 +2547,11 @@ const BUDGETS = [
     margin-inline: auto;
     display: flex;
     flex-wrap: wrap;
-    gap: 16px 32px;
+    gap: 14px 32px;
     align-items: center;
     justify-content: space-between;
-    font-size: 14.5px;
+    font-size: 14px;
     line-height: 1.6;
-  }
-
-  .wdfoot__scribble {
-    font-family: var(--wd-hand);
-    font-size: 20px;
-    color: var(--wd-gold);
-    transform: rotate(-1deg);
   }
 
   .wdfoot__links {

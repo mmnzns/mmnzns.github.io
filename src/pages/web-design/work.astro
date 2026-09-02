@@ -50,49 +50,73 @@ const SHOTS = {
     </nav>
   </header>
 
-  <section class="wdsec wdwrap" id="cases">
-    <p class="wdkick" data-reveal>one of four</p>
+  {/*
+    Each build is its own full-bleed band, alternating near-black and paper,
+    with the picture swapping sides to match. That rhythm is the Work page's
+    whole structure in v13; it was one paper-coloured section with four rows.
+  */}
+  {
+    BUILDS.map((build, i) => {
+      const dark = i % 2 === 0;
+      return (
+        <section
+          class:list={['wdband', dark ? 'wdband--dark' : 'wdband--paper']}
+          id={i === 0 ? 'cases' : undefined}
+        >
+          <div class="wdband__inner">
+            {i === 0 ? (
+              <p class="wdkick wdcase__kick" data-reveal>
+                one of four
+              </p>
+            ) : null}
 
-    {
-      BUILDS.map((build, i) => (
-        <article class={`wdcase ${i % 2 === 1 ? 'wdcase--flip' : ''}`}>
-          <div class="wdcase__text" data-reveal>
-            <p class="wdcase__meta">{build.meta}</p>
-            <h2 class="wdh2 wdcase__title">
-              {build.titleLead} <em>{build.titleAccent}</em>
-            </h2>
+            <article class:list={['wdcase', !dark && 'wdcase--flip']}>
+              <div class="wdcase__text" data-reveal>
+                <p class="wdcase__meta">{build.meta}</p>
+                <h2 class="wdh2 wdcase__title">
+                  {build.titleLead} <em>{build.titleAccent}</em>
+                </h2>
 
-            <div class="wdcase__blocks">
-              <div>
-                <p class="wdcase__label">The situation</p>
-                <p class="wdbody">{build.situation}</p>
-              </div>
-              <div>
-                <p class="wdcase__label">What I built</p>
-                <p class="wdbody">{build.built}</p>
-              </div>
-              <div>
-                <p class="wdcase__label">What happened</p>
-                <p class="wdbody">{build.happened}</p>
-              </div>
-            </div>
+                <div class="wdcase__blocks">
+                  <div>
+                    <p class="wdcase__label">The situation</p>
+                    <p class="wdbody">{build.situation}</p>
+                  </div>
+                  <div>
+                    <p class="wdcase__label">What I built</p>
+                    <p class="wdbody">{build.built}</p>
+                  </div>
+                  <div>
+                    <p class="wdcase__label">What happened</p>
+                    <p class="wdbody">{build.happened}</p>
+                  </div>
+                </div>
 
-            <a class="wdcase__link" href={build.href} target="_blank" rel="noopener">
-              {build.linkLabel}
-            </a>
+                <a class="wdcase__link" href={build.href} target="_blank" rel="noopener">
+                  {build.linkLabel}
+                </a>
+              </div>
+
+              <div class="wdcase__shot" data-reveal="pop">
+                <a href={build.href} target="_blank" rel="noopener" aria-label={build.alt}>
+                  <Image
+                    src={SHOTS[build.slug]}
+                    alt={build.alt}
+                    widths={[560, 900]}
+                    sizes="(max-width: 980px) 92vw, 46vw"
+                    loading="lazy"
+                  />
+                </a>
+              </div>
+            </article>
           </div>
+        </section>
+      );
+    })
+  }
 
-          <div class="wdcase__shot" data-reveal="pop">
-            <a href={build.href} target="_blank" rel="noopener" aria-label={build.alt}>
-              <Image src={SHOTS[build.slug]} alt={build.alt} widths={[420, 760]} loading="lazy" />
-            </a>
-          </div>
-        </article>
-      ))
-    }
-  </section>
-
-  <section class="wdsec wdwrap" id="judge">
+  <section class="wdband wdband--paper wdband--tight" id="judge">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>please be picky</p>
     <h2 class="wdh2" data-reveal>How to judge these <em>yourself.</em></h2>
     <p class="wdlede" data-reveal>
@@ -113,9 +137,11 @@ const SHOTS = {
     </div>
 
     <p class="wdnote" data-reveal>if any of mine fail your test, tell me. I’d like to know</p>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="background">
+  <section class="wdband wdband--dark" id="background">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>the longer story</p>
     <h2 class="wdh2" data-reveal>Where the instincts <em>came from.</em></h2>
     <p class="wdlede" data-reveal>
@@ -150,9 +176,11 @@ const SHOTS = {
         </p>
       </div>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="testimonials">
+  <section class="wdband wdband--paper" id="testimonials">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>the honest bit</p>
     <h2 class="wdh2" data-reveal>The testimonial wall is <em>empty on purpose.</em></h2>
     <p class="wdlede" data-reveal>
@@ -186,9 +214,12 @@ const SHOTS = {
         you’d like to talk to me about any of it, the call is free and I love these conversations.
       </p>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap wdcta" id="start">
+  <section class="wdcta" id="start">
+    <span class="wdcta__m" aria-hidden="true">M.</span>
+    <div class="wdcta__inner">
     <h2 class="wdh2" data-reveal>Fancy being <em>number five?</em></h2>
     <p class="wdlede" data-reveal>
       Five questions, two minutes, and I can usually come back with a price rather than a pitch
@@ -199,6 +230,7 @@ const SHOTS = {
       <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
       <a class="wdbtn wdbtn--ghost" href="/web-design/process/">How the process works</a>
       <a class="wdbtn wdbtn--ghost" href="/web-design/pricing/">See the prices</a>
+    </div>
     </div>
   </section>
 </WebDesignLayout>
@@ -277,55 +309,89 @@ const SHOTS = {
   }
 
   /* -------------------------------------------------------------- cases -- */
-  .wdcase {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    gap: clamp(24px, 4vw, 64px);
-    align-items: center;
-    padding-block: clamp(36px, 5vw, 64px);
-    border-bottom: 2px solid rgb(23 19 16 / 12%);
+  /* The band base lives in WebDesignLayout; these are the case-specific
+     inversions for the dark half of the alternation. */
+  .wdband--dark .wdcase__meta {
+    color: var(--wd-faint);
   }
 
-  .wdcase:last-of-type {
-    border-bottom: 0;
+  .wdband--dark .wdcase__label {
+    color: var(--wd-yellow);
+  }
+
+  .wdband--dark .wdbody {
+    color: var(--wd-on-dark);
+  }
+
+  .wdband--dark .wdcase__link {
+    color: var(--wd-paper);
+  }
+
+  /* Darker frame and mat on the dark band, so the screenshot doesn't sit in a
+     bright box. */
+  .wdband--dark .wdcase__shot a {
+    border-color: var(--wd-ink-soft);
+    background: var(--wd-card-dark);
+  }
+
+  .wdcase {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+    gap: 44px 52px;
+    align-items: center;
   }
 
   /* Alternating sides. The image is second in the markup either way, so the
      reading order stays text-then-picture for a screen reader. */
+  .wdcase--flip {
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+  }
+
   .wdcase--flip .wdcase__text {
     order: 2;
   }
 
+  .wdcase__kick {
+    margin-bottom: 44px;
+    font-size: 27px;
+    transform: rotate(-1deg);
+  }
+
+  /* Mono, not handwriting: the export uses IBM Plex Mono for these tags. */
   .wdcase__meta {
-    font-family: var(--wd-hand);
-    font-size: clamp(18px, 1.8vw, 22px);
-    color: var(--wd-coral-deep);
+    font-family: var(--wd-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wd-muted);
   }
 
   .wdcase__title {
-    margin-top: 4px;
+    margin-top: 10px;
+    margin-bottom: 22px;
   }
 
   .wdcase__blocks {
-    margin-top: 22px;
     display: flex;
     flex-direction: column;
     gap: 18px;
+    margin-bottom: 26px;
   }
 
   .wdcase__label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--wd-faint);
+    color: var(--wd-coral-deep);
   }
 
   .wdbody {
-    margin-top: 8px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--wd-muted);
+    margin-top: 5px;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--wd-body);
     text-wrap: pretty;
   }
 
@@ -333,27 +399,47 @@ const SHOTS = {
     color: var(--wd-ink);
   }
 
+  /* Underlined rather than coloured: the link sits on both bands and the
+     coral rule is what carries across. */
   .wdcase__link {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    margin-top: 20px;
-    font-weight: 700;
-    color: var(--wd-bluelink);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--wd-ink);
+    border-bottom: 2.5px solid var(--wd-coral);
+    padding-bottom: 3px;
   }
 
   .wdcase__link:hover,
   .wdcase__link:focus-visible {
-    color: var(--wd-coral-deep);
+    color: var(--wd-coral);
+  }
+
+  .wdcase__shot a {
+    display: block;
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--wd-blueband);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .wdcase__shot a:hover,
+  .wdcase__shot a:focus-visible {
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 0 var(--wd-coral);
   }
 
   .wdcase__shot img {
     display: block;
     width: 100%;
-    height: auto;
-    border: 2px solid var(--wd-ink);
-    border-radius: 20px;
-    box-shadow: 8px 8px 0 var(--wd-ink);
+    height: 420px;
+    object-fit: cover;
+    object-position: top center;
   }
 
   .wdcase__q {

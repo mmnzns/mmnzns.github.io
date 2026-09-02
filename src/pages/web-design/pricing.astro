@@ -55,7 +55,8 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     plain table of "if you need this, it's that", which is the same
     information the widget gives one row at a time.
   */}
-  <section class="wdsec wdwrap" id="picker">
+  <section class="wdband wdband--paper" id="picker">
+    <div class="wdband__inner">
     <div class="wdcard wdpick" data-pick>
       <p class="wdkick">in a hurry? three questions</p>
 
@@ -205,9 +206,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         <a class="wdpick__more" href="#websites">See what’s included ↓</a>
       </div>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="how">
+  <section class="wdband wdband--paper" id="how">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>how the number is decided</p>
     <h2 class="wdh2" data-reveal>Two questions <em>set the price.</em></h2>
 
@@ -279,9 +282,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       </ul>
       <p class="wdnote">when it’s not a fit, I’ll point you to the build that is, cheerfully</p>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="websites">
+  <section class="wdband wdband--paper wdband--tight" id="websites">
+    <div class="wdband__inner">
     <div class="wdhead" data-reveal>
       <h2 class="wdh2">The smaller three</h2>
       <span class="wdnote">hand-built or platform: your pick, $100 apart</span>
@@ -362,9 +367,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         drive. I’ll walk you through both on our call.
       </p>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="platform">
+  <section class="wdband wdband--paper wdband--tight" id="platform">
+    <div class="wdband__inner">
     <div class="wdhead" data-reveal>
       <h2 class="wdh2">The bigger three</h2>
       <span class="wdnote">platform-built · you edit it yourself</span>
@@ -411,9 +418,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       And if anything I deliver doesn’t match what we agreed, I fix it free, without touching your
       revision. Fair’s fair.
     </p>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="sitecheck">
+  <section class="wdband wdband--paper wdband--tight" id="sitecheck">
+    <div class="wdband__inner">
     <div class="wdtwo">
       <div data-reveal>
         <p class="wdkick">already have a site?</p>
@@ -445,9 +454,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         <p class="wdtier__ex">{SITE_CHECK.excludes}</p>
       </div>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="care">
+  <section class="wdband wdband--dark" id="care">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>after launch</p>
     <h2 class="wdh2" data-reveal>Website Care: <em>so it stays fast, safe and found.</em></h2>
     <p class="wdlede" data-reveal>
@@ -480,9 +491,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     <ul class="wdterms" data-reveal>
       {CARE_TERMS.map((term) => <li>{term}</li>)}
     </ul>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="domain">
+  <section class="wdband wdband--paper" id="domain">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>the unglamorous essentials, handled</p>
     <h2 class="wdh2" data-reveal>Managed domain &amp; SSL: <em>one small fee.</em></h2>
 
@@ -511,9 +524,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         </p>
       </div>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="addons">
+  <section class="wdband wdband--paper wdband--tight" id="addons">
+    <div class="wdband__inner">
     <div class="wdhead" data-reveal>
       <h2 class="wdh2">Extras</h2>
       <span class="wdnote">a short list, on purpose</span>
@@ -550,9 +565,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         guesses.
       </p>
     </div>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="rules">
+  <section class="wdband wdband--paper wdband--tight" id="rules">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>the fine print, in large print</p>
     <h2 class="wdh2" data-reveal>How we keep <em>a fixed price fixed.</em></h2>
 
@@ -587,9 +604,11 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       writing. Hand-built clients receive the actual files; platform clients receive the account
       access, design assets and project materials.
     </p>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap" id="compare">
+  <section class="wdband wdband--dark" id="compare">
+    <div class="wdband__inner">
     <p class="wdkick" data-reveal>please do shop around</p>
     <h2 class="wdh2" data-reveal>How the numbers <em>compare.</em></h2>
     <p class="wdlede" data-reveal>
@@ -653,9 +672,12 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       the free-forever hosting option is the one you won’t find elsewhere, and it’s my favourite
       thing to offer
     </p>
+    </div>
   </section>
 
-  <section class="wdsec wdwrap wdcta">
+  <section class="wdcta">
+    <span class="wdcta__m" aria-hidden="true">M.</span>
+    <div class="wdcta__inner">
     <h2 class="wdh2" data-reveal>Let’s find <em>your number.</em></h2>
     <p class="wdlede" data-reveal>
       Five questions, two minutes, and I’ll usually come back with a price, not a pitch, within two
@@ -668,6 +690,7 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
       <a class="wdbtn wdbtn--ghost" href={callHref}>Book a free 30-min call</a>
       <a class="wdbtn wdbtn--ghost" href={phoneHref}>{CONTACT.phone}</a>
+    </div>
     </div>
   </section>
 </WebDesignLayout>
@@ -873,7 +896,7 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--wd-faint);
+    color: var(--wd-muted);
   }
 
   .wdpick__table {
@@ -1060,7 +1083,7 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     margin-top: 16px;
     font-size: 13px;
     line-height: 1.55;
-    color: var(--wd-faint);
+    color: var(--wd-muted);
     text-wrap: pretty;
   }
 
@@ -1074,7 +1097,7 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--wd-faint);
+    color: var(--wd-muted);
   }
 
   .wdtier__pair {
@@ -1099,7 +1122,7 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
   .wdtier__std {
     margin-top: 10px;
     font-size: 13px;
-    color: var(--wd-faint);
+    color: var(--wd-muted);
   }
 
   .wdcheck {
@@ -1119,11 +1142,19 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     color: var(--wd-muted);
   }
 
+  /* A pill in the export, not a handwritten line — and ink, because coral on
+     the yellow face measures 3.09:1. */
   .wdcheck__credit {
+    display: inline-block;
     margin-top: 10px;
-    font-family: var(--wd-hand);
-    font-size: 20px;
-    color: var(--wd-coral-deep);
+    padding: 8px 16px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-yellow);
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--wd-ink);
+    transform: rotate(-0.6deg);
   }
 
   .wdterms {

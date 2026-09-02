@@ -14,7 +14,7 @@ export const SITE = {
   titleSeparator: '·',
   role: 'Lifecycle & GTM Strategist',
   description:
-    "Senior lifecycle and GTM strategist with 11 years in fintech, SaaS, and ecommerce. I read what's actually wrong, decide what should exist, then build it.",
+    "Senior lifecycle and GTM strategist with 12 years in fintech, SaaS, and ecommerce. I read what's actually wrong, decide what should exist, then build it.",
   author: 'Miguel N. Monzones',
   location: 'Vancouver, BC',
   /** Shown against a green dot on every contact card. Set to null to hide. */

@@ -210,9 +210,13 @@ const LINKS = [
   }
 
   /* The export has no current-page state; this is the one addition Miguel
-     asked for, using the nav's own hover accent rather than a new decoration. */
+     asked for. Coral text alone measures 3.31:1 on the nav's paper, under AA
+     for 14px, so the mark is the coral rule and the label stays full-contrast
+     ink. */
   .wdnav__sec[aria-current='page'] {
-    color: var(--wd-coral);
+    color: var(--wd-ink);
+    border-bottom: 2.5px solid var(--wd-coral);
+    padding-bottom: 3px;
   }
 
   .wdnav__cta {
@@ -285,7 +289,11 @@ const LINKS = [
   }
 
   .wdnav__panel a[aria-current='page'] {
-    color: var(--wd-coral);
+    color: var(--wd-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--wd-coral);
+    text-decoration-thickness: 2.5px;
+    text-underline-offset: 5px;
   }
 
   .wdnav__panelhq {

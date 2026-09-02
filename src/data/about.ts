@@ -40,9 +40,9 @@ export const SCOPE_PROOF = [
  */
 export const TOTALS = [
   {
-    value: '11+',
+    value: '12+',
     label: 'Years building lifecycle and marketing systems',
-    countTo: 11,
+    countTo: 12,
     suffix: '+',
   },
   { value: '14', label: 'Markets supported across several regions', countTo: 14 },
