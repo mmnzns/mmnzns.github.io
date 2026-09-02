@@ -1,0 +1,385 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import { CONTACT } from '../../config';
+import {
+  ENGAGEMENT_DETAILS,
+  PRACTICE_DETAILS,
+  SERVICES_HERO,
+  SERVICES_JUMPS,
+  SYSTEMS,
+} from '../../data/consulting';
+
+/** `/consulting/services/` — ported from the v13 export's `Monzones-C-Services`. */
+---
+
+<ConsultingLayout
+  title="Services · Consulting"
+  description="Three practice areas and six ways to engage — lifecycle and retention, conversion and web, AI and automation — every one a fixed fee quoted before anything starts."
+  current="services"
+>
+  <section class="chero" id="top">
+    <div class="cwrap chero__grid">
+      <div>
+        <span class="ckicker">{SERVICES_HERO.kicker}</span>
+        <h1 class="disp chero__title">{SERVICES_HERO.title}</h1>
+        <p class="chero__body">{SERVICES_HERO.body}</p>
+        <div class="ctarow">
+          <a class="cbtn cbtn--solid" href="/consulting/#contact">Book a free 30-min call</a>
+          <a class="cbtn cbtn--ghost" href="#engage">See the six shapes</a>
+        </div>
+      </div>
+
+      <nav class="cjump" aria-label="On this page">
+        {
+          SERVICES_JUMPS.map((jump) => (
+            <a href={jump.href}>
+              <span>{jump.name}</span>
+              <span class="cjump__meta">{jump.meta}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <section class="csection" id="practices">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Practice areas</span>
+        <h2 class="disp ctitle">Three connected areas. Most problems live between them.</h2>
+      </div>
+      <p class="clede" data-reveal>
+        Pick an area to see what’s included, what you walk away with, and the tools behind it.
+      </p>
+
+      {/*
+        As on the home page: every panel renders, and the script collapses them
+        into a tablist. Without it this reads as three labelled sections rather
+        than one panel and two missing.
+      */}
+      <div class="cprac" data-prac>
+        <div class="cprac__tabs" role="tablist" aria-label="Practice areas" hidden data-prac-tabs>
+          {
+            PRACTICE_DETAILS.map((practice, i) => (
+              <button
+                type="button"
+                role="tab"
+                class="cprac__tab"
+                id={`prac-tab-${i}`}
+                aria-controls={`prac-panel-${i}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-prac-tab={String(i)}
+              >
+                {practice.name}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          PRACTICE_DETAILS.map((practice, i) => (
+            <article
+              class="cprac__panel"
+              id={`prac-panel-${i}`}
+              role="tabpanel"
+              aria-labelledby={`prac-tab-${i}`}
+              tabindex="0"
+              data-prac-panel={String(i)}
+            >
+              <div>
+                <span class="ckicker">{practice.kicker}</span>
+                <h3 class="disp cprac__name">{practice.name}</h3>
+                <p class="cprac__blurb">{practice.blurb}</p>
+                <p class="cprac__detail cprac__detail--stacked">{practice.detail}</p>
+                <p class="cprac__tools">
+                  <span class="cprac__tools-label">Tools</span>
+                  {practice.tools}
+                </p>
+              </div>
+
+              <div>
+                <p class="cminilabel">What’s included</p>
+                <ul class="cincluded">
+                  {practice.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="engage">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Ways to work together</span>
+        <h2 class="disp ctitle">From one focused week to a seat inside your team.</h2>
+      </div>
+      <p class="clede" data-reveal>
+        Every engagement is a fixed fee, quoted before anything starts, so you know the scope, the
+        cost, and what you walk away with.
+      </p>
+
+      <div class="cshapes" data-reveal>
+        {
+          ENGAGEMENT_DETAILS.map((engagement) => (
+            <article class="cshape">
+              <div class="cshape__head">
+                <h3 class="disp cshape__name">{engagement.name}</h3>
+                <span class="cshape__length">{engagement.length}</span>
+              </div>
+              <p class="cshape__body">{engagement.body}</p>
+              <p class="cshape__leave">
+                <span class="cminilabel">You walk away with</span>
+                {engagement.leave}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="clede" data-reveal>
+        The hourly meter doesn’t exist here, and I’m happy to show you the math on any quote. Not
+        sure which shape fits? Bring it to the <a class="cinline" href="/consulting/process/">free
+        30-minute call</a> and we’ll figure it out together.
+      </p>
+    </div>
+  </section>
+
+  <section class="csection" id="systems">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Systems</span>
+        <h2 class="disp ctitle">Odds are, I already know your stack.</h2>
+      </div>
+
+      <div class="csys">
+        {
+          SYSTEMS.map((category) => (
+            <div class="csys__card" data-reveal>
+              <span class="disp csys__name">{category.name}</span>
+              <span class="csys__tools">{category.toolLine}</span>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="clede" data-reveal>
+        I pick systems for what they need to do, not for what’s shiny. Deepest: <strong
+          >Braze, Salesforce Marketing Cloud, HubSpot, Webflow, n8n</strong
+        >. Happy to talk detail on any of them.
+      </p>
+    </div>
+  </section>
+
+  <section class="csection csection--ink" id="cta">
+    <div class="cwrap">
+      <h2 class="disp ctitle" data-reveal>Found the one that fits? Let’s talk it through.</h2>
+      <p class="clede" data-reveal>
+        And if none of them quite fit, say so — I’ll tell you cheerfully whether I’m the right
+        person, and point you somewhere better if I’m not.
+      </p>
+      <div class="ctarow" data-reveal>
+        <a class="cbtn cbtn--solid" href="/consulting/#contact">Book a free 30-min call</a>
+        <a class="cbtn cbtn--ghost" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      </div>
+    </div>
+  </section>
+</ConsultingLayout>
+
+<script>
+  /* Same tablist as the home page. It lives here too because Astro only ships
+     a page's script with that page, and the two pages render different data. */
+  const prac = document.querySelector<HTMLElement>('[data-prac]');
+
+  if (prac) {
+    const tabs = [...prac.querySelectorAll<HTMLButtonElement>('[data-prac-tab]')];
+    const panels = [...prac.querySelectorAll<HTMLElement>('[data-prac-panel]')];
+    const tabBar = prac.querySelector<HTMLElement>('[data-prac-tabs]');
+
+    if (tabs.length && tabs.length === panels.length && tabBar) {
+      const select = (index: number, focus = false) => {
+        tabs.forEach((tab, i) => {
+          tab.setAttribute('aria-selected', String(i === index));
+          tab.tabIndex = i === index ? 0 : -1;
+        });
+        panels.forEach((panel, i) => {
+          panel.hidden = i !== index;
+        });
+        if (focus) tabs[index].focus();
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(i));
+        tab.addEventListener('keydown', (event) => {
+          const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+          if (!delta) return;
+          event.preventDefault();
+          select((i + delta + tabs.length) % tabs.length, true);
+        });
+      });
+
+      tabBar.hidden = false;
+      select(0);
+    }
+  }
+</script>
+
+<style>
+  .cinline {
+    color: var(--c-green);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .cinline:hover,
+  .cinline:focus-visible {
+    color: var(--c-terra);
+  }
+
+  .cprac__detail--stacked {
+    margin-top: 14px;
+  }
+
+  .cincluded {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .cincluded li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  .cincluded li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-terra);
+  }
+
+  .cshapes {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+
+  .cshape {
+    padding: clamp(24px, 2.8vw, 34px);
+    border-radius: 22px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+  }
+
+  .cshape__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+  }
+
+  .cshape__name {
+    font-size: clamp(21px, 2vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.016em;
+  }
+
+  .cshape__length {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  .cshape__body {
+    margin-top: 14px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  .cshape__leave {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgb(34 30 26 / 12%);
+    font-size: 15px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .csys {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .csys__card {
+    display: flex;
+    flex-direction: column;
+    padding: 26px;
+    border-radius: 20px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  .csys__card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--c-float);
+  }
+
+  .csys__name {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.014em;
+  }
+
+  .csys__tools {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--c-ink-2);
+  }
+
+  @media (max-width: 960px) {
+    .csys {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .cshapes {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .csys {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

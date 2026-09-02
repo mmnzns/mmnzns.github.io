@@ -1,0 +1,215 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import { CONTACT } from '../../config';
+import { RESULTS_HERO, RESULT_STORIES, STATS } from '../../data/consulting';
+
+/** `/consulting/results/` — ported from the v13 export's `Monzones-C-Results`. */
+---
+
+<ConsultingLayout
+  title="Results · Consulting"
+  description="The headline numbers from real consulting engagements and the stories behind them: what was stuck, what changed, and what moved."
+  current="results"
+>
+  <section class="chero" id="top">
+    <div class="cwrap chero__grid">
+      <div>
+        <span class="ckicker">{RESULTS_HERO.kicker}</span>
+        <h1 class="disp chero__title">{RESULTS_HERO.title}</h1>
+        <p class="chero__body">{RESULTS_HERO.body}</p>
+        <div class="ctarow">
+          <a class="cbtn cbtn--solid" href="#stories">Read the stories</a>
+          <a class="cbtn cbtn--ghost" href="/consulting/#contact">Book a free 30-min call</a>
+        </div>
+      </div>
+
+      <nav class="cjump" aria-label="The stories">
+        <span class="cminilabel">Three stories</span>
+        {
+          RESULT_STORIES.map((story, i) => (
+            <a href={`#${story.id}`}>
+              <span>
+                <span class="disp cjump__num">{String(i + 1).padStart(2, '0')}</span>
+                {story.title}
+              </span>
+              <span class="cjump__meta">{story.client}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <section class="csection" id="numbers">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">The numbers</span>
+        <h2 class="disp ctitle">Four figures, all from real work.</h2>
+      </div>
+
+      <div class="cstats" data-reveal>
+        {
+          STATS.map((stat) => (
+            <div class="cstat">
+              <span class="cstat__rule" aria-hidden="true" />
+              <p class="disp cstat__num">{stat.num}</p>
+              <p class="cstat__label">{stat.label}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="stories">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">The stories behind the numbers</span>
+        <h2 class="disp ctitle">What was stuck, and what moved.</h2>
+      </div>
+
+      <div class="cstories">
+        {
+          RESULT_STORIES.map((story) => (
+            <article class="cstory" id={story.id} data-reveal>
+              <div class="cstory__figure">
+                <span class="cminilabel">{story.metricLabel}</span>
+                <p class="disp cstory__metric">{story.metric}</p>
+                <p class="cstory__note">{story.metricNote}</p>
+                <p class="cstory__second">{story.second}</p>
+              </div>
+
+              <div>
+                <span class="cstory__client">{story.client}</span>
+                <h3 class="disp cstory__title">{story.title}</h3>
+                <p class="cstory__block">
+                  <span class="cminilabel">What was stuck</span>
+                  {story.stuck}
+                </p>
+                <p class="cstory__block">
+                  <span class="cminilabel">What we did</span>
+                  {story.did}
+                </p>
+                <a class="clink" href={story.href}>
+                  Read the full case study →
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="clede" data-reveal>
+        Three engagements, written up with the context intact. Dig into the full case studies, and
+        I’m happy to walk through the detail on a call.
+      </p>
+    </div>
+  </section>
+
+  <section class="csection csection--ink" id="cta">
+    <div class="cwrap">
+      <h2 class="disp ctitle" data-reveal>Want numbers like these? Tell me which one’s stuck.</h2>
+      <p class="clede" data-reveal>
+        Two paragraphs is plenty to start, and the first call is free and useful either way.
+      </p>
+      <div class="ctarow" data-reveal>
+        <a class="cbtn cbtn--solid" href="/consulting/#contact">Book a free 30-min call</a>
+        <a class="cbtn cbtn--ghost" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      </div>
+    </div>
+  </section>
+</ConsultingLayout>
+
+<style>
+  .cjump__num {
+    margin-right: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--c-terra);
+  }
+
+  .cstories {
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .cstory {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+    gap: clamp(24px, 3.5vw, 56px);
+    padding: clamp(26px, 3.4vw, 44px);
+    border-radius: 24px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+    /* The anchor from the hero jump list lands under the sticky-free header,
+       but a little breathing room reads better than a heading flush to the
+       viewport edge. */
+    scroll-margin-top: 24px;
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  .cstory:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--c-float);
+  }
+
+  .cstory__metric {
+    margin-top: 6px;
+    font-size: clamp(32px, 3.6vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.024em;
+    line-height: 1;
+  }
+
+  .cstory__note {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--c-ink-2);
+  }
+
+  .cstory__second {
+    margin-top: 14px;
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgb(47 93 80 / 10%);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-green);
+  }
+
+  .cstory__client {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-green);
+  }
+
+  .cstory__title {
+    margin-top: 8px;
+    font-size: clamp(24px, 2.6vw, 32px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+
+  .cstory__block {
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 860px) {
+    .cstory {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

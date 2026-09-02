@@ -1,0 +1,970 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { CONTACT } from '../config';
+import { FOOTER_LINE } from '../data/consulting';
+import logoMark from '../assets/logo-mark.png';
+
+/**
+ * The shell for `/consulting/` and its three sub-pages.
+ *
+ * Consulting is a sub-brand, the same bargain `web-design.astro` makes: it
+ * lives on this domain for the traffic, but looks nothing like the main site.
+ * Warm cream instead of paper, Clash Display and Switzer instead of General
+ * Sans, terracotta and deep green instead of the four accents, and its own
+ * nav that goes sideways across the section rather than back to the site.
+ * Don't restyle it to match global.css — see the note there.
+ *
+ * It exists as a layout rather than being repeated per page because there are
+ * four pages: without it the palette, the header, the footer and the reveal
+ * script would be copied four times and drift on the second edit.
+ *
+ * The page opts out of the site chrome through BaseLayout's `standalone`
+ * flag. Analytics and the consent banner still come from BaseLayout, because
+ * GA runs site-wide and the footer's "Cookie settings" link has to reach it.
+ */
+interface Props {
+  title: string;
+  description: string;
+  /** Marks the current item in the section nav. Home passes nothing. */
+  current?: 'services' | 'results' | 'process';
+}
+
+const { title, description, current } = Astro.props;
+
+const NAV = [
+  { label: 'Services', href: '/consulting/services/', key: 'services' },
+  { label: 'Results', href: '/consulting/results/', key: 'results' },
+  { label: 'Process', href: '/consulting/process/', key: 'process' },
+] as const;
+
+const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+---
+
+<BaseLayout title={title} description={description} standalone>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link
+      href="https://api.fontshare.com/v2/css?f%5B%5D=clash-display@500,600,700&f%5B%5D=switzer@400,500,600,700&display=swap"
+      rel="stylesheet"
+    />
+  </Fragment>
+
+  <div class="c">
+    <div class="c__grain" aria-hidden="true"></div>
+
+    <header class="cnav">
+      <nav class="cnav__bar" aria-label="Consulting">
+        <a class="cnav__brand" href="/consulting/">
+          <img class="cnav__mark" src={logoMark.src} alt="" width="32" height="32" />
+          <span class="cnav__names">
+            <span class="disp cnav__name">Miguel Monzones</span>
+            <span class="cnav__sub">Consulting</span>
+          </span>
+        </a>
+
+        <div class="cnav__links">
+          <a class="cnav__hq" href="/" title="Back to mnmonzones.com">← back to HQ</a>
+          <span class="cnav__pipe" aria-hidden="true"></span>
+          {
+            NAV.map((item) => (
+              <a
+                class="cnav__link"
+                href={item.href}
+                aria-current={current === item.key ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+          <a class="cnav__cta" href="/consulting/#contact">Book a call</a>
+        </div>
+
+        <button
+          class="cnav__burger"
+          type="button"
+          aria-expanded="false"
+          aria-controls="consulting-menu"
+          aria-label="Menu"
+          data-cnav-toggle
+        >
+          <span class="cnav__bars" aria-hidden="true"></span>
+        </button>
+      </nav>
+
+      <div class="cnav__panel" id="consulting-menu" hidden data-cnav-panel>
+        {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+        <a href="/">← back to HQ</a>
+        <a href="/consulting/#contact">Book a call</a>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="cfoot">
+      <div class="cfoot__inner">
+        <p class="cfoot__line">{FOOTER_LINE}</p>
+        <div class="cfoot__links">
+          <a href="/">mnmonzones.com</a>
+          <a href="#cookie-settings" data-cookie-settings>Cookie settings</a>
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          <a href={phoneHref}>{CONTACT.phone}</a>
+          <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  /* ------------------------------------------------------------- nav ---- */
+  const toggle = document.querySelector<HTMLButtonElement>('[data-cnav-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-cnav-panel]');
+
+  if (toggle && panel) {
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+    });
+
+    /* Escape closes it, and so does following a link inside it — the panel is
+       position: static, so a same-page #contact link would otherwise leave it
+       hanging open over the section it just scrolled to. */
+    panel.addEventListener('click', (event) => {
+      if (!(event.target instanceof HTMLAnchorElement)) return;
+      toggle.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      toggle.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+      toggle.focus();
+    });
+  }
+
+  /* --------------------------------------------------------- reveals ---- */
+  /* Same discipline as Motion.astro and web-design.astro: the hidden starting
+     state is written here, never in CSS, so a page whose script never runs
+     shows everything instead of nothing. The failsafe below clears anything
+     still pending if the observer never fires — which is what happens in a
+     background tab, where callbacks and rAF are throttled to nothing. */
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+
+  if (!reduced && typeof IntersectionObserver === 'function' && targets.length) {
+    const pending = new Set<HTMLElement>(targets);
+
+    for (const el of targets) {
+      el.style.opacity = '0';
+      el.style.translate = '0 26px';
+      el.style.transition =
+        'opacity .7s cubic-bezier(.2,.8,.25,1), translate .7s cubic-bezier(.2,.8,.25,1)';
+    }
+
+    const show = (el: HTMLElement) => {
+      if (!pending.delete(el)) return;
+      el.style.opacity = '1';
+      el.style.translate = 'none';
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          show(entry.target as HTMLElement);
+          io.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    targets.forEach((el) => io.observe(el));
+
+    const flush = () => {
+      io.disconnect();
+      for (const el of [...pending]) {
+        el.style.transition = '';
+        show(el);
+      }
+    };
+
+    window.setTimeout(flush, 4000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flush();
+    });
+  }
+</script>
+
+<style is:global>
+  /* Scoped styles can't reach the page content passed through <slot />, and
+     every consulting page shares this vocabulary, so the section's stylesheet
+     lives here as one global block namespaced under `.c`. Nothing outside a
+     `.c` ancestor is touched. */
+  .c {
+    --c-paper: #f4efe6;
+    --c-card: #fffdf9;
+    --c-ink: #221e1a;
+    --c-ink-2: #5b544c;
+    --c-terra: #c0603c;
+    --c-green: #2f5d50;
+    --c-butter: #f6e7b2;
+
+    --c-raised:
+      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 16%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
+    --c-float:
+      0 1px 2px rgb(34 30 26 / 8%), 0 44px 80px -28px rgb(34 30 26 / 32%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
+
+    --c-disp: 'Clash Display', 'General Sans', 'Helvetica Neue', sans-serif;
+    --c-body: 'Switzer', 'General Sans', 'Helvetica Neue', sans-serif;
+
+    position: relative;
+    min-width: 320px;
+    background: var(--c-paper);
+    color: var(--c-ink);
+    font-family: var(--c-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .c ::selection {
+    background: var(--c-butter);
+    color: var(--c-ink);
+  }
+
+  .c .disp {
+    font-family: var(--c-disp);
+  }
+
+  .c a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .c :focus-visible {
+    outline: 2px solid var(--c-terra);
+    outline-offset: 3px;
+  }
+
+  /* The paper grain. Fixed and pointer-events:none so it sits over the whole
+     section without intercepting a single click. */
+  .c__grain {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: multiply;
+    background-size: 220px 220px;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9 .45' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23f)'/%3E%3C/svg%3E");
+  }
+
+  /* ----------------------------------------------------------- layout -- */
+  .c .cwrap {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: clamp(20px, 4vw, 48px);
+  }
+
+  .c .csection {
+    padding-block: clamp(64px, 8vw, 116px);
+  }
+
+  .c .ckicker {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  .c .ctitle {
+    margin-top: 12px;
+    font-size: clamp(32px, 4.4vw, 56px);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .c .clede {
+    margin-top: 18px;
+    max-width: 62ch;
+    font-size: clamp(17px, 1.5vw, 20px);
+    line-height: 1.6;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  /* ------------------------------------------------- shared components -- */
+  /* These live here rather than in a page because all four consulting pages
+     use them. Page-scoped styles also can't reach markup passed through
+     <slot />, so anything a sub-page needs has to be global anyway. */
+  .c .cbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 26px;
+    border-radius: 999px;
+    border: 1px solid var(--c-ink);
+    font-size: 15px;
+    font-weight: 600;
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      background 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .c .cbtn--solid {
+    background: var(--c-terra);
+    border-color: var(--c-terra);
+    color: var(--c-card);
+  }
+
+  .c .cbtn--solid:hover,
+  .c .cbtn--solid:focus-visible {
+    transform: translateY(-3px);
+    background: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-card);
+  }
+
+  .c .cbtn--ghost,
+  .c .cbtn--outline {
+    background: transparent;
+  }
+
+  .c .cbtn--ghost:hover,
+  .c .cbtn--ghost:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--c-green);
+    color: var(--c-green);
+  }
+
+  .c .cbtn--outline:hover,
+  .c .cbtn--outline:focus-visible {
+    transform: translateY(-2px);
+    background: var(--c-green);
+    border-color: var(--c-green);
+    color: var(--c-card);
+  }
+
+  /* On the ink and green bands the ink-bordered button disappears. */
+  .c .csection--ink .cbtn,
+  .c .csection--green .cbtn {
+    border-color: var(--c-paper);
+    color: var(--c-paper);
+  }
+
+  .c .csection--ink .cbtn--solid,
+  .c .csection--green .cbtn--solid {
+    background: var(--c-terra);
+    border-color: var(--c-terra);
+    color: var(--c-card);
+  }
+
+  .c .csection--ink .cbtn--ghost:hover,
+  .c .csection--ink .cbtn--ghost:focus-visible,
+  .c .csection--green .cbtn--ghost:hover,
+  .c .csection--green .cbtn--ghost:focus-visible {
+    background: var(--c-paper);
+    color: var(--c-ink);
+  }
+
+  .c .ctarow {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .c .chead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 32px;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .c .clink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--c-green);
+    transition: color 0.2s ease;
+  }
+
+  .c .clink:hover,
+  .c .clink:focus-visible {
+    color: var(--c-terra);
+  }
+
+  .c .csection--green {
+    background: var(--c-green);
+    color: var(--c-paper);
+  }
+
+  .c .csection--ink {
+    background: var(--c-ink);
+    color: var(--c-paper);
+  }
+
+  .c .csection--green .ckicker,
+  .c .csection--ink .ckicker,
+  .c .csection--green .clink,
+  .c .csection--ink .clink {
+    color: var(--c-butter);
+  }
+
+  .c .csection--green .clede,
+  .c .csection--ink .clede {
+    color: rgb(244 239 230 / 76%);
+  }
+
+  /* The four-figure band, on both the home and results pages. */
+  .c .cstats {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(18px, 2.2vw, 32px);
+  }
+
+  .c .cstat__rule {
+    display: block;
+    width: 36px;
+    height: 3px;
+    background: var(--c-terra);
+  }
+
+  .c .cstat__num {
+    margin-top: 16px;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .c .cstat__label {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--c-ink-2);
+  }
+
+  /* The practice tabs, on both the home and services pages. */
+  .c .cprac {
+    margin-top: 36px;
+  }
+
+  .c .cprac__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .c .cprac__tab {
+    padding: 13px 22px;
+    border: 1px solid var(--c-ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--c-ink);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.25s ease,
+      color 0.25s ease,
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  .c .cprac__tab[aria-selected='true'] {
+    background: var(--c-green);
+    border-color: var(--c-green);
+    color: var(--c-paper);
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 10%),
+      0 10px 20px -10px rgb(47 93 80 / 60%);
+  }
+
+  .c .cprac__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(24px, 3vw, 48px);
+    padding: clamp(26px, 3.2vw, 44px);
+    border-radius: 24px;
+    background: var(--c-card);
+    color: var(--c-ink);
+    box-shadow: var(--c-raised);
+  }
+
+  /* Without a script the panels stack, so each needs its own separation. */
+  .c .cprac__panel + .cprac__panel {
+    margin-top: 20px;
+  }
+
+  .c .cprac__name {
+    margin-top: 10px;
+    font-size: clamp(24px, 2.6vw, 34px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .c .cprac__blurb {
+    margin-top: 14px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  .c .cprac__detail {
+    font-size: 16px;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .c .cprac__tools {
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--c-ink-2);
+  }
+
+  .c .cprac__tools-label,
+  .c .cminilabel {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  .c .cfollow {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 20px;
+  }
+
+  .c .cfollow__note {
+    font-size: 14px;
+    color: var(--c-ink-2);
+  }
+
+  /* The step cards, on both the home and process pages. */
+  .c .csteps {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+
+  .c .cstep {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    border-radius: 22px;
+    background: var(--c-card);
+    color: var(--c-ink);
+    box-shadow: var(--c-raised);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  .c .cstep:nth-child(1) {
+    rotate: -3deg;
+  }
+
+  .c .cstep:nth-child(2) {
+    rotate: 2deg;
+    box-shadow: var(--c-float);
+  }
+
+  .c .cstep:nth-child(3) {
+    rotate: -1.5deg;
+  }
+
+  .c .cstep:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--c-float);
+  }
+
+  .c .cstep__num {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--c-terra);
+  }
+
+  .c .cstep__name {
+    margin-top: 12px;
+    font-size: 23px;
+    font-weight: 600;
+    letter-spacing: -0.016em;
+  }
+
+  .c .cstep__body {
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  /* The hero, shared by all four pages. */
+  .c .chero {
+    padding-block: clamp(44px, 6vw, 92px) clamp(56px, 7vw, 104px);
+  }
+
+  .c .chero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 72px);
+    align-items: start;
+  }
+
+  .c .chero__title {
+    margin-top: 22px;
+    font-size: clamp(40px, 6vw, 78px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.028em;
+    text-wrap: balance;
+  }
+
+  .c .chero__body {
+    margin-top: 26px;
+    max-width: 56ch;
+    font-size: clamp(17px, 1.6vw, 21px);
+    line-height: 1.55;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  /* The floating "on this page" card in the sub-page heroes. */
+  .c .cjump {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    border-radius: 22px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+  }
+
+  .c .cjump > a {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 44px;
+    justify-content: center;
+    padding-block: 10px;
+    font-weight: 600;
+    border-bottom: 1px solid rgb(34 30 26 / 10%);
+    transition: color 0.2s ease;
+  }
+
+  .c .cjump > a:last-child {
+    border-bottom: 0;
+  }
+
+  .c .cjump > a:hover,
+  .c .cjump > a:focus-visible {
+    color: var(--c-terra);
+  }
+
+  .c .cjump__meta {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-ink-2);
+  }
+
+  @media (max-width: 1080px) {
+    .c .cstats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .c .chero__grid,
+    .c .csteps,
+    .c .cprac__panel {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .c .cstats {
+      grid-template-columns: 1fr;
+    }
+
+    /* Rotated cards cost horizontal room a phone doesn't have, and the
+       corners were the thing poking past the gutter. */
+    .c .cstep {
+      rotate: none;
+    }
+
+    .c .ctarow {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  /* --------------------------------------------------------------- nav -- */
+  .c .cnav {
+    position: relative;
+    z-index: 20;
+    border-bottom: 1px solid rgb(34 30 26 / 10%);
+    background: var(--c-paper);
+  }
+
+  .c .cnav__bar {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: 16px clamp(20px, 4vw, 48px);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .c .cnav__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: auto;
+  }
+
+  .c .cnav__mark {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .c .cnav__names {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .c .cnav__name {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .c .cnav__sub {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  .c .cnav__links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .c .cnav__links a {
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+
+  .c .cnav__links a:hover,
+  .c .cnav__links a:focus-visible {
+    color: var(--c-terra);
+  }
+
+  .c .cnav__hq {
+    color: var(--c-ink-2);
+  }
+
+  .c .cnav__pipe {
+    width: 1px;
+    height: 18px;
+    background: rgb(34 30 26 / 18%);
+  }
+
+  .c .cnav__link[aria-current='page'] {
+    color: var(--c-terra);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+
+  .c .cnav__cta {
+    padding: 11px 18px;
+    border: 1px solid var(--c-ink);
+    border-radius: 999px;
+    font-weight: 600;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .c .cnav__cta:hover,
+  .c .cnav__cta:focus-visible {
+    background: var(--c-ink);
+    color: var(--c-card);
+    transform: translateY(-2px);
+  }
+
+  .c .cnav__burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(34 30 26 / 20%);
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .c .cnav__bars,
+  .c .cnav__bars::before,
+  .c .cnav__bars::after {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--c-ink);
+    transition: transform 0.2s ease;
+  }
+
+  .c .cnav__bars::before,
+  .c .cnav__bars::after {
+    content: '';
+    position: relative;
+  }
+
+  .c .cnav__bars::before {
+    top: -6px;
+  }
+
+  .c .cnav__bars::after {
+    top: 4px;
+  }
+
+  .c .cnav__panel {
+    display: flex;
+    flex-direction: column;
+    padding: 8px clamp(20px, 4vw, 48px) 20px;
+    border-top: 1px solid rgb(34 30 26 / 10%);
+  }
+
+  .c .cnav__panel a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid rgb(34 30 26 / 8%);
+  }
+
+  @media (max-width: 860px) {
+    .c .cnav__links {
+      display: none;
+    }
+
+    .c .cnav__burger {
+      display: flex;
+    }
+  }
+
+  @media (min-width: 861px) {
+    /* The panel is only ever a phone affordance. Without this it would stay
+       open behind the desktop links after a resize. */
+    .c .cnav__panel {
+      display: none;
+    }
+  }
+
+  @media (min-width: 861px) and (max-width: 1120px) {
+    .c .cnav__links {
+      gap: 14px;
+      font-size: 13px;
+    }
+
+    .c .cnav__cta {
+      padding: 11px 16px;
+    }
+  }
+
+  /* ------------------------------------------------------------ footer -- */
+  .c .cfoot {
+    background: var(--c-ink);
+    color: var(--c-paper);
+    padding-block: clamp(36px, 5vw, 56px);
+  }
+
+  .c .cfoot__inner {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: clamp(20px, 4vw, 48px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .c .cfoot__line {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .c .cfoot__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    font-size: 13px;
+    color: rgb(244 239 230 / 72%);
+  }
+
+  .c .cfoot__links a {
+    transition: color 0.2s ease;
+  }
+
+  .c .cfoot__links a:hover,
+  .c .cfoot__links a:focus-visible {
+    color: var(--c-butter);
+  }
+
+  @media (max-width: 719px) {
+    /* Footer links are the smallest targets in the section; give them the
+       44px the rest of the site's phone layouts use. */
+    .c .cfoot__links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .c *,
+    .c *::before,
+    .c *::after {
+      transition-duration: 1ms !important;
+      animation: none !important;
+    }
+  }
+</style>

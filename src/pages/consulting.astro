@@ -1,1765 +1,730 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { CONTACT, SITE, FORM_ENDPOINT } from '../config';
-import logoMark from '../assets/logo-mark.png';
-import illPositioning from '../assets/consulting/positioning.svg?url';
-import illLifecycle from '../assets/consulting/lifecycle.svg?url';
-import illConversion from '../assets/consulting/conversion.svg?url';
-import illAutomation from '../assets/consulting/automation.svg?url';
+import ConsultingLayout from '../layouts/ConsultingLayout.astro';
+import { CONTACT, FORM_ENDPOINT } from '../config';
 import {
-  PRACTICES,
+  CONTACT_SECTION,
   ENGAGEMENTS,
-  FIT_YES,
-  FIT_NO,
-  START_STEPS,
+  HERO,
+  HERO_STATS,
+  PRACTICES,
   PROOF,
-  CONSULTING_NUMBERS,
-  SYSTEMS,
-  DEPTH,
+  START_STEPS,
+  STATS,
 } from '../data/consulting';
 
 /**
- * The consulting service page.
- *
- * v9 pulled this page out of the site's Bold system and gave it its own look —
- * warm cream, rounded cards, pastel tiles, a handwritten accent face — the
- * sibling of /web-design/. Both are things being sold, and both read as an
- * offer rather than as another chapter of the portfolio. That's deliberate:
- * don't restyle either back into global.css.
- *
- * It opts out of the site chrome via BaseLayout's `standalone` flag and ships
- * its own header, footer and motion. Analytics and the consent banner still
- * come from the shared layout, because GA runs site-wide.
- *
- * Two deliberate departures from the design export:
- *
- *  1. Its contact form was inert. Here it POSTs to Formspree like every other
- *     form on the site, tagged `service: consulting` so enquiries can be told
- *     apart from web-design leads in the inbox.
- *  2. "What's included" was a JS-driven toggle. It's a native <details> here,
- *     so the list is readable — and openable — before any script runs.
+ * `/consulting/` — the section's front door, ported from the v13 export's
+ * `Monzones-C-Home`. Copy lives in src/data/consulting.ts; the sub-brand's
+ * palette, nav and footer live in ConsultingLayout.astro.
  */
-
 const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
-const linkedinLabel = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
-
-const ILLUSTRATIONS: Record<string, string> = {
-  lifecycle: illLifecycle,
-  web: illConversion,
-  ai: illAutomation,
-};
-
-/* The page's own nav. Home/Work/Writing/About plus the sibling service, so
-   someone who lands here from search can get anywhere without going back. */
-const NAV = [
-  { label: 'Home', href: '/' },
-  { label: 'Work', href: '/work/' },
-  { label: 'Writing', href: '/thinking/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Web Design', href: '/web-design/' },
-] as const;
 ---
 
-<BaseLayout
+<ConsultingLayout
   title="Consulting"
-  description="I help fintech, SaaS, and ecommerce teams fix the journeys, funnels, and systems behind a stuck metric — then leave them owning the fix. Fixed-fee engagements through MNM Alaminos Consulting Ltd., Vancouver."
-  breadcrumbs={[{ label: 'Consulting', href: '/consulting/' }]}
-  standalone
+  description="Lifecycle, conversion and automation consulting for fintech, SaaS and ecommerce teams. I fix the journeys, funnels and systems behind a stuck metric, then leave you owning the fix."
 >
-  <Fragment slot="head">
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://api.fontshare.com/v2/css?f%5B%5D=cabinet-grotesk@500,700,800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,400..700;1,400..700&display=swap"
-      rel="stylesheet"
-    />
-  </Fragment>
+  <section class="chero" id="top">
+    <div class="cwrap chero__grid">
+      <div>
+        <p class="chero__avail">
+          <span class="chero__dot" aria-hidden="true"></span>
+          {HERO.availability}
+        </p>
 
-  <div class="cn">
-    {/* --------------------------------------------------------------- nav -- */}
-    <header class="cnhead">
-      <nav class="cnnav" aria-label="Consulting page">
-        <a class="cnnav__brand" href="/">
-          <img src={logoMark.src} alt="" width="26" height="26" />
-          <span class="cnnav__brandtext">
-            <span class="cnnav__brandname">Miguel Monzones</span>
-            <span class="hand cnnav__brandsub">consulting</span>
-          </span>
-        </a>
+        <h1 class="disp chero__title">
+          {HERO.titleLead} <span class="chero__accent">{HERO.titleAccent}</span><br
+          />{HERO.titleRest}
+        </h1>
 
-        <div class="cnnav__links">
-          {NAV.map((item) => <a class="cnnav__link" href={item.href}>{item.label}</a>)}
-          <a class="cnbtn cnbtn--pill" href="#contact">Work with me</a>
+        <p class="chero__body">{HERO.body}</p>
+
+        <div class="ctarow">
+          <a class="cbtn cbtn--solid" href="#contact">{HERO.primaryCta}</a>
+          <a class="cbtn cbtn--ghost" href="#cases">{HERO.secondaryCta}</a>
         </div>
 
-        <button
-          class="cnnav__burger"
-          type="button"
-          aria-expanded="false"
-          aria-controls="cn-menu"
-          aria-label="Menu"
-          data-cn-nav-toggle
-        >
-          <span aria-hidden="true"><span /><span /><span /></span>
-        </button>
-      </nav>
-
-      <div class="cnnav__panel" id="cn-menu" hidden data-cn-nav-panel>
-        {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
-        <a class="cnnav__panelcta" href="#contact">Work with me</a>
+        <p class="chero__reassure">{HERO.reassurance}</p>
       </div>
 
-      <div class="cnprog" aria-hidden="true" data-cn-progress></div>
-    </header>
-
-    {/* -------------------------------------------------------------- hero -- */}
-    <section class="cnwrap cnhero" id="top">
-      <div class="cnhero__grid">
-        <div>
-          <p class="cnhero__badge cnrise">
-            <span class="cndot" aria-hidden="true"></span>
-            Lifecycle · Conversion · AI automation
-          </p>
-
-          <h1 class="serif cnhero__title cnrise cnrise--2">
-            Your numbers stopped moving.<br />
-            <em class="wavy">Let’s find out why.</em>
-          </h1>
-
-          <p class="cnhero__lede cnrise cnrise--3">
-            I help fintech, SaaS, and ecommerce teams fix the journeys, funnels, and systems behind
-            a stuck metric — then leave them owning the fix. Eleven years in-house, now on your side
-            of the table.
-          </p>
-
-          <div class="cnhero__cta cnrise cnrise--4">
-            <a class="cnbtn cnbtn--solid" href="#contact">Book a free 30-minute call</a>
-            <a class="cnbtn cnbtn--ghost" href="#results">See the results</a>
-          </div>
-
-          <p class="hand cnhero__aside cnrise cnrise--4">
-            Useful either way — if I’m not the right person, I’ll say so.
-          </p>
-        </div>
-
-        <div class="cnhero__ill cnrise cnrise--3">
-          <span class="cnblob" aria-hidden="true"></span>
-          <span class="cnhero__illframe">
-            <img class="cnbob" src={illPositioning} alt="" width="440" height="440" />
-          </span>
-        </div>
-      </div>
-    </section>
-
-    {/* ----------------------------------------------------------- results -- */}
-    <section class="cnwrap cnsection" id="results">
-      <div class="cnhead2" data-cn-reveal>
-        <h2 class="serif">Proof, not promises.</h2>
-        <span class="hand cnhead2__note">numbers from real engagements</span>
-      </div>
-
-      <div class="cnstats" data-cn-stagger="pop">
+      <div class="chero__stats">
         {
-          CONSULTING_NUMBERS.map((number) => (
-            <div class="cnstat" style={`background:${number.bg}`}>
-              <p class="serif cnstat__value">{number.value}</p>
-              <p class="cnstat__label">{number.label}</p>
+          HERO_STATS.map((stat, i) => (
+            <div class={`chero__chip chero__chip--${i + 1}`}>
+              <span class="disp chero__chip-num">{stat.num}</span>
+              <span class="chero__chip-label">{stat.label}</span>
+            </div>
+          ))
+        }
+        <p class="chero__note">
+          All three are broken down on the <a href="/consulting/results/">results page</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="results">
+    <div class="cwrap">
+      <div class="chead" data-reveal>
+        <div>
+          <span class="ckicker">Results</span>
+          <h2 class="disp ctitle">Proof, not promises.</h2>
+        </div>
+        <a class="clink" href="/consulting/results/">The full breakdown →</a>
+      </div>
+
+      <div class="cstats" data-reveal>
+        {
+          STATS.map((stat) => (
+            <div class="cstat">
+              <span class="cstat__rule" aria-hidden="true" />
+              <p class="disp cstat__num">{stat.num}</p>
+              <p class="cstat__label">{stat.label}</p>
             </div>
           ))
         }
       </div>
-    </section>
+    </div>
+  </section>
 
-    {/* --------------------------------------------------------- practices -- */}
-    <section class="cnwrap cnsection" id="practices">
-      <div class="cnintro" data-cn-reveal>
-        <h2 class="serif">How I help your numbers move.</h2>
-        <p>
-          Three connected areas — and most problems live somewhere between them. Start with the one
-          closest to yours.
-        </p>
+  <section class="csection csection--green" id="cases">
+    <div class="cwrap">
+      <div class="chead" data-reveal>
+        <div>
+          <span class="ckicker ckicker--on-green">Selected work</span>
+          <h2 class="disp ctitle">The receipts.</h2>
+        </div>
+        <a class="clink clink--on-green" href="/consulting/results/">See the full results →</a>
       </div>
 
-      <div class="cnpractices">
-        {
-          PRACTICES.map((practice) => (
-            <article class="cncard cnpractice" data-cn-reveal>
-              <div class="cnpractice__ill">
-                <span
-                  class="cnblob cnblob--card"
-                  aria-hidden="true"
-                  style={`background:${practice.blob};border-radius:${practice.blobShape}`}
-                />
-                <img class="cnbob" src={ILLUSTRATIONS[practice.key]} alt="" width="300" height="300" loading="lazy" />
-              </div>
-
-              <h3 class="serif cnpractice__name">{practice.name}</h3>
-              <p class="cnpractice__blurb">{practice.blurb}</p>
-              <p class="cneyebrow cneyebrow--terra">How I help</p>
-              <p class="cnpractice__detail">{practice.detail}</p>
-
-              {/* Native disclosure: the list opens with or without JavaScript. */}
-              <details class="cnincludes">
-                <summary>
-                  <span class="cnincludes__shut">What’s included +</span>
-                  <span class="cnincludes__open">Hide what’s included −</span>
-                </summary>
-                <ul class="cnincludes__list">
-                  {
-                    practice.items.map((item) => (
-                      <li>
-                        <span class="cnincludes__dot" aria-hidden="true" style={`background:${practice.dot}`} />
-                        {item}
-                      </li>
-                    ))
-                  }
-                </ul>
-              </details>
-
-              <p class="cnpractice__tools">{practice.tools}</p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
-
-    {/* ------------------------------------------------------------- cases -- */}
-    <section class="cnwrap cnsection" id="cases">
-      <div class="cnhead2 cnhead2--split" data-cn-reveal>
-        <h2 class="serif">Case studies.</h2>
-        <a class="cnlink cntap" href="/work/">See all work →</a>
-      </div>
-
-      <div class="cncases">
+      <div class="ccases">
         {
           PROOF.map((proof) => (
-            <a class="cncase" href={`/work/${proof.slug}/`} style={`background:${proof.bg}`} data-cn-reveal>
-              <span class="cneyebrow">{proof.client}</span>
-              <span class="serif cncase__title">{proof.title}</span>
-              <span class="cncase__line">{proof.line}</span>
-              <span class="cncase__more">
-                Read the full case <span class="cncase__arrow" aria-hidden="true">→</span>
-              </span>
+            <a class="ccase" href={proof.href} data-reveal>
+              <span class="ccase__metric-label">{proof.metricLabel}</span>
+              <span class="disp ccase__metric">{proof.metric}</span>
+              <span class="ccase__metric-note">{proof.metricNote}</span>
+              <span class="ccase__rule" aria-hidden="true" />
+              <span class="ccase__client">{proof.client}</span>
+              <span class="disp ccase__title">{proof.title}</span>
+              <span class="ccase__line">{proof.line}</span>
+              <span class="ccase__more">Read the full case →</span>
             </a>
           ))
         }
       </div>
-    </section>
+    </div>
+  </section>
 
-    {/* ------------------------------------------------------- engagements -- */}
-    <section class="cnwrap cnsection" id="engagements">
-      <div class="cnintro" data-cn-reveal>
-        <h2 class="serif">Ways to work together.</h2>
-        <p>
-          From one focused week to a seat inside your team. Every engagement is a fixed fee, quoted
-          before anything starts — you know the scope, the cost, and what you walk away with.
-        </p>
+  <section class="csection" id="practices">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Practice</span>
+        <h2 class="disp ctitle">How I help your numbers move.</h2>
       </div>
+      <p class="clede" data-reveal>
+        Three connected areas, and most problems live somewhere between them. Pick the one closest
+        to yours.
+      </p>
 
-      <div class="cncard cnengagements">
-        {
-          ENGAGEMENTS.map((engagement) => (
-            <article class="cnengagement" data-cn-reveal>
-              <div class="cnengagement__head">
-                <h3 class="serif cnengagement__name">{engagement.name}</h3>
-                <span class="cnengagement__chip" style={`background:${engagement.chip}`}>
-                  {engagement.length}
-                </span>
-              </div>
-              <div class="cnengagement__body">
-                <p>{engagement.body}</p>
-                <p class="cnengagement__leave">
-                  <span>You walk away with:</span> {engagement.leave}
-                </p>
-              </div>
-            </article>
-          ))
-        }
-        <p class="hand cnengagements__note">
-          Fixed fee, quoted up front. The hourly meter doesn’t exist here.
-        </p>
-      </div>
-    </section>
-
-    {/* ----------------------------------------------------------- systems -- */}
-    <section class="cnwrap cnsection" id="systems">
-      <div class="cnintro" data-cn-reveal>
-        <h2 class="serif">Odds are, I already know your stack.</h2>
-        <p>
-          I pick systems for what they need to do, not for what’s shiny. But most teams already have
-          a stack — here’s what I can pick up without a ramp.
-        </p>
-      </div>
-
-      <div class="cnsystems">
-        {
-          SYSTEMS.map((category) => (
-            <div class="cnsystem" data-cn-reveal>
-              <span class="cnsystem__name">{category.name}</span>
-              <span class="cnsystem__tools">{category.tools.join(' · ')}</span>
-            </div>
-          ))
-        }
-      </div>
-
-      <div class="cndepth" data-cn-reveal>
-        <p class="cneyebrow cneyebrow--terra">Where I go deepest</p>
-        <div class="cndepth__grid">
+      {/*
+        Every panel is rendered. The script hides the inactive ones and turns
+        the headings into a tablist — so with no JavaScript this reads as three
+        labelled sections rather than one visible panel and two missing.
+      */}
+      <div class="cprac" data-prac>
+        <div class="cprac__tabs" role="tablist" aria-label="Practice areas" hidden data-prac-tabs>
           {
-            DEPTH.map((tool) => (
-              <div class="cndepth__row">
-                <div class="cndepth__head">
-                  <span class="cndepth__name">{tool.name}</span>
-                  <span class:list={['cndepth__level', tool.level === 'Expert' && 'cndepth__level--expert']}>
-                    {tool.level}
-                  </span>
-                </div>
-                <span class="cndepth__note">{tool.note}</span>
-              </div>
+            PRACTICES.map((practice, i) => (
+              <button
+                type="button"
+                role="tab"
+                class="cprac__tab"
+                id={`prac-tab-${i}`}
+                aria-controls={`prac-panel-${i}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-prac-tab={String(i)}
+              >
+                {practice.name}
+              </button>
             ))
           }
         </div>
-        <p class="cndepth__caveat">
-          Proficiency here reflects current fluency rather than everything I’ve touched. Salesforce
-          Marketing Cloud is the one exception worth flagging: my last production build was 2021,
-          and I’m current on the platform through a live vendor evaluation rather than day-to-day
-          work.
-        </p>
-      </div>
-    </section>
 
-    {/* --------------------------------------------------------------- fit -- */}
-    <section class="cnwrap cnsection" id="fit">
-      <div class="cnintro" data-cn-reveal>
-        <h2 class="serif">Real talk about fit.</h2>
-        <p>
-          This works best when there’s a real problem to understand, enough signal to learn from,
-          and a team willing to look at the whole system. I’d rather lose the gig than waste your
-          quarter.
-        </p>
-      </div>
-
-      <div class="cnfit">
-        <div class="cnfit__card cnfit__card--yes" data-cn-reveal>
-          <p class="cneyebrow cneyebrow--terra">We’ll get along if</p>
-          <ul class="cnfit__list">
-            {
-              FIT_YES.map((line) => (
-                <li>
-                  <span class="cnfit__mark" aria-hidden="true">+</span>
-                  {line}
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-
-        <div class="cnfit__card cnfit__card--no" data-cn-reveal>
-          <p class="cneyebrow">Probably not, if</p>
-          <ul class="cnfit__list cnfit__list--no">
-            {
-              FIT_NO.map((line) => (
-                <li>
-                  <span class="cnfit__mark cnfit__mark--no" aria-hidden="true">−</span>
-                  {line}
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    {/* ------------------------------------------------------------- start -- */}
-    <section class="cnwrap cnsection" id="start">
-      <div class="cnintro" data-cn-reveal>
-        <h2 class="serif">Starting is zero-risk. <em class="wavy">By design.</em></h2>
-        <p>Three steps, and you can bail at every one of them.</p>
+        {
+          PRACTICES.map((practice, i) => (
+            <article
+              class="cprac__panel"
+              id={`prac-panel-${i}`}
+              role="tabpanel"
+              aria-labelledby={`prac-tab-${i}`}
+              tabindex="0"
+              data-prac-panel={String(i)}
+            >
+              <div>
+                <span class="ckicker">{practice.kicker}</span>
+                <h3 class="disp cprac__name">{practice.name}</h3>
+                <p class="cprac__blurb">{practice.blurb}</p>
+              </div>
+              <div>
+                <p class="cprac__detail">{practice.detail}</p>
+                <p class="cprac__tools">
+                  <span class="cprac__tools-label">Tools</span>
+                  {practice.tools}
+                </p>
+              </div>
+            </article>
+          ))
+        }
       </div>
 
-      <div class="cnstart" data-cn-stagger="up">
+      <div class="cfollow" data-reveal>
+        <a class="cbtn cbtn--outline" href="/consulting/services/">Every practice area in detail →</a>
+        <span class="cfollow__note">Deliverables, inclusions, and tools on the services page.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="services">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Services</span>
+        <h2 class="disp ctitle">Ways to work together.</h2>
+      </div>
+      <p class="clede" data-reveal>
+        From one focused week to a seat inside your team: six shapes, every one a fixed fee quoted
+        before anything starts.
+      </p>
+
+      <div class="cengs" data-reveal>
+        {
+          ENGAGEMENTS.map((engagement) => (
+            <article class="ceng">
+              <h3 class="disp ceng__name">{engagement.name}</h3>
+              <p class="ceng__line">{engagement.line}</p>
+              <span class="ceng__length">{engagement.length}</span>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="cfollow" data-reveal>
+        <a class="cbtn cbtn--outline" href="/consulting/services/">Explore the services →</a>
+        <span class="cfollow__note">
+          What’s included, what you walk away with, and the full detail.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="start">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">How it starts</span>
+        <h2 class="disp ctitle">Starting is zero-risk. By design.</h2>
+      </div>
+
+      <div class="csteps">
         {
           START_STEPS.map((step) => (
-            <div class="cncard cnstep">
-              <span class="serif cnstep__num">{step.num}</span>
-              <span class="cnstep__name">{step.name}</span>
-              <span class="cnstep__body">{step.body}</span>
+            <div class="cstep" data-reveal>
+              <span class="disp cstep__num">{step.num}</span>
+              <span class="disp cstep__name">{step.name}</span>
+              <span class="cstep__body">{step.body}</span>
             </div>
           ))
         }
       </div>
-    </section>
 
-    {/* ----------------------------------------------------------- contact -- */}
-    <section class="cncontact" id="contact">
-      <div class="cnwrap">
-        <h2 class="serif cncontact__title" data-cn-reveal>
-          Tell me what’s stuck.<br />
-          <em>I’ll tell you what I’d do first.</em>
-        </h2>
-        <p class="cncontact__lede" data-cn-reveal>
-          What’s happening, what you’re seeing, what you suspect. I’ll be straight about whether I
-          can help — and about whether I’m the right person at all.
-        </p>
+      <div class="cfollow" data-reveal>
+        <a class="cbtn cbtn--outline" href="/consulting/process/">Here’s the whole process →</a>
+        <span class="cfollow__note">Three steps, and you can bail at every one of them.</span>
+      </div>
+    </div>
+  </section>
 
-        <div class="cncontact__grid" data-cn-reveal>
-          {/*
-            A plain POST to Formspree, so the form still works with JavaScript
-            disabled — the visitor lands on Formspree's own thank-you page
-            instead of seeing the inline message.
-          */}
-          <form class="cnform" action={FORM_ENDPOINT} method="POST" data-contact-form>
-            {/* Routes consulting enquiries apart from web-design leads. */}
-            <input type="hidden" name="_subject" value="New consulting enquiry" />
-            <input type="hidden" name="service" value="consulting" />
+  <section class="csection csection--ink" id="contact">
+    <div class="cwrap">
+      <p class="ccontact__avail" data-reveal>
+        <span class="chero__dot" aria-hidden="true"></span>
+        {CONTACT_SECTION.availability}
+      </p>
+      <h2 class="disp ctitle ctitle--on-ink" data-reveal>{CONTACT_SECTION.title}</h2>
+      <p class="clede clede--on-ink" data-reveal>{CONTACT_SECTION.body}</p>
 
-            <label class="cnfield">
-              Your name
-              <input type="text" name="name" autocomplete="name" required />
-            </label>
+      <div class="ccontact" data-reveal>
+        <form class="cform" action={FORM_ENDPOINT} method="POST" data-consulting-form>
+          {/* Routes consulting enquiries apart from web-design leads. */}
+          <input type="hidden" name="_subject" value="New consulting enquiry" />
+          <input type="hidden" name="service" value="consulting" />
 
-            <label class="cnfield">
-              Email
-              <input type="email" name="email" autocomplete="email" required />
-            </label>
+          <label class="cfield">
+            Your name
+            <input type="text" name="name" autocomplete="name" required />
+          </label>
 
-            <label class="cnfield">
-              What’s on your mind?
-              <textarea name="message" rows="4" required></textarea>
-            </label>
+          <label class="cfield">
+            Email
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
 
-            {/* Formspree discards any submission that fills this in. */}
-            <input
-              type="text"
-              name="_gotcha"
-              tabindex="-1"
-              autocomplete="off"
-              aria-hidden="true"
-              class="cnform__honeypot"
-            />
+          <label class="cfield">
+            What’s on your mind?
+            <textarea name="message" rows="4" required></textarea>
+          </label>
 
-            <button type="submit" class="cnbtn cnbtn--solid cnform__submit">Send it</button>
-            <p class="cnform__status" role="status" aria-live="polite" data-form-status></p>
-          </form>
+          {/* Formspree discards any submission that fills this in. */}
+          <input
+            type="text"
+            name="_gotcha"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            class="choneypot"
+          />
 
-          <div class="cnroutes">
-            {
-              SITE.availability && (
-                <p class="cnroutes__status">
-                  <span class="cndot cndot--gold" aria-hidden="true" />
-                  {SITE.availability}
-                </p>
-              )
-            }
+          <button type="submit" class="cbtn cbtn--send">Send it</button>
 
-            <a class="cnroute cntap" href={`mailto:${CONTACT.email}`}>
-              <span class="cnroute__label">Email</span>
-              <span class="cnroute__value">{CONTACT.email}</span>
-              <span class="cnroute__icon" aria-hidden="true">→</span>
-            </a>
+          <p class="cform__status" role="status" aria-live="polite" data-form-status></p>
+        </form>
 
-            <a class="cnroute cntap" href={phoneHref}>
-              <span class="cnroute__label">Phone</span>
-              <span class="cnroute__value">{CONTACT.phone}</span>
-              <span class="cnroute__icon" aria-hidden="true">→</span>
-            </a>
+        <div class="ccontact__direct">
+          <a href={`mailto:${CONTACT.email}`}>
+            <span class="ccontact__label">Email</span>
+            <span class="ccontact__value">{CONTACT.email}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href={phoneHref}>
+            <span class="ccontact__label">Phone</span>
+            <span class="ccontact__value">{CONTACT.phone}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href={CONTACT.linkedin} target="_blank" rel="noopener">
+            <span class="ccontact__label">LinkedIn</span>
+            <span class="ccontact__value">linkedin.com/in/mmonzones</span>
+            <span aria-hidden="true">↗</span>
+          </a>
 
-            <a class="cnroute cntap" href={CONTACT.linkedin} target="_blank" rel="noopener">
-              <span class="cnroute__label">LinkedIn</span>
-              <span class="cnroute__value">{linkedinLabel}</span>
-              <span class="cnroute__icon" aria-hidden="true">↗</span>
-            </a>
-
-            <p class="hand cncoffee">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-                <path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"></path>
-                <path d="M17 10.5h2a2.5 2.5 0 0 1 0 5h-2"></path>
-                <path d="M8 5.5c0-1 1.2-1.4 1.2-2.5"></path>
-                <path d="M12.5 5.5c0-1 1.2-1.4 1.2-2.5"></path>
-              </svg>
-              <span>
-                If you’re in {CONTACT.city.replace(', BC', '')}, <span class="cncoffee__mark">coffee’s on me</span>. I’d
-                rather hear it out loud anyway.
-              </span>
-            </p>
-          </div>
-        </div>
-
-        <div class="cnfoot">
-          <span class="cnfoot__entity">{CONTACT.entity} — lifecycle and GTM, Vancouver.</span>
-          <span class="cnfoot__links">
-            <a href="#cookie-settings" data-cookie-settings>Cookie settings</a>
-            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-            <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-          </span>
+          <p class="ccontact__note">{CONTACT_SECTION.local}</p>
+          <p class="ccontact__note">
+            Funnel’s fine but the website itself needs building? That’s its own service:
+            <a class="ccontact__xlink" href="/web-design/">web design →</a>
+          </p>
         </div>
       </div>
-    </section>
-  </div>
-</BaseLayout>
+    </div>
+  </section>
+</ConsultingLayout>
 
 <script>
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* ------------------------------------------------------ practice tabs -- */
+  const prac = document.querySelector<HTMLElement>('[data-prac]');
 
-  /* ----------------------------------------------------------- mobile nav -- */
-  const toggle = document.querySelector<HTMLButtonElement>('[data-cn-nav-toggle]');
-  const panel = document.querySelector<HTMLElement>('[data-cn-nav-panel]');
+  if (prac) {
+    const tabs = [...prac.querySelectorAll<HTMLButtonElement>('[data-prac-tab]')];
+    const panels = [...prac.querySelectorAll<HTMLElement>('[data-prac-panel]')];
+    const tabBar = prac.querySelector<HTMLElement>('[data-prac-tabs]');
 
-  toggle?.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!open));
-    panel?.toggleAttribute('hidden', open);
-  });
+    if (tabs.length && tabs.length === panels.length && tabBar) {
+      const select = (index: number, focus = false) => {
+        tabs.forEach((tab, i) => {
+          tab.setAttribute('aria-selected', String(i === index));
+          tab.tabIndex = i === index ? 0 : -1;
+        });
+        panels.forEach((panel, i) => {
+          panel.hidden = i !== index;
+        });
+        if (focus) tabs[index].focus();
+      };
 
-  panel?.addEventListener('click', (event) => {
-    if ((event.target as HTMLElement).closest('a')) {
-      toggle?.setAttribute('aria-expanded', 'false');
-      panel.setAttribute('hidden', '');
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(i));
+        tab.addEventListener('keydown', (event) => {
+          /* Roving tabindex: a tablist is one stop, arrows move within it. */
+          const delta = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+          if (!delta) return;
+          event.preventDefault();
+          select((i + delta + tabs.length) % tabs.length, true);
+        });
+      });
+
+      tabBar.hidden = false;
+      select(0);
     }
-  });
-
-  /* ------------------------------------------------------- scroll progress -- */
-  // Only where scroll-driven animations aren't supported; elsewhere the bar is
-  // driven entirely by CSS and this listener never runs.
-  const progress = document.querySelector<HTMLElement>('[data-cn-progress]');
-  const nativeTimeline = CSS.supports?.('animation-timeline: scroll()') ?? false;
-
-  if (progress && !nativeTimeline && !reduced) {
-    const update = () => {
-      const doc = document.documentElement;
-      const travel = Math.max(1, doc.scrollHeight - window.innerHeight);
-      progress.style.transform = `scaleX(${Math.min(1, doc.scrollTop / travel)})`;
-    };
-    window.addEventListener('scroll', update, { passive: true });
-    update();
   }
 
-  /* ---------------------------------------------------------------- reveals -- */
-  // Same discipline as Motion.astro: starting states written here, never in
-  // CSS, with a failsafe that shows everything if the observer goes quiet.
-  const canObserve = typeof IntersectionObserver === 'function';
+  /* ------------------------------------------------------------- form ---- */
+  /* Submits in place, falling through to a normal POST on anything
+     unexpected — the same bargain ContactSection makes, repeated here because
+     component scripts only ship on pages that render the component. */
+  const form = document.querySelector<HTMLFormElement>('[data-consulting-form]');
 
-  if (!reduced && canObserve) {
-    const initial: Record<string, string> = {
-      up: 'translateY(26px)',
-      pop: 'translateY(22px) scale(.95)',
-    };
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 
-    const pending = new Set<HTMLElement>();
+    form.addEventListener('submit', async (event) => {
+      if (!form.checkValidity()) return;
+      event.preventDefault();
 
-    const prep = (el: HTMLElement, kind: string, delay: number) => {
-      el.style.opacity = '0';
-      el.style.transform = initial[kind] ?? initial.up;
-      el.style.transition = `opacity .65s ease ${delay}ms, transform .65s cubic-bezier(.2,.8,.25,1) ${delay}ms`;
-      pending.add(el);
-    };
-
-    const showEl = (el: HTMLElement) => {
-      if (!pending.delete(el)) return;
-      el.style.opacity = '1';
-      el.style.transform = 'none';
-    };
-
-    const targets: HTMLElement[] = [];
-
-    for (const el of document.querySelectorAll<HTMLElement>('[data-cn-reveal]')) {
-      prep(el, 'up', 0);
-      targets.push(el);
-    }
-
-    for (const parent of document.querySelectorAll<HTMLElement>('[data-cn-stagger]')) {
-      const kind = parent.dataset.cnStagger ?? 'up';
-      [...parent.children].forEach((child, i) => prep(child as HTMLElement, kind, i * 90));
-      targets.push(parent);
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const el = entry.target as HTMLElement;
-          if (el.hasAttribute('data-cn-stagger')) {
-            [...el.children].forEach((child) => showEl(child as HTMLElement));
-          } else {
-            showEl(el);
-          }
-          io.unobserve(el);
-        }
-      },
-      { threshold: 0.12 },
-    );
-    targets.forEach((el) => io.observe(el));
-
-    const flush = () => {
-      for (const el of [...pending]) {
-        el.style.transition = '';
-        showEl(el);
+      const original = submit?.textContent ?? 'Send it';
+      if (submit) {
+        submit.disabled = true;
+        submit.textContent = 'Sending…';
       }
-    };
-    window.setTimeout(flush, 2600);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && pending.size) flush();
+      if (status) {
+        status.textContent = '';
+        status.dataset.state = '';
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (!response.ok) throw new Error(String(response.status));
+
+        form.reset();
+        if (status) {
+          status.textContent = 'Thanks — that’s with me. I answer everything within a couple of days.';
+          status.dataset.state = 'ok';
+        }
+      } catch {
+        if (status) {
+          status.textContent =
+            'That didn’t send. Email me directly at miguel@mnmonzones.com and I’ll pick it up.';
+          status.dataset.state = 'error';
+        }
+      } finally {
+        if (submit) {
+          submit.disabled = false;
+          submit.textContent = original;
+        }
+      }
     });
   }
-
-  /* ------------------------------------------------------------------- form -- */
-  // Same in-place submit as the site's other forms; a failure falls through to
-  // Formspree's own page, so nothing is ever swallowed.
-  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-  const status = form?.querySelector<HTMLElement>('[data-form-status]');
-  const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
-
-  form?.addEventListener('submit', async (event) => {
-    if (!form.checkValidity()) return;
-    event.preventDefault();
-
-    const original = submit?.textContent ?? 'Send it';
-    if (submit) {
-      submit.disabled = true;
-      submit.textContent = 'Sending…';
-    }
-    if (status) {
-      status.textContent = '';
-      status.dataset.state = '';
-    }
-
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' },
-      });
-      if (!response.ok) throw new Error(String(response.status));
-      form.reset();
-      if (status) {
-        status.textContent = 'Got it — that’s with me. I answer everything within a couple of days.';
-        status.dataset.state = 'ok';
-      }
-    } catch {
-      if (status) {
-        status.textContent =
-          'That didn’t send. Email me directly at miguel@mnmonzones.com and I’ll pick it up.';
-        status.dataset.state = 'error';
-      }
-    } finally {
-      if (submit) {
-        submit.disabled = false;
-        submit.textContent = original;
-      }
-    }
-  });
 </script>
 
+
 <style>
-  /* The page's own design system: warm cream, rounded everything, pastel
-     tiles, Cabinet Grotesk for display and Shantell Sans for the handwritten
-     asides. Nothing here is shared with global.css on purpose — see the note
-     at the top of this file. */
-  .cn {
-    --cn-paper: #faf6ed;
-    --cn-card: #fffefa;
-    --cn-panel: #f1ecdd;
-    --cn-ink: #23221e;
-    --cn-body: #43423c;
-    --cn-muted: #5e5c53;
-    --cn-faint: #8b887c;
-    --cn-line: rgb(35 34 30 / 12%);
-    --cn-line-2: rgb(35 34 30 / 25%);
-    --cn-terra: #c75b39;
-    --cn-gold: #e9b44c;
-    --cn-dark: #1e1e1d;
-    --cn-on-dark: #faf6ed;
-    --cn-on-dark-2: #cfc9b9;
-    --cn-on-dark-3: #8f8a7c;
-    --cn-butter: #f5efd8;
-    --cn-sage: #ddebd2;
-    --cn-peri: #c9d2f4;
-    --cn-stone: #e9e6dc;
-    --cn-display: 'Cabinet Grotesk', 'General Sans', 'Helvetica Neue', sans-serif;
-    --cn-hand: 'Shantell Sans', cursive;
-    --cn-ease: cubic-bezier(0.2, 0.8, 0.25, 1);
+  /* Page-unique styles only. The shared consulting vocabulary — buttons,
+     section heads, stat band, practice tabs, step cards, hero grid — lives in
+     ConsultingLayout.astro, because all four pages use it and scoped styles
+     can't reach markup the layout renders around a <slot />. */
 
-    background: var(--cn-paper);
-    color: var(--cn-ink);
-    min-width: 320px;
-    overflow-x: clip;
-  }
-
-  .cn :global(::selection) {
-    background: var(--cn-terra);
-    color: var(--cn-on-dark);
-  }
-
-  .cn :global(a) {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .cn :global(:focus-visible) {
-    outline: 3px solid var(--cn-terra);
-    outline-offset: 3px;
-  }
-
-  .serif {
-    font-family: var(--cn-display);
-  }
-
-  .hand {
-    font-family: var(--cn-hand);
-    font-style: italic;
-  }
-
-  /* A gold highlighter behind emphasised words in a heading, and a hand-drawn
-     squiggle under the ones marked .wavy. Both clone across line breaks. */
-  .cn :global(h1 em),
-  .cn :global(h2 em) {
-    font-family: var(--cn-hand);
-    font-style: italic;
-    font-weight: 500;
-    background-image: linear-gradient(
-      100deg,
-      rgb(233 180 76 / 0%) 0.5%,
-      rgb(233 180 76 / 95%) 3.5%,
-      rgb(233 180 76 / 85%) 96%,
-      rgb(233 180 76 / 0%) 98.5%
-    );
-    background-repeat: no-repeat;
-    background-size: 100% 0.24em;
-    background-position: 0 100%;
-    padding: 0 0.1em 0.14em;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-  }
-
-  .cn :global(h1 em.wavy),
-  .cn :global(h2 em.wavy) {
-    color: var(--cn-terra);
-    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 10 C40 3 90 2 140 5 C168 6.6 186 8.4 197 11' fill='none' stroke='%23C75B39' stroke-width='2.4' stroke-linecap='round' opacity='0.75'/%3E%3C/svg%3E");
-    background-size: 100% 0.3em;
-    padding: 0 0.06em 0.2em;
-  }
-
-  /* ------------------------------------------------------------ header -- */
-  .cnhead {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    background: rgb(250 246 237 / 94%);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgb(35 34 30 / 14%);
-  }
-
-  .cnnav {
-    max-width: 1200px;
-    margin-inline: auto;
-    padding: 16px 28px;
-    display: flex;
-    align-items: center;
-    gap: 28px;
-  }
-
-  .cnnav__brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: none;
-    white-space: nowrap;
-    margin-right: auto;
-  }
-
-  .cnnav__brand img {
-    height: 26px;
-    width: auto;
-    display: block;
-  }
-
-  .cnnav__brandtext {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
-
-  .cnnav__brandname {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-
-  .cnnav__brandsub {
-    font-size: 13px;
-    color: var(--cn-terra);
-  }
-
-  .cnnav__links {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    font-size: 14.5px;
-    font-weight: 500;
-  }
-
-  .cnnav__link {
-    color: var(--cn-muted);
-    white-space: nowrap;
-    padding: 6px 10px;
-    margin: -6px -10px;
-    border-radius: 8px;
-    transition: color 180ms ease, background-color 180ms ease;
-  }
-
-  .cnnav__link:hover {
-    color: var(--cn-terra);
-    background: rgb(233 180 76 / 28%);
-  }
-
-  .cnnav__burger {
-    display: none;
-    flex: none;
-    width: 44px;
-    height: 44px;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1.5px solid var(--cn-ink);
-    border-radius: 12px;
-    padding: 0;
-    cursor: pointer;
-  }
-
-  .cnnav__burger > span {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 18px;
-  }
-
-  .cnnav__burger > span > span {
-    display: block;
-    height: 2px;
-    background: var(--cn-ink);
-    border-radius: 2px;
-  }
-
-  .cnnav__panel {
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid rgb(35 34 30 / 12%);
-    background: var(--cn-paper);
-    padding: 8px 28px 20px;
-  }
-
-  .cnnav__panel > a {
-    padding: 13px 0;
-    font-size: 15px;
-    font-weight: 500;
-    border-bottom: 1px solid rgb(35 34 30 / 10%);
-  }
-
-  .cnnav__panelcta {
-    margin-top: 16px;
-    padding: 14px 20px !important;
-    background: var(--cn-terra);
-    color: var(--cn-on-dark);
-    font-weight: 600 !important;
-    text-align: center;
-    border-radius: 999px;
-    border-bottom: 0 !important;
-  }
-
-  .cnprog {
-    position: absolute;
-    inset-inline: 0;
-    bottom: -1px;
-    height: 2px;
-    background: var(--cn-terra);
-    transform-origin: 0 50%;
-    transform: scaleX(0);
-  }
-
-  @supports (animation-timeline: scroll()) {
-    .cnprog {
-      animation: cn-prog linear both;
-      animation-timeline: scroll();
-    }
-  }
-
-  @keyframes cn-prog {
-    from {
-      transform: scaleX(0);
-    }
-
-    to {
-      transform: scaleX(1);
-    }
-  }
-
-  /* ------------------------------------------------------------ buttons -- */
-  .cnbtn {
+  .chero__avail {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-size: 15px;
+    gap: 10px;
+    font-size: 13px;
     font-weight: 600;
-    border-radius: 999px;
-    padding: 16px 30px;
-    transition: background 200ms ease, color 200ms ease, transform 200ms ease;
+    color: var(--c-ink-2);
   }
 
-  .cnbtn--pill {
-    padding: 11px 22px;
-    background: var(--cn-terra);
-    color: var(--cn-on-dark);
+  .chero__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--c-terra);
+    animation: cpulse 2.6s ease-out infinite;
   }
 
-  .cnbtn--solid {
-    background: var(--cn-terra);
-    color: var(--cn-on-dark);
-    border: 0;
-    cursor: pointer;
+  @keyframes cpulse {
+    0% {
+      box-shadow: 0 0 0 0 rgb(192 96 60 / 50%);
+    }
+    70% {
+      box-shadow: 0 0 0 9px rgb(192 96 60 / 0%);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(192 96 60 / 0%);
+    }
   }
 
-  .cnbtn--ghost {
-    border: 1.5px solid var(--cn-ink);
+  .chero__accent {
+    color: var(--c-terra);
   }
 
-  .cnbtn--pill:hover,
-  .cnbtn--solid:hover,
-  .cnbtn--ghost:hover {
-    background: var(--cn-ink);
-    color: var(--cn-on-dark);
+  .chero__reassure {
+    margin-top: 20px;
+    max-width: 52ch;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--c-ink-2);
   }
 
-  .cnbtn--solid:hover {
-    transform: translateY(-2px);
+  .chero__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 28px;
   }
 
-  .cnbtn--solid:active {
-    transform: scale(0.97);
+  .chero__chip {
+    align-self: flex-start;
+    padding: 18px 24px;
+    border-radius: 18px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+    animation: cfloaty 5.5s ease-in-out infinite;
   }
 
-  .cnlink {
-    font-size: 15px;
+  .chero__chip--1 {
+    rotate: -2deg;
+  }
+
+  .chero__chip--2 {
+    margin-left: 34px;
+    rotate: 1.5deg;
+    animation-delay: -1.6s;
+    animation-duration: 6.2s;
+  }
+
+  .chero__chip--3 {
+    margin-left: 10px;
+    rotate: -1deg;
+    animation-delay: -3.4s;
+    animation-duration: 5s;
+  }
+
+  @keyframes cfloaty {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -9px;
+    }
+  }
+
+  .chero__chip-num {
+    display: block;
+    font-size: clamp(24px, 2.4vw, 32px);
     font-weight: 600;
-    color: var(--cn-terra);
+    letter-spacing: -0.02em;
   }
 
-  .cnlink:hover {
-    color: var(--cn-ink);
+  .chero__chip-label {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--c-ink-2);
   }
 
-  /* ------------------------------------------------------------- layout -- */
-  .cnwrap {
-    max-width: 1200px;
-    margin-inline: auto;
-    padding-inline: 28px;
+  .chero__note {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--c-ink-2);
   }
 
-  .cnsection {
-    padding-top: clamp(70px, 9vw, 120px);
+  .chero__note a {
+    color: var(--c-green);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
-  .cnhero {
-    padding-top: clamp(60px, 7vw, 100px);
+  .chero__note a:hover,
+  .chero__note a:focus-visible {
+    color: var(--c-terra);
   }
 
-  .cneyebrow {
-    margin: 0;
+  .ctitle--on-ink {
+    max-width: 22ch;
+  }
+
+  /* ------------------------------------------------------------- cases -- */
+  .ccases {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+
+  .ccase {
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    border-radius: 22px;
+    background: var(--c-card);
+    color: var(--c-ink);
+    box-shadow: var(--c-raised);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  /* The middle card sits proud in the design. The offset is a margin, not a
+     `translate`: the reveal in ConsultingLayout animates `translate` and
+     clears it to `none` inline when the card comes into view, which outranks
+     any stylesheet rule and flattened the card back into the row. It keeps
+     its own resting shadow so the hover below still reads as a lift. */
+  .ccase:nth-child(2) {
+    margin-top: -18px;
+    box-shadow: var(--c-float);
+  }
+
+  .ccase:hover,
+  .ccase:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: var(--c-float);
+  }
+
+  .ccase__metric-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  .ccase__metric {
+    margin-top: 6px;
+    font-size: clamp(30px, 3.2vw, 42px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .ccase__metric-note {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--c-ink-2);
+  }
+
+  .ccase__rule {
+    display: block;
+    height: 1px;
+    margin-block: 20px;
+    background: rgb(34 30 26 / 12%);
+  }
+
+  .ccase__client {
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--cn-faint);
+    color: var(--c-green);
   }
 
-  .cneyebrow--terra {
-    color: var(--cn-terra);
-  }
-
-  .cnhead2 {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 40px;
-  }
-
-  .cnhead2--split {
-    justify-content: space-between;
-  }
-
-  .cnhead2 h2,
-  .cnintro h2 {
-    margin: 0;
-    font-size: clamp(30px, 3.6vw, 48px);
-    font-weight: 800;
-    letter-spacing: -0.018em;
-    line-height: 1.12;
-    text-wrap: balance;
-  }
-
-  .cnhead2__note {
-    font-size: clamp(16px, 1.6vw, 19px);
-    color: var(--cn-faint);
-  }
-
-  .cnintro {
-    max-width: 720px;
-    margin-bottom: 44px;
-  }
-
-  .cnintro p {
-    margin: 18px 0 0;
-    font-size: 17px;
-    line-height: 1.65;
-    color: var(--cn-muted);
-  }
-
-  .cncard {
-    background: var(--cn-card);
-    border: 1px solid var(--cn-line);
-    border-radius: 28px;
-  }
-
-  /* --------------------------------------------------------------- hero -- */
-  .cnhero__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    gap: 64px;
-    align-items: center;
-  }
-
-  .cnhero__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 28px;
-    padding: 8px 16px;
-    border: 1.5px solid var(--cn-line-2);
-    border-radius: 999px;
-    font-size: 13px;
+  .ccase__title {
+    margin-top: 8px;
+    font-size: 21px;
     font-weight: 600;
-    color: var(--cn-muted);
+    letter-spacing: -0.014em;
+    line-height: 1.2;
   }
 
-  .cndot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--cn-terra);
-    flex: none;
-    animation: cn-pulse 2.6s ease-out infinite;
-  }
-
-  .cndot--gold {
-    width: 8px;
-    height: 8px;
-    background: var(--cn-gold);
-    animation-name: cn-pulse-gold;
-  }
-
-  @keyframes cn-pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgb(199 91 57 / 40%);
-    }
-
-    70% {
-      box-shadow: 0 0 0 9px rgb(199 91 57 / 0%);
-    }
-
-    100% {
-      box-shadow: 0 0 0 0 rgb(199 91 57 / 0%);
-    }
-  }
-
-  @keyframes cn-pulse-gold {
-    0% {
-      box-shadow: 0 0 0 0 rgb(233 180 76 / 40%);
-    }
-
-    70% {
-      box-shadow: 0 0 0 9px rgb(233 180 76 / 0%);
-    }
-
-    100% {
-      box-shadow: 0 0 0 0 rgb(233 180 76 / 0%);
-    }
-  }
-
-  .cnhero__title {
-    margin: 0;
-    font-size: clamp(38px, 5.4vw, 72px);
-    line-height: 1.06;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
-  }
-
-  .cnhero__lede {
-    margin: 26px 0 0;
-    max-width: 540px;
-    font-size: clamp(17px, 1.8vw, 20px);
-    line-height: 1.6;
-    color: var(--cn-muted);
-  }
-
-  .cnhero__cta {
-    margin-top: 36px;
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .cnhero__aside {
-    margin: 22px 0 0;
-    font-size: 16px;
-    color: var(--cn-faint);
-  }
-
-  .cnhero__ill {
-    position: relative;
-    justify-self: center;
-    width: 100%;
-    max-width: 440px;
-  }
-
-  .cnhero__illframe {
-    position: relative;
-    display: block;
-    aspect-ratio: 1 / 1;
-  }
-
-  .cnhero__illframe img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .cnblob {
-    position: absolute;
-    inset: 6% 2% 4% 4%;
-    background: var(--cn-peri);
-    border-radius: 52% 48% 58% 42% / 48% 55% 45% 52%;
-    animation: cn-float 9s ease-in-out infinite, cn-morph 13s ease-in-out infinite;
-  }
-
-  .cnblob--card {
-    inset: 8% 14% 4% 14%;
-    animation: cn-morph 11s ease-in-out infinite;
-  }
-
-  .cnbob {
-    animation: cn-bob 7s ease-in-out infinite;
-  }
-
-  .cnpractice:nth-child(2) .cnbob {
-    animation-delay: 1.1s;
-  }
-
-  .cnpractice:nth-child(3) .cnbob {
-    animation-delay: 2.2s;
-  }
-
-  @keyframes cn-float {
-    0%,
-    100% {
-      transform: translate(0, 0) rotate(0deg);
-    }
-
-    50% {
-      transform: translate(8px, -10px) rotate(1.5deg);
-    }
-  }
-
-  @keyframes cn-morph {
-    0%,
-    100% {
-      border-radius: 52% 48% 58% 42% / 48% 55% 45% 52%;
-    }
-
-    50% {
-      border-radius: 45% 55% 48% 52% / 55% 46% 54% 45%;
-    }
-  }
-
-  @keyframes cn-bob {
-    0%,
-    100% {
-      transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-      transform: translateY(-9px) rotate(-1.4deg);
-    }
-  }
-
-  /* The hero's own entrance — a plain CSS stagger, not the scroll reveals. */
-  @keyframes cn-rise {
-    from {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .cnrise {
-    animation: cn-rise 0.7s var(--cn-ease) both;
-  }
-
-  .cnrise--2 {
-    animation-delay: 0.1s;
-  }
-
-  .cnrise--3 {
-    animation-delay: 0.2s;
-  }
-
-  .cnrise--4 {
-    animation-delay: 0.3s;
-  }
-
-  /* -------------------------------------------------------------- stats -- */
-  .cnstats {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 28px;
-  }
-
-  .cnstat {
-    border-radius: 24px;
-    padding: 28px;
-  }
-
-  .cnstat__value {
-    margin: 0;
-    font-size: clamp(32px, 3vw, 44px);
-    font-weight: 700;
-    letter-spacing: -0.015em;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .cnstat__label {
-    margin: 12px 0 0;
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--cn-muted);
-  }
-
-  /* ---------------------------------------------------------- practices -- */
-  .cnpractices {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
-  }
-
-  .cnpractice {
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    transition: transform 300ms var(--cn-ease), box-shadow 300ms ease;
-  }
-
-  .cnpractice:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgb(35 34 30 / 9%);
-  }
-
-  .cnpractice__ill {
-    position: relative;
-    height: 170px;
-    margin-bottom: 4px;
-    transition: transform 350ms var(--cn-ease);
-  }
-
-  .cnpractice:hover .cnpractice__ill {
-    transform: rotate(-2.5deg) scale(1.06);
-  }
-
-  .cnpractice__ill img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .cnpractice__name {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.012em;
-  }
-
-  .cnpractice__blurb {
-    margin: 0;
-    font-size: 15.5px;
-    line-height: 1.6;
-    color: var(--cn-muted);
-  }
-
-  .cnpractice__detail {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.65;
-    color: var(--cn-body);
-  }
-
-  .cnpractice__tools {
-    margin: auto 0 0;
-    padding-top: 10px;
-    font-size: 12.5px;
-    line-height: 1.6;
-    color: var(--cn-faint);
-  }
-
-  .cnincludes summary {
-    display: inline-block;
-    padding: 8px 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--cn-terra);
-    cursor: pointer;
-    list-style: none;
-  }
-
-  .cnincludes summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .cnincludes summary:hover {
-    color: var(--cn-ink);
-  }
-
-  .cnincludes__open,
-  .cnincludes[open] .cnincludes__shut {
-    display: none;
-  }
-
-  .cnincludes[open] .cnincludes__open {
-    display: inline;
-  }
-
-  .cnincludes__list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--cn-line);
-  }
-
-  .cnincludes__list li {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 12px;
-    align-items: baseline;
-    padding: 9px 0;
-    border-bottom: 1px solid rgb(35 34 30 / 8%);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--cn-muted);
-  }
-
-  .cnincludes__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    position: relative;
-    top: -1px;
-  }
-
-  /* -------------------------------------------------------------- cases -- */
-  .cncases {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
-  }
-
-  .cncase {
-    border-radius: 28px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-height: 240px;
-    transition: transform 300ms var(--cn-ease), box-shadow 300ms ease;
-  }
-
-  .cncase:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgb(35 34 30 / 10%);
-  }
-
-  .cncase .cneyebrow {
-    color: var(--cn-body);
-  }
-
-  .cncase__title {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.25;
-  }
-
-  .cncase__line {
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: var(--cn-body);
-  }
-
-  .cncase__more {
-    margin-top: auto;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .cncase__arrow {
-    display: inline-block;
-    transition: transform 240ms ease;
-  }
-
-  .cncase:hover .cncase__arrow {
-    transform: translateX(6px);
-  }
-
-  /* -------------------------------------------------------- engagements -- */
-  .cnengagements {
-    padding: 8px clamp(20px, 3vw, 40px);
-    margin-top: 32px;
-  }
-
-  .cnengagement {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.7fr);
-    gap: 16px 48px;
-    padding: 28px 0;
-    border-bottom: 1px solid rgb(35 34 30 / 10%);
-  }
-
-  .cnengagement__head {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .cnengagement__name {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    line-height: 1.15;
-  }
-
-  .cnengagement__chip {
-    align-self: flex-start;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--cn-body);
-    border-radius: 999px;
-    padding: 5px 12px;
-  }
-
-  .cnengagement__body {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .cnengagement__body p {
-    margin: 0;
-    font-size: 15.5px;
-    line-height: 1.65;
-    color: var(--cn-body);
-  }
-
-  .cnengagement__leave {
-    font-size: 14px !important;
-    color: var(--cn-faint) !important;
-  }
-
-  .cnengagement__leave span {
-    color: var(--cn-terra);
-    font-weight: 600;
-  }
-
-  .cnengagements__note {
-    margin: 0;
-    padding: 24px 0 20px;
-    font-size: 17px;
-    line-height: 1.6;
-    color: var(--cn-muted);
-  }
-
-  /* ------------------------------------------------------------ systems -- */
-  .cnsystems {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 48px;
-  }
-
-  .cnsystem {
-    padding: 20px 0;
-    border-top: 1.5px solid rgb(35 34 30 / 35%);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 22px;
-  }
-
-  .cnsystem__name {
-    font-size: 14.5px;
-    font-weight: 600;
-  }
-
-  .cnsystem__tools {
-    font-size: 14px;
-    line-height: 1.8;
-    color: var(--cn-muted);
-  }
-
-  .cndepth {
-    margin-top: 20px;
-    background: var(--cn-panel);
-    border-radius: 28px;
-    padding: clamp(24px, 3vw, 40px);
-  }
-
-  .cndepth .cneyebrow {
-    margin-bottom: 8px;
-  }
-
-  .cndepth__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 48px;
-  }
-
-  .cndepth__row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 18px 0;
-    border-bottom: 1px solid var(--cn-line);
-  }
-
-  .cndepth__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 14px;
-  }
-
-  .cndepth__name {
-    font-size: 16.5px;
-    font-weight: 600;
-    letter-spacing: -0.008em;
-  }
-
-  .cndepth__level {
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--cn-body);
-    background: var(--cn-stone);
-    border-radius: 999px;
-    padding: 4px 10px;
-    white-space: nowrap;
-  }
-
-  .cndepth__level--expert {
-    background: var(--cn-sage);
-  }
-
-  .cndepth__note {
-    font-size: 14px;
-    line-height: 1.65;
-    color: var(--cn-muted);
-  }
-
-  .cndepth__caveat {
-    margin: 20px 0 0;
-    font-size: 13px;
-    line-height: 1.65;
-    color: var(--cn-faint);
-    max-width: 660px;
-  }
-
-  /* ---------------------------------------------------------------- fit -- */
-  .cnfit {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-  }
-
-  .cnfit__card {
-    border-radius: 28px;
-    padding: clamp(24px, 3vw, 36px);
-  }
-
-  .cnfit__card--yes {
-    background: var(--cn-sage);
-  }
-
-  .cnfit__card--no {
-    background: var(--cn-stone);
-  }
-
-  .cnfit__card .cneyebrow {
-    margin-bottom: 16px;
-  }
-
-  .cnfit__list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .cnfit__list li {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 14px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--cn-line);
+  .ccase__line {
+    margin-top: 12px;
     font-size: 15px;
     line-height: 1.6;
-    color: var(--cn-ink);
-  }
-
-  .cnfit__list--no li {
-    border-bottom-color: rgb(35 34 30 / 10%);
-    color: var(--cn-muted);
-  }
-
-  .cnfit__mark {
-    font-weight: 700;
-    color: var(--cn-terra);
-  }
-
-  .cnfit__mark--no {
-    color: var(--cn-faint);
-  }
-
-  /* -------------------------------------------------------------- start -- */
-  .cnstart {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
-  }
-
-  .cnstep {
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .cnstep__num {
-    font-size: 34px;
-    font-weight: 800;
-    color: var(--cn-terra);
-    line-height: 1;
-  }
-
-  .cnstep__name {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.008em;
-  }
-
-  .cnstep__body {
-    font-size: 14.5px;
-    line-height: 1.68;
-    color: var(--cn-muted);
-  }
-
-  /* ------------------------------------------------------------ contact -- */
-  .cncontact {
-    margin-top: clamp(70px, 9vw, 120px);
-    background: var(--cn-dark);
-    color: var(--cn-on-dark);
-    padding: clamp(64px, 8vw, 100px) 0 clamp(56px, 6vw, 80px);
-  }
-
-  .cncontact__title {
-    margin: 0;
-    font-size: clamp(34px, 4.6vw, 64px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.12;
-    max-width: 1000px;
-    text-wrap: balance;
-  }
-
-  .cncontact__title em {
-    color: var(--cn-gold);
-  }
-
-  .cncontact__lede {
-    margin: 22px 0 48px;
-    font-size: clamp(16px, 1.7vw, 19px);
-    line-height: 1.6;
-    color: var(--cn-on-dark-2);
-    max-width: 620px;
+    color: var(--c-ink-2);
     text-wrap: pretty;
   }
 
-  .cncontact__grid {
+  .ccase__more {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--c-terra);
+  }
+
+  /* ------------------------------------------------------- engagements -- */
+  .cengs {
+    margin-top: 36px;
+    border-top: 1px solid rgb(34 30 26 / 14%);
+  }
+
+  .ceng {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: 64px;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr) minmax(0, 1.1fr);
+    gap: clamp(16px, 2.5vw, 44px);
+    align-items: center;
+    padding-block: 24px;
+    border-bottom: 1px solid rgb(34 30 26 / 14%);
   }
 
-  .cnform {
-    background: var(--cn-paper);
-    color: var(--cn-ink);
-    border-radius: 28px;
-    padding: clamp(24px, 3vw, 40px);
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
+  .ceng__name {
+    font-size: clamp(20px, 2vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.016em;
   }
 
-  .cnfield {
-    display: block;
+  .ceng__line {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  .ceng__length {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  /* ----------------------------------------------------------- contact -- */
+  .ccontact__avail {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--cn-muted);
+    color: rgb(244 239 230 / 76%);
   }
 
-  .cnfield input,
-  .cnfield textarea {
-    margin-top: 8px;
-    width: 100%;
-    padding: 13px 16px;
-    border: 1.5px solid var(--cn-line-2);
-    border-radius: 14px;
-    font: inherit;
+  .ccontact {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(32px, 4.5vw, 72px);
+    align-items: start;
+  }
+
+  .cform {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .cfield {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgb(244 239 230 / 76%);
+  }
+
+  .cfield input,
+  .cfield textarea {
+    padding: 14px 16px;
+    border: 1px solid rgb(244 239 230 / 26%);
+    border-radius: 12px;
+    background: rgb(244 239 230 / 6%);
+    color: var(--c-paper);
+    font-family: inherit;
     font-size: 16px;
     font-weight: 400;
-    background: var(--cn-card);
-    color: var(--cn-ink);
+    letter-spacing: normal;
+    text-transform: none;
   }
 
-  .cnfield textarea {
-    resize: vertical;
+  .cfield input:focus-visible,
+  .cfield textarea:focus-visible {
+    outline: 2px solid var(--c-terra);
+    outline-offset: 2px;
   }
 
-  .cnform__honeypot {
+  .choneypot {
     position: absolute;
     left: -9999px;
     width: 1px;
@@ -1767,243 +732,138 @@ const NAV = [
     opacity: 0;
   }
 
-  .cnform__submit {
+  .cbtn--send {
     align-self: flex-start;
-    padding: 15px 30px;
+    background: var(--c-terra);
+    border-color: var(--c-terra);
+    color: var(--c-card);
   }
 
-  .cnform__status {
-    margin: 0;
+  .cbtn--send:hover:not(:disabled),
+  .cbtn--send:focus-visible {
+    transform: translateY(-3px);
+    background: var(--c-paper);
+    border-color: var(--c-paper);
+    color: var(--c-ink);
+  }
+
+  .cbtn--send:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .cform__status {
     font-size: 14px;
-    line-height: 1.55;
-    color: var(--cn-muted);
+    line-height: 1.5;
+    color: rgb(244 239 230 / 76%);
   }
 
-  .cnform__status[data-state='error'] {
-    color: var(--cn-terra);
+  .cform__status[data-state='ok'] {
+    color: var(--c-butter);
   }
 
-  .cnroutes {
+  .cform__status[data-state='error'] {
+    color: #f0a58a;
+  }
+
+  .ccontact__direct {
     display: flex;
     flex-direction: column;
   }
 
-  .cnroutes__status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgb(250 246 237 / 30%);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--cn-on-dark-2);
-  }
-
-  .cnroute {
+  .ccontact__direct > a {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: baseline;
-    padding: 18px 0;
-    border-bottom: 1px solid rgb(250 246 237 / 20%);
-    transition: color 220ms ease;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 16px;
+    padding-block: 16px;
+    border-bottom: 1px solid rgb(244 239 230 / 18%);
+    transition: opacity 0.2s ease;
   }
 
-  .cnroute:hover {
-    color: var(--cn-gold);
+  .ccontact__direct > a:hover,
+  .ccontact__direct > a:focus-visible {
+    opacity: 0.7;
   }
 
-  .cnroute__label {
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+  .ccontact__label {
+    grid-column: 1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--cn-on-dark-3);
+    color: var(--c-butter);
   }
 
-  .cnroute__value {
-    font-size: 16px;
-    overflow-wrap: anywhere;
+  .ccontact__value {
+    grid-column: 1;
+    font-size: 17px;
+    font-weight: 500;
   }
 
-  .cnroute__icon {
+  .ccontact__direct > a > span:last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: 18px;
+  }
+
+  .ccontact__note {
+    margin-top: 18px;
     font-size: 14px;
-    color: var(--cn-on-dark-3);
+    line-height: 1.6;
+    color: rgb(244 239 230 / 68%);
   }
 
-  .cncoffee {
-    margin: 28px 0 0;
-    font-size: 19px;
-    line-height: 1.55;
-    color: var(--cn-on-dark-2);
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .cncoffee svg {
-    flex: none;
-    margin-top: 3px;
-    color: var(--cn-gold);
-  }
-
-  .cncoffee__mark {
-    color: var(--cn-gold);
-    text-decoration: underline wavy rgb(233 180 76 / 55%) 2px;
-    text-underline-offset: 0.18em;
-  }
-
-  .cnfoot {
-    margin-top: clamp(48px, 6vw, 72px);
-    padding-top: 24px;
-    border-top: 1px solid rgb(250 246 237 / 20%);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .cnfoot__entity {
-    font-size: 13px;
-    color: var(--cn-on-dark-3);
-  }
-
-  .cnfoot__links {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    font-size: 13px;
+  .ccontact__xlink {
+    color: var(--c-butter);
     font-weight: 600;
-    flex-wrap: wrap;
-    color: var(--cn-on-dark-2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
-  .cnfoot__links a:first-child {
-    color: var(--cn-on-dark-3);
+  .ccontact__xlink:hover,
+  .ccontact__xlink:focus-visible {
+    color: var(--c-card);
   }
 
-  .cnfoot__links a:hover {
-    color: var(--cn-gold);
-  }
-
-  /* --------------------------------------------------------- responsive -- */
-  @media (max-width: 1080px) {
-    .cnnav__links {
-      gap: 14px;
-      font-size: 13px;
-    }
-
-    .cnnav__links .cnbtn--pill {
-      padding: 10px 16px;
-    }
-
-    .cnstats {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .cnpractices,
-    .cncases {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  @media (max-width: 900px) {
-    .cnhero__grid {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 40px;
-    }
-
-    .cnhero__ill {
-      max-width: 380px;
-    }
-
-    .cnengagement,
-    .cnfit,
-    .cncontact__grid,
-    .cndepth__grid,
-    .cnstart,
-    .cnsystems {
+  /* ---------------------------------------------------------- responsive */
+  @media (max-width: 960px) {
+    .ccases,
+    .ccontact {
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .cncontact__grid {
-      gap: 40px;
-    }
-  }
-
-  @media (max-width: 860px) {
-    .cnnav__links {
-      display: none;
+    .ccase:nth-child(2) {
+      margin-top: 0;
     }
 
-    .cnnav__burger {
-      display: flex;
-    }
-  }
-
-  @media (max-width: 719px) {
-    .cnfoot__links {
-      gap: 8px 20px;
-    }
-
-    .cnhero__cta {
-      width: 100%;
-    }
-
-    .cnhero__cta .cnbtn {
-      flex: 1 1 auto;
-    }
-
-    /* Tap targets on a phone. */
-    .cntap,
-    .cnfoot__links a {
-      display: inline-flex;
-      align-items: center;
-      min-height: 44px;
-    }
-
-    .cnroute.cntap {
-      display: grid;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .cnstats {
+    .ceng {
       grid-template-columns: minmax(0, 1fr);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .cnwrap,
-    .cnnav,
-    .cnnav__panel {
-      padding-inline: 20px;
+      gap: 10px;
     }
 
-    .cnroute {
-      grid-template-columns: 64px minmax(0, 1fr) auto;
-      gap: 12px;
+    /* The floating chips become a row on tablet rather than a tall stacked
+       column pushing the rest of the page down. */
+    .chero__stats {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      padding-top: 18px;
+    }
+
+    .chero__chip {
+      margin-left: 0;
+    }
+
+    .chero__note {
+      flex-basis: 100%;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cnrise,
-    .cnblob,
-    .cnbob,
-    .cndot {
-      animation: none !important;
-    }
-
-    .cnprog {
-      display: none;
-    }
-
-    .cn :global(*) {
-      transition-duration: 1ms !important;
+    .chero__chip,
+    .chero__dot {
+      animation: none;
     }
   }
 </style>

@@ -1,0 +1,277 @@
+---
+import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
+import { CONTACT } from '../../config';
+import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS } from '../../data/consulting';
+
+/** `/consulting/process/` — ported from the v13 export's `Monzones-C-Process`. */
+---
+
+<ConsultingLayout
+  title="Process · Consulting"
+  description="How a consulting engagement starts and runs: three steps to begin, four principles once we're going, and an honest read on fit before anyone spends a dollar."
+  current="process"
+>
+  <section class="chero" id="top">
+    <div class="cwrap chero__grid">
+      <div>
+        <span class="ckicker">{PROCESS_HERO.kicker}</span>
+        <h1 class="disp chero__title">{PROCESS_HERO.title}</h1>
+        <p class="chero__body">{PROCESS_HERO.body}</p>
+        <div class="ctarow">
+          <a class="cbtn cbtn--solid" href="/consulting/#contact">Send that note</a>
+          <a class="cbtn cbtn--ghost" href="#fit">Read the fit test</a>
+        </div>
+      </div>
+
+      <nav class="cjump" aria-label="On this page">
+        <span class="cminilabel">On this page</span>
+        {
+          PROCESS_JUMPS.map((jump) => (
+            <a href={jump.href}>
+              <span>{jump.name}</span>
+              <span class="cjump__meta">{jump.meta}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </section>
+
+  <section class="csection" id="start">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">How it starts</span>
+        <h2 class="disp ctitle">Three steps. No mystery.</h2>
+      </div>
+
+      <div class="csteps">
+        {
+          PROCESS_STEPS.map((step) => (
+            <div class="cstep" data-reveal>
+              <span class="disp cstep__num">{step.num}</span>
+              <span class="disp cstep__name">{step.name}</span>
+              <span class="cstep__body">{step.body}</span>
+              <span class="cstep__bail">{step.bail}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="running">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Once we’re going</span>
+        <h2 class="disp ctitle">What working together looks like.</h2>
+      </div>
+      <p class="clede" data-reveal>
+        The shape flexes with the <a class="cinline" href="/consulting/services/">engagement you
+        pick</a>, but the principles don’t.
+      </p>
+
+      <div class="cprinciples">
+        {
+          PRINCIPLES.map((principle) => (
+            <div class="cprinciple" data-reveal>
+              <span class="cminilabel">{principle.tag}</span>
+              <span class="disp cprinciple__name">{principle.name}</span>
+              <span class="cprinciple__body">{principle.body}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="csection" id="fit">
+    <div class="cwrap">
+      <div data-reveal>
+        <span class="ckicker">Fit</span>
+        <h2 class="disp ctitle">Real talk about fit.</h2>
+      </div>
+      <p class="clede" data-reveal>
+        This works best when there’s a real problem to understand, enough signal to learn from, and
+        a team willing to look at the whole system. If it’s not a fit, I’ll tell you early and
+        cheerfully. That saves us both a quarter.
+      </p>
+
+      <div class="cfit">
+        <div class="cfit__col" data-reveal>
+          <p class="cfit__head">We’ll get along if</p>
+          {
+            FIT_YES.map((line) => (
+              <p class="cfit__row">
+                <span class="cfit__sign cfit__sign--yes" aria-hidden="true">
+                  +
+                </span>
+                {line}
+              </p>
+            ))
+          }
+        </div>
+        <div class="cfit__col" data-reveal>
+          <p class="cfit__head">Probably not, if</p>
+          {
+            FIT_NO.map((line) => (
+              <p class="cfit__row">
+                <span class="cfit__sign cfit__sign--no" aria-hidden="true">
+                  −
+                </span>
+                {line}
+              </p>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="csection csection--ink" id="cta">
+    <div class="cwrap">
+      <h2 class="disp ctitle" data-reveal>Step one is two paragraphs. That’s it.</h2>
+      <p class="clede" data-reveal>
+        What’s happening, which number you’re watching, what you’ve tried. I’ll take it from there.
+      </p>
+      <div class="ctarow" data-reveal>
+        <a class="cbtn cbtn--solid" href="/consulting/#contact">Send that note</a>
+        <a class="cbtn cbtn--ghost" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      </div>
+    </div>
+  </section>
+</ConsultingLayout>
+
+<style>
+  .cstep__bail {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgb(34 30 26 / 12%);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-terra);
+  }
+
+  .cinline {
+    color: var(--c-green);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .cinline:hover,
+  .cinline:focus-visible {
+    color: var(--c-terra);
+  }
+
+  .cprinciples {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(18px, 2.2vw, 32px);
+  }
+
+  .cprinciple {
+    display: flex;
+    flex-direction: column;
+    padding: 26px;
+    border-radius: 20px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+
+  .cprinciple:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--c-float);
+  }
+
+  .cprinciple__name {
+    margin-top: 8px;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.014em;
+    line-height: 1.2;
+  }
+
+  .cprinciple__body {
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  .cfit {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+
+  .cfit__col {
+    padding: clamp(24px, 3vw, 36px);
+    border-radius: 22px;
+    background: var(--c-card);
+    box-shadow: var(--c-raised);
+  }
+
+  .cfit__head {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-terra);
+  }
+
+  .cfit__row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--c-ink-2);
+    text-wrap: pretty;
+  }
+
+  .cfit__sign {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .cfit__sign--yes {
+    background: rgb(47 93 80 / 12%);
+    color: var(--c-green);
+  }
+
+  .cfit__sign--no {
+    background: rgb(192 96 60 / 12%);
+    color: var(--c-terra);
+  }
+
+  @media (max-width: 1080px) {
+    .cprinciples {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .cfit {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .cprinciples {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

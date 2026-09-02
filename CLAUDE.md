@@ -41,17 +41,32 @@ beyond that.
   refinement. The design is **light only** — there is deliberately no
   `prefers-color-scheme: dark` block, because this palette inverted is a different design
   rather than the same one at night. Don't add one piecemeal.
-- **The two service pages look wrong on purpose.** `src/pages/web-design.astro` (warm
-  cream, peach/blue, Bricolage Grotesque + Caveat) and, since v9,
-  `src/pages/consulting.astro` (warm cream, terracotta/gold pastels, Cabinet Grotesk +
-  Shantell Sans) each carry their own palette, faces and rounded shapes. That difference is
-  the point: these are the things being sold, and they read as an offer rather than as
-  another chapter of the portfolio. Both opt out of the site chrome via BaseLayout's
-  `standalone` flag and ship their own nav, footer and motion. Don't "align" either with
-  global.css, don't move their styles there, and don't apply the Bold rules above to them —
-  rounded corners and soft shadows are correct *here* and nowhere else. Both forms POST to
-  the same Formspree endpoint with a `service` field (`web-design` / `consulting`) so the
-  leads are tellable apart in the inbox.
+- **The two service sections look wrong on purpose.** `src/pages/web-design.astro` (warm
+  cream, peach/blue, Bricolage Grotesque + Caveat) and, since v13, the four consulting
+  pages (warm cream, terracotta and deep green, Clash Display + Switzer) each carry their
+  own palette, faces and rounded shapes. That difference is the point: these are the things
+  being sold, and they read as an offer rather than as another chapter of the portfolio.
+  Both opt out of the site chrome via BaseLayout's `standalone` flag and ship their own
+  nav, footer and motion. Don't "align" either with global.css, don't move their styles
+  there, and don't apply the Bold rules above to them — rounded corners and soft shadows
+  are correct *here* and nowhere else. Both forms POST to the same Formspree endpoint with
+  a `service` field (`web-design` / `consulting`) so the leads are tellable apart in the
+  inbox; that field is easy to drop when a page is rebuilt from a new export, and dropping
+  it silently merges the two lead streams.
+- **Consulting is four pages behind one layout.** v13 split it into `/consulting/` plus
+  `services/`, `process/` and `results/`. `src/layouts/ConsultingLayout.astro` owns the
+  sub-brand: the `--c-*` tokens, the grain, the section nav, the footer, the reveal script,
+  and every class more than one page uses (`.cbtn`, `.chead`, `.cstats`, `.cprac*`,
+  `.cstep*`, `.chero*`, `.cjump`). Those live in an `is:global` block on purpose —
+  **scoped styles cannot reach markup passed through a `<slot />`**, so a shared class
+  defined in a page simply misses on the other three. Page-unique styling stays scoped in
+  its page. The reveal animates `translate` and clears it to `none` inline, which outranks
+  any stylesheet rule: if an element needs a permanent offset, use a margin (see the raised
+  middle card in `.ccase:nth-child(2)`), not `translate`.
+- **`gen-consulting.mjs` no longer runs against anything.** It read the single-page
+  `Monzones-D-Consulting-Bold` export, which v13 replaced with the four-file C-series.
+  `src/data/consulting.ts` is now hand-maintained from those files; it is the one data file
+  with no generator.
 - **Four accents, each bound to a category** — coral/Lifecycle, sky/Leadership &
   Operations, moss/AI & Automation, sun/Web & Analytics. The mapping is declared once in
   `CATEGORY_ACCENT` (`src/data/site.ts`); read it from there rather than picking a colour
