@@ -11,8 +11,8 @@
  */
 
 export const INTRO = [
-  'Hey—thanks for taking the time to read this.',
-  'I’m Miguel. I work across lifecycle, GTM, and automation—the connected systems that help someone move from a first click to becoming a long-term customer. I’ve spent eleven years doing that across fintech, SaaS, ecommerce, and a few industries I never expected to find myself in.',
+  'Hey, thanks for taking the time to read this.',
+  'I’m Miguel. I work across lifecycle, GTM, and automation: the connected systems that help someone move from a first click to becoming a long-term customer. I’ve spent twelve years doing that across fintech, SaaS, ecommerce, and a few industries I never expected to find myself in.',
   'I’m curious by default and a builder by upbringing. I like understanding how things work, listening to the people closest to a problem, and leaving behind something useful that can keep working without me.',
 ] as const;
 
@@ -69,7 +69,7 @@ export const BELIEFS = [
   {
     claim: 'If a system only works when I’m in the room, it isn’t finished.',
     body:
-      'I document what I build, involve the people who will operate it, and make handoff part of the work—not an afterthought. I’ve trained a successor in every major role I’ve left. The real test is whether the system keeps helping people after I’m gone.',
+      'I document what I build, involve the people who will operate it, and make handoff part of the work rather than an afterthought. I’ve trained a successor in every major role I’ve left. The real test is whether the system keeps helping people after I’m gone.',
   },
   {
     claim: 'Be honest about the tradeoffs.',
@@ -82,7 +82,7 @@ export const BELIEFS = [
     body: {
       phrase: 'Nea Onnim No Sua A, Ohu',
       after:
-        '—“He who does not know can know from learning.” It’s an Adinkra symbol and Akan proverb I have tattooed on my right wrist. I don’t really believe in “I can’t do this.” I believe in “I haven’t learned it yet.”',
+        ', “He who does not know can know from learning.” It’s an Adinkra symbol and Akan proverb I have tattooed on my right wrist. I don’t really believe in “I can’t do this.” I believe in “I haven’t learned it yet.”',
     },
   },
 ] as const;
@@ -91,12 +91,12 @@ export const OUTSIDE_WORK = [
   'I travel for the food as much as the place. Given the choice between a famous viewpoint and somewhere the locals genuinely love to eat, I’ll usually take the second. Sharing a meal tells me something about people and their culture that I’d never learn from a checklist of landmarks.',
   'I’m also into comics, games, and adventure stories. I’ve read all of Tolkien and once wandered very far into Warhammer 40,000 lore for no practical reason whatsoever. I think it comes from the same place as travel: I enjoy being dropped into a world I don’t understand yet and slowly working out how everything fits together.',
   'There’s almost always jazz or Latin music playing while I work. Jazz for the soul and improvisation; Latin music because it’s difficult to sit still when it’s on. Joy matters to me, and I try to work in a way that leaves room for it.',
-  'I live in Vancouver with my girlfriend, Alejandra, and our fat cat, Katy—with a K. We take Katy on adventures. She continues to register her objections.',
+  'I live in Vancouver with my girlfriend, Alejandra, and our fat cat, Katy, with a K. We take Katy on adventures. She continues to register her objections.',
 ] as const;
 
 export const TO_WORK_WITH = [
   'I’m curious, collaborative, and fairly open about what I’m thinking. I ask a lot of questions, share what I’m noticing, and make room for the people closest to the work to challenge my read. I care more about reaching the right answer together than being the person who arrived with it.',
-  'I get genuinely invested in the problems I work on. Part of that is because they feel like puzzles, but the more important part is knowing the answer can make something easier for a customer or the team behind the experience. Eleven years in, I still enjoy the moment when the pieces begin to connect—and turning that understanding into something useful.',
+  'I get invested in the problems I work on. Part of that is because they feel like puzzles, but the more important part is knowing the answer can make something easier for a customer or the team behind the experience. Twelve years in, I still enjoy the moment when the pieces begin to connect, and turning that understanding into something useful.',
 ] as const;
 
 /**
@@ -172,34 +172,34 @@ export const ROLES = [
     org: 'Mogo',
     title: 'Senior Marketing Operations Manager (Lifecycle and MarTech)',
     what: 'Lifecycle, martech, web, and AI automation across Mogo’s fintech products',
-    years: '2024 — now',
+    years: '2024–now',
   },
   {
     org: 'CraftConcepts',
     title: 'Founder and Growth Strategist',
     what:
       'Built a 20+ person collective that helped 26 small businesses rebuild their digital presence after the pandemic',
-    years: '2022 — 2025',
+    years: '2022–2025',
   },
   {
     org: 'DTC Newsletter · Pilothouse',
     title: 'Email & Website Operations Manager (MarTech)',
     what:
       'Lifecycle, web, martech, deliverability, and AI workflows across two companies and client accounts',
-    years: '2021 — 2024',
+    years: '2021–2024',
   },
   {
     org: 'Sportserve',
     title: 'Senior Marketing Projects and Operations Manager',
     what:
       'Global lifecycle and payments operations; built and led the Payments Operations division',
-    years: '2014 — 2021',
+    years: '2014–2021',
   },
   {
     org: 'Rappler',
     title: 'Editor and Contributor',
     what: 'Editing and fact-checking in a 24/7 Manila newsroom, where I trained under Maria Ressa',
-    years: '2013 — 2014',
+    years: '2013–2014',
   },
 ] as const;
 

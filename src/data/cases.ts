@@ -62,21 +62,21 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The decision',
         paras: [
-          'Rebuild the lifecycle around the actual product activation event instead of a time-based email sequence. That meant rebuilding the web experience in parallel, instrumenting the real behavioural triggers, and treating lifecycle as an extension of the product rather than a marketing layer on top of it.',
+          'Rebuild the lifecycle around the actual product activation event instead of a time-based email sequence. That meant rebuilding the web experience in parallel, instrumenting behavioural triggers, and treating lifecycle as an extension of the product rather than a marketing layer on top of it.',
           'It wasn’t a campaign brief. It was an architectural decision about how lifecycle and product relate to each other.',
         ],
       },
       {
         label: 'How I measured it',
         paras: [
-          'Activation rate — bank-connection rate, specifically. Not open rate and not click rate, since those were already healthy, which was the confusing part. If activation moved, the read was right.',
+          'Activation rate: bank-connection rate, specifically. Not open rate and not click rate, since those were already healthy, which was the confusing part. If activation moved, the read was right.',
           'I tracked 7-day drop-off as the inverse. Both numbers had to move together, or the intervention was noise.',
         ],
       },
       {
         label: 'The build',
         paras: [
-          'Rebuilt the onboarding web experience, added behavioural event tracking for real product actions, and rebuilt the lifecycle in Braze around those events instead of time delays, with segmented journeys for activated and not-yet-activated users on distinct messaging and timing logic.',
+          'Rebuilt the onboarding web experience, added behavioural event tracking for product actions, and rebuilt the lifecycle in Braze around those events instead of time delays, with segmented journeys for activated and not-yet-activated users on distinct messaging and timing logic.',
           'Product and Engineering instrumented the activation event with me, and Data helped shape the measurement framework. The Braze rebuild took six weeks, and the numbers moved inside two months of launch.',
         ],
       },
@@ -85,7 +85,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '24% → 38%', label: 'Activation rate' },
       { value: '78% → 62%', label: '7-day drop-off' },
     ],
-    outcome: 'Activation moved because the lifecycle was finally tracking real product behaviour, and drop-off fell because users who weren’t activating got a different experience rather than more email.',
+    outcome: 'Activation moved because the lifecycle was finally tracking product behaviour, and drop-off fell because users who weren’t activating got a different experience rather than more email.',
     tech: [
       { name: 'Braze', use: 'Lifecycle and behavioural messaging' },
       { name: 'Webflow', use: 'Onboarding web experience' },
@@ -103,29 +103,29 @@ export const CASES: Record<string, CaseStudy> = {
         paras: [
           'Leadership wanted investing activations out of a dormant base of roughly 900,000 people. The first thing that mattered was that it wasn’t one audience: some had gone quiet on Intelligent Investing, but a large part of the pool were lending customers who had never invested with us at all, which is a cross-sell rather than a winback.',
           'The two products needed different pitches on top of that. Manage is automated weekly investing into an S&P 500 strategy. Self-directed is manual trading with research alongside it. One list, four different conversations.',
-          'And I genuinely didn’t know what the list quality was. Pruning it on guesswork would have thrown away contacts that were still worth something, so that question had to be answered under real campaign conditions rather than assumed.',
+          'And I didn’t know what the list quality was. Pruning it on guesswork would have thrown away contacts that were still worth something, so that question had to be answered under real campaign conditions rather than assumed.',
         ],
       },
       {
         label: 'The decision',
         paras: [
-          'Build it as a multi-iteration program rather than a campaign. Iteration 1 would do two jobs at once: give a real read on conversion, and act as the list clean-up, since engagement under live conditions is the only honest signal of who is still reachable.',
-          'Two behavioural hooks anchored the whole thing. For the Manage path, an investment calculator where someone could model what a small weekly contribution grows into by 75. For Self-directed, Fiscal.ai — a research tool already included in every Mogo membership, so the pitch was about something they already had.',
+          'Build it as a multi-iteration program rather than a campaign. Iteration 1 would do two jobs at once: give a live read on conversion, and act as the list clean-up, since engagement under live conditions is the only honest signal of who is still reachable.',
+          'Two behavioural hooks anchored the whole thing. For the Manage path, an investment calculator where someone could model what a small weekly contribution grows into by 75. For Self-directed, Fiscal.ai, a research tool already included in every Mogo membership, so the pitch was about something they already had.',
           'Messaging split by relationship rather than by segment name. Lending customers got progression: you have borrowed with us, here is how to start building. Dormant investors got resumption without judgment: you paused, and you are still an investor as far as we are concerned.',
         ],
       },
       {
         label: 'How I measured it',
         paras: [
-          'Conversion rate, with one condition attached: Iteration 1 was also the decision gate for how to treat the list afterwards — who to keep, who to cull, and what to do with the segment that never engaged at all.',
+          'Conversion rate, with one condition attached: Iteration 1 was also the decision gate for how to treat the list afterwards: who to keep, who to cull, and what to do with the segment that never engaged at all.',
         ],
       },
       {
         label: 'The build',
         paras: [
-          'Iteration 1 ran February to June 2025 across the full pool. Re-introduction in month one with a subject-line resend to non-openers, product-specific tracks through months two and three, then objection handling in months three and four using a one-click survey where people named their own barrier — too risky, cash flow, confused about the products, or already investing somewhere else. Each answer got its own response: risk mapped to long-term dollar-cost-averaging education and the calculator, cash flow to micro-contribution framing at ten or twenty dollars a week, confusion to plain product explainers, and other platforms repositioned as complementary rather than competitive. Months four and five tapered off for the coldest segments.',
+          'Iteration 1 ran February to June 2025 across the full pool. Re-introduction in month one with a subject-line resend to non-openers, product-specific tracks through months two and three, then objection handling in months three and four using a one-click survey where people named their own barrier: too risky, cash flow, confused about the products, or already investing somewhere else. Each answer got its own response: risk mapped to long-term dollar-cost-averaging education and the calculator, cash flow to micro-contribution framing at ten or twenty dollars a week, confusion to plain product explainers, and other platforms repositioned as complementary rather than competitive. Months four and five tapered off for the coldest segments.',
           'That round converted about 2.7%. Afterwards I culled hard bounces, spam complaints, and anything with three or more soft bounces, which brought the reachable audience to roughly 600,000.',
-          'Iteration 2 ran July 2025 to January 2026 on the cleaned list and converted about 5% — around 30,000 people who either activated for the first time or came back to real activity. The structural call in that round was what to do with people who had never interacted at all. Going dark on them risks a reputation spike whenever you eventually return, and normal cadence just burns them, so I ran a low-frequency monthly drip instead: one educational email a month, alternating between calculator content and Fiscal.ai research concepts.',
+          'Iteration 2 ran July 2025 to January 2026 on the cleaned list and converted about 5%: around 30,000 people who either activated for the first time or came back to regular activity. The structural call in that round was what to do with people who had never interacted at all. Going dark on them risks a reputation spike whenever you eventually return, and normal cadence just burns them, so I ran a low-frequency monthly drip instead: one educational email a month, alternating between calculator content and Fiscal.ai research concepts.',
         ],
       },
     ],
@@ -134,7 +134,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '~2.7% → ~5%', label: 'Conversion, Iteration 1 to Iteration 2' },
       { value: '~900K', label: 'People in the original pool' },
     ],
-    outcome: 'Iteration 3 is running now against the remaining ~300K, with a sunset program planned for whatever is left after it. The numbers matter less than what the program left behind: a repeatable winback and cross-sell architecture — the two-hook model, cleaning the list as you convert it, and the low-frequency drip for the coldest segments — plus proof that lending-to-investing cross-sell works when you frame it as progression and give it more than one pass.',
+    outcome: 'Iteration 3 is running now against the remaining ~300K, with a sunset program planned for whatever is left after it. The numbers matter less than what the program left behind: a repeatable winback and cross-sell architecture (the two-hook model, cleaning the list as you convert it, and the low-frequency drip for the coldest segments), plus proof that lending-to-investing cross-sell works when you frame it as progression and give it more than one pass.',
     tech: [
       { name: 'Braze', use: 'Segmentation, iteration waves and cross-channel delivery' },
       { name: 'Investment calculator', use: 'Behavioural hook for the Manage path' },
@@ -151,7 +151,7 @@ export const CASES: Record<string, CaseStudy> = {
         label: 'The starting point',
         paras: [
           'Users were funding their accounts and stopping there, and the lifecycle had no path at all from a funded account to a first trade.',
-          'The scheduled emails made the case for why to trade, which is the right message earlier in the journey. These users had already decided to fund — they were stuck on the next step, not the first one.',
+          'The scheduled emails made the case for why to trade, which is the right message earlier in the journey. These users had already decided to fund; they were stuck on the next step, not the first one.',
           'Looking at the timing showed the underlying issue: the lifecycle was timed, not triggered. Someone who funded yesterday and someone who funded six weeks ago received the same email on the same day.',
         ],
       },
@@ -165,13 +165,13 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'How I measured it',
         paras: [
-          'Funded-idle to first-trade conversion. Not activation broadly and not engagement, but the specific transition from funded and dormant to first real product action. That was the number that showed whether the trigger layer was working.',
+          'Funded-idle to first-trade conversion. Not activation broadly and not engagement, but the specific transition from funded and dormant to a first product action. That was the number that showed whether the trigger layer was working.',
         ],
       },
       {
         label: 'The build',
         paras: [
-          'Instrumented the funded-idle event in Braze as a behavioural trigger and built a dedicated journey that fired on account funding rather than on a schedule, with messaging built around the barrier a funded user actually faces: not why to trade, but how to place a first trade right now.',
+          'Instrumented the funded-idle event in Braze as a behavioural trigger and built a dedicated journey that fired on account funding rather than on a schedule, with messaging built around the barrier a funded user faces: not why to trade, but how to place a first trade right now.',
           'Built separate branches for users who funded and did nothing, users who viewed the trading interface without executing, and users who started a trade and dropped off, each with its own logic and timing. Product confirmed the event instrumentation was clean before we scaled it.',
         ],
       },
@@ -195,9 +195,9 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The starting point',
         paras: [
-          'Open rates were falling and spam placement was rising, so content was the reasonable first place to look — cleaner subject lines, tighter segmentation, fresher copy.',
+          'Open rates were falling and spam placement was rising, so content was the reasonable first place to look: cleaner subject lines, tighter segmentation, fresher copy.',
           'The infrastructure told a different story. DTC was on a shared IP inside ActiveCampaign, and other senders on that IP were damaging a reputation we had no way to influence from our end. A dedicated IP would have solved it, but it wasn’t in the budget.',
-          'So the deliverability problem wasn’t fixable within the platform we were on. The only real fix was a migration.',
+          'So the deliverability problem wasn’t fixable within the platform we were on. The only durable fix was a migration.',
         ],
       },
       {
@@ -238,7 +238,7 @@ export const CASES: Record<string, CaseStudy> = {
   },
   'dafabet-sfmc': {
     meta: 'Sportserve (Dafabet) · Senior Marketing Projects and Operations Manager · 2014 – 2021',
-    title: 'Salesforce lifecycle automation — Dafabet',
+    title: 'Salesforce lifecycle automation at Dafabet',
     deck: 'Twelve countries, safer-gambling compliance in every market, and no system connecting user behaviour to messaging.',
     sections: [
       {
@@ -246,7 +246,7 @@ export const CASES: Record<string, CaseStudy> = {
         paras: [
           'Dafabet had users, products, and markets across APAC, EU, and LATAM. What it didn’t have was a lifecycle system that responded to what users actually did.',
           'New users were registering without placing a first bet, existing users were going dormant with no triggered re-engagement, high-value users weren’t being identified or treated differently, and every message had to satisfy safer-gambling requirements that varied by jurisdiction.',
-          'Put together, what existed were occasional batch campaigns with no behavioural logic connecting them. The product had a clear activation event — the first bet — and nothing was built around it.',
+          'Put together, what existed were occasional batch campaigns with no behavioural logic connecting them. The product had a clear activation event, the first bet, and nothing was built around it.',
         ],
       },
       {
@@ -259,7 +259,7 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'How I measured it',
         paras: [
-          'First-bet conversion rate. In a gaming product the first bet is the activation event — retention, LTV, and cross-sport engagement all depend on whether the user crosses that threshold.',
+          'First-bet conversion rate. In a gaming product the first bet is the activation event: retention, LTV, and cross-sport engagement all depend on whether the user crosses that threshold.',
           'Secondary: 7-day reactivation rate. If the re-engagement flows were working, that number would move independently of acquisition volume.',
         ],
       },
@@ -294,7 +294,7 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The starting point',
         paras: [
-          'The direction was clear — we are automating — with no tool selected, no owner named, and no scope defined. Ops teams were working manually on loan routing, compliance review, and email production, and leadership wanted AI involved.',
+          'The direction was clear: we are automating. No tool selected, no owner named, no scope defined. Ops teams were working manually on loan routing, compliance review, and email production, and leadership wanted AI involved.',
           'Talking it through with the teams, the underlying need was less about AI than about the manual bottlenecks slowing everything down. They needed to do more without adding headcount. The tool was the vehicle, not the point.',
         ],
       },
@@ -340,7 +340,7 @@ export const CASES: Record<string, CaseStudy> = {
         label: 'The starting point',
         paras: [
           'DTC Newsletter signups were reaching the shared Pilothouse HubSpot instance with basic contact information but little company context, qualification data, or indication of which leads deserved immediate attention.',
-          'The CFO wanted to enrich those records automatically. Before building anything, I spoke with the stakeholders involved to understand what information would actually help Sales. Enrichment was useful, but it wasn’t the end goal. The larger need was faster qualification and real-time visibility when someone from a promising company signed up.',
+          'The CFO wanted to enrich those records automatically. Before building anything, I spoke with the stakeholders involved to understand what information would help Sales. Enrichment was useful, but it wasn’t the end goal. The larger need was faster qualification and real-time visibility when someone from a promising company signed up.',
           'The opportunity was to turn each signup into a structured, sales-ready record and surface the strongest leads while their interest was still fresh.',
         ],
       },
@@ -354,8 +354,8 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'How I measured it',
         paras: [
-          'Lead-data pre-population rate was the clearest measure of whether the record was genuinely useful. By the time Sales opened a new lead, most of the research and qualification context should already be there.',
-          'I also tracked the number of signups processed and enriched leads produced each month to make sure the workflow remained useful at real operating volume — not only in testing.',
+          'Lead-data pre-population rate was the clearest measure of whether the record was useful. By the time Sales opened a new lead, most of the research and qualification context should already be there.',
+          'I also tracked the number of signups processed and enriched leads produced each month to make sure the workflow remained useful at production volume, not only in testing.',
         ],
       },
       {
@@ -372,7 +372,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '~300', label: 'Newsletter signups processed each day' },
       { value: '1K–2K', label: 'Enriched, sales-ready leads generated each month' },
     ],
-    outcome: 'The workflow gave Sales and leadership real-time visibility into high-value signups while reducing the manual research needed before outreach. More importantly, it turned enrichment into a dependable part of the revenue workflow: useful context arrived in HubSpot in a consistent format, unreliable AI output was stopped before reaching the CRM, and the system could handle real daily volume.',
+    outcome: 'The workflow gave Sales and leadership real-time visibility into high-value signups while reducing the manual research needed before outreach. More importantly, it turned enrichment into a dependable part of the revenue workflow: useful context arrived in HubSpot in a consistent format, unreliable AI output was stopped before reaching the CRM, and the system could handle full daily volume.',
     tech: [
       { name: 'LindyAI', use: 'Primary workflow orchestration, triggering, filtering, and enrichment coordination' },
       { name: 'StoreLeads + Clay', use: 'Company and contact enrichment, with Clay added in a later iteration to improve depth and accuracy' },
@@ -385,7 +385,7 @@ export const CASES: Record<string, CaseStudy> = {
   'compliance-workflow': {
     meta: 'Mogo · Senior Marketing Operations Manager (Lifecycle and MarTech) · 2024 – present',
     title: 'Email validation and compliance workflow',
-    deck: 'The first validation workflow ran fine technically and still nobody leaned on it, because it wasn’t checking what Compliance actually reviews.',
+    deck: 'The first validation workflow ran fine technically and still nobody leaned on it, because it wasn’t checking what Compliance reviews.',
     sections: [
       {
         label: 'The starting point',
@@ -405,14 +405,14 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'How I measured it',
         paras: [
-          'Compliance review cycles per email — how many rounds of back-and-forth before sign-off. That was the friction the workflow existed to remove, and if the number didn’t drop it wasn’t working, whatever it produced technically.',
+          'Compliance review cycles per email: how many rounds of back-and-forth before sign-off. That was the friction the workflow existed to remove, and if the number didn’t drop it wasn’t working, whatever it produced technically.',
         ],
       },
       {
         label: 'The build',
         paras: [
           'I sat with Compliance before touching the workflow and documented how they actually reviewed content: what they looked for, what triggered a flag, what the rules were per content category, what varied by jurisdiction. That logic became the prompt architecture and validation layer.',
-          'It took four versions. V1 checked spam signals — functional, but aimed at the wrong question. V2 added compliance flag categories: better output, still inconsistent, because the model was interpreting rules rather than applying them. V3 brought Compliance in and replaced interpretation with explicit rule sets — reliable, but too verbose to use. V4 restructured the output so results were actionable in seconds.',
+          'It took four versions. V1 checked spam signals: functional, but aimed at the wrong question. V2 added compliance flag categories: better output, still inconsistent, because the model was interpreting rules rather than applying them. V3 brought Compliance in and replaced interpretation with explicit rule sets: reliable, but too verbose to use. V4 restructured the output so results were actionable in seconds.',
           'Built in n8n so the lifecycle team could run validation themselves while drafting. Compliance reviews the output rather than the email, so the compliance question is answered before the email reaches them.',
         ],
       },
@@ -453,15 +453,15 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'How I measured it',
         paras: [
-          'Conversion rate from lifecycle traffic — the specific failure the rebuild was meant to address. If lifecycle emails sent people to pages that matched the message and the intent, that number would move.',
-          'Secondary: time to launch for a new page. The ownership problem was only solved if Marketing could actually ship without waiting on engineering.',
+          'Conversion rate from lifecycle traffic: the specific failure the rebuild was meant to address. If lifecycle emails sent people to pages that matched the message and the intent, that number would move.',
+          'Secondary: time to launch for a new page. The ownership problem was only solved if Marketing could ship without waiting on engineering.',
         ],
       },
       {
         label: 'The build',
         paras: [
           'Rebuilt five properties: MogoTrade first as the proof of the Webflow model, then Moka, Intelligent Investing, orion-digital.com, and mogo.ca.',
-          'Built a component system rather than individual pages — reusable sections, governed naming, and a CMS structure that let anyone assemble a page from the library in hours. Defined URL structures, content models, and metadata templates before touching layouts, so SEO and tracking were built in rather than retrofitted.',
+          'Built a component system rather than individual pages: reusable sections, governed naming, and a CMS structure that let anyone assemble a page from the library in hours. Defined URL structures, content models, and metadata templates before touching layouts, so SEO and tracking were built in rather than retrofitted.',
           'Applied SEO, AEO, and GEO across all five properties: schema markup, canonical structures, internal linking, metadata by page type. Rebuilt GA4 and GTM in parallel, bringing Analytics, DevOps, Product, and Legal into the tracking architecture during the migration rather than after. Every page launched with clean event tracking on day one.',
         ],
       },
@@ -471,7 +471,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '+30%', label: 'Conversion on campaign-specific landing pages' },
       { value: '~5% → ~14%', label: 'MogoTrade organic traffic share, within 90 days' },
     ],
-    outcome: 'The lifecycle conversion problem turned out to be a destination problem. Once the pages matched the message and Marketing owned the ability to change them, conversion followed — and the component system meant the fix held for every campaign after, not just one.',
+    outcome: 'The lifecycle conversion problem turned out to be a destination problem. Once the pages matched the message and Marketing owned the ability to change them, conversion followed, and the component system meant the fix held for every campaign after, not just one.',
     tech: [
       { name: 'Webflow', use: 'Full web ecosystem and component system' },
       { name: 'GA4 + GTM', use: 'Rebuilt tracking infrastructure' },
@@ -490,14 +490,14 @@ export const CASES: Record<string, CaseStudy> = {
         label: 'The starting point',
         paras: [
           'DTC Newsletter had strong email engagement and a growing subscriber base. The website told a different story: bounce rate at 70%, organic traffic underperforming relative to content volume, and low signup conversion from organic visitors who were, by definition, high intent.',
-          'Looking at the site itself, the information architecture had grown by accretion — content added over time without taxonomy or hierarchy, and no clear path from a search result to a signup. It had been built as a content container, which it did well. It hadn’t been built as a conversion system.',
+          'Looking at the site itself, the information architecture had grown by accretion: content added over time without taxonomy or hierarchy, and no clear path from a search result to a signup. It had been built as a content container, which it did well. It hadn’t been built as a conversion system.',
           'So the bounce rate wasn’t about audience quality. The right people were landing and leaving again, because the page gave them no reason to stay.',
         ],
       },
       {
         label: 'The decision',
         paras: [
-          'Rebuild the architecture from the information model outward: taxonomy first, then URL structure, then page hierarchy, then layouts. Treat the site as a conversion system where every page had a job — capture a subscriber, build credibility with a sponsor, or rank for a term that brought in the next reader.',
+          'Rebuild the architecture from the information model outward: taxonomy first, then URL structure, then page hierarchy, then layouts. Treat the site as a conversion system where every page had a job: capture a subscriber, build credibility with a sponsor, or rank for a term that brought in the next reader.',
           'I ran all of it end to end. No separate web team, no design handoff, no engineering queue. Three full rebuilds over the tenure.',
         ],
       },
@@ -513,7 +513,7 @@ export const CASES: Record<string, CaseStudy> = {
         paras: [
           'The first version shipped with a clean content taxonomy, consistent URL structure, schema markup across all content types, and metadata templates matched to search intent by page category.',
           'The second rebuild expanded the system for growing content volume: new page types for sponsor content, resource sections, and topic cluster hubs, with internal linking built around keyword groupings.',
-          'The third rebuild was forced by an external contractor deleting the entire Webflow environment. I rebuilt the full site from memory and documentation — every component, CMS collection, automation, and content system — without data loss. Operations never stopped.',
+          'The third rebuild was forced by an external contractor deleting the entire Webflow environment. I rebuilt the full site from memory and documentation, every component, CMS collection, automation, and content system, with no data loss. Operations never stopped.',
         ],
       },
     ],
@@ -522,7 +522,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '+28%', label: 'Organic traffic' },
       { value: '+27%', label: 'Organic newsletter signups' },
     ],
-    outcome: 'Three rebuilds taught the same lesson each time. Bounce rate was a symptom, and the real question was whether the page gave the reader a reason to be there. When the architecture matched how readers actually moved through the content, the numbers followed.',
+    outcome: 'Three rebuilds taught the same lesson each time. Bounce rate was a symptom, and the deeper question was whether the page gave the reader a reason to be there. When the architecture matched how readers moved through the content, the numbers followed.',
     tech: [
       { name: 'Webflow', use: 'Full site development and CMS' },
       { name: 'Semrush / Ahrefs', use: 'SEO audit and keyword research' },
@@ -542,14 +542,14 @@ export const CASES: Record<string, CaseStudy> = {
         paras: [
           'Performance reports were going out with a caveat that the numbers might not be accurate. The data had been unreliable long enough that leadership had stopped making decisions with it.',
           'GA4 was partially configured, and GTM held years of tags added without documentation, naming conventions, or governance. Attribution across web, app, and lifecycle was inconsistent, and nobody had a complete picture of what was firing, what was double-counting, and what wasn’t firing at all.',
-          'The martech stack had grown tool by tool without a central owner. Braze, Intercom, and Microsoft Dynamics were running as silos — Braze wasn’t connected to Dynamics at all, so behavioural segmentation was blind to customer status, loan history, and account events.',
+          'The martech stack had grown tool by tool without a central owner. Braze, Intercom, and Microsoft Dynamics were running as silos: Braze wasn’t connected to Dynamics at all, so behavioural segmentation was blind to customer status, loan history, and account events.',
           'Two problems compounding each other, then: a broken tracking layer making reporting unreliable, and a disconnected stack holding lifecycle strategy back from what it could do.',
         ],
       },
       {
         label: 'The decision',
         paras: [
-          'Use the Webflow ecosystem rebuild as the forcing function to fix the tracking layer at the same time. That was what made the work possible without a separate project cycle — every page launching in Webflow could launch with clean tagging from day one instead of a retrofit afterward.',
+          'Use the Webflow ecosystem rebuild as the forcing function to fix the tracking layer at the same time. That was what made the work possible without a separate project cycle: every page launching in Webflow could launch with clean tagging from day one instead of a retrofit afterward.',
           'Run the martech audit in parallel: map every tool, integration, and data flow, and surface what was missing, what was underused, and what was costing money without delivering value.',
         ],
       },
@@ -563,7 +563,7 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The build',
         paras: [
-          'Created a new GA4 property from scratch with a full event taxonomy supporting lifecycle, acquisition, and retention measurement simultaneously — standardized naming, custom dimensions, and conversion event configuration.',
+          'Created a new GA4 property from scratch with a full event taxonomy supporting lifecycle, acquisition, and retention measurement simultaneously: standardized naming, custom dimensions, and conversion event configuration.',
           'Rebuilt GTM completely in parallel with the Webflow migration, clearing years of tag debt and consolidating pixel management for Meta, LinkedIn, and other channels under GTM governance. Brought Analytics, DevOps, Product, and Legal into the process during the migration rather than after. Integrated Branch Metrics for mobile attribution, which had been essentially unmeasured.',
           'Ran the martech audit across the full stack, mapping data flows between Braze, Intercom, Dynamics, and supporting tools. Surfaced the Braze–Dynamics integration gap, escalated it to the COO, and got it onto the product roadmap. Identified about $18K in annual savings from unused features and redundant subscriptions, and delivered a tech roadmap for future scaling.',
         ],
@@ -573,7 +573,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '40% → 80%', label: 'Data accuracy rate' },
       { value: '~$18K', label: 'Annual martech savings identified' },
     ],
-    outcome: 'The rebuild didn’t improve campaign performance directly. It made campaign performance legible. When leadership can trust the data they make decisions with it, and when they can’t they stop looking at it entirely. The real outcome wasn’t better numbers — it was numbers that could be used.',
+    outcome: 'The rebuild didn’t improve campaign performance directly. It made campaign performance legible. When leadership can trust the data they make decisions with it, and when they can’t they stop looking at it entirely. The outcome that mattered wasn’t better numbers. It was numbers that could be used.',
     tech: [
       { name: 'GA4', use: 'Analytics property rebuilt from scratch' },
       { name: 'Google Tag Manager', use: 'Full implementation and governance' },
@@ -606,13 +606,13 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'How I measured it',
         paras: [
-          'Launch throughput and production error rate across the whole portfolio, not any single launch. If the system was working, every launch would get faster and cleaner, not only the ones I was close to. That was the honest test of whether the constraint really was structural.',
+          'Launch throughput and production error rate across the whole portfolio, not any single launch. If the system was working, every launch would get faster and cleaner, not only the ones I was close to. That was the honest test of whether the constraint was structural.',
         ],
       },
       {
         label: 'The build',
         paras: [
-          'I hired the initial team of 5 and defined the operating model: Agile sprint cycles, RACI models for ownership clarity, centralized project tracking, and a data-driven prioritization framework that sequenced launches by market impact rather than by who asked first.',
+          'I hired the initial team of 5 and defined the operating model: Agile sprint cycles, RACI models for ownership clarity, centralized project tracking, and a centralized project tracking system, and a prioritization framework that sequenced launches by market impact rather than by who asked first.',
           'I wrote the SOPs, the QA processes, and the standardized launch templates so the team could execute consistently without me in every decision. Then I traveled to new regional offices to train local teams in person, since the model only worked if it held the same way in every market.',
           'The division sat inside the broader MSOps department, which grew from 5 to 36 over the same stretch as four other leads built out their own divisions in parallel. That wider growth wasn’t my build. The 5-person division was.',
         ],
@@ -639,15 +639,15 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The starting point',
         paras: [
-          'I was running lifecycle and web systems full-time at DTC/Pilothouse, with employer permission to take on local SMB work alongside it, and I kept meeting the same situation. Owners had lost whatever digital presence they’d built before the pandemic, and standard agency pricing put real help out of reach.',
-          'The gap wasn’t expertise, it was access. Nobody was building a structure that could deliver real strategy and execution at those budgets, and freelancing solo would only ever help one business at a time.',
+          'I was running lifecycle and web systems full-time at DTC/Pilothouse, with employer permission to take on local SMB work alongside it, and I kept meeting the same situation. Owners had lost whatever digital presence they’d built before the pandemic, and standard agency pricing put professional help out of reach.',
+          'The gap wasn’t expertise, it was access. Nobody was building a structure that could deliver strategy and execution at those budgets, and freelancing solo would only ever help one business at a time.',
         ],
       },
       {
         label: 'The decision',
         paras: [
           'Serving more than one client properly meant building a team rather than taking clients one by one. I founded CraftConcepts with two co-founders, one on sales and one on creative, with one rule that never moved: nothing went out the door without me reviewing the strategy first, whoever had built it.',
-          'There was no capital to hire, so I built the team through referrals and treated every contributor relationship as mentorship rather than labor. People learned how to diagnose a client’s actual problem and build the system that fixed it, then left with real client work for their own portfolios.',
+          'There was no capital to hire, so I built the team through referrals and treated every contributor relationship as mentorship rather than labor. People learned how to diagnose a client’s actual problem and build the system that fixed it, then left with live client work for their own portfolios.',
         ],
       },
       {
@@ -659,8 +659,8 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The build',
         paras: [
-          'I built a commission-based compensation model scaled to each client’s budget, paired with volunteer effort from contributors who wanted the portfolio experience more than the pay. I ran founder interviews with every client to draw out their real positioning before any build started, then wrote repeatable website and content playbooks so nobody started from zero on a new engagement.',
-          'The team grew from 3 co-founders to 8 within the first year, then to a rotating collective of 20+ at peak in year two, including early-career marketers in both Vancouver and the Philippines. No formal hierarchy, no full-time staff — just people rotating through real client work under my review.',
+          'I built a commission-based compensation model scaled to each client’s budget, paired with volunteer effort from contributors who wanted the portfolio experience more than the pay. I ran founder interviews with every client to draw out their positioning before any build started, then wrote repeatable website and content playbooks so nobody started from zero on a new engagement.',
+          'The team grew from 3 co-founders to 8 within the first year, then to a rotating collective of 20+ at peak in year two, including early-career marketers in both Vancouver and the Philippines. No formal hierarchy, no full-time staff: just people rotating through real client work under my review.',
         ],
       },
     ],
@@ -669,7 +669,7 @@ export const CASES: Record<string, CaseStudy> = {
       { value: '26', label: 'Businesses served' },
       { value: '~40%', label: 'Organic visibility lift' },
     ],
-    outcome: 'The model scaled past what I could do alone, not through traditional hiring but because the mentorship structure meant contributors could genuinely execute client work rather than shadow it. I wound it down deliberately in January 2025, once the gap it was built for had closed.',
+    outcome: 'The model scaled past what I could do alone, not through traditional hiring but because the mentorship structure meant contributors could execute client work rather than shadow it. I wound it down deliberately in January 2025, once the gap it was built for had closed.',
     tech: [
       { name: 'Webflow and WordPress', use: 'Client website builds' },
       { name: 'SEO and CRO', use: 'Visibility and conversion work' },

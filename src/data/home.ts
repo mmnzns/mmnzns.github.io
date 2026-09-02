@@ -22,7 +22,7 @@ export const SYMPTOMS = [
   {
     ask: '“People are dropping off during their first week.”',
     found:
-      'We were asking people to connect their bank account before we had properly explained security, custody, or how their money was protected. Once we understood it as a trust problem—not simply a UX problem—we knew which part of the experience needed to change.',
+      'We were asking people to connect their bank account before we had properly explained security, custody, or how their money was protected. Once we understood it as a trust problem, not simply a UX problem, we knew which part of the experience needed to change.',
   },
   {
     ask: '“Open rates are falling. Could the subject lines be the problem?”',
@@ -74,7 +74,7 @@ export const FEATURED_CASES: readonly FeaturedCase[] = [
     title: 'The Intelligent Investing winback',
     category: 'Lifecycle',
     brief: [
-      'Around 900,000 people had either gone quiet on investing or had a Mogo lending relationship but never started investing. We wanted to help more of them take—or retake—the first step.',
+      'Around 900,000 people had either gone quiet on investing or had a Mogo lending relationship but never started investing. We wanted to help more of them take, or retake, the first step.',
     ],
     read: [
       'This wasn’t one audience or one campaign. Dormant investors needed an easy way back, while lending customers were being introduced to investing for the first time. Manage and Self-directed also asked for different behaviours and gave people different reasons to care.',
@@ -135,13 +135,13 @@ export const METHOD = [
     name: 'Understand',
     source: 'Mogo · Connecting the journey',
     example:
-      'The emails were setting one expectation while the web and product experience created another. At the same time, lifecycle messages were being triggered by days elapsed rather than what customers had actually done. We needed to treat the journey as one connected experience.',
+      'The emails were setting one expectation while the web and product experience created another. At the same time, lifecycle messages were being triggered by days elapsed rather than what customers had done. We needed to treat the journey as one connected experience.',
   },
   {
     name: 'Measure',
     source: 'Mogo · Agreeing on success',
     example:
-      'Open rate wouldn’t tell us whether the full journey was improving—it was already healthy. We chose activation and seven-day drop-off because they reflected whether more people were moving forward and staying engaged after signup.',
+      'Open rate wouldn’t tell us whether the full journey was improving; it was already healthy. We chose activation and seven-day drop-off because they reflected whether more people were moving forward and staying engaged after signup.',
   },
   {
     name: 'Build',
@@ -181,7 +181,7 @@ export const RECEIPTS: readonly Receipt[] = [
     window: 'First 2 months, Mogo lifecycle rebuild',
     bars: { before: 24, after: 38, beforeLabel: '24%', afterLabel: '38%' },
     read:
-      'The journey improved once lifecycle, web, and product began setting the same expectations. We also moved from calendar-based messages to triggers based on what customers actually did. Activation increased from 24% to 38%, while seven-day drop-off fell from 78% to 62% over the same period.',
+      'The journey improved once lifecycle, web, and product began setting the same expectations. We also moved from calendar-based messages to triggers based on what customers did. Activation increased from 24% to 38%, while seven-day drop-off fell from 78% to 62% over the same period.',
   },
   {
     name: 'Retention',
@@ -189,7 +189,7 @@ export const RECEIPTS: readonly Receipt[] = [
     window: 'First-year churn, after the longer-term flows went in',
     bars: { before: 35, after: 23, beforeLabel: '35% churn', afterLabel: '23% churn' },
     read:
-      'This work focused on helping people build confidence in long-term investing. The journeys reinforced simple but important ideas—consistent contributions, compounding, staying invested through volatility, and the value of avoiding unnecessary fees. When people better understood the habit they were building, more of them continued it.',
+      'This work focused on helping people build confidence in long-term investing. The journeys reinforced simple but important ideas: consistent contributions, compounding, staying invested through volatility, and the value of avoiding unnecessary fees. When people better understood the habit they were building, more of them continued it.',
   },
   {
     name: 'Reactivation',
