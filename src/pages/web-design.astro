@@ -1261,10 +1261,6 @@ const BUDGETS = [
     transform: rotate(-1deg);
   }
 
-  .deco {
-    position: absolute;
-    pointer-events: none;
-  }
 
   /* ------------------------------------------------------------ buttons -- */
   .wdbtn {
@@ -1791,13 +1787,6 @@ const BUDGETS = [
     padding: 40px;
   }
 
-  .ctabox--solid {
-    border-style: solid;
-    background: var(--wd-bright);
-    box-shadow: 8px 8px 0 var(--wd-ink);
-    padding: 56px 40px;
-  }
-
   .ctabox__badge {
     position: absolute;
     top: -13px;
@@ -1832,210 +1821,9 @@ const BUDGETS = [
     color: var(--wd-muted);
   }
 
-  .midcta-wrap {
-    padding: 0 24px;
-  }
-
-  .midcta {
-    margin-bottom: 110px;
-  }
-
-  .midcta__star1 {
-    top: -14px;
-    left: 48px;
-    font-size: 30px;
-    color: var(--wd-coral);
-    text-shadow: 1.5px 1.5px 0 var(--wd-ink);
-    transform: rotate(-12deg);
-  }
-
-  .midcta__star2 {
-    bottom: -12px;
-    right: 64px;
-    font-size: 24px;
-    color: #D8400C;
-    text-shadow: 1px 1px 0 var(--wd-ink);
-    transform: rotate(15deg);
-  }
-
   /* --------------------------------------------------------------- ladder -- */
-  .ladder {
-    position: relative;
-    padding: 110px 24px;
-    overflow: hidden;
-  }
-
-  .ladder__dot1 {
-    top: 70px;
-    right: 8%;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--wd-peach);
-  }
-
-  .ladder__dot2 {
-    bottom: 120px;
-    left: 5%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--wd-blue);
-  }
-
-  .ladder__sub {
-    margin: 0 0 44px;
-    font-size: 19px;
-    max-width: 560px;
-    line-height: 1.5;
-  }
-
-  .ladder__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
-  }
-
-  .rung {
-    background: var(--wd-bright);
-    border: 2.5px solid var(--wd-ink);
-    border-radius: 22px;
-    padding: 30px;
-    box-shadow: 8px 8px 0 var(--rung, var(--wd-peach));
-    transition:
-      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-      box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .rung:hover {
-    transform: translate(-4px, -7px) rotate(-0.6deg);
-    box-shadow: 14px 16px 0 var(--rung, var(--wd-peach));
-  }
-
-  .rung__num {
-    margin: 0;
-    font-size: 72px;
-    font-weight: 800;
-    line-height: 1;
-  }
-
-  .rung__title {
-    margin: 14px 0 8px;
-    font-size: 28px;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-
-  .rung__body {
-    margin: 0 0 14px;
-    font-size: 16px;
-    line-height: 1.55;
-  }
-
-  .rung__price {
-    margin: 0;
-    font-weight: 700;
-    font-size: 17px;
-  }
-
-  .rung__scribble {
-    margin: 8px 0 0;
-    font-family: var(--wd-hand);
-    font-size: 22px;
-    color: var(--wd-bluelink);
-    transform: rotate(-1.5deg);
-  }
-
-  .ladder__note {
-    margin: 32px 0 0;
-    font-size: 16px;
-    max-width: 640px;
-    line-height: 1.55;
-  }
 
   /* ----------------------------------------------------------------- fork -- */
-  .fork {
-    background: var(--wd-blueband);
-    border-top: 2px solid var(--wd-ink);
-    border-bottom: 2px solid var(--wd-ink);
-    padding: 110px 24px;
-  }
-
-  .fork__title {
-    margin: 0 0 48px;
-    font-size: clamp(36px, 5.6vw, 72px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    max-width: 900px;
-    text-transform: uppercase;
-    text-shadow: 3px 3px 0 var(--wd-card);
-    text-wrap: balance;
-  }
-
-  .fork__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-  }
-
-  .forkcard {
-    background: var(--wd-card);
-    border: 2px solid var(--wd-ink);
-    border-radius: 24px;
-    padding: 34px;
-    transform: rotate(var(--tilt, 0deg));
-    box-shadow: 6px 6px 0 var(--wd-ink);
-    transition:
-      transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-      box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .forkcard:hover {
-    transform: rotate(0deg) translate(-4px, -6px);
-    box-shadow: 12px 14px 0 var(--forkshadow, var(--wd-peach));
-  }
-
-  .forkcard__chip {
-    display: inline-block;
-    border: 1.5px solid var(--wd-ink);
-    font-weight: 800;
-    font-size: 15px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 7px 14px;
-    border-radius: 999px;
-    margin: 0 0 18px;
-  }
-
-  .forkcard__title {
-    margin: 0 0 12px;
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1.05;
-  }
-
-  .forkcard__body {
-    margin: 0 0 14px;
-    font-size: 17px;
-    line-height: 1.55;
-    color: var(--wd-muted);
-  }
-
-  .forkcard__price {
-    margin: 4px 0 0;
-    font-size: 22px;
-    font-weight: 800;
-  }
-
-  .fork__note {
-    margin: 36px auto 0;
-    max-width: 760px;
-    font-size: 18px;
-    line-height: 1.55;
-    text-align: center;
-    font-weight: 600;
-  }
 
   /* -------------------------------------------------------------- pricing -- */
   .pricing {
@@ -2314,24 +2102,6 @@ const BUDGETS = [
     overflow: hidden;
   }
 
-  .awkward__dot1 {
-    top: 90px;
-    right: 10%;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--wd-butter);
-  }
-
-  .awkward__dot2 {
-    bottom: 100px;
-    left: 7%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--wd-peach);
-  }
-
   .awkward__inner {
     position: relative;
     max-width: 880px;
@@ -2418,48 +2188,6 @@ const BUDGETS = [
   }
 
   /* ------------------------------------------------------------ ownership -- */
-  .own {
-    background: var(--wd-blueband);
-    border-top: 2px solid var(--wd-ink);
-    border-bottom: 2px solid var(--wd-ink);
-    padding: 96px 24px;
-  }
-
-  .own__title {
-    margin: 0 0 44px;
-    font-size: clamp(36px, 5vw, 64px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    text-transform: uppercase;
-    text-shadow: 3px 3px 0 var(--wd-card);
-  }
-
-  .own__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-  }
-
-  .owncard {
-    background: var(--wd-card);
-    border: 2px solid var(--wd-ink);
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 5px 5px 0 var(--wd-ink);
-  }
-
-  .owncard h3 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    font-weight: 800;
-  }
-
-  .owncard p {
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.55;
-  }
 
   /* ------------------------------------------------------------------ faq -- */
   .faq {
@@ -2807,10 +2535,6 @@ const BUDGETS = [
     }
 
 
-    .deco {
-      display: none;
-    }
-
     .hero {
       padding: 64px 18px 0;
     }
@@ -2845,12 +2569,9 @@ const BUDGETS = [
     }
 
     .who,
-    .ladder,
-    .fork,
     .pricing,
     .work,
     .awkward,
-    .own,
     .faq {
       padding-left: 18px;
       padding-right: 18px;
@@ -2898,10 +2619,6 @@ const BUDGETS = [
 
     .ctabox {
       padding: 30px 20px;
-    }
-
-    .midcta {
-      margin-bottom: 72px;
     }
 
     .ctabox__badge {
