@@ -10,8 +10,17 @@ import {
   TIMELINE_MOVERS,
 } from '../../data/web-design';
 
-/** `/web-design/process/` — ported from the v13 export's `Monzones-W-Process`. */
+/** `/web-design/process/` — ported from the v14 export's `Monzones-W-Process`. */
 const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discovery call (30 minutes)')}`;
+
+/* The two gate steps are the only tinted cards in the sequence: 04 sits on
+   yellow with an ink shadow, 05 keeps the paper face but takes a coral frame. */
+const HERO_STRONG = 'Development starts after you approve that draft';
+const heroBody = PROCESS_HERO.body.split(HERO_STRONG);
+if (heroBody.length !== 2) throw new Error('PROCESS_HERO.body no longer contains the gate sentence');
+
+const gateClass = (gate?: string) =>
+  gate === 'Gate 1' ? 'wdstep--gate1' : gate === 'Gate 2' ? 'wdstep--gate2' : undefined;
 ---
 
 <WebDesignLayout
@@ -21,407 +30,470 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
 >
   <header class="wdwrap wdhero" id="top">
     <p class="wdhero__tags">
-      {PROCESS_HERO.tags.map((tag) => <span class="wdtag">{tag}</span>)}
+      {
+        PROCESS_HERO.tags.map((tag, i) => (
+          <span class:list={['wdtag', i === 1 && 'wdtag--butter']}>{tag}</span>
+        ))
+      }
     </p>
     <h1 class="wdhero__title">
       {PROCESS_HERO.titleLead} <em>{PROCESS_HERO.titleAccent}</em>
     </h1>
-    <p class="wdlede wdhero__body">{PROCESS_HERO.body}</p>
+    {/* The export sets the gate sentence in ink; the data keeps it as one string. */}
+    <p class="wdhero__body">
+      {heroBody[0]}<strong>{HERO_STRONG}</strong>{heroBody[1]}
+    </p>
 
     <nav class="wdjumps" aria-label="On this page">
       {PROCESS_JUMPS.map((jump) => <a href={jump.href}>{jump.label}</a>)}
     </nav>
   </header>
 
-  <section class="wdband wdband--dark" id="gates">
+  <section class="wdband wdband--dark wdband--112" id="gates">
     <div class="wdband__inner">
-    <p class="wdkick" data-reveal>the two moments that matter</p>
-    <h2 class="wdh2" data-reveal>Two gates, and <em>nothing hidden.</em></h2>
-    <p class="wdlede" data-reveal>
-      Most website projects go sideways in one of two places: the clock starting before anyone is
-      ready, or the build starting before the design is agreed. So I’ve made both moments explicit.
-      You’ll always know which side of each gate we’re on.
-    </p>
+      <p class="wdkick" data-reveal>the two moments that matter</p>
+      <h2 class="wdh2 wdgates__title" data-reveal>Two gates, and <em>nothing hidden.</em></h2>
+      <p class="wdlede wdgates__lede" data-reveal>
+        Most website projects go sideways in one of two places: the clock starting before anyone is
+        ready, or the build starting before the design is agreed. So I’ve made both moments
+        explicit. You’ll always know which side of each gate we’re on.
+      </p>
 
-    <div class="wdtwo">
-      {
-        GATES.map((gate) => (
-          <div class="wdcard wdgate" data-reveal>
-            <span class="wdgate__label">{gate.label}</span>
-            <h3 class="wdh3">{gate.title}</h3>
-            <p class="wdbody">{gate.body}</p>
-            <p class="wdnote">{gate.note}</p>
-          </div>
-        ))
-      }
-    </div>
-    </div>
-  </section>
-
-  <section class="wdband wdband--paper" id="steps">
-    <div class="wdband__inner">
-    <p class="wdkick" data-reveal>start to launch</p>
-    <h2 class="wdh2" data-reveal>The <em>process.</em></h2>
-
-    <ol class="wdsteps">
-      {
-        PROCESS_STEPS.map((step) => (
-          <li class="wdstep" id={step.num === '03' ? 'inputs' : undefined} data-reveal>
-            <span class="wdstep__num" aria-hidden="true">
-              {step.num}
-            </span>
-            <div class="wdstep__body">
-              {step.gate ? <span class="wdgate__label">{step.gate}</span> : null}
-              <h3 class="wdh3">{step.title}</h3>
-              {step.paras.map((para) => (
-                <p class="wdbody">{para}</p>
-              ))}
-              {step.listLabel ? <p class="wdstep__label">{step.listLabel}</p> : null}
-              {step.items ? (
-                <ul class="wdlist">
-                  {step.items.map((item) => (
-                    <li>{item}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {step.after?.map((para) => (
-                <p class="wdbody">{para}</p>
-              ))}
-              {/*
-                Step 10's closing paragraph carries the only inline link in the
-                sequence, so it is written here rather than smuggled into the
-                data file as a string of HTML.
-              */}
-              {step.num === '10' ? (
-                <p class="wdbody">
-                  New content, new features, design changes, or anything caused by a third-party
-                  platform aren’t faults in the original build. Those go through{' '}
-                  <a class="wdlink" href="/web-design/pricing/#care">
-                    Website Care
-                  </a>
-                  , a written project quote, or the small-change policy on hand-built sites,
-                  whichever suits you best.
-                </p>
-              ) : null}
+      <div class="wdgrid wdgates__grid">
+        {
+          GATES.map((gate, i) => (
+            <div class:list={['wdgate', i === 0 ? 'wdgate--one' : 'wdgate--two']} data-reveal>
+              <span class="wdgate__pill">{gate.label}</span>
+              <h3 class="wdgate__title">{gate.title}</h3>
+              <p class="wdgate__body">{gate.body}</p>
+              <p class="wdgate__note">{gate.note}</p>
             </div>
-          </li>
-        ))
-      }
-    </ol>
+          ))
+        }
+      </div>
     </div>
   </section>
 
-  <section class="wdband wdband--dark" id="pause">
-    <div class="wdband__inner">
-    <p class="wdkick" data-reveal>honest about the clock</p>
-    <h2 class="wdh2" data-reveal>What pauses or moves <em>the timeline.</em></h2>
-    <p class="wdlede" data-reveal>
-      The assessed timeline assumes content, access, decisions and consolidated feedback arrive
-      reasonably on time. Life happens, so here’s when the schedule may pause or shift:
-    </p>
+  <section class="wdband wdband--paper wdband--112" id="steps">
+    <div class="wdband__inner wdband__inner--1000">
+      <p class="wdkick" data-reveal>start to launch</p>
+      <h2 class="wdh2 wdsteps__title" data-reveal>The <em>process.</em></h2>
 
-    <div class="wdmovers">
-      {TIMELINE_MOVERS.map((mover) => <p class="wdcard wdmover" data-reveal>{mover}</p>)}
-    </div>
-
-    <p class="wdlede" data-reveal>
-      A pause isn’t extra billable time on its own. It can move the project to the next available
-      opening, because I only ever run one active build at a time, and that’s the same reason your
-      build gets my full attention when it’s yours.
-    </p>
+      <ol class="wdsteps">
+        {
+          PROCESS_STEPS.map((step) => (
+            <li
+              class:list={['wdstep', gateClass(step.gate)]}
+              id={step.num === '03' ? 'inputs' : undefined}
+              data-reveal
+            >
+              <span class="wdstep__num" aria-hidden="true">
+                {step.num}
+              </span>
+              <div class="wdstep__card">
+                {step.gate ? <span class="wdstep__gate">{step.gate}</span> : null}
+                <h3 class="wdh3 wdstep__title">{step.title}</h3>
+                {step.paras.map((para) => (
+                  <p class="wdbody wdstep__body">{para}</p>
+                ))}
+                {step.listLabel ? <p class="wdmono wdstep__label">{step.listLabel}</p> : null}
+                {step.items ? (
+                  <ul class="wdstep__list">
+                    {step.items.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                ) : null}
+                {/*
+                  Step 07 closes on a handwritten line; every other step's
+                  trailing paragraph is the small print, with any paragraph
+                  before it set as body copy.
+                */}
+                {step.num === '07'
+                  ? step.after?.map((para) => <p class="wdnote wdstep__note">{para}</p>)
+                  : step.after?.map((para, i, all) => (
+                      <p
+                        class:list={[
+                          i === all.length - 1 ? 'wdstep__small' : 'wdbody wdstep__body',
+                        ]}
+                      >
+                        {para}
+                      </p>
+                    ))}
+                {/*
+                  Step 10's closing paragraph carries the only inline link in the
+                  sequence, so it is written here rather than smuggled into the
+                  data file as a string of HTML.
+                */}
+                {step.num === '10' ? (
+                  <p class="wdbody wdstep__body wdstep__body--last">
+                    New content, new features, design changes, or anything caused by a third-party
+                    platform aren’t faults in the original build. Those go through{' '}
+                    <a class="wdinline" href="/web-design/pricing/#care">
+                      Website Care
+                    </a>
+                    , a written project quote, or the small-change policy on hand-built sites,
+                    whichever suits you best.
+                  </p>
+                ) : null}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
     </div>
   </section>
 
-  <section class="wdband wdband--paper">
+  <section class="wdband wdband--dark wdband--112" id="pause">
     <div class="wdband__inner">
-    <p class="wdkick" data-reveal>{PROMISE.kicker}</p>
-    <div class="wdcard wdcard--butter wdpromise" data-reveal="pop">
-      <p class="wdpromise__line">{PROMISE.headline}</p>
-      <p class="wdbody">{PROMISE.body}</p>
+      <p class="wdkick" data-reveal>honest about the clock</p>
+      <h2 class="wdh2 wdgates__title" data-reveal>What pauses or moves <em>the timeline.</em></h2>
+      <p class="wdlede wdpause__lede" data-reveal>
+        The assessed timeline assumes content, access, decisions and consolidated feedback arrive
+        reasonably on time. Life happens, so here’s when the schedule may pause or shift:
+      </p>
+
+      <div class="wdgrid wdgrid--3 wdmovers">
+        {
+          TIMELINE_MOVERS.map((mover, i) => (
+            <p class:list={['wdmover', i === TIMELINE_MOVERS.length - 1 && 'wdmover--aside']} data-reveal>
+              {mover}
+            </p>
+          ))
+        }
+      </div>
+
+      <p class="wdlede wdpause__close" data-reveal>
+        A pause isn’t extra billable time on its own. It can move the project to the next available
+        opening, because I only ever run one active build at a time, and that’s the same reason
+        your build gets my full attention when it’s yours.
+      </p>
     </div>
+  </section>
+
+  <section class="wdband wdband--paper wdband--112">
+    <div class="wdband__inner wdband__inner--900">
+      <p class="wdkick wdpromise__kick" data-reveal>{PROMISE.kicker}</p>
+      <div class="wdpromise" data-reveal="pop">
+        <p class="wdpromise__line">{PROMISE.headline}</p>
+        <p class="wdpromise__body">{PROMISE.body}</p>
+      </div>
     </div>
   </section>
 
   <section class="wdcta" id="start">
     <span class="wdcta__m" aria-hidden="true">M.</span>
     <div class="wdcta__inner">
-    <h2 class="wdh2" data-reveal>Ready to start <em>step one?</em></h2>
-    <p class="wdlede" data-reveal>
-      Discovery is free, unhurried, and doesn’t start any clock. Tell me what you’re trying to do and
-      we’ll figure out the rest together.
-    </p>
-    <p class="wdnote" data-reveal>usually replies within a day</p>
-    <div class="wdctarow" data-reveal>
-      <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
-      <a class="wdbtn wdbtn--ghost" href={callHref}>Book a free call ↗</a>
-      <a class="wdbtn wdbtn--ghost" href="/web-design/pricing/">See the prices</a>
-    </div>
+      <h2 class="wdh2" data-reveal>Ready to start <em>step one?</em></h2>
+      <p class="wdlede wdcta__lede" data-reveal>
+        Discovery is free, unhurried, and doesn’t start any clock. Tell me what you’re trying to do
+        and we’ll figure out the rest together.
+      </p>
+      <p class="wdnote" data-reveal>usually replies within a day</p>
+      <div class="wdctarow" data-reveal>
+        <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
+        <a class="wdbtn wdbtn--ghost" href={callHref}>Book a free call ↗</a>
+        <a class="wdbtn wdbtn--ghost" href="/web-design/pricing/">See the prices</a>
+      </div>
     </div>
   </section>
 </WebDesignLayout>
 
 <style>
-  .wdhero {
-    padding-block: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 36px);
+  /* Page-unique styles; the shared vocabulary is in WebDesignLayout.astro.
+     Values are the v14 export's (`Monzones-W-Process`). */
+
+  /* -------------------------------------------------------------- gates -- */
+  .wdgates__title {
+    max-width: 900px;
   }
 
-  .wdhero__tags {
+  .wdgates__lede {
+    margin-bottom: 44px;
+  }
+
+  .wdgates__grid {
+    gap: 22px;
+  }
+
+  /* Two dark cards, each framed in its gate's colour. */
+  .wdgate {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    padding: 32px 30px;
+    border: 1px solid var(--wd-yellow);
+    border-radius: 14px;
+    background: var(--wd-card-dark);
   }
 
-  .wdtag {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 14px;
-    border: 2px solid var(--wd-ink);
+  .wdgate--two {
+    border-color: var(--wd-coral);
+  }
+
+  .wdgate__pill {
+    align-self: flex-start;
+    margin-bottom: 18px;
+    padding: 7px 12px 6px;
     border-radius: 999px;
-    background: var(--wd-bright);
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .wdhero__title {
-    margin-top: 22px;
-    font-size: clamp(40px, 6vw, 92px);
-    font-weight: 900;
-    line-height: 0.94;
-    letter-spacing: -0.025em;
+    background: var(--wd-yellow);
+    color: var(--wd-ink);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    line-height: 1;
     text-transform: uppercase;
-    text-wrap: balance;
   }
 
-  .wdhero__title em {
-    font-style: italic;
+  .wdgate--two .wdgate__pill {
+    background: var(--wd-coral);
+    color: var(--wd-card);
+  }
+
+  .wdgate__title {
+    margin: 0 0 14px;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: var(--wd-paper);
+  }
+
+  .wdgate__body {
+    margin: 0 0 14px;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--wd-on-dark);
+    text-wrap: pretty;
+  }
+
+  .wdgate__note {
+    margin: auto 0 0;
+    font-family: var(--wd-hand);
+    font-size: 23px;
+    color: var(--wd-yellow);
+  }
+
+  .wdgate--two .wdgate__note {
     color: var(--wd-coral);
   }
 
-  .wdhero__body {
-    margin-top: 22px;
+  /* -------------------------------------------------------------- steps -- */
+  .wdsteps__title {
+    margin-bottom: 52px;
   }
 
-  .wdjumps {
-    margin-top: 26px;
+  .wdsteps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    gap: 20px;
   }
 
-  .wdjumps a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 40px;
-    padding: 8px 15px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 999px;
-    background: var(--wd-bright);
-    font-size: 14px;
-    font-weight: 600;
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .wdjumps a:hover,
-  .wdjumps a:focus-visible {
-    transform: translateY(-2px);
-    background: var(--wd-butter);
-  }
-
-  .wdtwo {
-    margin-top: 32px;
+  /* A numbered disc beside a card. */
+  .wdstep {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 24px;
     align-items: start;
+    /* Step 03 is the target of the "What I need from you" jump link. */
+    scroll-margin-top: 88px;
   }
 
-  .wdgate__label {
+  .wdstep__num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 999px;
+    background: var(--wd-ink);
+    color: var(--wd-paper);
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .wdstep__card {
+    padding: 30px 30px 32px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
+    background: var(--wd-card);
+  }
+
+  .wdstep__gate {
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
+    margin-bottom: 16px;
+    padding: 7px 12px 6px;
     border-radius: 999px;
-    background: var(--wd-yellow);
-    /* Explicit: on the dark band this pill would otherwise inherit the
-       card’s light ink and sit at 1.26:1 on yellow. */
-    color: var(--wd-ink);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    background: var(--wd-ink);
+    color: var(--wd-yellow);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
-  /* Every h3 on the export's Process page uses this one size and weight. */
-  .wdh3 {
-    margin-top: 12px;
-    font-size: clamp(21px, 2vw, 25px);
-    font-weight: 900;
-    letter-spacing: -0.01em;
-    line-height: 1.15;
+  .wdstep__title {
+    margin-bottom: 12px;
   }
 
-  .wdbody {
-    margin-top: 12px;
-    font-size: 16px;
+  .wdstep__body {
+    margin-bottom: 12px;
+  }
+
+  .wdstep__body--last,
+  .wdstep__card > .wdstep__body:last-child {
+    margin-bottom: 0;
+  }
+
+  .wdstep__label {
+    margin-bottom: 12px;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+  }
+
+  /* The export's lists keep the browser's discs. */
+  .wdstep__list {
+    margin: 0;
+    padding-left: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--wd-body-soft);
+    text-wrap: pretty;
+  }
+
+  .wdstep__small {
+    margin: 16px 0 0;
+    font-size: 15.5px;
     line-height: 1.6;
     color: var(--wd-muted);
     text-wrap: pretty;
   }
 
-  .wdbody strong {
+  .wdstep__note {
+    margin-top: 16px;
+    font-size: 23px;
+  }
+
+  /* Gate 1: yellow disc and card, ink shadow, everything in ink. */
+  .wdstep--gate1 .wdstep__num {
+    background: var(--wd-yellow);
+    color: var(--wd-ink);
+    border: 1px solid var(--wd-ink);
+  }
+
+  .wdstep--gate1 .wdstep__card {
+    background: var(--wd-yellow);
+    box-shadow: 6px 6px 0 var(--wd-ink);
+  }
+
+  .wdstep--gate1 .wdstep__body,
+  .wdstep--gate1 .wdstep__list {
     color: var(--wd-ink);
   }
 
-  .wdlist {
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    padding: 0;
-    list-style: none;
+  .wdstep--gate1 .wdstep__small {
+    color: var(--wd-body);
   }
 
-  .wdlist li {
-    position: relative;
-    padding-left: 22px;
-    font-size: 15px;
-    line-height: 1.55;
-    color: var(--wd-muted);
-    text-wrap: pretty;
-  }
-
-  .wdlist li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.5em;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
+  /* Gate 2: coral disc, coral frame and shadow on the paper card. */
+  .wdstep--gate2 .wdstep__num {
     background: var(--wd-coral);
+    color: var(--wd-card);
   }
 
-  /* -------------------------------------------------------------- steps -- */
-  .wdsteps {
-    margin: 32px 0 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+  .wdstep--gate2 .wdstep__card {
+    border-color: var(--wd-coral);
+    box-shadow: 6px 6px 0 var(--wd-coral);
   }
 
-  .wdstep {
-    display: grid;
-    grid-template-columns: 76px minmax(0, 1fr);
-    gap: clamp(16px, 2.4vw, 32px);
-    padding: clamp(22px, 2.6vw, 32px);
-    border: 2px solid var(--wd-ink);
-    border-radius: 22px;
-    background: var(--wd-bright);
-    box-shadow: 6px 6px 0 var(--wd-ink);
-    /* Step 03 is the target of the "What I need from you" jump link. */
-    scroll-margin-top: 20px;
+  .wdstep--gate2 .wdstep__gate {
+    background: var(--wd-coral);
+    color: var(--wd-card);
   }
 
-  .wdstep__num {
-    font-size: clamp(30px, 3.4vw, 44px);
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.03em;
-    color: var(--wd-peach);
+  /* -------------------------------------------------------------- pause -- */
+  .wdpause__lede {
+    margin-bottom: 40px;
   }
 
-  .wdstep__body > .wdh3:first-child {
-    margin-top: 0;
-  }
-
-  .wdstep__label {
-    margin-top: 18px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--wd-muted);
-  }
-
-  .wdlink {
-    color: var(--wd-bluelink);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .wdlink:hover,
-  .wdlink:focus-visible {
-    color: var(--wd-coral-deep);
-  }
-
-  /* ------------------------------------------------------------ movers -- */
   .wdmovers {
-    margin-top: 32px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    gap: 16px;
+    margin-bottom: 26px;
   }
 
   .wdmover {
-    font-size: 16px;
-    line-height: 1.5;
-    font-weight: 600;
+    margin: 0;
+    padding: 24px 22px;
+    border: 1px solid var(--wd-ink-soft);
+    border-radius: 12px;
+    background: var(--wd-card-dark);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--wd-paper);
+    text-wrap: pretty;
+  }
+
+  /* The last tile is the aside, not a cause: dashed, quieter, italic. */
+  .wdmover--aside {
+    border: 1px dashed var(--wd-muted);
+    color: var(--wd-faint);
+    font-style: italic;
+  }
+
+  .wdpause__close {
+    max-width: 760px;
+  }
+
+  /* ------------------------------------------------------------ promise -- */
+  /* Needs the band in the selector to outrank the layout's `.wd .wdkick`. */
+  .wdband .wdpromise__kick {
+    margin-bottom: 20px;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.05;
   }
 
   .wdpromise {
-    margin-top: 20px;
-    text-align: center;
+    padding: 40px 38px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
+    background: var(--wd-card);
+    box-shadow: 8px 8px 0 var(--wd-ink);
   }
 
   .wdpromise__line {
-    font-size: clamp(24px, 3.2vw, 40px);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.024em;
+    margin: 0 0 16px;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
-  .wdpromise .wdbody {
-    max-width: 62ch;
-    margin-inline: auto;
+  .wdpromise__body {
+    margin: 0;
+    font-size: 17.5px;
+    line-height: 1.65;
+    color: var(--wd-body);
+    text-wrap: pretty;
   }
 
-  .wdcta {
-    text-align: center;
-  }
-
-  .wdcta .wdlede {
-    margin-inline: auto;
-  }
-
-  .wdcta .wdctarow {
-    justify-content: center;
+  .wdcta__lede {
+    max-width: 560px;
   }
 
   @media (max-width: 900px) {
-    .wdmovers {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 760px) {
-    .wdtwo {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    /* The number column costs room a phone hasn't got, so it becomes a label
-       above the step rather than a gutter beside it. */
+    /* The disc becomes a label above the card rather than a gutter beside it. */
     .wdstep {
       grid-template-columns: minmax(0, 1fr);
-      gap: 6px;
+      gap: 14px;
     }
   }
 
-  @media (max-width: 560px) {
-    .wdmovers {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
 </style>
