@@ -269,8 +269,14 @@ p {
   max-width: var(--wrap-wide);
 }
 
+/* Not a modifier on `.wrap` — it is never used alongside it, so it has to
+   centre itself. Without `margin-inline: auto` every homepage section sat
+   flush left above 1320px while `.contact__inner`, which re-declares all
+   three properties, centred correctly: the contact block ended up 53px to
+   the right of everything above it. */
 .wrap--home {
   max-width: var(--wrap-home);
+  margin-inline: auto;
   padding-inline: 28px;
 }
 

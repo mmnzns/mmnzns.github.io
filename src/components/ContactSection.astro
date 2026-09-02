@@ -20,6 +20,12 @@ interface Props {
   submitLabel?: string;
   /** The Vancouver box: sun on the home page, wash on the others. */
   vancouverBox?: 'sun' | 'wash';
+  /**
+   * Container width. The export gives this block 1320px on the home page and
+   * 1120px on About, matching whatever the host page uses — hardcoding the
+   * home width made the contact band 100px wider than the rest of About.
+   */
+  width?: 'home' | 'page';
   id?: string;
 }
 
@@ -31,6 +37,7 @@ const {
   aside = 'If you’re in Vancouver, coffee’s on me. I’d rather hear it out loud anyway.',
   submitLabel = 'Send',
   vancouverBox = 'wash',
+  width = 'home',
   id = 'contact',
 } = Astro.props;
 
@@ -47,7 +54,7 @@ const routes = [
 ---
 
 <section class="band band--sky contact" id={id}>
-  <div class="wrap--home contact__inner">
+  <div class:list={['contact__inner', width === 'home' ? 'wrap--home' : 'wrap']}>
     {
       number ? (
         <div class="numbered">
@@ -205,10 +212,10 @@ const routes = [
     /* The band's own borders carry the separation; the default band gap stays. */
   }
 
+  /* Width comes from the `.wrap` / `.wrap--home` class the `width` prop
+     picks, so this only carries what both share. */
   .contact__inner {
-    max-width: var(--wrap-home);
     margin-inline: auto;
-    padding-inline: 28px;
   }
 
   .contact__title {
