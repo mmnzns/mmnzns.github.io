@@ -25,13 +25,23 @@ import logoMark from '../assets/logo-mark.png';
 interface Props {
   title: string;
   description: string;
-  /** Marks the current item in the section nav. Home passes nothing. */
-  current?: 'services' | 'results' | 'process';
+  /** Marks the current item in the section nav. */
+  current: 'home' | 'services' | 'results' | 'process';
 }
 
 const { title, description, current } = Astro.props;
 
+/*
+ * Home is in this list on every page, including the home page itself.
+ *
+ * The v13 design disagrees with itself here: `Monzones-C-Services`,
+ * `-Process` and `-Results` all carry a Home link, and `Monzones-C-Home`
+ * omits it — so in the export the item appears and disappears as you move
+ * around the section. Miguel asked for it to be consistently present, which
+ * is also the reading the three sub-pages already agree on.
+ */
 const NAV = [
+  { label: 'Home', href: '/consulting/', key: 'home' },
   { label: 'Services', href: '/consulting/services/', key: 'services' },
   { label: 'Results', href: '/consulting/results/', key: 'results' },
   { label: 'Process', href: '/consulting/process/', key: 'process' },

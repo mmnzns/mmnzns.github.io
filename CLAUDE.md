@@ -63,7 +63,7 @@ beyond that.
   its page. The reveal animates `translate` and clears it to `none` inline, which outranks
   any stylesheet rule: if an element needs a permanent offset, use a margin (see the raised
   middle card in `.ccase:nth-child(2)`), not `translate`.
-- **`gen-consulting.mjs` no longer runs against anything.** It read the single-page
+- **`gen-consulting.mjs` was deleted.** It read the single-page
   `Monzones-D-Consulting-Bold` export, which v13 replaced with the four-file C-series.
   `src/data/consulting.ts` is now hand-maintained from those files; it is the one data file
   with no generator.

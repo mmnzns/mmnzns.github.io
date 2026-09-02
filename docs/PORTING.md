@@ -39,7 +39,7 @@ node scripts/sync-projects.mjs  "$D/Monzones-D-Work-Bold.dc.html"          # rep
 node scripts/sync-projects-apply.mjs "$D/Monzones-D-Work-Bold.dc.html"     # then apply
 ```
 
-**`gen-consulting.mjs` is no longer part of the recipe.** It read the
+**`gen-consulting.mjs` was deleted in v13.** It read the
 single-page `Monzones-D-Consulting-Bold` export, which v13 replaced with the
 four-file `Monzones-C-*` series. `src/data/consulting.ts` and
 `src/data/web-design.ts` are now maintained by hand from the C- and W-series
@@ -67,12 +67,15 @@ passed through a `<slot />`.
 ```bash
 node ./node_modules/astro/bin/astro.mjs check
 node ./node_modules/astro/bin/astro.mjs build
-node scripts/check-copy.mjs "../Website - Main Site/mnmonzones v9" dist
+node scripts/check-copy.mjs "$D" dist
 ```
 
 5. Browser sanity pass (the dev server, or `dist/` served locally): home shelf tabs and
-   method tabs, the consulting "what's included" toggles, one case page, about. At 375px
-   and 1440px.
+   method tabs, the case page's brief/read toggle, the consulting practice tabs, the
+   pricing picker and its hand-built/platform switch, one case page, about. At 375px and
+   1440px. **Click between the pages of a service section and watch the header** — the two
+   web design navs used to differ in padding, width and height, and the shift was only
+   visible in motion. `WebDesignNav.astro` is now the single nav for all four.
    **375px has to be a real 375px layout viewport.** Load each page in a 375px-wide
    iframe and assert `documentElement.scrollWidth === innerWidth`; screenshot through the
    same iframe. Headless Chrome's `--window-size=375` lays the page out wider and crops,
@@ -85,7 +88,6 @@ node scripts/check-copy.mjs "../Website - Main Site/mnmonzones v9" dist
 | --- | --- | --- |
 | `gen-cases.mjs` | `Monzones-D-Case.dc.html` | `src/data/cases.ts` (wholesale) |
 | `gen-home.mjs` | `Monzones-D-Paper.dc.html` | `src/data/home.ts` (wholesale) |
-| `gen-consulting.mjs` | `Monzones-D-Consulting.dc.html` | `src/data/consulting.ts` (wholesale) |
 | `gen-about.mjs` | `Monzones-D-About.dc.html` | `src/data/about.ts` (wholesale) |
 | `sync-projects(-apply).mjs` | `Monzones-D-Work.dc.html` | `title`/`problem`/`tags` in `src/data/site.ts` only |
 | `check-copy.mjs` | every `*.dc.html` + `dist/` | nothing — reports design sentences missing from the built site |

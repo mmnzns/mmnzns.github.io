@@ -1,0 +1,327 @@
+---
+import { Image } from 'astro:assets';
+import logoM from '../assets/logo-m-transparent.png';
+
+/**
+ * The web design section's nav, shared by `web-design.astro` and the three
+ * sub-pages that render through `WebDesignLayout`.
+ *
+ * It exists as a component because it used to exist twice, and the two copies
+ * drifted: different padding (24px vs 44px), different max-width (none vs
+ * 1180px), one sticky and one not, one carrying a Home link and one not, and
+ * two spellings of the CTA. Clicking between the main page and a sub-page
+ * therefore shifted the header sideways and changed its height. One nav, one
+ * set of numbers.
+ *
+ * FAQ deliberately never takes `aria-current`: it is an anchor on the main
+ * page rather than a page of its own, so there is no state in which it is
+ * "the current page".
+ */
+interface Props {
+  current: 'home' | 'work' | 'process' | 'pricing';
+}
+
+const { current } = Astro.props;
+
+const LINKS = [
+  { label: 'Home', href: '/web-design/', key: 'home', dot: '#F0621F' },
+  { label: 'Work', href: '/web-design/work/', key: 'work', dot: '#F5C0A4' },
+  { label: 'Process', href: '/web-design/process/', key: 'process', dot: '#FADFA6' },
+  { label: 'Pricing', href: '/web-design/pricing/', key: 'pricing', dot: '#ADD4EE' },
+] as const;
+---
+
+<nav class="wdnav" aria-label="Web design">
+  <a class="wdnav__brand" href="/web-design/">
+    <Image src={logoM} alt="" width={84} height={84} loading="eager" />
+    <span class="wdnav__brandtext">
+      <span class="wdnav__brandname">Sites that sell.</span>
+      <span class="wdnav__brandsub">by Miguel Monzones</span>
+    </span>
+  </a>
+
+  <div class="wdnav__list">
+    <a class="wdnav__hq" href="/" title="Back to mnmonzones.com">← back to HQ</a>
+    <span class="wdnav__div" aria-hidden="true"></span>
+
+    {
+      LINKS.map((link) => (
+        <a
+          class="wdnav__sec"
+          href={link.href}
+          aria-current={current === link.key ? 'page' : undefined}
+        >
+          <span class="wdnav__dot" style={`background:${link.dot}`} aria-hidden="true" />
+          {link.label}
+        </a>
+      ))
+    }
+
+    <a class="wdnav__sec" href="/web-design/#faq">FAQ</a>
+    <a class="wdnav__cta" href="/web-design/#start">Start a project ↗</a>
+
+    <button
+      type="button"
+      class="wdnav__burger"
+      aria-expanded="false"
+      aria-controls="wd-mobile-nav"
+      data-wd-nav-toggle
+    >
+      <span class="visually-hidden">Menu</span>
+      <span class="wdnav__burgerlines" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+  </div>
+
+  <div class="wdnav__panel" id="wd-mobile-nav" hidden data-wd-nav-panel>
+    {
+      LINKS.map((link) => (
+        <a href={link.href} aria-current={current === link.key ? 'page' : undefined}>
+          {link.label}
+        </a>
+      ))
+    }
+    <a href="/web-design/#faq">FAQ</a>
+    <a class="wdnav__panelhq" href="/">← back to HQ</a>
+    <a class="wdnav__panelcta" href="/web-design/#start">Start a project ↗</a>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-wd-nav-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-wd-nav-panel]');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    panel?.toggleAttribute('hidden', open);
+  });
+
+  panel?.addEventListener('click', (event) => {
+    if ((event.target as HTMLElement).closest('a')) {
+      toggle?.setAttribute('aria-expanded', 'false');
+      panel.setAttribute('hidden', '');
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (toggle?.getAttribute('aria-expanded') !== 'true') return;
+    toggle.setAttribute('aria-expanded', 'false');
+    panel?.setAttribute('hidden', '');
+    toggle.focus();
+  });
+</script>
+
+<style>
+  .wdnav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 24px;
+    background: rgb(242 235 223 / 94%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1.5px solid var(--wd-ink);
+  }
+
+  .wdnav__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--wd-ink);
+    text-decoration: none;
+  }
+
+  .wdnav__brand :global(img) {
+    width: 42px;
+    height: 42px;
+    display: block;
+  }
+
+  .wdnav__brandtext {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+
+  .wdnav__brandname {
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+  }
+
+  .wdnav__brandsub {
+    font-family: var(--wd-hand);
+    font-size: 16px;
+    color: var(--wd-scribble, #e0561b);
+    transform: rotate(-1deg);
+  }
+
+  .wdnav__list {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .wdnav__hq {
+    display: inline-block;
+    font-family: var(--wd-hand);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--wd-muted);
+    transform: rotate(-2deg);
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      transform 0.2s,
+      color 0.2s;
+  }
+
+  .wdnav__hq:hover,
+  .wdnav__hq:focus-visible {
+    color: var(--wd-coral-deep);
+    transform: rotate(0deg);
+  }
+
+  .wdnav__div {
+    width: 1.5px;
+    height: 18px;
+    background: rgb(28 27 25 / 25%);
+    flex: none;
+  }
+
+  .wdnav__sec {
+    color: var(--wd-ink);
+    text-decoration: none;
+    text-underline-offset: 6px;
+    white-space: nowrap;
+  }
+
+  .wdnav__sec:hover,
+  .wdnav__sec:focus-visible {
+    color: var(--wd-coral-deep);
+    text-decoration: underline wavy #2f9bdb 2px;
+  }
+
+  /* The current page is marked with the same wavy underline the hover uses,
+     so the two read as one idea rather than two decorations. */
+  .wdnav__sec[aria-current='page'] {
+    font-weight: 800;
+    text-decoration: underline wavy var(--wd-coral) 2px;
+  }
+
+  .wdnav__dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 7px;
+    vertical-align: 2px;
+  }
+
+  .wdnav__cta {
+    background: var(--wd-peach);
+    color: var(--wd-ink);
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--wd-ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wdnav__cta:hover,
+  .wdnav__cta:focus-visible {
+    background: var(--wd-butter);
+    color: var(--wd-ink);
+  }
+
+  .wdnav__burger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 2px solid var(--wd-ink);
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .wdnav__burgerlines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 20px;
+  }
+
+  .wdnav__burgerlines span {
+    display: block;
+    height: 2.5px;
+    background: var(--wd-ink);
+  }
+
+  .wdnav__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--wd-paper);
+    border-bottom: 1.5px solid var(--wd-ink);
+    padding: 6px 16px 16px;
+  }
+
+  .wdnav__panel a {
+    display: block;
+    padding: 13px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--wd-ink);
+    text-align: center;
+    text-decoration: none;
+    border-bottom: 1.5px solid #e4dcc9;
+  }
+
+  .wdnav__panel a[aria-current='page'] {
+    text-decoration: underline wavy var(--wd-coral) 2px;
+    text-underline-offset: 6px;
+  }
+
+  .wdnav__panelhq {
+    color: var(--wd-muted) !important;
+  }
+
+  .wdnav__panel .wdnav__panelcta {
+    margin-top: 14px;
+    background: var(--wd-peach);
+    font-weight: 800;
+    padding: 14px 20px;
+    border-radius: 999px;
+    border: 2px solid var(--wd-ink);
+    box-shadow: 3px 3px 0 var(--wd-ink);
+  }
+
+  @media (max-width: 760px) {
+    .wdnav__hq,
+    .wdnav__div,
+    .wdnav__sec,
+    .wdnav__brandsub,
+    .wdnav__cta {
+      display: none;
+    }
+
+    .wdnav__burger {
+      display: flex;
+    }
+  }
+</style>

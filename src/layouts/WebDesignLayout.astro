@@ -1,37 +1,34 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import WebDesignNav from '../components/WebDesignNav.astro';
 import { CONTACT } from '../config';
-import logoM from '../assets/logo-m-transparent.png';
 
 /**
  * The shell for the web design sub-pages — `/web-design/work/`, `/process/`
  * and `/pricing/`.
  *
- * v13 split the web design offer into four pages that share one nav. This
- * layout carries the sub-brand for the three new ones: the `--wd-*` palette,
- * Bricolage Grotesque + Caveat, the grain, the nav and the footer.
+ * v13 split the web design offer into four pages. This layout carries the
+ * sub-brand for the three new ones: the `--wd-*` palette, Bricolage Grotesque
+ * + Caveat, the grain and the footer.
  *
- * `src/pages/web-design.astro` is deliberately *not* migrated onto this
- * layout. It is 2,800 lines of working, hand-tuned page whose only v13 change
- * is copy, and rebuilding it to share a shell would risk a great deal to save
- * a little. It therefore keeps its own scoped copy of the same tokens under
- * the same `.wd` class — the values here and there must stay in step, and
- * this is the one place in the repo where that duplication is on purpose.
+ * The nav is **not** here. `web-design.astro` is deliberately not migrated
+ * onto this layout — 2,800 lines of hand-tuned page whose only v13 change was
+ * copy — so the nav lives in `WebDesignNav.astro` and both render the same
+ * one. It used to exist twice and the copies drifted, which made the header
+ * jump on every click between the main page and a sub-page.
+ *
+ * The `.wd` tokens below are still duplicated in web-design.astro's own scoped
+ * block, and the two must stay in step. That is the remaining deliberate
+ * duplication in this section.
  */
 interface Props {
   title: string;
   description: string;
   /** Marks the current item in the section nav. */
-  current?: 'work' | 'process' | 'pricing';
+  current: 'work' | 'process' | 'pricing';
 }
 
 const { title, description, current } = Astro.props;
-
-const NAV = [
-  { label: 'Work', href: '/web-design/work/', key: 'work', dot: '#F5C0A4' },
-  { label: 'Process', href: '/web-design/process/', key: 'process', dot: '#FADFA6' },
-  { label: 'Pricing', href: '/web-design/pricing/', key: 'pricing', dot: '#ADD4EE' },
-] as const;
 
 const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 ---
@@ -49,54 +46,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   <div class="wd">
     <div class="wd__grain" aria-hidden="true"></div>
 
-    <nav class="wdnav" aria-label="Web design">
-      <a class="wdnav__brand" href="/web-design/">
-        <img src={logoM.src} alt="" width="84" height="84" />
-        <span class="wdnav__brandtext">
-          <span class="wdnav__brandname">Sites that sell.</span>
-          <span class="wdnav__brandsub">by Miguel Monzones</span>
-        </span>
-      </a>
-
-      <div class="wdnav__list">
-        <a class="wdnav__hq" href="/" title="Back to mnmonzones.com">← back to HQ</a>
-        <span class="wdnav__div" aria-hidden="true"></span>
-        <a class="wdnav__sec" href="/web-design/">Home</a>
-        {
-          NAV.map((item) => (
-            <a
-              class="wdnav__sec"
-              href={item.href}
-              aria-current={current === item.key ? 'page' : undefined}
-            >
-              <span class="wdnav__dot" style={`background:${item.dot}`} aria-hidden="true" />
-              {item.label}
-            </a>
-          ))
-        }
-        <a class="wdnav__sec" href="/web-design/#faq">FAQ</a>
-        <a class="wdnav__cta" href="/web-design/#start">Start a project ↗</a>
-
-        <button
-          class="wdnav__burger"
-          type="button"
-          aria-expanded="false"
-          aria-controls="wd-menu"
-          aria-label="Menu"
-          data-wdnav-toggle
-        >
-          <span class="wdnav__bars" aria-hidden="true"></span>
-        </button>
-      </div>
-
-      <div class="wdnav__panel" id="wd-menu" hidden data-wdnav-panel>
-        <a href="/web-design/">Home</a>
-        {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
-        <a href="/web-design/#faq">FAQ</a>
-        <a href="/">← back to HQ</a>
-        <a href="/web-design/#start">Start a project ↗</a>
-      </div>
-    </nav>
+    <WebDesignNav current={current} />
 
     <slot />
 
@@ -120,31 +70,6 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 </BaseLayout>
 
 <script>
-  /* ------------------------------------------------------------- nav ---- */
-  const toggle = document.querySelector<HTMLButtonElement>('[data-wdnav-toggle]');
-  const panel = document.querySelector<HTMLElement>('[data-wdnav-panel]');
-
-  if (toggle && panel) {
-    toggle.addEventListener('click', () => {
-      const open = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!open));
-      panel.hidden = open;
-    });
-
-    panel.addEventListener('click', (event) => {
-      if (!(event.target instanceof HTMLAnchorElement)) return;
-      toggle.setAttribute('aria-expanded', 'false');
-      panel.hidden = true;
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape') return;
-      if (toggle.getAttribute('aria-expanded') !== 'true') return;
-      toggle.setAttribute('aria-expanded', 'false');
-      panel.hidden = true;
-      toggle.focus();
-    });
-  }
 
   /* --------------------------------------------------------- reveals ---- */
   /* Starting states are written here, never in CSS, with a failsafe that
@@ -386,191 +311,6 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     margin-top: 4px;
     font-size: 13px;
     color: var(--wd-faint);
-  }
-
-  /* -------------------------------------------------------------- nav -- */
-  .wd .wdnav {
-    position: relative;
-    z-index: 20;
-    max-width: 1180px;
-    margin-inline: auto;
-    padding: 14px clamp(18px, 4vw, 44px);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .wd .wdnav__brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-right: auto;
-  }
-
-  .wd .wdnav__brand img {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-  }
-
-  .wd .wdnav__brandtext {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-  }
-
-  .wd .wdnav__brandname {
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-  }
-
-  .wd .wdnav__brandsub {
-    font-family: var(--wd-hand);
-    font-size: 16px;
-    color: var(--wd-coral-deep);
-  }
-
-  .wd .wdnav__list {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    font-size: 15px;
-    font-weight: 500;
-  }
-
-  .wd .wdnav__sec {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    white-space: nowrap;
-  }
-
-  .wd .wdnav__sec:hover,
-  .wd .wdnav__sec:focus-visible {
-    color: var(--wd-coral-deep);
-  }
-
-  .wd .wdnav__sec[aria-current='page'] {
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 6px;
-    text-decoration-thickness: 2px;
-  }
-
-  .wd .wdnav__dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-  }
-
-  .wd .wdnav__hq {
-    color: var(--wd-faint);
-    white-space: nowrap;
-  }
-
-  .wd .wdnav__hq:hover,
-  .wd .wdnav__hq:focus-visible {
-    color: var(--wd-coral-deep);
-  }
-
-  .wd .wdnav__div {
-    width: 1px;
-    height: 18px;
-    background: rgb(28 27 25 / 18%);
-  }
-
-  .wd .wdnav__cta {
-    padding: 11px 18px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 999px;
-    background: var(--wd-butter);
-    font-weight: 700;
-    white-space: nowrap;
-    transition:
-      transform 0.2s ease,
-      background 0.2s ease;
-  }
-
-  .wd .wdnav__cta:hover,
-  .wd .wdnav__cta:focus-visible {
-    transform: translateY(-2px);
-    background: var(--wd-coral);
-    color: var(--wd-bright);
-  }
-
-  .wd .wdnav__burger {
-    display: none;
-    width: 44px;
-    height: 44px;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--wd-ink);
-    border-radius: 12px;
-    background: var(--wd-bright);
-    cursor: pointer;
-  }
-
-  .wd .wdnav__bars,
-  .wd .wdnav__bars::before,
-  .wd .wdnav__bars::after {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: var(--wd-ink);
-  }
-
-  .wd .wdnav__bars::before,
-  .wd .wdnav__bars::after {
-    content: '';
-    position: relative;
-  }
-
-  .wd .wdnav__bars::before {
-    top: -6px;
-  }
-
-  .wd .wdnav__bars::after {
-    top: 4px;
-  }
-
-  .wd .wdnav__panel {
-    display: flex;
-    flex-direction: column;
-    margin: 0 clamp(18px, 4vw, 44px);
-    padding: 6px 18px 14px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 18px;
-    background: var(--wd-bright);
-  }
-
-  .wd .wdnav__panel a {
-    display: flex;
-    align-items: center;
-    min-height: 48px;
-    font-size: 16px;
-    font-weight: 600;
-    border-bottom: 1px solid rgb(28 27 25 / 10%);
-  }
-
-  .wd .wdnav__panel a:last-child {
-    border-bottom: 0;
-  }
-
-  @media (max-width: 900px) {
-    .wd .wdnav__list > *:not(.wdnav__burger) {
-      display: none;
-    }
-
-    .wd .wdnav__burger {
-      display: flex;
-    }
-  }
-
-  @media (min-width: 901px) {
-    .wd .wdnav__panel {
-      display: none;
-    }
   }
 
   /* ----------------------------------------------------------- footer -- */
