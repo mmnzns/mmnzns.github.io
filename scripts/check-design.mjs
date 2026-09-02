@@ -211,9 +211,14 @@ function inventory() {
     return false;
   };
 
-  /** Is the node's box cut off by an overflow-clipping ancestor (carousel, marquee)? */
+  /**
+   * Is the node's box cut off by an overflow-clipping element (carousel,
+   * marquee, the 1px visually-hidden pattern)? Starts at the element itself:
+   * `.visually-hidden` clips its own text, and the text's range rect is still
+   * full size because overflow doesn't shrink layout.
+   */
   const clipped = (el, r) => {
-    for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) {
+    for (let e = el; e && e !== document.body; e = e.parentElement) {
       const cs = getComputedStyle(e);
       if (/(hidden|clip|auto|scroll)/.test(cs.overflowX + cs.overflowY)) {
         const b = e.getBoundingClientRect();
@@ -291,6 +296,10 @@ function inventory() {
         y: Math.round(b.top + scrollY),
         w: Math.round(b.width),
         h: Math.round(b.height),
+        // The left edge is where the text starts, not the box: a flex item
+        // wrapping the label directly and one wrapping it in a span put the
+        // same glyphs at the same x with different block boxes.
+        tx: Math.round(r.left + scrollX),
         tag: blockEl.tagName.toLowerCase(),
         cls: (blockEl.getAttribute('class') || '').split(/\s+/)[0] || '',
         anim: animatedAncestor(blockEl),
@@ -441,10 +450,10 @@ function compare(design, site, width) {
     // misalignment this exists to catch. A card label at another x is more
     // often the card in another slot — the site has a newer article, say —
     // so it stays MED.
-    const dx = Math.abs(d.x - s.x);
+    const dx = Math.abs(d.tx - s.tx);
     if (dx > 8) {
       const structural = /^(h[1-6]|p)$/.test(s.tag);
-      add(dx > 40 && structural ? 'HIGH' : 'MED', 'left-edge', `${where} x ${d.x} → ${s.x} (Δ${s.x - d.x})`, s.t.slice(0, 70));
+      add(dx > 40 && structural ? 'HIGH' : 'MED', 'left-edge', `${where} x ${d.tx} → ${s.tx} (Δ${s.tx - d.tx})`, s.t.slice(0, 70));
     }
     const dw = Math.abs(d.w - s.w);
     if (dw > Math.max(12, width * 0.04)) add('LOW', 'width', `${where} ${d.w} → ${s.w}px`, s.t.slice(0, 70));

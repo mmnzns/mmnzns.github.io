@@ -202,7 +202,9 @@ const routes = [
 
 <style>
   .contact {
-    /* The band's own borders carry the separation; the default band gap stays. */
+    /* The band's own borders carry the separation; the default band gap stays.
+       The export gives this band 4px more than the shared band padding. */
+    padding-block: clamp(74px, 9.6vw, 134px);
   }
 
   /* Width comes from the `.wrap` / `.wrap--home` class the `width` prop
@@ -226,9 +228,11 @@ const routes = [
 
   .contact__intro {
     margin-top: 24px;
-    font-size: clamp(18px, 1.9vw, 23px);
+    font-size: clamp(18px, 1.9vw, 24px);
     line-height: 1.45;
-    font-weight: 600;
+    font-weight: 500;
+    /* Deliberately not the export's #0F2C46, which measures 4.17:1 on the sky
+       and misses AA for body-size text. --sky-ink is the same hue, darker. */
     color: var(--sky-ink);
     max-width: 700px;
   }

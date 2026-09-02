@@ -4,14 +4,16 @@ import { SITE, NAV_LINKS, NAV_SERVICES, NAV_CTA } from '../config';
 import logoMark from '../assets/logo-mark.png';
 
 /**
- * The v8 header: a dark bar with the plain site links, then the two offerings
- * boxed together behind a small "Services" tab, then the coral CTA.
+ * The desktop header (`.deskhead` in the export): a dark bar with the plain
+ * site links, then the two offerings boxed together behind a small "Services"
+ * tab, then the coral CTA.
  *
- * The design export's own mobile nav (`Monzones-D-Nav-Bold`) never shipped —
- * at 899px and below the export simply has no navigation. The panel below is
- * therefore inferred, not ported: the same accessible toggle-and-panel this
- * site has always had, restyled in the Bold language (dark panel, 3px rules,
- * the services pair labelled as such).
+ * Below 900px the export swaps it for its `Monzones-D-Nav-Bold` component,
+ * which v14 is the first round to ship: a 61px bar with a 3px-bordered toggle,
+ * and a full-screen dark panel of 26px links in 68px rows — each with a colour
+ * dot on the right, the two services tagged "Service", the CTA as the last
+ * row. That component is what the mobile markup below ports; the earlier
+ * inferred panel is gone.
  */
 
 interface Props {
@@ -21,6 +23,23 @@ interface Props {
 
 const { progress = false } = Astro.props;
 const path = Astro.url.pathname;
+
+/** The dot beside each mobile link, as the export's LINKS array assigns them. */
+const DOTS: Record<string, string> = {
+  '/': 'var(--coral)',
+  '/work/': 'var(--sky)',
+  '/thinking/': 'var(--moss)',
+  '/about/': 'var(--coral)',
+  '/consulting/': 'var(--sun)',
+  '/web-design/': 'var(--moss)',
+  [NAV_CTA.href]: 'var(--sun)',
+};
+
+const mobileLinks = [
+  ...NAV_LINKS.map((l) => ({ ...l, service: false, cta: false })),
+  ...NAV_SERVICES.map((l) => ({ ...l, service: true, cta: false })),
+  { ...NAV_CTA, service: false, cta: true },
+];
 
 /**
  * `/work/mogo-lifecycle/` should still light up the "Work" tab. Home is matched
@@ -75,43 +94,33 @@ function isCurrent(href: string) {
     <button
       type="button"
       class="header__toggle"
+      aria-label="Open menu"
       aria-expanded="false"
       aria-controls="mobile-nav"
       data-nav-toggle
     >
-      <span class="visually-hidden">Menu</span>
       <span class="header__bars" aria-hidden="true"></span>
     </button>
   </nav>
 
-  <div class="mobilenav" id="mobile-nav" hidden data-nav-panel>
-    <ul class="mobilenav__list">
-      {
-        NAV_LINKS.map((link) => (
-          <li>
-            <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-      <li class="mobilenav__services-label" aria-hidden="true">Services</li>
-      {
-        NAV_SERVICES.map((link) => (
-          <li>
-            <a
-              class="mobilenav__service"
-              href={link.href}
-              aria-current={isCurrent(link.href) ? 'page' : undefined}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-      <li><a class="mobilenav__cta" href={NAV_CTA.href}>{NAV_CTA.label}</a></li>
-    </ul>
-  </div>
+  <nav class="mobilenav" id="mobile-nav" aria-label="Menu" hidden data-nav-panel>
+    {
+      mobileLinks.map((link) => (
+        <a
+          class:list={['mobilenav__link', { 'mobilenav__link--cta': link.cta }]}
+          href={link.href}
+          aria-current={!link.cta && isCurrent(link.href) ? 'page' : undefined}
+          style={`--dot:${DOTS[link.href] ?? 'var(--coral)'}`}
+        >
+          <span class="mobilenav__label">
+            <span>{link.label}</span>
+            {link.service && <span class="mobilenav__tag">Service</span>}
+          </span>
+          <span class="mobilenav__dot" aria-hidden="true"></span>
+        </a>
+      ))
+    }
+  </nav>
 
   {progress && <div class="header__progress" aria-hidden="true" data-reading-progress></div>}
 </header>
@@ -120,19 +129,34 @@ function isCurrent(href: string) {
   const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
   const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
 
-  toggle?.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!open));
-    panel?.toggleAttribute('hidden', open);
-  });
+  // The panel covers the viewport, so the page behind it stops scrolling while
+  // it is open — the export locks body overflow the same way.
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    toggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    panel?.toggleAttribute('hidden', !open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
+
+  toggle?.addEventListener('click', () => setOpen(!isOpen()));
 
   // Escape closes it, and returns focus to the control that opened it.
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
-    if (toggle?.getAttribute('aria-expanded') !== 'true') return;
-    toggle.setAttribute('aria-expanded', 'false');
-    panel?.setAttribute('hidden', '');
-    toggle.focus();
+    if (event.key !== 'Escape' || !isOpen()) return;
+    setOpen(false);
+    toggle?.focus();
+  });
+
+  // Growing past the breakpoint swaps in the desktop bar; an open panel left
+  // behind would keep the body locked.
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 900 && isOpen()) setOpen(false);
+  });
+
+  // A same-page link (the CTA to #contact) doesn't navigate, so close by hand.
+  panel?.addEventListener('click', (event) => {
+    if ((event.target as HTMLElement).closest('a')) setOpen(false);
   });
 </script>
 
@@ -277,28 +301,31 @@ function isCurrent(href: string) {
     color: var(--ink);
   }
 
+  /* The export's 44px square: a 3px cream frame that fills coral when open. */
   .header__toggle {
     display: grid;
     place-items: center;
+    flex: none;
     width: 44px;
     height: 44px;
-    margin-right: -8px;
-    border: 2px solid var(--on-dark);
+    padding: 0;
+    border: 3px solid var(--on-dark);
     background: transparent;
-    transition: border-color var(--dur-fast) var(--ease);
+    transition: background var(--dur-fast) var(--ease);
   }
 
-  .header__toggle:hover {
-    border-color: var(--sun);
+  .header__toggle[aria-expanded='true'] {
+    background: var(--coral);
   }
 
-  /* Three lines drawn from one element: the bar itself plus two shadows. */
+  /* Three 18×3 lines drawn from one element: the bar itself plus two shadows,
+     4.5px apart, as the export spaces them. */
   .header__bars,
   .header__bars::before,
   .header__bars::after {
     display: block;
     width: 18px;
-    height: 2.5px;
+    height: 3px;
     background: var(--on-dark);
     transition: transform var(--dur) var(--ease);
   }
@@ -310,15 +337,20 @@ function isCurrent(href: string) {
   }
 
   .header__bars::before {
-    transform: translateY(-6px);
+    transform: translateY(-4.5px);
   }
 
   .header__bars::after {
-    transform: translateY(6px);
+    transform: translateY(4.5px);
   }
 
   [aria-expanded='true'] .header__bars {
     background: transparent;
+  }
+
+  [aria-expanded='true'] .header__bars::before,
+  [aria-expanded='true'] .header__bars::after {
+    background: var(--ink);
   }
 
   [aria-expanded='true'] .header__bars::before {
@@ -329,66 +361,78 @@ function isCurrent(href: string) {
     transform: rotate(-45deg);
   }
 
+  /* The export's panel is fixed below its 61px bar and covers the viewport;
+     the page behind is locked by the script while it's open. */
   .mobilenav {
-    border-top: 1px solid rgb(251 249 246 / 25%);
+    position: fixed;
+    top: 61px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 55;
     background: var(--dark);
+    padding: 8px 0 40px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .mobilenav__list {
-    list-style: none;
-    margin: 0;
-    padding: 8px 28px 20px;
+  .mobilenav__link {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 68px;
+    margin: 0 14px;
+    padding: 0 4px;
+    border-bottom: 3px solid rgb(251 249 246 / 22%);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: rgb(251 249 246 / 68%);
+    transition: color var(--dur-fast) var(--ease);
   }
 
-  .mobilenav__list a {
-    display: block;
-    padding: 13px 0;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: rgb(251 249 246 / 62%);
-    border-bottom: 1px solid rgb(251 249 246 / 18%);
+  .mobilenav__link:last-child {
+    border-bottom-color: transparent;
   }
 
-  .mobilenav__list a:hover,
-  .mobilenav__list a:focus-visible {
+  .mobilenav__link:hover,
+  .mobilenav__link:focus-visible {
     color: var(--sun);
   }
 
-  .mobilenav__list a[aria-current='page'] {
+  .mobilenav__link--cta {
     color: var(--on-dark);
   }
 
-  .mobilenav__services-label {
-    padding: 16px 0 4px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .mobilenav__link[aria-current='page'] {
     color: var(--sun);
+    --dot: var(--sun);
   }
 
-  .mobilenav__service {
-    border-color: rgb(245 184 65 / 30%) !important;
+  .mobilenav__label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
-  .mobilenav__list .mobilenav__cta {
-    margin-top: 18px;
-    border: 0;
-    background: var(--coral);
-    color: var(--ink);
-    text-align: center;
-    font-weight: 700;
-    padding: 15px 20px;
-  }
-
-  .mobilenav__list .mobilenav__cta:hover,
-  .mobilenav__list .mobilenav__cta:focus-visible {
+  .mobilenav__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
     background: var(--sun);
     color: var(--ink);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .mobilenav__dot {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background: var(--dot);
   }
 
   /* Taken out of flow on purpose. In flow it added its 2px to the header, so
@@ -409,6 +453,27 @@ function isCurrent(href: string) {
      and the CTA — so the breakpoint sits higher than the old 860px. Between
      900 and 1080px the design tightens tracking and hides the Services tab
      label rather than dropping to the burger. */
+  /* Below the breakpoint the bar is the export's mobile one: 61px tall, 14px
+     gutters, a 22px mark and a 14px brand. */
+  @media (max-width: 899px) {
+    .header__bar {
+      min-height: 61px;
+      padding: 0 14px;
+      gap: 12px;
+    }
+
+    .brand {
+      gap: 9px;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      padding-block: 8px;
+    }
+
+    .brand :global(img) {
+      height: 22px;
+    }
+  }
+
   @media (min-width: 900px) {
     .navlinks,
     .services {

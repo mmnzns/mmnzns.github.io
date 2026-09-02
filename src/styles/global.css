@@ -175,8 +175,14 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 17px;
-  line-height: 1.65;
+  /* The export's body sets neither size nor leading: every run of text carries
+     its own, and labels, buttons and links sit at the font's `normal` (~1.3).
+     Inheriting 17px/1.65 here put ~5px on every pill, nav link and stat label
+     and read as the whole site being zoomed in next to the design. Prose
+     classes (.lede, .prose, page copy) set their own leading, as the design's
+     paragraphs do inline. */
+  font-size: 16px;
+  line-height: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Oversized display type and the marquee both overflow by design; clip the
@@ -286,7 +292,8 @@ p {
 
 /* Vertical rhythm between major page sections. */
 .section {
-  padding-top: clamp(75px, 13.4vw, 150px);
+  /* The export's paper sections: `padding:clamp(88px,11.5vw,168px) 0 0`. */
+  padding-top: clamp(88px, 11.5vw, 168px);
 }
 
 .section--tight {
