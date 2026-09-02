@@ -64,7 +64,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     </div>
   </section>
 
-  <section class="csection" id="results">
+  <section class="csection csection--overlap" id="results">
     <div class="cwrap">
       <div class="chead" data-reveal>
         <div>
@@ -88,7 +88,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     </div>
   </section>
 
-  <section class="csection csection--green" id="cases">
+  <section class="csection csection--green csection--after-overlap" id="cases">
     <div class="cwrap">
       <div class="chead" data-reveal>
         <div>
@@ -164,7 +164,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
               data-prac-panel={String(i)}
             >
               <div>
-                <span class="ckicker">{practice.kicker}</span>
+                <span class="cprac__kicker">{practice.kicker}</span>
                 <h3 class="disp cprac__name">{practice.name}</h3>
                 <p class="cprac__blurb">{practice.blurb}</p>
               </div>
@@ -181,13 +181,13 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
       </div>
 
       <div class="cfollow" data-reveal>
-        <a class="cbtn cbtn--outline" href="/consulting/services/">Every practice area in detail →</a>
+        <a class="cbtn" href="/consulting/services/">Every practice area in detail →</a>
         <span class="cfollow__note">Deliverables, inclusions, and tools on the services page.</span>
       </div>
     </div>
   </section>
 
-  <section class="csection" id="services">
+  <section class="csection csection--flush-top" id="services">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">Services</span>
@@ -211,7 +211,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
       </div>
 
       <div class="cfollow" data-reveal>
-        <a class="cbtn cbtn--outline" href="/consulting/services/">Explore the services →</a>
+        <a class="cbtn cbtn--ink" href="/consulting/services/">Explore the services →</a>
         <span class="cfollow__note">
           What’s included, what you walk away with, and the full detail.
         </span>
@@ -219,7 +219,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     </div>
   </section>
 
-  <section class="csection" id="start">
+  <section class="csection csection--flush-top csection--deep" id="start">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">How it starts</span>
@@ -238,21 +238,23 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
         }
       </div>
 
-      <div class="cfollow" data-reveal>
-        <a class="cbtn cbtn--outline" href="/consulting/process/">Here’s the whole process →</a>
-        <span class="cfollow__note">Three steps, and you can bail at every one of them.</span>
+      <div class="cfollow cfollow--roomy" data-reveal>
+        <a class="cbtn" href="/consulting/process/">Here’s the whole process →</a>
+        <span class="cfollow__note cfollow__note--strong">
+          Three steps, and you can bail at every one of them.
+        </span>
       </div>
     </div>
   </section>
 
-  <section class="csection csection--ink" id="contact">
+  <section class="csection csection--terra" id="contact">
     <div class="cwrap">
       <p class="ccontact__avail" data-reveal>
         <span class="chero__dot" aria-hidden="true"></span>
         {CONTACT_SECTION.availability}
       </p>
-      <h2 class="disp ctitle ctitle--on-ink" data-reveal>{CONTACT_SECTION.title}</h2>
-      <p class="clede clede--on-ink" data-reveal>{CONTACT_SECTION.body}</p>
+      <h2 class="disp ctitle ccontact__title" data-reveal>{CONTACT_SECTION.title}</h2>
+      <p class="clede ccontact__lede" data-reveal>{CONTACT_SECTION.body}</p>
 
       <div class="ccontact" data-reveal>
         <form class="cform" action={FORM_ENDPOINT} method="POST" data-consulting-form>
@@ -307,7 +309,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
             <span aria-hidden="true">↗</span>
           </a>
 
-          <p class="ccontact__note">{CONTACT_SECTION.local}</p>
+          <p class="ccontact__note ccontact__note--lead">{CONTACT_SECTION.local}</p>
           <p class="ccontact__note">
             Funnel’s fine but the website itself needs building? That’s its own service:
             <a class="ccontact__xlink" href="/web-design/">web design →</a>
@@ -411,22 +413,29 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
 <style>
   /* Page-unique styles only. The shared consulting vocabulary — buttons,
-     section heads, stat band, practice tabs, step cards, hero grid — lives in
+     section heads, stat card, practice tabs, step cards, hero grid — lives in
      ConsultingLayout.astro, because all four pages use it and scoped styles
-     can't reach markup the layout renders around a <slot />. */
+     can't reach markup the layout renders around a <slot />. Values are the
+     v14 export's (`Monzones-C-Home`). */
 
+  /* The availability line is a raised pill. */
   .chero__avail {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
+    padding: 9px 18px;
+    border: 1px solid var(--c-line);
+    border-radius: 999px;
+    background: var(--c-card);
     font-size: 13px;
     font-weight: 600;
-    color: var(--c-ink-2);
+    color: var(--c-ink-3);
+    box-shadow: var(--c-raised);
   }
 
   .chero__dot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--c-terra);
     animation: cpulse 2.6s ease-out infinite;
@@ -444,31 +453,44 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     }
   }
 
+  /* The accent isn't a colour change: the words stay ink over a butter
+     highlighter stripe drawn through their lower half. */
   .chero__accent {
-    color: var(--c-terra);
+    background-image: linear-gradient(
+      180deg,
+      transparent 56%,
+      var(--c-butter) 56%,
+      var(--c-butter) 93%,
+      transparent 93%
+    );
   }
 
   .chero__reassure {
-    margin-top: 20px;
-    max-width: 52ch;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--c-ink-2);
+    margin: 22px 0 0;
+    font-size: 15px;
+    color: var(--c-ink-4);
   }
 
+  /* Three floating figure pills, each tilted and indented differently. */
   .chero__stats {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding-top: 28px;
+    align-items: flex-start;
+    gap: 18px;
+    padding-top: 38px;
   }
 
   .chero__chip {
-    align-self: flex-start;
-    padding: 18px 24px;
-    border-radius: 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 16px 26px;
+    border: 1px solid rgb(34 30 26 / 8%);
+    border-radius: 999px;
     background: var(--c-card);
-    box-shadow: var(--c-raised);
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 22%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
     animation: cfloaty 5.5s ease-in-out infinite;
   }
 
@@ -501,23 +523,27 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .chero__chip-num {
-    display: block;
-    font-size: clamp(24px, 2.4vw, 32px);
+    font-size: 22px;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    color: var(--c-terra);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .chero__chip-label {
-    display: block;
-    margin-top: 4px;
     font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     color: var(--c-ink-2);
+    white-space: nowrap;
   }
 
   .chero__note {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--c-ink-2);
+    margin: 8px 0 0;
+    max-width: 280px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--c-ink-4);
   }
 
   .chero__note a {
@@ -532,13 +558,18 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--c-terra);
   }
 
-  .ctitle--on-ink {
-    max-width: 22ch;
+  /* The export caps these two titles so they break onto two lines. */
+  #practices .ctitle {
+    max-width: 760px;
+  }
+
+  #services .ctitle,
+  #start .ctitle {
+    max-width: 820px;
   }
 
   /* ------------------------------------------------------------- cases -- */
   .ccases {
-    margin-top: 44px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 22px;
@@ -548,11 +579,12 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .ccase {
     display: flex;
     flex-direction: column;
-    padding: 28px;
-    border-radius: 22px;
+    gap: 10px;
+    padding: 32px 30px 30px;
+    border-radius: 30px;
     background: var(--c-card);
     color: var(--c-ink);
-    box-shadow: var(--c-raised);
+    box-shadow: var(--c-raised-green);
     transition:
       transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
       box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
@@ -565,73 +597,74 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
      its own resting shadow so the hover below still reads as a lift. */
   .ccase:nth-child(2) {
     margin-top: -18px;
-    box-shadow: var(--c-float);
+    box-shadow: var(--c-float-green);
   }
 
   .ccase:hover,
   .ccase:focus-visible {
     transform: translateY(-6px);
-    box-shadow: var(--c-float);
+    box-shadow: var(--c-float-green);
   }
 
   .ccase__metric-label {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--c-terra);
+    color: var(--c-green);
   }
 
   .ccase__metric {
-    margin-top: 6px;
-    font-size: clamp(30px, 3.2vw, 42px);
+    font-size: clamp(40px, 4vw, 58px);
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     line-height: 1;
+    color: var(--c-terra);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .ccase__metric-note {
-    margin-top: 6px;
-    font-size: 13px;
-    color: var(--c-ink-2);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--c-ink-4);
   }
 
   .ccase__rule {
     display: block;
     height: 1px;
-    margin-block: 20px;
-    background: rgb(34 30 26 / 12%);
+    margin: 14px 0 10px;
+    background: var(--c-line);
   }
 
   .ccase__client {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-green);
+    color: var(--c-ink-3);
   }
 
   .ccase__title {
-    margin-top: 8px;
-    font-size: 21px;
+    font-size: 22px;
     font-weight: 600;
-    letter-spacing: -0.014em;
-    line-height: 1.2;
+    letter-spacing: -0.012em;
+    line-height: 1.15;
   }
 
   .ccase__line {
-    margin-top: 12px;
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.6;
     color: var(--c-ink-2);
     text-wrap: pretty;
   }
 
   .ccase__more {
-    margin-top: 20px;
+    margin-top: auto;
+    padding-top: 14px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--c-terra);
+    color: var(--c-green);
   }
 
   /* ------------------------------------------------------- engagements -- */
@@ -646,77 +679,123 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     gap: clamp(16px, 2.5vw, 44px);
     align-items: center;
     padding-block: 24px;
-    border-bottom: 1px solid rgb(34 30 26 / 14%);
+    border-bottom: 1px solid rgb(34 30 26 / 12%);
   }
 
   .ceng__name {
-    font-size: clamp(20px, 2vw, 26px);
+    font-size: 21px;
     font-weight: 600;
-    letter-spacing: -0.016em;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
   }
 
   .ceng__line {
-    font-size: 16px;
-    line-height: 1.55;
+    font-size: 15px;
+    line-height: 1.6;
     color: var(--c-ink-2);
     text-wrap: pretty;
   }
 
+  /* The length reads as a green hairline pill. */
   .ceng__length {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--c-terra);
+    justify-self: start;
+    padding: 8px 16px;
+    border: 1px solid rgb(47 93 80 / 35%);
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--c-green);
+    white-space: nowrap;
   }
 
   /* ----------------------------------------------------------- contact -- */
+  /* The availability tag: butter, tilted, above the title. */
   .ccontact__avail {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: rgb(244 239 230 / 76%);
+    margin: 0 0 24px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: var(--c-butter);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--c-ink);
+    rotate: -1.5deg;
+    box-shadow: 0 1px 2px rgb(34 30 26 / 10%), 0 16px 32px -16px rgb(34 30 26 / 30%);
+  }
+
+  .ccontact__avail .chero__dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  /* The home band's title and lede run bigger than the sub-pages' CTA. The
+     section is in the selector to outrank the layout's `.c .csection--terra
+     .ctitle` — this page renders the section, so the scope attribute lands on
+     both compounds. */
+  .csection--terra .ccontact__title {
+    max-width: 1050px;
+    font-size: clamp(38px, 5.2vw, 86px);
+    line-height: 1;
+  }
+
+  .csection--terra .ccontact__lede {
+    margin: 24px 0 0;
+    max-width: 620px;
+    font-size: clamp(16px, 1.7vw, 19px);
   }
 
   .ccontact {
-    margin-top: 40px;
+    margin-top: clamp(36px, 4.5vw, 58px);
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
     gap: clamp(32px, 4.5vw, 72px);
     align-items: start;
   }
 
+  /* The form is a cream card on the terracotta. */
   .cform {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
+    padding: clamp(26px, 3vw, 40px);
+    border-radius: 30px;
+    background: var(--c-card);
+    color: var(--c-ink);
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 10%), 0 44px 80px -28px rgb(60 20 10 / 45%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
   }
 
   .cfield {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgb(244 239 230 / 76%);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--c-ink-3);
   }
 
   .cfield input,
   .cfield textarea {
-    padding: 14px 16px;
-    border: 1px solid rgb(244 239 230 / 26%);
-    border-radius: 12px;
-    background: rgb(244 239 230 / 6%);
-    color: var(--c-paper);
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid rgb(34 30 26 / 15%);
+    border-radius: 14px;
+    background: var(--c-paper);
+    color: var(--c-ink);
     font-family: inherit;
     font-size: 16px;
     font-weight: 400;
-    letter-spacing: normal;
-    text-transform: none;
+    box-shadow: inset 0 1px 2px rgb(34 30 26 / 6%);
+  }
+
+  .cfield textarea {
+    resize: vertical;
   }
 
   .cfield input:focus-visible,
@@ -733,90 +812,99 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     opacity: 0;
   }
 
-  .cbtn--send {
+  /* `.cform` is in the selector to outrank the layout's `.c .cbtn`. */
+  .cform .cbtn--send {
     align-self: flex-start;
-    background: var(--c-terra);
-    border-color: var(--c-terra);
-    color: var(--c-card);
+    padding: 16px 34px;
+    border: 0;
+    background: var(--c-green);
+    color: var(--c-paper);
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 16px 32px -16px rgb(47 93 80 / 50%);
   }
 
-  .cbtn--send:hover:not(:disabled),
-  .cbtn--send:focus-visible {
+  .cform .cbtn--send:hover:not(:disabled),
+  .cform .cbtn--send:focus-visible {
     transform: translateY(-3px);
-    background: var(--c-paper);
-    border-color: var(--c-paper);
-    color: var(--c-ink);
+    background: var(--c-ink);
+    color: var(--c-paper);
   }
 
-  .cbtn--send:disabled {
+  .cform .cbtn--send:disabled {
     opacity: 0.6;
     cursor: default;
   }
 
   .cform__status {
+    margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    color: rgb(244 239 230 / 76%);
+    color: var(--c-ink-2);
+  }
+
+  .cform__status:empty {
+    display: none;
   }
 
   .cform__status[data-state='ok'] {
-    color: var(--c-butter);
+    color: var(--c-green);
   }
 
   .cform__status[data-state='error'] {
-    color: #f0a58a;
+    color: var(--c-terra);
   }
 
+  /* The direct routes, cream on the terracotta. */
   .ccontact__direct {
     display: flex;
     flex-direction: column;
+    color: var(--c-card);
   }
 
   .ccontact__direct > a {
     display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 4px 16px;
-    padding-block: 16px;
-    border-bottom: 1px solid rgb(244 239 230 / 18%);
+    grid-template-columns: 88px minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 16px;
+    padding-block: 18px;
+    border-bottom: 1px solid rgb(255 253 249 / 30%);
     transition: opacity 0.2s ease;
   }
 
   .ccontact__direct > a:hover,
   .ccontact__direct > a:focus-visible {
+    color: var(--c-card);
     opacity: 0.7;
   }
 
   .ccontact__label {
-    grid-column: 1;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-butter);
+    color: rgb(255 253 249 / 70%);
   }
 
   .ccontact__value {
-    grid-column: 1;
-    font-size: 17px;
-    font-weight: 500;
-  }
-
-  .ccontact__direct > a > span:last-child {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    font-size: 18px;
+    font-size: 16px;
+    overflow-wrap: anywhere;
   }
 
   .ccontact__note {
-    margin-top: 18px;
-    font-size: 14px;
+    margin: 18px 0 0;
+    max-width: 420px;
+    font-size: 14.5px;
     line-height: 1.6;
-    color: rgb(244 239 230 / 68%);
+    color: rgb(255 253 249 / 78%);
+  }
+
+  .ccontact__note--lead {
+    margin-top: 28px;
+    font-size: 17px;
+    color: rgb(255 253 249 / 90%);
   }
 
   .ccontact__xlink {
-    color: var(--c-butter);
+    color: var(--c-card);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -824,7 +912,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
   .ccontact__xlink:hover,
   .ccontact__xlink:focus-visible {
-    color: var(--c-card);
+    color: var(--c-butter);
   }
 
   /* ---------------------------------------------------------- responsive */
@@ -843,7 +931,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
       gap: 10px;
     }
 
-    /* The floating chips become a row on tablet rather than a tall stacked
+    /* The floating pills become a row on tablet rather than a tall stacked
        column pushing the rest of the page down. */
     .chero__stats {
       flex-direction: row;
@@ -858,6 +946,17 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
     .chero__note {
       flex-basis: 100%;
+    }
+  }
+
+  @media (max-width: 719px) {
+    /* The export turns the routes into inline rows on a phone, label beside
+       value, each a 44px target. */
+    .ccontact__direct > a {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 44px;
     }
   }
 

@@ -186,18 +186,18 @@ cards (the site has an article the export doesn't) show up as MED `left-edge` on
 spans — that's the pairing, not a layout bug. Two things it cannot see: images, and
 anything behind an interaction (a tab panel that isn't the default, a hover state).
 
-### check-design baseline (v14, after `Remove the homepage section numbers`)
+### check-design baseline (v14)
 
 | Page | 375 | 1440 | Notes |
 | --- | --- | --- | --- |
-| home | 2 | 0 | — |
+| home | 0 | 0 | ported to v14 2026-09-02 |
 | about | 13 | 17 | the roles/years column, Switzer vs Clash Display on one label |
 | work | 2 | 40 | card grid columns 59px right of the design's |
 | thinking | 16 | 20 | — |
 | 404 | 3 | 2 | — |
 | case | 2 | 18 | tech table columns |
 | article | 24 | 30 | author block, TOC |
-| consulting (4 pages) | 52–112 | 80–165 | **not yet ported to v14** — dark green engagement band, cream cards |
+| consulting (4 pages) | 0 | 0–1 | ported to v14 2026-09-02; the 1 is the nav's current-page label kept ink (the export's terracotta measures 3.68:1) |
 | web-design | 33 | 27 | flip-card hint on yellow, hero carousel |
 | web-design work/process/pricing | 59–221 | 82–280 | **not yet ported to v14** — dark tiers, yellow table heads, Plex Mono labels |
 

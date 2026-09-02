@@ -9,7 +9,7 @@ import {
   SYSTEMS,
 } from '../../data/consulting';
 
-/** `/consulting/services/` — ported from the v13 export's `Monzones-C-Services`. */
+/** `/consulting/services/` — ported from the v14 export's `Monzones-C-Services`. */
 ---
 
 <ConsultingLayout
@@ -20,7 +20,7 @@ import {
   <section class="chero" id="top">
     <div class="cwrap chero__grid">
       <div>
-        <span class="ckicker">{SERVICES_HERO.kicker}</span>
+        <span class="ckicker ckicker--hero">{SERVICES_HERO.kicker}</span>
         <h1 class="disp chero__title">{SERVICES_HERO.title}</h1>
         <p class="chero__body">{SERVICES_HERO.body}</p>
         <div class="ctarow">
@@ -42,11 +42,13 @@ import {
     </div>
   </section>
 
-  <section class="csection" id="practices">
+  <section class="csection csection--overlap" id="practices">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">Practice areas</span>
-        <h2 class="disp ctitle">Three connected areas. Most problems live between them.</h2>
+        <h2 class="disp ctitle cpractices__title">
+          Three connected areas. Most problems live between them.
+        </h2>
       </div>
       <p class="clede" data-reveal>
         Pick an area to see what’s included, what you walk away with, and the tools behind it.
@@ -57,7 +59,7 @@ import {
         into a tablist. Without it this reads as three labelled sections rather
         than one panel and two missing.
       */}
-      <div class="cprac" data-prac>
+      <div class="cprac cprac--tight" data-prac>
         <div class="cprac__tabs" role="tablist" aria-label="Practice areas" hidden data-prac-tabs>
           {
             PRACTICE_DETAILS.map((practice, i) => (
@@ -80,7 +82,7 @@ import {
         {
           PRACTICE_DETAILS.map((practice, i) => (
             <article
-              class="cprac__panel"
+              class="cprac__panel cprac__panel--overlap"
               id={`prac-panel-${i}`}
               role="tabpanel"
               aria-labelledby={`prac-tab-${i}`}
@@ -88,10 +90,10 @@ import {
               data-prac-panel={String(i)}
             >
               <div>
-                <span class="ckicker">{practice.kicker}</span>
+                <span class="cprac__kicker">{practice.kicker}</span>
                 <h3 class="disp cprac__name">{practice.name}</h3>
-                <p class="cprac__blurb">{practice.blurb}</p>
-                <p class="cprac__detail cprac__detail--stacked">{practice.detail}</p>
+                <p class="cprac__blurb cprac__blurb--wide">{practice.blurb}</p>
+                <p class="cprac__detail cprac__detail--capped">{practice.detail}</p>
                 <p class="cprac__tools">
                   <span class="cprac__tools-label">Tools</span>
                   {practice.tools}
@@ -113,13 +115,13 @@ import {
     </div>
   </section>
 
-  <section class="csection" id="engage">
+  <section class="csection csection--green csection--after-overlap-88" id="engage">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">Ways to work together</span>
-        <h2 class="disp ctitle">From one focused week to a seat inside your team.</h2>
+        <h2 class="disp ctitle cengage__title">From one focused week to a seat inside your team.</h2>
       </div>
-      <p class="clede" data-reveal>
+      <p class="clede cengage__lede" data-reveal>
         Every engagement is a fixed fee, quoted before anything starts, so you know the scope, the
         cost, and what you walk away with.
       </p>
@@ -142,7 +144,7 @@ import {
         }
       </div>
 
-      <p class="clede" data-reveal>
+      <p class="cengage__note" data-reveal>
         The hourly meter doesn’t exist here, and I’m happy to show you the math on any quote. Not
         sure which shape fits? Bring it to the <a class="cinline" href="/consulting/process/">free
         30-minute call</a> and we’ll figure it out together.
@@ -150,25 +152,25 @@ import {
     </div>
   </section>
 
-  <section class="csection" id="systems">
+  <section class="csection csection--deep" id="systems">
     <div class="cwrap">
-      <div data-reveal>
+      <div class="csystems__head" data-reveal>
         <span class="ckicker">Systems</span>
-        <h2 class="disp ctitle">Odds are, I already know your stack.</h2>
+        <h2 class="disp ctitle csystems__title">Odds are, I already know your stack.</h2>
       </div>
 
       <div class="csys">
         {
           SYSTEMS.map((category) => (
             <div class="csys__card" data-reveal>
-              <span class="disp csys__name">{category.name}</span>
+              <span class="csys__name">{category.name}</span>
               <span class="csys__tools">{category.toolLine}</span>
             </div>
           ))
         }
       </div>
 
-      <p class="clede" data-reveal>
+      <p class="csystems__note" data-reveal>
         I pick systems for what they need to do, not for what’s shiny. Deepest: <strong
           >Braze, Salesforce Marketing Cloud, HubSpot, Webflow, n8n</strong
         >. Happy to talk detail on any of them.
@@ -176,7 +178,7 @@ import {
     </div>
   </section>
 
-  <section class="csection csection--ink" id="cta">
+  <section class="csection csection--terra" id="cta">
     <div class="cwrap">
       <h2 class="disp ctitle" data-reveal>Found the one that fits? Let’s talk it through.</h2>
       <p class="clede" data-reveal>
@@ -230,8 +232,141 @@ import {
 </script>
 
 <style>
-  .cinline {
+  /* Page-unique styles; the shared vocabulary is in ConsultingLayout.astro.
+     Values are the v14 export's (`Monzones-C-Services`). */
+
+  .cpractices__title,
+  .cengage__title {
+    max-width: 820px;
+  }
+
+  .cengage__title {
+    max-width: 860px;
+  }
+
+  .cprac--tight {
+    margin-top: 28px;
+  }
+
+  .cprac__blurb--wide {
+    max-width: 460px;
+  }
+
+  .cprac__detail--capped {
+    min-height: 0;
+    max-width: 480px;
+  }
+
+  /* The included list: a terracotta dot, then the line. */
+  .cincluded {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+  }
+
+  .cincluded li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--c-line);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: #3a342e;
+    text-wrap: pretty;
+  }
+
+  .cincluded li::before {
+    content: '';
+    position: relative;
+    top: -1px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c-terra);
+  }
+
+  .cengage__lede {
+    max-width: 680px;
+    color: rgb(244 239 230 / 72%);
+  }
+
+  /* Six rows on the green: name and length, the line, what you leave with. */
+  .cshapes {
+    margin-top: 36px;
+    border-top: 1px solid rgb(244 239 230 / 20%);
+  }
+
+  .cshape {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.7fr) minmax(0, 1.1fr);
+    gap: clamp(16px, 2.5vw, 44px);
+    align-items: center;
+    padding-block: 28px;
+    border-bottom: 1px solid rgb(244 239 230 / 16%);
+  }
+
+  .cshape__head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cshape__name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--c-paper);
+  }
+
+  .cshape__length {
+    padding: 7px 15px;
+    border-radius: 999px;
+    background: var(--c-butter);
     color: var(--c-green);
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .cshape__body {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: rgb(244 239 230 / 82%);
+    text-wrap: pretty;
+  }
+
+  .cshape__leave {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgb(244 239 230 / 65%);
+    text-wrap: pretty;
+  }
+
+  .cshape__leave .cminilabel {
+    margin-bottom: 5px;
+    letter-spacing: 0.1em;
+  }
+
+  .cengage__note {
+    margin: 26px 0 0;
+    max-width: 640px;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgb(244 239 230 / 80%);
+  }
+
+  .cinline {
+    color: var(--c-butter);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -239,107 +374,32 @@ import {
 
   .cinline:hover,
   .cinline:focus-visible {
-    color: var(--c-terra);
+    color: var(--c-card);
   }
 
-  .cprac__detail--stacked {
-    margin-top: 14px;
+  .csystems__head {
+    margin-bottom: clamp(32px, 4vw, 48px);
   }
 
-  .cincluded {
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    list-style: none;
-    padding: 0;
+  .csystems__title {
+    max-width: 900px;
   }
 
-  .cincluded li {
-    position: relative;
-    padding-left: 22px;
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--c-ink-2);
-    text-wrap: pretty;
-  }
-
-  .cincluded li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.55em;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--c-terra);
-  }
-
-  .cshapes {
-    margin-top: 44px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 22px;
-  }
-
-  .cshape {
-    padding: clamp(24px, 2.8vw, 34px);
-    border-radius: 22px;
-    background: var(--c-card);
-    box-shadow: var(--c-raised);
-  }
-
-  .cshape__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px 16px;
-  }
-
-  .cshape__name {
-    font-size: clamp(21px, 2vw, 26px);
-    font-weight: 600;
-    letter-spacing: -0.016em;
-  }
-
-  .cshape__length {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--c-terra);
-  }
-
-  .cshape__body {
-    margin-top: 14px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--c-ink-2);
-    text-wrap: pretty;
-  }
-
-  .cshape__leave {
-    margin-top: 18px;
-    padding-top: 16px;
-    border-top: 1px solid rgb(34 30 26 / 12%);
-    font-size: 15px;
-    line-height: 1.55;
-    text-wrap: pretty;
-  }
-
+  /* Six small cards; the first floats a little higher than the rest. */
   .csys {
-    margin-top: 44px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 22px;
+    align-items: start;
   }
 
   .csys__card {
     display: flex;
     flex-direction: column;
-    padding: 26px;
-    border-radius: 20px;
+    gap: 10px;
+    padding: 26px 28px;
+    border: 1px solid var(--c-line);
+    border-radius: 26px;
     background: var(--c-card);
     box-shadow: var(--c-raised);
     transition:
@@ -347,33 +407,50 @@ import {
       box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
   }
 
-  .csys__card:hover {
-    transform: translateY(-6px);
+  .csys__card:first-child {
     box-shadow: var(--c-float);
   }
 
+  .csys__card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 22%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
+  }
+
   .csys__name {
-    font-size: 19px;
-    font-weight: 600;
-    letter-spacing: -0.014em;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--c-green);
   }
 
   .csys__tools {
-    margin-top: 10px;
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.8;
     color: var(--c-ink-2);
   }
 
-  @media (max-width: 960px) {
-    .csys {
-      grid-template-columns: 1fr 1fr;
-    }
+  .csystems__note {
+    margin: 26px 0 0;
+    max-width: 680px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--c-ink-3);
   }
 
-  @media (max-width: 760px) {
-    .cshapes {
-      grid-template-columns: 1fr;
+  .csystems__note strong {
+    color: var(--c-ink);
+  }
+
+  @media (max-width: 960px) {
+    .cshape {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .csys {
+      grid-template-columns: 1fr 1fr;
     }
   }
 

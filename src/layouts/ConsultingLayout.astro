@@ -59,13 +59,16 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     />
   </Fragment>
 
-  <div class="c">
+  {/* The three sub-pages share a slightly smaller type scale and hero than the home page. */}
+  <div class:list={['c', { 'c--sub': current !== 'home' }]}>
     <div class="c__grain" aria-hidden="true"></div>
 
     <header class="cnav">
       <nav class="cnav__bar" aria-label="Consulting">
         <a class="cnav__brand" href="/consulting/">
-          <img class="cnav__mark" src={logoMark.src} alt="" width="32" height="32" />
+          <span class="cnav__markbox">
+            <img class="cnav__mark" src={logoMark.src} alt="" width="26" height="20" />
+          </span>
           <span class="cnav__names">
             <span class="disp cnav__name">Miguel Monzones</span>
             <span class="cnav__sub">Consulting</span>
@@ -103,8 +106,8 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
       <div class="cnav__panel" id="consulting-menu" hidden data-cnav-panel>
         {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
-        <a href="/">← back to HQ</a>
-        <a href="/consulting/#contact">Book a call</a>
+        <a class="cnav__panel-hq" href="/">← back to HQ</a>
+        <a class="cnav__panel-cta" href="/consulting/#contact">Book a call</a>
       </div>
     </header>
 
@@ -116,9 +119,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
         <div class="cfoot__links">
           <a href="/">mnmonzones.com</a>
           <a href="#cookie-settings" data-cookie-settings>Cookie settings</a>
-          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-          <a href={phoneHref}>{CONTACT.phone}</a>
-          <a href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+          <a class="cfoot__reach" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          {/* Not in the export's footer, kept because it is a real way to reach him. */}
+          <a class="cfoot__reach" href={phoneHref}>{CONTACT.phone}</a>
+          <a class="cfoot__reach" href={CONTACT.linkedin} target="_blank" rel="noopener">LinkedIn</a>
         </div>
       </div>
     </footer>
@@ -212,15 +216,24 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* Scoped styles can't reach the page content passed through <slot />, and
      every consulting page shares this vocabulary, so the section's stylesheet
      lives here as one global block namespaced under `.c`. Nothing outside a
-     `.c` ancestor is touched. */
+     `.c` ancestor is touched.
+
+     Every value here is the v14 export's (`Monzones-C-*`), read off its inline
+     styles. The four pages share one system: a 1260px container with 28px
+     gutters, pill kickers, an overlapping stats card that hangs 96px into the
+     green band below it, and a terracotta contact band and footer. */
   .c {
     --c-paper: #f4efe6;
     --c-card: #fffdf9;
     --c-ink: #221e1a;
-    --c-ink-2: #5b544c;
+    /* The export's three quieter inks: body copy, labels, notes. */
+    --c-ink-2: #5e574f;
+    --c-ink-3: #6b635a;
+    --c-ink-4: #8a8178;
     --c-terra: #c0603c;
     --c-green: #2f5d50;
     --c-butter: #f6e7b2;
+    --c-line: rgb(34 30 26 / 10%);
 
     --c-raised:
       0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 16%),
@@ -228,12 +241,21 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     --c-float:
       0 1px 2px rgb(34 30 26 / 8%), 0 44px 80px -28px rgb(34 30 26 / 32%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
+    /* Cards on the green band throw a green-tinted shadow. */
+    --c-raised-green:
+      0 1px 2px rgb(34 30 26 / 8%), 0 24px 48px -20px rgb(14 30 26 / 40%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
+    --c-float-green:
+      0 1px 2px rgb(34 30 26 / 10%), 0 48px 90px -30px rgb(14 30 26 / 55%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
 
     --c-disp: 'Clash Display', 'General Sans', 'Helvetica Neue', sans-serif;
     --c-body: 'Switzer', 'General Sans', 'Helvetica Neue', sans-serif;
 
     position: relative;
     min-width: 320px;
+    max-width: 100vw;
+    overflow-x: clip;
     background: var(--c-paper);
     color: var(--c-ink);
     font-family: var(--c-body);
@@ -273,38 +295,65 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   /* ----------------------------------------------------------- layout -- */
+  /* The export pads the section 28px and centres a 1260px div inside it, so
+     the content is 1260 wide. With border-box that is 1260 + 2×28 here. */
   .c .cwrap {
-    max-width: 1180px;
+    max-width: 1316px;
     margin-inline: auto;
-    padding-inline: clamp(20px, 4vw, 48px);
+    padding-inline: 28px;
   }
 
   .c .csection {
     padding-block: clamp(64px, 8vw, 116px);
   }
 
+  /* The section right after a hero: a short top, and its card (`.cstats`)
+     hangs 96px into the band below. The band that follows makes room. */
+  .c .csection--overlap {
+    position: relative;
+    z-index: 2;
+    padding-block: clamp(20px, 3vw, 40px) 0;
+  }
+
+  .c .csection--after-overlap {
+    padding-block: calc(96px + clamp(56px, 7vw, 104px)) clamp(72px, 9vw, 128px);
+  }
+
+  .c .csection--flush-top {
+    padding-top: 0;
+  }
+
+  .c .csection--deep {
+    padding-bottom: clamp(72px, 9vw, 128px);
+  }
+
+  /* The kicker is a pill, green on paper. */
   .c .ckicker {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border: 1px solid rgb(34 30 26 / 15%);
+    border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--c-terra);
+    color: var(--c-green);
   }
 
   .c .ctitle {
-    margin-top: 12px;
-    font-size: clamp(32px, 4.4vw, 56px);
+    margin: 14px 0 0;
+    font-size: clamp(32px, 4.2vw, 64px);
     font-weight: 600;
-    line-height: 1.04;
-    letter-spacing: -0.02em;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 
   .c .clede {
     margin-top: 18px;
-    max-width: 62ch;
-    font-size: clamp(17px, 1.5vw, 20px);
+    max-width: 640px;
+    font-size: 17px;
     line-height: 1.6;
     color: var(--c-ink-2);
     text-wrap: pretty;
@@ -314,26 +363,44 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* These live here rather than in a page because all four consulting pages
      use them. Page-scoped styles also can't reach markup passed through
      <slot />, so anything a sub-page needs has to be global anyway. */
+
+  /* The quiet button: a hairline pill that fills green on hover. */
   .c .cbtn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 15px 26px;
+    padding: 14px 26px;
     border-radius: 999px;
-    border: 1px solid var(--c-ink);
+    border: 1px solid rgb(34 30 26 / 15%);
+    background: transparent;
+    color: var(--c-ink);
     font-size: 15px;
     font-weight: 600;
     transition:
       transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
       background 0.25s ease,
       color 0.25s ease,
       border-color 0.25s ease;
   }
 
+  .c .cbtn:hover,
+  .c .cbtn:focus-visible {
+    transform: translateY(-2px);
+    background: var(--c-green);
+    border-color: var(--c-green);
+    color: var(--c-card);
+  }
+
+  /* The hero pair: bigger, with the raised shadow. */
   .c .cbtn--solid {
+    padding: 18px 34px;
     background: var(--c-terra);
     border-color: var(--c-terra);
     color: var(--c-card);
+    font-size: 16px;
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(192 96 60 / 45%);
   }
 
   .c .cbtn--solid:hover,
@@ -342,78 +409,91 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     background: var(--c-ink);
     border-color: var(--c-ink);
     color: var(--c-card);
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 10%), 0 32px 56px -20px rgb(34 30 26 / 35%);
   }
 
-  .c .cbtn--ghost,
-  .c .cbtn--outline {
-    background: transparent;
+  .c .cbtn--ghost {
+    padding: 18px 34px;
+    background: var(--c-card);
+    border-color: rgb(34 30 26 / 12%);
+    color: var(--c-ink);
+    font-size: 16px;
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
   }
 
   .c .cbtn--ghost:hover,
   .c .cbtn--ghost:focus-visible {
     transform: translateY(-3px);
+    background: var(--c-card);
     border-color: var(--c-green);
     color: var(--c-green);
+    box-shadow: var(--c-raised);
   }
 
-  .c .cbtn--outline:hover,
-  .c .cbtn--outline:focus-visible {
-    transform: translateY(-2px);
+  /* The ink button that closes the services list. */
+  .c .cbtn--ink {
+    padding: 16px 30px;
+    background: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-paper);
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 16px 32px -16px rgb(34 30 26 / 40%);
+  }
+
+  .c .cbtn--ink:hover,
+  .c .cbtn--ink:focus-visible {
+    transform: translateY(-3px);
     background: var(--c-green);
     border-color: var(--c-green);
-    color: var(--c-card);
-  }
-
-  /* On the ink and green bands the ink-bordered button disappears. */
-  .c .csection--ink .cbtn,
-  .c .csection--green .cbtn {
-    border-color: var(--c-paper);
     color: var(--c-paper);
   }
 
-  .c .csection--ink .cbtn--solid,
-  .c .csection--green .cbtn--solid {
-    background: var(--c-terra);
-    border-color: var(--c-terra);
-    color: var(--c-card);
-  }
-
-  .c .csection--ink .cbtn--ghost:hover,
-  .c .csection--ink .cbtn--ghost:focus-visible,
-  .c .csection--green .cbtn--ghost:hover,
-  .c .csection--green .cbtn--ghost:focus-visible {
-    background: var(--c-paper);
-    color: var(--c-ink);
-  }
-
   .c .ctarow {
-    margin-top: 32px;
+    margin-top: 36px;
     display: flex;
     flex-wrap: wrap;
     gap: 14px;
   }
 
+  /* A section head with a link on the right. */
   .c .chead {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px 32px;
+    gap: 24px;
     align-items: flex-end;
     justify-content: space-between;
+    margin-bottom: clamp(28px, 3vw, 40px);
   }
 
+  .c .csection--green .chead {
+    margin-bottom: clamp(36px, 4.5vw, 60px);
+  }
+
+  /* The head's link is a green pill on paper, and an outlined one on green. */
   .c .clink {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    padding: 14px 26px;
+    border: 1px solid var(--c-green);
+    border-radius: 999px;
+    background: var(--c-green);
+    color: var(--c-paper);
     font-size: 15px;
     font-weight: 600;
-    color: var(--c-green);
-    transition: color 0.2s ease;
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 16px 32px -16px rgb(47 93 80 / 50%);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
+      background 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
   }
 
   .c .clink:hover,
   .c .clink:focus-visible {
-    color: var(--c-terra);
+    transform: translateY(-2px);
+    background: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-paper);
   }
 
   .c .csection--green {
@@ -421,67 +501,166 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--c-paper);
   }
 
-  .c .csection--ink {
-    background: var(--c-ink);
+  .c .csection--green .ckicker {
+    border-color: rgb(244 239 230 / 25%);
+    color: rgb(244 239 230 / 75%);
+  }
+
+  .c .csection--green .clink {
+    background: transparent;
+    border-color: rgb(244 239 230 / 30%);
     color: var(--c-paper);
+    box-shadow: none;
   }
 
-  .c .csection--green .ckicker,
-  .c .csection--ink .ckicker,
-  .c .csection--green .clink,
-  .c .csection--ink .clink {
-    color: var(--c-butter);
+  .c .csection--green .clink:hover,
+  .c .csection--green .clink:focus-visible {
+    background: var(--c-paper);
+    border-color: var(--c-paper);
+    color: var(--c-green);
   }
 
-  .c .csection--green .clede,
-  .c .csection--ink .clede {
+  .c .csection--green .clede {
     color: rgb(244 239 230 / 76%);
   }
 
-  /* The four-figure band, on both the home and results pages. */
+  .c .csection--green .cbtn {
+    border-color: rgb(244 239 230 / 30%);
+    color: var(--c-paper);
+  }
+
+  .c .csection--green .cbtn:hover,
+  .c .csection--green .cbtn:focus-visible {
+    background: var(--c-paper);
+    border-color: var(--c-paper);
+    color: var(--c-green);
+  }
+
+  /* The terracotta band every page ends on, its top corners rounded off the
+     paper above. The footer continues the colour. */
+  .c .csection--terra {
+    background: var(--c-terra);
+    color: var(--c-ink);
+    border-radius: clamp(28px, 4vw, 52px) clamp(28px, 4vw, 52px) 0 0;
+    padding-block: clamp(64px, 8vw, 112px) clamp(64px, 8vw, 104px);
+  }
+
+  /* The sub-pages' closing CTA sizes; the home contact band runs bigger and
+     overrides these in consulting.astro. */
+  .c .csection--terra .ctitle {
+    max-width: 900px;
+    font-size: clamp(36px, 4.8vw, 76px);
+    line-height: 1.02;
+    letter-spacing: -0.028em;
+    color: var(--c-card);
+  }
+
+  .c .csection--terra .clede {
+    margin: 22px 0 0;
+    max-width: 600px;
+    font-size: clamp(16px, 1.6vw, 18px);
+    color: rgb(255 253 249 / 82%);
+  }
+
+  .c .csection--terra .ctarow {
+    margin-top: 34px;
+    align-items: center;
+  }
+
+  /* On terracotta the solid button goes cream with terracotta text, and the
+     ghost is a cream hairline. */
+  .c .csection--terra .cbtn--solid {
+    background: var(--c-card);
+    border-color: var(--c-card);
+    color: var(--c-terra);
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 10%), 0 24px 48px -20px rgb(60 20 10 / 45%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
+  }
+
+  .c .csection--terra .cbtn--solid:hover,
+  .c .csection--terra .cbtn--solid:focus-visible {
+    background: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-card);
+  }
+
+  .c .csection--terra .cbtn--ghost {
+    background: transparent;
+    border-color: rgb(255 253 249 / 50%);
+    color: var(--c-card);
+    box-shadow: none;
+  }
+
+  .c .csection--terra .cbtn--ghost:hover,
+  .c .csection--terra .cbtn--ghost:focus-visible {
+    background: transparent;
+    border-color: var(--c-card);
+    color: var(--c-card);
+    box-shadow: none;
+  }
+
+  /* The four-figure card, on both the home and results pages. It hangs 96px
+     below its section into the green band that follows. */
   .c .cstats {
-    margin-top: 44px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: clamp(18px, 2.2vw, 32px);
+    padding: clamp(28px, 3.2vw, 44px);
+    margin-bottom: -96px;
+    border: 1px solid rgb(34 30 26 / 8%);
+    border-radius: 30px;
+    background: var(--c-card);
+    color: var(--c-ink);
+    box-shadow: var(--c-float);
   }
 
   .c .cstat__rule {
     display: block;
-    width: 36px;
+    width: 34px;
     height: 3px;
+    border-radius: 2px;
     background: var(--c-terra);
   }
 
   .c .cstat__num {
-    margin-top: 16px;
-    font-size: clamp(28px, 3vw, 40px);
+    margin-top: 20px;
+    font-size: clamp(34px, 3.4vw, 52px);
     font-weight: 600;
+    line-height: 1;
     letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .c .cstat__label {
-    margin-top: 8px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--c-ink-2);
+    margin-top: 14px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--c-ink-3);
+    text-wrap: pretty;
   }
 
-  /* The practice tabs, on both the home and services pages. */
+  /* The practice tabs, on both the home and services pages: a pill tray. */
   .c .cprac {
-    margin-top: 36px;
+    margin-top: 30px;
   }
 
   .c .cprac__tabs {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 28px;
+    gap: 6px;
+    margin-bottom: 24px;
+    padding: 6px;
+    border: 1px solid var(--c-line);
+    border-radius: 999px;
+    background: var(--c-card);
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), inset 0 1px 0 rgb(255 255 255 / 90%);
   }
 
   .c .cprac__tab {
-    padding: 13px 22px;
-    border: 1px solid var(--c-ink);
+    padding: 13px 24px;
+    border: 0;
     border-radius: 999px;
     background: transparent;
     color: var(--c-ink);
@@ -497,7 +676,6 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
   .c .cprac__tab[aria-selected='true'] {
     background: var(--c-green);
-    border-color: var(--c-green);
     color: var(--c-paper);
     box-shadow:
       0 1px 2px rgb(34 30 26 / 10%),
@@ -505,11 +683,13 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .cprac__panel {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(24px, 3vw, 48px);
-    padding: clamp(26px, 3.2vw, 44px);
-    border-radius: 24px;
+    padding: clamp(28px, 3.4vw, 52px);
+    border: 1px solid rgb(34 30 26 / 8%);
+    border-radius: 32px;
     background: var(--c-card);
     color: var(--c-ink);
     box-shadow: var(--c-raised);
@@ -520,62 +700,136 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     margin-top: 20px;
   }
 
+  /* On the services page the panel hangs into the green band below it. */
+  .c .cprac__panel--overlap {
+    margin-bottom: -88px;
+    box-shadow: var(--c-float);
+  }
+
+  .c .csteps--overlap {
+    margin-bottom: -88px;
+  }
+
+  .c .csteps--overlap .cstep {
+    border-color: rgb(34 30 26 / 8%);
+  }
+
+  .c .cprac__panel > div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .c .cprac__panel > div:first-child {
+    gap: 16px;
+  }
+
+  .c .cprac__panel > div:last-child {
+    gap: 18px;
+  }
+
+  /* The panel's own kicker is a tilted butter tag. */
+  .c .cprac__kicker {
+    align-self: flex-start;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--c-butter);
+    color: var(--c-green);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    rotate: -2deg;
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
+  }
+
   .c .cprac__name {
-    margin-top: 10px;
-    font-size: clamp(24px, 2.6vw, 34px);
+    margin: 6px 0 0;
+    font-size: clamp(26px, 2.6vw, 40px);
     font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    letter-spacing: -0.018em;
+    line-height: 1.05;
   }
 
   .c .cprac__blurb {
-    margin-top: 14px;
+    margin: 0;
+    max-width: 440px;
     font-size: 17px;
-    line-height: 1.55;
-    color: var(--c-ink-2);
+    line-height: 1.6;
+    font-weight: 500;
     text-wrap: pretty;
   }
 
   .c .cprac__detail {
-    font-size: 16px;
-    line-height: 1.65;
+    margin: 0;
+    min-height: 5.5em;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--c-ink-2);
     text-wrap: pretty;
   }
 
   .c .cprac__tools {
-    margin-top: 20px;
+    margin: auto 0 0;
+    padding-top: 18px;
+    border-top: 1px solid rgb(34 30 26 / 12%);
     font-size: 13px;
-    line-height: 1.6;
-    color: var(--c-ink-2);
+    line-height: 1.7;
+    color: var(--c-ink-3);
   }
 
-  .c .cprac__tools-label,
+  .c .cprac__tools-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink);
+  }
+
+  /* The small green label over a list ("What's included", "You walk away
+     with"); butter on the green band. */
   .c .cminilabel {
     display: block;
     margin-bottom: 6px;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-terra);
+    color: var(--c-green);
+  }
+
+  .c .csection--green .cminilabel {
+    color: var(--c-butter);
   }
 
   .c .cfollow {
-    margin-top: 32px;
+    margin-top: 30px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 14px 20px;
+    gap: 18px;
+  }
+
+  .c .cfollow--roomy {
+    margin-top: 34px;
   }
 
   .c .cfollow__note {
-    font-size: 14px;
+    font-size: 14.5px;
+    color: var(--c-ink-4);
+  }
+
+  .c .cfollow__note--strong {
+    font-size: 15.5px;
+    font-weight: 600;
     color: var(--c-ink-2);
   }
 
-  /* The step cards, on both the home and process pages. */
+  /* The step cards, on both the home and process pages. The cards sit
+     straight; it's the number badge that tilts. */
   .c .csteps {
-    margin-top: 44px;
+    margin-top: clamp(32px, 4vw, 48px);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 22px;
@@ -585,8 +839,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c .cstep {
     display: flex;
     flex-direction: column;
-    padding: 30px;
-    border-radius: 22px;
+    gap: 12px;
+    padding: 32px 30px;
+    border: 1px solid var(--c-line);
+    border-radius: 30px;
     background: var(--c-card);
     color: var(--c-ink);
     box-shadow: var(--c-raised);
@@ -595,17 +851,8 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
       box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
   }
 
-  .c .cstep:nth-child(1) {
-    rotate: -3deg;
-  }
-
   .c .cstep:nth-child(2) {
-    rotate: 2deg;
     box-shadow: var(--c-float);
-  }
-
-  .c .cstep:nth-child(3) {
-    rotate: -1.5deg;
   }
 
   .c .cstep:hover {
@@ -614,33 +861,59 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .cstep__num {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    color: var(--c-terra);
+    align-self: flex-start;
+    padding: 9px 13px;
+    border-radius: 999px;
+    background: var(--c-terra);
+    color: var(--c-card);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    rotate: -3deg;
+  }
+
+  .c .cstep:nth-child(2) .cstep__num {
+    rotate: 2deg;
+  }
+
+  .c .cstep:nth-child(3) .cstep__num {
+    rotate: -1.5deg;
   }
 
   .c .cstep__name {
-    margin-top: 12px;
-    font-size: 23px;
+    margin-top: 8px;
+    font-size: 21px;
     font-weight: 600;
-    letter-spacing: -0.016em;
+    letter-spacing: -0.01em;
   }
 
   .c .cstep__body {
-    margin-top: 12px;
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14.5px;
+    line-height: 1.68;
     color: var(--c-ink-2);
     text-wrap: pretty;
   }
 
-  /* The hero, shared by all four pages. */
+  /* The hero, shared by all four pages, with the export's two soft radial
+     washes behind it. */
   .c .chero {
-    padding-block: clamp(44px, 6vw, 92px) clamp(56px, 7vw, 104px);
+    position: relative;
+    overflow: clip;
+    padding-block: clamp(52px, 6.5vw, 104px) clamp(56px, 7vw, 104px);
+  }
+
+  .c .chero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(900px 520px at 86% -14%, rgb(192 96 60 / 13%), transparent 62%),
+      radial-gradient(700px 460px at -6% 110%, rgb(47 93 80 / 8%), transparent 62%);
   }
 
   .c .chero__grid {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     gap: clamp(32px, 4vw, 72px);
@@ -648,47 +921,118 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .chero__title {
-    margin-top: 22px;
-    font-size: clamp(40px, 6vw, 78px);
+    margin: 28px 0 0;
+    max-width: 900px;
+    font-size: clamp(42px, 6vw, 94px);
     font-weight: 600;
     line-height: 1;
-    letter-spacing: -0.028em;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
 
   .c .chero__body {
-    margin-top: 26px;
-    max-width: 56ch;
-    font-size: clamp(17px, 1.6vw, 21px);
-    line-height: 1.55;
+    margin: 28px 0 0;
+    max-width: 600px;
+    font-size: clamp(17px, 1.8vw, 20px);
+    line-height: 1.6;
     color: var(--c-ink-2);
     text-wrap: pretty;
+  }
+
+  /* ------------------------------------------------------- sub-pages -- */
+  /* Services, Process and Results: a shorter hero with one radial wash, a
+     tilted card kicker, a 92px title, and 60px section titles. */
+  .c--sub .chero {
+    padding-block: clamp(52px, 6.5vw, 100px) clamp(48px, 6vw, 88px);
+  }
+
+  .c--sub .chero::before {
+    background-image: radial-gradient(900px 520px at 84% -16%, rgb(192 96 60 / 13%), transparent 62%);
+  }
+
+  .c--sub .chero__title {
+    max-width: 860px;
+    font-size: clamp(42px, 6vw, 92px);
+  }
+
+  .c--sub .chero__body {
+    margin-top: 26px;
+    max-width: 620px;
+  }
+
+  .c--sub .chero .ctarow {
+    margin-top: 34px;
+  }
+
+  .c--sub .ctitle {
+    font-size: clamp(32px, 4.2vw, 60px);
+  }
+
+  .c--sub .csection--overlap {
+    padding-top: clamp(24px, 3vw, 48px);
+  }
+
+  /* The sub-pages' overlapping card hangs 88px, not 96. */
+  .c .csection--after-overlap-88 {
+    padding-block: calc(88px + clamp(56px, 7vw, 104px)) clamp(72px, 9vw, 128px);
+  }
+
+  /* The hero kicker is a tilted raised card. */
+  .c .ckicker--hero {
+    padding: 9px 18px;
+    border-color: var(--c-line);
+    background: var(--c-card);
+    rotate: -2deg;
+    box-shadow: var(--c-raised);
   }
 
   /* The floating "on this page" card in the sub-page heroes. */
   .c .cjump {
     display: flex;
     flex-direction: column;
-    padding: 24px;
-    border-radius: 22px;
+    margin-top: 22px;
+    padding: 10px 26px 12px;
+    border: 1px solid rgb(34 30 26 / 8%);
+    border-radius: 24px;
     background: var(--c-card);
-    box-shadow: var(--c-raised);
+    rotate: 1.5deg;
+    box-shadow:
+      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 22%),
+      inset 0 1px 0 rgb(255 255 255 / 90%);
+    animation: cfloat 5.5s ease-in-out infinite;
+  }
+
+  @keyframes cfloat {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -9px;
+    }
+  }
+
+  .c .cjump--labelled {
+    padding-top: 18px;
+  }
+
+  .c .cjump > .cminilabel {
+    margin: 0;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
   }
 
   .c .cjump > a {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
     min-height: 44px;
-    justify-content: center;
-    padding-block: 10px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--c-line);
+    font-size: 15px;
     font-weight: 600;
-    border-bottom: 1px solid rgb(34 30 26 / 10%);
     transition: color 0.2s ease;
-  }
-
-  .c .cjump > a:last-child {
-    border-bottom: 0;
   }
 
   .c .cjump > a:hover,
@@ -699,9 +1043,8 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c .cjump__meta {
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--c-ink-2);
+    letter-spacing: 0.06em;
+    color: var(--c-ink-4);
   }
 
   @media (max-width: 1080px) {
@@ -716,40 +1059,72 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     .c .cprac__panel {
       grid-template-columns: minmax(0, 1fr);
     }
+
+    /* The export flattens its section rhythm on tablet and phone: every
+       section gets 64px, the hero 44px on top, and the overlap disappears. */
+    .c .csection,
+    .c .csection--overlap,
+    .c .csection--after-overlap,
+    .c .csection--after-overlap-88,
+    .c .csection--flush-top,
+    .c .csection--deep,
+    .c .csection--terra,
+    .c--sub .csection--overlap {
+      padding-block: 64px;
+    }
+
+    .c .chero,
+    .c--sub .chero {
+      padding-block: 44px 64px;
+    }
+
+    .c .cstats,
+    .c .cprac__panel--overlap,
+    .c .csteps--overlap {
+      margin-bottom: 0;
+    }
+
+    .c .cjump {
+      rotate: none;
+      animation: none;
+    }
   }
 
   @media (max-width: 560px) {
     .c .cstats {
       grid-template-columns: 1fr;
     }
+  }
 
-    /* Rotated cards cost horizontal room a phone doesn't have, and the
-       corners were the thing poking past the gutter. */
-    .c .cstep {
-      rotate: none;
-    }
-
+  @media (max-width: 719px) {
     .c .ctarow {
       flex-direction: column;
       align-items: stretch;
+    }
+
+    .c .ctarow .cbtn {
+      justify-content: center;
+      text-align: center;
     }
   }
 
   /* --------------------------------------------------------------- nav -- */
   .c .cnav {
-    position: relative;
-    z-index: 20;
-    border-bottom: 1px solid rgb(34 30 26 / 10%);
-    background: var(--c-paper);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid var(--c-line);
+    background: rgb(244 239 230 / 86%);
+    backdrop-filter: blur(12px);
   }
 
   .c .cnav__bar {
-    max-width: 1180px;
+    max-width: 1260px;
     margin-inline: auto;
-    padding: 16px clamp(20px, 4vw, 48px);
+    padding: 14px 28px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 28px;
   }
 
   .c .cnav__brand {
@@ -757,18 +1132,33 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     align-items: center;
     gap: 12px;
     margin-right: auto;
+    white-space: nowrap;
+  }
+
+  /* The mark sits in a small raised card. */
+  .c .cnav__markbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--c-line);
+    border-radius: 11px;
+    background: var(--c-card);
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
   }
 
   .c .cnav__mark {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
+    display: block;
+    height: 20px;
+    width: auto;
   }
 
   .c .cnav__names {
     display: flex;
-    flex-direction: column;
-    line-height: 1.15;
+    align-items: center;
+    gap: 10px;
   }
 
   .c .cnav__name {
@@ -777,20 +1167,25 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     letter-spacing: -0.01em;
   }
 
+  /* "Consulting" as a green pill beside the name. */
   .c .cnav__sub {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--c-green);
+    color: var(--c-paper);
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--c-terra);
   }
 
   .c .cnav__links {
     display: flex;
     align-items: center;
-    gap: 22px;
-    font-size: 14px;
-    font-weight: 500;
+    gap: 24px;
+    font-size: 14.5px;
+    font-weight: 600;
   }
 
   .c .cnav__links a {
@@ -804,35 +1199,41 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .cnav__hq {
-    color: var(--c-ink-2);
+    color: var(--c-ink-4);
   }
 
   .c .cnav__pipe {
     width: 1px;
-    height: 18px;
-    background: rgb(34 30 26 / 18%);
+    height: 16px;
+    background: rgb(34 30 26 / 15%);
   }
 
+  /* The export marks the current sub-page bold terracotta. The weight is kept;
+     the label stays ink — terracotta text alone is 3.68:1 on this paper, under
+     AA at 14.5px — and the rule carries the colour instead. */
   .c .cnav__link[aria-current='page'] {
-    color: var(--c-terra);
+    font-weight: 700;
     text-decoration: underline;
+    text-decoration-color: var(--c-terra);
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
   }
 
   .c .cnav__cta {
-    padding: 11px 18px;
-    border: 1px solid var(--c-ink);
+    padding: 13px 24px;
     border-radius: 999px;
+    background: var(--c-terra);
+    color: var(--c-card);
     font-weight: 600;
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 12px 24px -12px rgb(192 96 60 / 50%);
     transition:
-      background 0.2s ease,
-      color 0.2s ease,
-      transform 0.2s ease;
+      background 0.25s ease,
+      color 0.25s ease,
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
   }
 
-  .c .cnav__cta:hover,
-  .c .cnav__cta:focus-visible {
+  .c .cnav__links a.cnav__cta:hover,
+  .c .cnav__links a.cnav__cta:focus-visible {
     background: var(--c-ink);
     color: var(--c-card);
     transform: translateY(-2px);
@@ -840,24 +1241,27 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 
   .c .cnav__burger {
     display: none;
+    flex: none;
     width: 44px;
     height: 44px;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgb(34 30 26 / 20%);
-    border-radius: 12px;
-    background: transparent;
+    padding: 0;
+    border: 1px solid rgb(34 30 26 / 15%);
+    border-radius: 999px;
+    background: var(--c-card);
     cursor: pointer;
   }
 
+  /* Three 18×2 rounded lines, 5px apart. */
   .c .cnav__bars,
   .c .cnav__bars::before,
   .c .cnav__bars::after {
     display: block;
     width: 18px;
     height: 2px;
+    border-radius: 2px;
     background: var(--c-ink);
-    transition: transform 0.2s ease;
   }
 
   .c .cnav__bars::before,
@@ -867,27 +1271,44 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .cnav__bars::before {
-    top: -6px;
+    top: -7px;
   }
 
   .c .cnav__bars::after {
-    top: 4px;
+    top: 5px;
   }
 
   .c .cnav__panel {
     display: flex;
     flex-direction: column;
-    padding: 8px clamp(20px, 4vw, 48px) 20px;
-    border-top: 1px solid rgb(34 30 26 / 10%);
+    padding: 8px 28px 20px;
+    border-top: 1px solid var(--c-line);
+    background: var(--c-paper);
   }
 
   .c .cnav__panel a {
     display: flex;
     align-items: center;
     min-height: 48px;
-    font-size: 16px;
+    padding-block: 6px;
+    border-bottom: 1px solid var(--c-line);
+    font-size: 15px;
     font-weight: 600;
-    border-bottom: 1px solid rgb(34 30 26 / 8%);
+  }
+
+  .c .cnav__panel .cnav__panel-hq {
+    color: var(--c-ink-4);
+  }
+
+  .c .cnav__panel .cnav__panel-cta {
+    justify-content: center;
+    margin-top: 16px;
+    padding: 15px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--c-terra);
+    color: var(--c-card);
+    text-align: center;
   }
 
   @media (max-width: 860px) {
@@ -920,38 +1341,48 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   /* ------------------------------------------------------------ footer -- */
+  /* Continues the terracotta band above it; a hairline separates the two. */
   .c .cfoot {
-    background: var(--c-ink);
-    color: var(--c-paper);
-    padding-block: clamp(36px, 5vw, 56px);
+    background: var(--c-terra);
+    color: var(--c-card);
+    padding: 0 28px 36px;
   }
 
   .c .cfoot__inner {
-    max-width: 1180px;
+    max-width: 1260px;
     margin-inline: auto;
-    padding-inline: clamp(20px, 4vw, 48px);
+    padding-top: 26px;
+    border-top: 1px solid rgb(255 253 249 / 30%);
     display: flex;
     flex-wrap: wrap;
-    gap: 16px 32px;
+    gap: 24px;
     align-items: center;
     justify-content: space-between;
   }
 
   .c .cfoot__line {
-    font-size: 14px;
-    font-weight: 500;
+    margin: 0;
+    font-size: 12.5px;
+    color: rgb(255 253 249 / 80%);
   }
 
   .c .cfoot__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 20px;
-    font-size: 13px;
-    color: rgb(244 239 230 / 72%);
+    align-items: center;
+    gap: 24px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgb(255 253 249 / 80%);
   }
 
   .c .cfoot__links a {
     transition: color 0.2s ease;
+  }
+
+  /* The ways to reach Miguel read at full strength; the site links sit back. */
+  .c .cfoot__links .cfoot__reach {
+    color: var(--c-card);
   }
 
   .c .cfoot__links a:hover,
@@ -962,6 +1393,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   @media (max-width: 719px) {
     /* Footer links are the smallest targets in the section; give them the
        44px the rest of the site's phone layouts use. */
+    .c .cfoot__links {
+      gap: 8px 20px;
+    }
+
     .c .cfoot__links a {
       display: inline-flex;
       align-items: center;

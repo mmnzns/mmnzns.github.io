@@ -3,7 +3,7 @@ import ConsultingLayout from '../../layouts/ConsultingLayout.astro';
 import { CONTACT } from '../../config';
 import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS } from '../../data/consulting';
 
-/** `/consulting/process/` — ported from the v13 export's `Monzones-C-Process`. */
+/** `/consulting/process/` — ported from the v14 export's `Monzones-C-Process`. */
 ---
 
 <ConsultingLayout
@@ -14,7 +14,7 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
   <section class="chero" id="top">
     <div class="cwrap chero__grid">
       <div>
-        <span class="ckicker">{PROCESS_HERO.kicker}</span>
+        <span class="ckicker ckicker--hero">{PROCESS_HERO.kicker}</span>
         <h1 class="disp chero__title">{PROCESS_HERO.title}</h1>
         <p class="chero__body">{PROCESS_HERO.body}</p>
         <div class="ctarow">
@@ -23,7 +23,7 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
         </div>
       </div>
 
-      <nav class="cjump" aria-label="On this page">
+      <nav class="cjump cjump--labelled" aria-label="On this page">
         <span class="cminilabel">On this page</span>
         {
           PROCESS_JUMPS.map((jump) => (
@@ -37,14 +37,14 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
     </div>
   </section>
 
-  <section class="csection" id="start">
+  <section class="csection csection--overlap" id="start">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">How it starts</span>
         <h2 class="disp ctitle">Three steps. No mystery.</h2>
       </div>
 
-      <div class="csteps">
+      <div class="csteps csteps--overlap">
         {
           PROCESS_STEPS.map((step) => (
             <div class="cstep" data-reveal>
@@ -59,7 +59,7 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
     </div>
   </section>
 
-  <section class="csection" id="running">
+  <section class="csection csection--green csection--after-overlap-88" id="running">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">Once we’re going</span>
@@ -74,7 +74,7 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
         {
           PRINCIPLES.map((principle) => (
             <div class="cprinciple" data-reveal>
-              <span class="cminilabel">{principle.tag}</span>
+              <span class="cprinciple__tag">{principle.tag}</span>
               <span class="disp cprinciple__name">{principle.name}</span>
               <span class="cprinciple__body">{principle.body}</span>
             </div>
@@ -84,7 +84,7 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
     </div>
   </section>
 
-  <section class="csection" id="fit">
+  <section class="csection csection--deep" id="fit">
     <div class="cwrap">
       <div data-reveal>
         <span class="ckicker">Fit</span>
@@ -97,12 +97,12 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
       </p>
 
       <div class="cfit">
-        <div class="cfit__col" data-reveal>
-          <p class="cfit__head">We’ll get along if</p>
+        <div class="cfit__col cfit__col--yes" data-reveal>
+          <p class="cfit__head cfit__head--yes">We’ll get along if</p>
           {
             FIT_YES.map((line) => (
-              <p class="cfit__row">
-                <span class="cfit__sign cfit__sign--yes" aria-hidden="true">
+              <p class="cfit__row cfit__row--yes">
+                <span class="cfit__sign" aria-hidden="true">
                   +
                 </span>
                 {line}
@@ -110,12 +110,12 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
             ))
           }
         </div>
-        <div class="cfit__col" data-reveal>
-          <p class="cfit__head">Probably not, if</p>
+        <div class="cfit__col cfit__col--no" data-reveal>
+          <p class="cfit__head cfit__head--no">Probably not, if</p>
           {
             FIT_NO.map((line) => (
-              <p class="cfit__row">
-                <span class="cfit__sign cfit__sign--no" aria-hidden="true">
+              <p class="cfit__row cfit__row--no">
+                <span class="cfit__sign" aria-hidden="true">
                   −
                 </span>
                 {line}
@@ -127,7 +127,7 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
     </div>
   </section>
 
-  <section class="csection csection--ink" id="cta">
+  <section class="csection csection--terra" id="cta">
     <div class="cwrap">
       <h2 class="disp ctitle" data-reveal>Step one is two paragraphs. That’s it.</h2>
       <p class="clede" data-reveal>
@@ -142,17 +142,20 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
 </ConsultingLayout>
 
 <style>
+  /* Page-unique styles; the shared vocabulary is in ConsultingLayout.astro.
+     Values are the v14 export's (`Monzones-C-Process`). */
+
   .cstep__bail {
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid rgb(34 30 26 / 12%);
-    font-size: 13px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--c-line);
+    font-size: 13.5px;
     font-weight: 600;
-    color: var(--c-terra);
+    color: var(--c-green);
   }
 
   .cinline {
-    color: var(--c-green);
+    color: var(--c-butter);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -160,11 +163,12 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
 
   .cinline:hover,
   .cinline:focus-visible {
-    color: var(--c-terra);
+    color: var(--c-card);
   }
 
+  /* Four outlined cards on the green, no fill. */
   .cprinciples {
-    margin-top: 44px;
+    margin-top: 36px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: clamp(18px, 2.2vw, 32px);
@@ -173,88 +177,129 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
   .cprinciple {
     display: flex;
     flex-direction: column;
-    padding: 26px;
-    border-radius: 20px;
-    background: var(--c-card);
-    box-shadow: var(--c-raised);
+    gap: 12px;
+    padding: 28px;
+    border: 1px solid rgb(244 239 230 / 20%);
+    border-radius: 26px;
     transition:
       transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
-      box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.25, 1);
+      border-color 0.25s ease;
   }
 
   .cprinciple:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--c-float);
+    transform: translateY(-5px);
+    border-color: rgb(246 231 178 / 70%);
+  }
+
+  .cprinciple__tag {
+    align-self: flex-start;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-butter);
   }
 
   .cprinciple__name {
-    margin-top: 8px;
-    font-size: 21px;
+    font-size: 19.5px;
     font-weight: 600;
-    letter-spacing: -0.014em;
-    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--c-paper);
   }
 
   .cprinciple__body {
-    margin-top: 12px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--c-ink-2);
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: rgb(244 239 230 / 72%);
     text-wrap: pretty;
   }
 
+  #running .ctitle {
+    max-width: 860px;
+  }
+
+  #fit .clede {
+    max-width: 680px;
+  }
+
+  /* Two cards; the "yes" column floats, the "no" column sits lower and flatter. */
   .cfit {
-    margin-top: 44px;
+    margin-top: 36px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 22px;
+    align-items: start;
   }
 
   .cfit__col {
-    padding: clamp(24px, 3vw, 36px);
-    border-radius: 22px;
+    padding: clamp(26px, 3vw, 40px);
+    border: 1px solid rgb(34 30 26 / 8%);
+    border-radius: 30px;
     background: var(--c-card);
+  }
+
+  .cfit__col--yes {
+    box-shadow: var(--c-float);
+  }
+
+  .cfit__col--no {
+    margin-top: 26px;
     box-shadow: var(--c-raised);
   }
 
   .cfit__head {
-    font-size: 12px;
+    margin: 0 0 14px;
+    font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-terra);
+  }
+
+  .cfit__head--yes {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--c-butter);
+    color: var(--c-green);
+    rotate: -1.5deg;
+    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
+  }
+
+  .cfit__head--no {
+    padding: 8px 0;
+    color: var(--c-ink-4);
   }
 
   .cfit__row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 24px 1fr;
     gap: 12px;
-    margin-top: 16px;
-    font-size: 16px;
-    line-height: 1.55;
-    color: var(--c-ink-2);
+    margin: 0;
+    padding: 14px 0;
+    border-top: 1px solid var(--c-line);
+    font-size: 15px;
+    line-height: 1.6;
     text-wrap: pretty;
   }
 
+  .cfit__row--yes {
+    color: var(--c-ink);
+  }
+
+  .cfit__row--no {
+    color: var(--c-ink-2);
+  }
+
   .cfit__sign {
-    flex: none;
-    width: 22px;
-    height: 22px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    font-size: 14px;
     font-weight: 700;
-    line-height: 1;
   }
 
-  .cfit__sign--yes {
-    background: rgb(47 93 80 / 12%);
-    color: var(--c-green);
-  }
-
-  .cfit__sign--no {
-    background: rgb(192 96 60 / 12%);
+  .cfit__row--yes .cfit__sign {
     color: var(--c-terra);
+  }
+
+  .cfit__row--no .cfit__sign {
+    color: var(--c-ink);
   }
 
   @media (max-width: 1080px) {
@@ -266,6 +311,10 @@ import { FIT_NO, FIT_YES, PRINCIPLES, PROCESS_HERO, PROCESS_JUMPS, PROCESS_STEPS
   @media (max-width: 760px) {
     .cfit {
       grid-template-columns: 1fr;
+    }
+
+    .cfit__col--no {
+      margin-top: 0;
     }
   }
 
