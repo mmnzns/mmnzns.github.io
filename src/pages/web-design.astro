@@ -9,6 +9,10 @@ import shotDTC from '../assets/webdesign/dtc-newsletter.jpg';
 import shotKatty from '../assets/webdesign/kattyco.jpg';
 import shotSLP from '../assets/webdesign/east-van-slp.jpg';
 import laptopFrame from '../assets/webdesign/hero-laptop-frame.png';
+import iconSells from '../assets/webdesign/icon-sells.png';
+import iconBuild from '../assets/webdesign/icon-build.png';
+import iconAnalytics from '../assets/webdesign/icon-analytics.png';
+import iconCare from '../assets/webdesign/icon-care.png';
 
 /**
  * The web design service page — deliberately nothing like the rest of the
@@ -351,13 +355,21 @@ const BUDGETS = [
     {/* ---------------------------------------------------- what you get -- */}
     <section class="keep">
       <div class="wd__inner">
-        <p class="scribble" data-wd-reveal="up">what you get</p>
-        <h2 class="wd__h2" data-wd-reveal="up">
-          Everything a site needs to <em>earn its keep.</em>
-        </h2>
+        {/* The export pairs this heading with an animated mark on the right.
+            GIFs live in public/ so Astro's image service leaves them animated. */}
+        <div class="keep__head">
+          <div>
+            <p class="scribble" data-wd-reveal="up">what you get</p>
+            <h2 class="wd__h2" data-wd-reveal="up">
+              Everything a site needs to <em>earn its keep.</em>
+            </h2>
+          </div>
+          <img class="keep__gif" src="/webdesign/keep.gif" alt="" width="280" height="280" loading="lazy" />
+        </div>
 
         <div class="keep__grid" data-wd-stagger="up">
           <div class="keep__card">
+            <Image class="keep__icon" src={iconSells} alt="" width={48} height={48} loading="lazy" />
             <h3 class="keep__title">Design that sells</h3>
             <p class="keep__body">
               No templates, no page-builder soup. A site designed around your customers and what
@@ -365,6 +377,7 @@ const BUDGETS = [
             </p>
           </div>
           <div class="keep__card">
+            <Image class="keep__icon" src={iconBuild} alt="" width={48} height={48} loading="lazy" />
             <h3 class="keep__title">Build: hand-coded or any platform</h3>
             <p class="keep__body">
               Fast, accessible, and easy to edit. You pick the stack; I make sure it loads instantly
@@ -372,6 +385,7 @@ const BUDGETS = [
             </p>
           </div>
           <div class="keep__card">
+            <Image class="keep__icon" src={iconAnalytics} alt="" width={48} height={48} loading="lazy" />
             <h3 class="keep__title">SEO &amp; analytics wired in</h3>
             <p class="keep__body">
               People have to find you before they can pay you. Local search setup, clean metadata,
@@ -379,6 +393,7 @@ const BUDGETS = [
             </p>
           </div>
           <div class="keep__card">
+            <Image class="keep__icon" src={iconCare} alt="" width={48} height={48} loading="lazy" />
             <h3 class="keep__title">Care after launch</h3>
             <p class="keep__body">
               Updates, tweaks, and honest advice from the person who built it, not a support ticket
@@ -433,12 +448,17 @@ const BUDGETS = [
         <p class="scribble" data-wd-reveal="up">how it works</p>
         <h2 class="wd__h2" data-wd-reveal="up">Three steps. <em>No mystery.</em></h2>
 
+        {/*
+          Step one is drawn as a raised card with a coral number and title, the
+          other two sit quietly behind a rule. That is the export's default
+          state, not a hover — the eye is meant to land on "a real conversation".
+        */}
         <ol class="steps__list" data-wd-stagger="up">
-          <li class="steps__row">
+          <li class="steps__row steps__row--live">
             <span class="steps__num" aria-hidden="true">1</span>
-            <div>
-              <h3 class="keep__title">A real conversation</h3>
-              <p class="keep__body">
+            <div class="steps__inner">
+              <h3 class="steps__title">A real conversation</h3>
+              <p class="steps__body">
                 Thirty minutes about your business, your customers, and what “working” means for the
                 site. No jargon.
               </p>
@@ -446,18 +466,18 @@ const BUDGETS = [
           </li>
           <li class="steps__row">
             <span class="steps__num" aria-hidden="true">2</span>
-            <div>
-              <h3 class="keep__title">Design in the open</h3>
-              <p class="keep__body">
+            <div class="steps__inner">
+              <h3 class="steps__title">Design in the open</h3>
+              <p class="steps__body">
                 You see the design early and often. Feedback is a conversation, not a form.
               </p>
             </div>
           </li>
           <li class="steps__row">
             <span class="steps__num" aria-hidden="true">3</span>
-            <div>
-              <h3 class="keep__title">Launch &amp; handover</h3>
-              <p class="keep__body">
+            <div class="steps__inner">
+              <h3 class="steps__title">Launch &amp; handover</h3>
+              <p class="steps__body">
                 Live, fast, and yours. You get the keys, a walkthrough, and someone to call after.
               </p>
             </div>
@@ -556,23 +576,32 @@ const BUDGETS = [
       <div class="wd__inner">
         <p class="scribble" data-wd-reveal="up">the proof</p>
         <h2 class="work__title" data-wd-reveal="up">The <em>work.</em></h2>
-        <div class="work__grid" data-wd-stagger="tilt">
+        {/*
+          A full-bleed screenshot band over a padded body, tag above the name.
+          The taped-photo look and the tilt were the previous design's.
+        */}
+        <div class="work__grid" data-wd-stagger="up">
           {
             WORKS.map((work) => (
-              <article class="workpiece" style={`--tilt:${work.tilt}`}>
-                <div class="workpiece__tape" style={`background:${work.tape}`}>
-                  {work.tapeText}
-                </div>
+              <article class="workpiece">
                 <div class="workpiece__img">
-                  <Image src={work.img} alt={`${work.name} website`} width={860} height={580} loading="lazy" />
+                  <Image
+                    src={work.img}
+                    alt={`${work.name} website`}
+                    widths={[600, 900]}
+                    sizes="(max-width: 900px) 92vw, 44vw"
+                    loading="lazy"
+                  />
                 </div>
-                <h3 class="workpiece__name">{work.name}</h3>
-                <p class="workpiece__tag">{work.tag}</p>
-                <p class="workpiece__blurb">{work.blurb}</p>
-                <p class="workpiece__stat">{work.stat}</p>
-                <a class="workpiece__link" href={work.href} target="_blank" rel="noopener">
-                  {work.link} ↗
-                </a>
+                <div class="workpiece__body">
+                  <p class="workpiece__tag">{work.tag}</p>
+                  <h3 class="workpiece__name">{work.name}</h3>
+                  <p class="workpiece__blurb">{work.blurb}</p>
+                  <p class="workpiece__stat">{work.stat}</p>
+                  <a class="workpiece__link" href={work.href} target="_blank" rel="noopener">
+                    {work.link} ↗
+                  </a>
+                </div>
               </article>
             ))
           }
@@ -590,8 +619,6 @@ const BUDGETS = [
 
     {/* --------------------------------------------------- the awkward one -- */}
     <section class="awkward">
-      <div class="deco awkward__dot1" aria-hidden="true"></div>
-      <div class="deco awkward__dot2" aria-hidden="true"></div>
       <div class="awkward__inner">
         <h2 class="awkward__title" data-wd-reveal="tilt">“Couldn’t I just use AI for this?”</h2>
         <p data-wd-reveal="up">
@@ -607,9 +634,21 @@ const BUDGETS = [
         <p data-wd-reveal="up">
           And I use these tools too. That’s part of why I’m not charging agency prices.
         </p>
-        <p class="awkward__punch" data-wd-reveal="pop">
-          Nobody is asking ChatGPT to verify their Google Business Profile.
-        </p>
+        <div class="awkward__grid">
+          <p class="awkward__punch" data-wd-reveal="pop">
+            Nobody is asking ChatGPT to verify their Google Business Profile.
+          </p>
+          <div class="awkward__gif" data-wd-reveal="up">
+            <img
+              src="/webdesign/computer-loading.gif"
+              alt="A site stuck loading, never quite launched"
+              width="230"
+              height="230"
+              loading="lazy"
+            />
+            <span>designed in an hour. still not live.</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1009,66 +1048,130 @@ const BUDGETS = [
   }
 
   /* ------------------------------------- what you get / three steps (v13) -- */
+  /* 112px/24px is the export's band rhythm, measured at 1440px. These two ran
+     86px with zero side padding, which made the page read cramped and let the
+     content touch the edge on a narrow viewport. `.steps` drops its bottom
+     padding because the discovery box below it belongs to the same band in the
+     export and carries the closing 112px. */
   .keep,
   .steps {
-    padding-block: clamp(48px, 6vw, 88px);
+    padding: clamp(64px, 8vw, 112px) 24px;
   }
 
+  .steps {
+    padding-bottom: 0;
+  }
+
+  /* One box, four panels. The 1px gap over the rule tint draws the hairline
+     dividers; the panels carry no border of their own. Four separate cards
+     with 2px borders and drop shadows is what made this band read heavy. */
   .keep__grid {
     margin-top: 32px;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--wd-rule);
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
+    overflow: hidden;
   }
 
   .keep__card {
-    padding: 26px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 20px;
+    padding: 40px 38px;
     background: var(--wd-bright);
-    box-shadow: 6px 6px 0 var(--wd-ink);
+  }
+
+  .keep__icon {
+    width: 48px;
+    height: 48px;
+    display: block;
   }
 
   .keep__title {
-    font-size: clamp(18px, 1.8vw, 21px);
+    margin: 18px 0 10px;
+    font-size: 22px;
     font-weight: 800;
-    letter-spacing: -0.014em;
     line-height: 1.2;
   }
 
   .keep__body {
-    margin-top: 10px;
-    font-size: 15px;
+    font-size: 15.5px;
     line-height: 1.6;
     color: var(--wd-muted);
     text-wrap: pretty;
   }
 
   .steps__list {
-    margin: 28px 0 0;
+    margin: 44px 0 0;
     padding: 0;
     list-style: none;
+    display: flex;
+    flex-direction: column;
   }
 
   .steps__row {
     display: grid;
-    grid-template-columns: 90px minmax(0, 1fr);
-    gap: 24px;
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 28px;
     align-items: center;
-    padding-block: 26px;
-    border-top: 1px solid #c9c2b2;
+    padding: 34px 8px;
+    border-top: 1px solid var(--wd-rule-strong);
+  }
+
+  /* The card is pulled out by half its own padding so its text still lines up
+     with the rows below it. */
+  .steps__row--live {
+    margin: 0 -17px -1px;
+    padding: 34px 24px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 12px;
+    background: var(--wd-bright);
+  }
+
+  .steps__inner {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 28px;
+    align-items: baseline;
   }
 
   .steps__num {
-    font-size: clamp(34px, 4vw, 54px);
-    font-weight: 800;
+    font-size: 88px;
+    font-weight: 900;
     line-height: 1;
-    color: var(--wd-peach);
+    color: var(--wd-rule-strong);
+  }
+
+  .steps__row--live .steps__num {
+    color: var(--wd-coral);
+  }
+
+  .steps__title {
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .steps__row--live .steps__title {
+    font-weight: 900;
+    color: var(--wd-coral);
+  }
+
+  .steps__body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .steps__row--live .steps__body {
+    color: var(--wd-body);
+    font-weight: 600;
   }
 
   .steps__more {
-    margin-top: 26px;
-    font-size: 16px;
+    margin-top: 34px;
+    max-width: 640px;
+    font-size: 15.5px;
     line-height: 1.6;
     color: var(--wd-muted);
   }
@@ -1083,6 +1186,22 @@ const BUDGETS = [
   .steps__more a:hover,
   .steps__more a:focus-visible {
     color: var(--wd-coral-deep);
+  }
+
+  @media (max-width: 900px) {
+    .steps__row {
+      grid-template-columns: 56px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .steps__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+    }
+
+    .steps__num {
+      font-size: 56px;
+    }
   }
 
   @media (max-width: 900px) {
@@ -1151,7 +1270,9 @@ const BUDGETS = [
   .wdbtn {
     position: relative;
     display: inline-block;
-    border: 2px solid var(--wd-ink);
+    /* Explicit: the submit button is a <button>, which takes the UA's
+       2px outset border the moment we stop declaring one. */
+    border: 0;
     color: var(--wd-ink);
     font-weight: 800;
     font-size: 18px;
@@ -1528,7 +1649,7 @@ const BUDGETS = [
   .who {
     background: var(--wd-ink-deep);
     color: var(--wd-paper);
-    padding: 100px 24px;
+    padding: clamp(64px, 8vw, 112px) 24px;
   }
 
   .who .scribble {
@@ -1649,10 +1770,14 @@ const BUDGETS = [
   }
 
   /* ------------------------------------------------------------ ctaboxes -- */
+  /* Continues the process band: 48px after the steps, then the band's own
+     closing 112px — which is the space that was missing under this box. */
   .disc {
-    padding: 90px 24px 0;
+    padding: 48px 24px clamp(64px, 8vw, 112px);
   }
 
+  /* A 1px dash and a 14px radius in the export — the 2px/28px version read as
+     a much softer, rounder box than the design draws. */
   .ctabox {
     position: relative;
     display: flex;
@@ -1660,10 +1785,10 @@ const BUDGETS = [
     gap: 24px 48px;
     align-items: center;
     justify-content: space-between;
-    border: 2px dashed var(--wd-ink);
-    border-radius: 28px;
-    background: var(--wd-card);
-    padding: 44px 40px;
+    border: 1px dashed var(--wd-ink);
+    border-radius: 14px;
+    background: var(--wd-bright);
+    padding: 40px;
   }
 
   .ctabox--solid {
@@ -1675,17 +1800,16 @@ const BUDGETS = [
 
   .ctabox__badge {
     position: absolute;
-    top: -16px;
-    right: 52px;
-    background: var(--wd-butter);
-    border: 1.5px solid var(--wd-ink);
+    top: -13px;
+    right: 44px;
+    background: var(--wd-yellow);
+    color: var(--wd-ink);
     font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 0.06em;
+    font-size: 11px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     padding: 6px 14px;
     border-radius: 999px;
-    transform: rotate(2deg);
   }
 
   .ctabox__text {
@@ -1694,17 +1818,17 @@ const BUDGETS = [
 
   .ctabox__title {
     margin: 0 0 10px;
-    font-size: clamp(28px, 3.6vw, 44px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
+    font-size: clamp(26px, 3.4vw, 38px);
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
     text-transform: uppercase;
   }
 
   .ctabox__body {
     margin: 0;
-    font-size: 17px;
-    line-height: 1.55;
+    font-size: 16px;
+    line-height: 1.6;
     color: var(--wd-muted);
   }
 
@@ -1917,7 +2041,7 @@ const BUDGETS = [
   .pricing {
     background: var(--wd-ink-deep);
     color: var(--wd-paper);
-    padding: 110px 24px;
+    padding: clamp(64px, 8vw, 112px) 24px;
   }
 
   .pricing .scribble {
@@ -2058,9 +2182,7 @@ const BUDGETS = [
   /* ----------------------------------------------------------------- work -- */
   .work {
     background: var(--wd-paper);
-    border-top: 2px solid var(--wd-ink);
-    border-bottom: 2px solid var(--wd-ink);
-    padding: 110px 24px;
+    padding: clamp(64px, 8vw, 112px) 24px;
   }
 
   /* No text-shadow in v13 — that was needed when this band was peach. */
@@ -2075,51 +2197,39 @@ const BUDGETS = [
 
   .work__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px;
   }
 
+  /* No resting shadow and no tilt in the export — the card lifts on hover
+     into a coral drop instead. */
   .workpiece {
     position: relative;
-    background: var(--wd-card);
-    border: 2px solid var(--wd-ink);
-    border-radius: 22px;
-    padding: 18px 18px 26px;
-    transform: rotate(var(--tilt, 0deg));
+    background: var(--wd-bright);
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 6px 6px 0 var(--wd-ink);
-    transition: transform 0.25s ease;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .workpiece:hover,
+  .workpiece:focus-within {
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 0 var(--wd-coral);
   }
 
   .workpiece:hover {
     transform: rotate(0deg) translateY(-4px);
   }
 
-  .workpiece__tape {
-    position: absolute;
-    top: -13px;
-    left: 34px;
-    min-width: 92px;
-    height: 28px;
-    padding: 0 12px;
-    border: 1.5px solid var(--wd-ink);
-    transform: rotate(-4deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--wd-hand);
-    font-size: 19px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
   .workpiece__img {
-    border-radius: 14px;
-    overflow: hidden;
-    background: #DDD6C7;
-    border: 1.5px solid var(--wd-ink);
-    height: 290px;
+    height: 280px;
+    background: var(--wd-blueband);
+    border-bottom: 1px solid var(--wd-ink);
   }
 
   .workpiece__img :global(img) {
@@ -2130,41 +2240,57 @@ const BUDGETS = [
     display: block;
   }
 
-  .workpiece__name {
-    margin: 20px 0 2px;
-    font-size: 26px;
-    font-weight: 800;
+  .workpiece__body {
+    padding: 26px 28px 30px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   .workpiece__tag {
-    margin: 0 0 10px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    margin: 0 0 6px;
+    font-family: var(--wd-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--wd-muted);
   }
 
+  .workpiece__name {
+    margin: 0 0 10px;
+    font-size: 25px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
   .workpiece__blurb {
     margin: 0 0 12px;
-    font-size: 16px;
-    line-height: 1.55;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--wd-muted);
   }
 
   .workpiece__stat {
-    margin: 0 0 16px;
+    margin: 0 0 18px;
     font-family: var(--wd-hand);
-    font-size: 23px;
-    color: var(--wd-bluelink);
+    font-size: 22px;
+    color: var(--wd-coral-deep);
   }
 
   .workpiece__link {
     margin-top: auto;
     align-self: flex-start;
-    font-weight: 700;
-    font-size: 16px;
+    font-weight: 800;
+    font-size: 15px;
     color: var(--wd-ink);
-    border-bottom: 3px solid var(--wd-gold);
+    border-bottom: 2.5px solid var(--wd-coral);
+    padding-bottom: 2px;
+  }
+
+  .workpiece__link:hover,
+  .workpiece__link:focus-visible {
+    color: var(--wd-coral);
   }
 
   .workpiece__link:hover,
@@ -2184,7 +2310,7 @@ const BUDGETS = [
   /* -------------------------------------------------------------- awkward -- */
   .awkward {
     position: relative;
-    padding: 110px 24px;
+    padding: 0 24px clamp(64px, 8vw, 112px);
     overflow: hidden;
   }
 
@@ -2208,18 +2334,65 @@ const BUDGETS = [
 
   .awkward__inner {
     position: relative;
-    max-width: 900px;
+    max-width: 880px;
     margin-inline: auto;
+    border-top: 1px solid var(--wd-rule-strong);
+    padding-top: clamp(56px, 7vw, 96px);
   }
 
   .awkward__title {
-    margin: 0 0 28px;
+    margin: 0 0 26px;
     font-family: var(--wd-hand);
-    font-size: clamp(44px, 7vw, 84px);
+    font-size: clamp(40px, 6.4vw, 76px);
     font-weight: 700;
     line-height: 1;
-    color: var(--wd-scribble);
-    transform: rotate(-1.2deg);
+    color: var(--wd-coral-deep);
+    transform: rotate(-1deg);
+  }
+
+  .awkward__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 36px;
+    align-items: center;
+  }
+
+  .awkward__gif {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .awkward__gif img {
+    width: 100%;
+    max-width: 230px;
+    height: auto;
+    display: block;
+  }
+
+  .awkward__gif span {
+    font-family: var(--wd-hand);
+    font-size: 22px;
+    color: var(--wd-muted);
+    text-align: center;
+    transform: rotate(-1deg);
+  }
+
+  .keep__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 52px;
+  }
+
+  .keep__gif {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    justify-self: end;
+    display: block;
   }
 
   .awkward__inner > p {
@@ -2231,16 +2404,16 @@ const BUDGETS = [
 
   .awkward__punch {
     display: inline-block;
-    background: var(--wd-butter);
-    border: 2px solid var(--wd-ink);
+    background: var(--wd-yellow);
+    border: 1px solid var(--wd-ink);
     color: var(--wd-ink) !important;
-    font-size: clamp(20px, 2.6vw, 28px) !important;
-    font-weight: 800;
+    font-size: clamp(19px, 2.4vw, 26px) !important;
+    font-weight: 900;
     line-height: 1.35 !important;
-    padding: 16px 24px;
-    border-radius: 14px;
-    transform: rotate(-0.8deg);
-    box-shadow: 5px 5px 0 var(--wd-ink);
+    padding: 18px 26px;
+    border-radius: 12px;
+    transform: rotate(-0.6deg);
+    box-shadow: 6px 6px 0 var(--wd-ink);
     margin-top: 10px !important;
   }
 
@@ -2290,7 +2463,7 @@ const BUDGETS = [
 
   /* ------------------------------------------------------------------ faq -- */
   .faq {
-    padding: 110px 24px;
+    padding: 0 24px clamp(64px, 8vw, 112px);
   }
 
   .faq__inner {
@@ -2299,12 +2472,20 @@ const BUDGETS = [
   }
 
   .faq__list {
-    border-top: 2px solid var(--wd-ink);
     margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .faq__item {
-    border-bottom: 2px solid var(--wd-ink);
+    background: var(--wd-bright);
+    border: 1px solid var(--wd-rule-soft);
+    border-radius: 12px;
+  }
+
+  .faq__item:has([aria-expanded='true']) {
+    border-color: var(--wd-ink);
   }
 
   .faq__q {
@@ -2347,8 +2528,7 @@ const BUDGETS = [
   .start {
     background: var(--wd-coral-deep);
     color: var(--wd-card);
-    border-top: 2px solid var(--wd-ink);
-    padding: 110px 24px 100px;
+    padding: clamp(64px, 8vw, 112px) 24px;
   }
 
   .start__inner {
@@ -2588,7 +2768,45 @@ const BUDGETS = [
     }
   }
 
+  /* The export hides both decorative columns at 860px rather than squeezing
+     them. */
+  @media (max-width: 860px) {
+    .keep__head,
+    .awkward__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    .keep__gif {
+      display: none;
+    }
+  }
+
   @media (max-width: 760px) {
+    .keep__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .keep__card {
+      padding: 26px 22px;
+    }
+
+    .ctabox {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 30px 22px;
+    }
+
+    .ctabox__badge {
+      right: auto;
+      left: 18px;
+    }
+
+    .work__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+
     .deco {
       display: none;
     }
