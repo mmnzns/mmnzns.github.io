@@ -8,7 +8,7 @@ import { CONTACT } from '../config';
  * and `/pricing/`.
  *
  * v13 split the web design offer into four pages. This layout carries the
- * sub-brand for the three new ones: the `--wd-*` palette, Bricolage Grotesque
+ * sub-brand for the three new ones: the `--wd-*` palette, Archivo
  * + Caveat, the grain and the footer.
  *
  * The nav is **not** here. `web-design.astro` is deliberately not migrated
@@ -38,7 +38,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
       rel="stylesheet"
     />
   </Fragment>
@@ -126,21 +126,34 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* Namespaced under `.wd`, and global because scoped rules can't reach the
      page markup that arrives through <slot />. */
   .wd {
-    --wd-paper: #fdf9ef;
-    --wd-bright: #fffdf7;
-    --wd-ink: #1c1b19;
-    --wd-muted: #55503f;
-    --wd-faint: #8a8168;
-    --wd-peach: #f5c0a4;
-    --wd-blue: #add4ee;
-    --wd-blueband: #c3dff1;
-    --wd-butter: #fadfa6;
-    --wd-coral: #f0621f;
-    --wd-coral-deep: #d8501a;
-    --wd-bluelink: #2a82be;
-    --wd-gold: #e8a317;
-    --wd-font: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+    /* v13 palette. The web design section was re-skinned in v13: Archivo
+       replaces Bricolage Grotesque, the paper cools, and the peach/blue pair
+       is gone entirely. `--wd-peach` and `--wd-blue*` are kept as aliases
+       onto their v13 replacements so nothing referencing them renders an
+       invalid colour, but new work should use the named tokens below. */
+    --wd-paper: #f4f1ea;
+    --wd-card: #fcfbf7;
+    --wd-bright: #fcfbf7;
+    --wd-ink: #171310;
+    --wd-ink-deep: #14100c;
+    --wd-ink-soft: #3a3327;
+    --wd-muted: #6e675c;
+    --wd-faint: #a89f8d;
+    --wd-rule: #ddd6c7;
+    --wd-rule-strong: #c9c2b2;
+    --wd-yellow: #f5d44a;
+    --wd-coral: #ee4a11;
+    --wd-coral-deep: #d8400c;
+    --wd-scribble: #d8400c;
+    --wd-butter: #f5d44a;
+    --wd-gold: #f5d44a;
+    --wd-peach: #f5d44a;
+    --wd-blue: #ddd6c7;
+    --wd-blueband: #e5dfd0;
+    --wd-bluelink: #d8400c;
+    --wd-font: 'Archivo', 'Helvetica Neue', sans-serif;
     --wd-hand: 'Caveat', cursive;
+    --wd-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
     position: relative;
     min-width: 320px;
@@ -148,6 +161,15 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--wd-ink);
     font-family: var(--wd-font);
     overflow-x: clip;
+  }
+
+  /* Archivo is a variable font with a width axis, and v13 sets headings wide.
+     This is a large part of why the section reads as its own brand. */
+  .wd h1,
+  .wd h2,
+  .wd h3,
+  .wd h4 {
+    font-stretch: 125%;
   }
 
   .wd a {
@@ -292,7 +314,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .wd .wdtable td {
     padding: 14px 16px;
     text-align: left;
-    border-bottom: 1px solid rgb(28 27 25 / 12%);
+    border-bottom: 1px solid rgb(23 19 16 / 12%);
     vertical-align: top;
     min-width: 150px;
   }

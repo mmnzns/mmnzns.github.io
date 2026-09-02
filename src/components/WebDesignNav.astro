@@ -23,11 +23,13 @@ interface Props {
 
 const { current } = Astro.props;
 
+/* v13's nav is plain text links — the coloured dots were a leftover from the
+   previous design and are not in the export. */
 const LINKS = [
-  { label: 'Home', href: '/web-design/', key: 'home', dot: '#F0621F' },
-  { label: 'Work', href: '/web-design/work/', key: 'work', dot: '#F5C0A4' },
-  { label: 'Process', href: '/web-design/process/', key: 'process', dot: '#FADFA6' },
-  { label: 'Pricing', href: '/web-design/pricing/', key: 'pricing', dot: '#ADD4EE' },
+  { label: 'Home', href: '/web-design/', key: 'home' },
+  { label: 'Work', href: '/web-design/work/', key: 'work' },
+  { label: 'Process', href: '/web-design/process/', key: 'process' },
+  { label: 'Pricing', href: '/web-design/pricing/', key: 'pricing' },
 ] as const;
 ---
 
@@ -51,7 +53,6 @@ const LINKS = [
           href={link.href}
           aria-current={current === link.key ? 'page' : undefined}
         >
-          <span class="wdnav__dot" style={`background:${link.dot}`} aria-hidden="true" />
           {link.label}
         </a>
       ))
@@ -124,7 +125,7 @@ const LINKS = [
     justify-content: space-between;
     gap: 16px;
     padding: 14px 24px;
-    background: rgb(242 235 223 / 94%);
+    background: rgb(244 241 234 / 94%);
     backdrop-filter: blur(8px);
     border-bottom: 1.5px solid var(--wd-ink);
   }
@@ -158,7 +159,7 @@ const LINKS = [
   .wdnav__brandsub {
     font-family: var(--wd-hand);
     font-size: 16px;
-    color: var(--wd-scribble, #e0561b);
+    color: var(--wd-scribble, #D8400C);
     transform: rotate(-1deg);
   }
 
@@ -193,7 +194,7 @@ const LINKS = [
   .wdnav__div {
     width: 1.5px;
     height: 18px;
-    background: rgb(28 27 25 / 25%);
+    background: rgb(23 19 16 / 25%);
     flex: none;
   }
 
@@ -207,7 +208,7 @@ const LINKS = [
   .wdnav__sec:hover,
   .wdnav__sec:focus-visible {
     color: var(--wd-coral-deep);
-    text-decoration: underline wavy #2f9bdb 2px;
+    text-decoration: underline wavy #D8400C 2px;
   }
 
   /* The current page is marked with the same wavy underline the hover uses,
@@ -217,14 +218,6 @@ const LINKS = [
     text-decoration: underline wavy var(--wd-coral) 2px;
   }
 
-  .wdnav__dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    margin-right: 7px;
-    vertical-align: 2px;
-  }
 
   .wdnav__cta {
     background: var(--wd-peach);
@@ -289,7 +282,7 @@ const LINKS = [
     color: var(--wd-ink);
     text-align: center;
     text-decoration: none;
-    border-bottom: 1.5px solid #e4dcc9;
+    border-bottom: 1.5px solid #DDD6C7;
   }
 
   .wdnav__panel a[aria-current='page'] {

@@ -13,7 +13,7 @@ import shotSLP from '../assets/webdesign/east-van-slp.jpg';
 /**
  * The web design service page — deliberately nothing like the rest of the
  * site. Its own palette (warm cream, peach, powder blue), its own faces
- * (Bricolage Grotesque + Caveat, from Google Fonts), its own nav and footer.
+ * (Archivo + Caveat + IBM Plex Mono, from Google Fonts), its own nav and footer.
  * That difference is the point: it separates the offer from the lifecycle
  * consulting brand while still living on the same domain for the traffic.
  * Don't restyle it to match global.css — see the note there.
@@ -34,33 +34,33 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
 const WHO = [
   {
     title: 'Local small businesses',
-    color: '#D8501A',
-    backBg: '#FCEBE1',
-    tilt: '-.5deg',
+    color: '#D8400C',
+    backBg: '#FCFBF7',
+    tilt: '-1deg',
     front: 'Clinics, trades, restaurants, salons, studios. The site is ten years old — or doesn’t exist.',
     back: '46% of Google searches are looking for something local — and most people check a business online before calling. If the site is broken or missing, they call the next one on the list. A current site with real hours, services and a working form quietly wins you the customers your competitors lose.',
   },
   {
     title: 'Independent professionals',
-    color: '#2A82BE',
-    backBg: '#EBF4FB',
-    tilt: '.5deg',
+    color: '#171310',
+    backBg: '#F5D44A',
+    tilt: '1deg',
     front: 'Consultants, therapists, coaches, designers. One credible page that isn’t LinkedIn.',
     back: 'Referrals still get googled. When a warm lead looks you up and finds only a LinkedIn profile, some of that trust leaks away. One well-written page — who you help, how it works, how to book — turns “I’ve heard of them” into “I’ve booked a call.”',
   },
   {
     title: 'Companies & startups',
-    color: '#D8501A',
-    backBg: '#FCEBE1',
-    tilt: '-.5deg',
+    color: '#D8400C',
+    backBg: '#FCFBF7',
+    tilt: '-1deg',
     front: 'Real CMS, conversion tracking, structured content. Quoted properly, not priced off a menu.',
     back: 'Your website is usually the first thing an investor, partner or serious buyer checks, often before they reply to the email. A site with structure, tracking and content that answers their questions does diligence for you while you sleep.',
   },
   {
     title: 'Agencies',
-    color: '#2A82BE',
-    backBg: '#EBF4FB',
-    tilt: '.5deg',
+    color: '#D8400C',
+    backBg: '#FCFBF7',
+    tilt: '1deg',
     front: 'White-label builds. You bring the design, I build it fast and quietly.',
     back: 'Overflow happens. When your dev bench is full, I build to your designs, in your client’s stack, under your name — clean handoff, no client contact unless you want it. You keep the margin and the relationship.',
   },
@@ -71,7 +71,7 @@ const WORKS = [
     name: 'Intelligent Investing',
     tag: 'Fintech platform · Webflow',
     tapeText: 'fintech',
-    tape: '#FADFA6',
+    tape: '#F5D44A',
     tilt: '-1.2deg',
     img: shotII,
     blurb:
@@ -84,7 +84,7 @@ const WORKS = [
     name: 'DTC Newsletter',
     tag: 'Daily publication · Webflow CMS',
     tapeText: 'media',
-    tape: '#C3DFF1',
+    tape: '#E5DFD0',
     tilt: '1.1deg',
     img: shotDTC,
     blurb:
@@ -97,7 +97,7 @@ const WORKS = [
     name: 'Katty & Co',
     tag: 'Pet care, Vancouver · hand-built',
     tapeText: 'local biz',
-    tape: '#FADFA6',
+    tape: '#F5D44A',
     tilt: '1.3deg',
     img: shotKatty,
     blurb:
@@ -110,7 +110,7 @@ const WORKS = [
     name: 'East Van SLP',
     tag: 'Speech-language pathology · hand-built, 5 pages',
     tapeText: 'clinic',
-    tape: '#C3DFF1',
+    tape: '#E5DFD0',
     tilt: '-1.1deg',
     img: shotSLP,
     blurb:
@@ -194,7 +194,7 @@ const BUDGETS = [
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Caveat:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
       rel="stylesheet"
     />
   </Fragment>
@@ -231,7 +231,7 @@ const BUDGETS = [
                 ><path
                   d="M6 15 C 32 8, 56 19, 86 13 S 140 7, 164 15 S 198 18, 214 11"
                   fill="none"
-                  stroke="#ADD4EE"
+                  stroke="#DDD6C7"
                   stroke-width="7"
                   stroke-linecap="round"
                   vector-effect="non-scaling-stroke"></path></svg
@@ -578,13 +578,13 @@ const BUDGETS = [
                 style="--tilt:-.6deg"
                 href={`mailto:${CONTACT.email}?subject=New website project`}
               >
-                <span class="startroute__icon" style="background:#F5C0A4" aria-hidden="true">
+                <span class="startroute__icon" style="background:#F5D44A" aria-hidden="true">
                   <svg
                     width="22"
                     height="22"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="#1C1B19"
+                    stroke="#171310"
                     stroke-width="2.2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -598,13 +598,13 @@ const BUDGETS = [
                 </span>
               </a>
               <a class="startroute" style="--tilt:.6deg" href={phoneHref}>
-                <span class="startroute__icon" style="background:#ADD4EE" aria-hidden="true">
+                <span class="startroute__icon" style="background:#DDD6C7" aria-hidden="true">
                   <svg
                     width="22"
                     height="22"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="#1C1B19"
+                    stroke="#171310"
                     stroke-width="2.2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -850,29 +850,49 @@ const BUDGETS = [
   /* The page's own design system. Cream paper, ink, peach/blue/butter pastels,
      rounded everything — nothing shared with global.css on purpose. */
   .wd {
-    --wd-paper: #f2ebdf;
-    --wd-card: #fbf3e4;
-    --wd-bright: #fffdf7;
-    --wd-ink: #1c1b19;
-    --wd-muted: #55503f;
-    --wd-faint: #8a8168;
-    --wd-peach: #f5c0a4;
-    --wd-blue: #add4ee;
-    --wd-blueband: #c3dff1;
-    --wd-butter: #fadfa6;
-    --wd-coral: #f0621f;
-    --wd-coral-deep: #d8501a;
-    --wd-scribble: #e0561b;
-    --wd-bluelink: #2a82be;
-    --wd-gold: #e8a317;
-    --wd-font: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+    /* v13 palette. The web design section was re-skinned in v13: Archivo
+       replaces Bricolage Grotesque, the paper cools, and the peach/blue pair
+       is gone entirely. `--wd-peach` and `--wd-blue*` are kept as aliases
+       onto their v13 replacements so nothing referencing them renders an
+       invalid colour, but new work should use the named tokens below. */
+    --wd-paper: #f4f1ea;
+    --wd-card: #fcfbf7;
+    --wd-bright: #fcfbf7;
+    --wd-ink: #171310;
+    --wd-ink-deep: #14100c;
+    --wd-ink-soft: #3a3327;
+    --wd-muted: #6e675c;
+    --wd-faint: #a89f8d;
+    --wd-rule: #ddd6c7;
+    --wd-rule-strong: #c9c2b2;
+    --wd-yellow: #f5d44a;
+    --wd-coral: #ee4a11;
+    --wd-coral-deep: #d8400c;
+    --wd-scribble: #d8400c;
+    --wd-butter: #f5d44a;
+    --wd-gold: #f5d44a;
+    --wd-peach: #f5d44a;
+    --wd-blue: #ddd6c7;
+    --wd-blueband: #e5dfd0;
+    --wd-bluelink: #d8400c;
+    --wd-font: 'Archivo', 'Helvetica Neue', sans-serif;
     --wd-hand: 'Caveat', cursive;
+    --wd-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
     font-family: var(--wd-font);
     background: var(--wd-paper);
     color: var(--wd-ink);
     min-width: 320px;
     overflow-x: clip;
+  }
+
+  /* Archivo is a variable font with a width axis, and v13 sets headings wide.
+     This is a large part of why the section reads as its own brand. */
+  .wd :global(h1),
+  .wd :global(h2),
+  .wd :global(h3),
+  .wd :global(h4) {
+    font-stretch: 125%;
   }
 
   .wd :global(a) {
@@ -1090,7 +1110,7 @@ const BUDGETS = [
     bottom: -14px;
     left: -14px;
     font-size: 20px;
-    color: #2f9bdb;
+    color: #D8400C;
     text-shadow: 1px 1px 0 var(--wd-ink);
     animation-delay: 2.25s;
   }
@@ -1371,7 +1391,7 @@ const BUDGETS = [
   .hero__platforms {
     margin: 56px 0 0;
     padding: 20px 0 28px;
-    border-top: 1.5px solid #d9cdb8;
+    border-top: 1.5px solid #C9C2B2;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -1390,11 +1410,16 @@ const BUDGETS = [
   }
 
   /* ----------------------------------------------------------------- who -- */
+  /* v13 runs this band near-black. Everything inside it inherits, so the
+     card faces below set their own ink back explicitly. */
   .who {
-    background: var(--wd-peach);
-    border-top: 2px solid var(--wd-ink);
-    border-bottom: 2px solid var(--wd-ink);
+    background: var(--wd-ink-deep);
+    color: var(--wd-paper);
     padding: 100px 24px;
+  }
+
+  .who .scribble {
+    color: var(--wd-yellow);
   }
 
   .who__title {
@@ -1577,7 +1602,7 @@ const BUDGETS = [
     bottom: -12px;
     right: 64px;
     font-size: 24px;
-    color: #2f9bdb;
+    color: #D8400C;
     text-shadow: 1px 1px 0 var(--wd-ink);
     transform: rotate(15deg);
   }
@@ -1763,7 +1788,23 @@ const BUDGETS = [
 
   /* -------------------------------------------------------------- pricing -- */
   .pricing {
+    background: var(--wd-ink-deep);
+    color: var(--wd-paper);
     padding: 110px 24px;
+  }
+
+  .pricing .scribble {
+    color: var(--wd-yellow);
+  }
+
+  .pricing__sub a {
+    color: var(--wd-yellow);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .pricing__label {
+    color: var(--wd-faint);
   }
 
   .pricing__sub {
@@ -1779,7 +1820,7 @@ const BUDGETS = [
     font-weight: 800;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--wd-faint, #8a8168);
+    color: var(--wd-faint, #A89F8D);
   }
 
   .pricing__list {
@@ -1877,7 +1918,7 @@ const BUDGETS = [
 
   /* ----------------------------------------------------------------- work -- */
   .work {
-    background: var(--wd-peach);
+    background: var(--wd-paper);
     border-top: 2px solid var(--wd-ink);
     border-bottom: 2px solid var(--wd-ink);
     padding: 110px 24px;
@@ -1937,7 +1978,7 @@ const BUDGETS = [
   .workpiece__img {
     border-radius: 14px;
     overflow: hidden;
-    background: #e4dcc9;
+    background: #DDD6C7;
     border: 1.5px solid var(--wd-ink);
     height: 290px;
   }
@@ -2046,7 +2087,7 @@ const BUDGETS = [
     margin: 0 0 18px;
     font-size: 20px;
     line-height: 1.6;
-    color: #3e3a2f;
+    color: #3A3327;
   }
 
   .awkward__punch {
@@ -2165,9 +2206,14 @@ const BUDGETS = [
 
   /* ---------------------------------------------------------------- start -- */
   .start {
-    background: var(--wd-butter);
+    background: var(--wd-coral-deep);
+    color: var(--wd-card);
     border-top: 2px solid var(--wd-ink);
     padding: 110px 24px 100px;
+  }
+
+  .start .scribble {
+    color: var(--wd-yellow);
   }
 
   .start__inner {
@@ -2350,7 +2396,7 @@ const BUDGETS = [
   .startform__note {
     margin: 0;
     font-size: 13px;
-    color: #6b6555;
+    color: #6E675C;
     line-height: 1.5;
     font-weight: 400;
     letter-spacing: normal;
@@ -2360,7 +2406,7 @@ const BUDGETS = [
   /* --------------------------------------------------------------- footer -- */
   .wdfoot {
     background: var(--wd-ink);
-    color: #a39c88;
+    color: #A89F8D;
     padding: 40px 24px;
   }
 
