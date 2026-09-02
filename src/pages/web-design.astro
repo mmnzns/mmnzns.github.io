@@ -4,16 +4,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import WebDesignNav from '../components/WebDesignNav.astro';
 import { CONTACT, FORM_ENDPOINT } from '../config';
 import { SUMMARY_EXTRAS, SUMMARY_TIERS } from '../data/web-design';
-import logoM from '../assets/logo-m-transparent.png';
 import shotII from '../assets/webdesign/intelligent-investing.jpg';
 import shotDTC from '../assets/webdesign/dtc-newsletter.jpg';
 import shotKatty from '../assets/webdesign/kattyco.jpg';
 import shotSLP from '../assets/webdesign/east-van-slp.jpg';
+import laptopFrame from '../assets/webdesign/hero-laptop-frame.png';
 
 /**
  * The web design service page — deliberately nothing like the rest of the
- * site. Its own palette (warm cream, peach, powder blue), its own faces
- * (Archivo + Caveat + IBM Plex Mono, from Google Fonts), its own nav and footer.
+ * site. Its own palette (cool paper, coral and yellow; v13 dropped the peach
+ * and powder blue the earlier version used), its own faces (Archivo, wide and
+ * italic, + Caveat + IBM Plex Mono), its own nav and footer.
  * That difference is the point: it separates the offer from the lifecycle
  * consulting brand while still living on the same domain for the traffic.
  * Don't restyle it to match global.css — see the note there.
@@ -194,7 +195,7 @@ const BUDGETS = [
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
   </Fragment>
@@ -205,66 +206,140 @@ const BUDGETS = [
     <WebDesignNav current="home" />
 
     {/* -------------------------------------------------------------- hero -- */}
+    {/*
+      v13 rebuilt this hero as a two-column grid: the headline on the left, a
+      laptop showing the live work on the right. In the export a single piece
+      of state drives the rotating word AND the screenshot, so the word, the
+      caption link and the active dot always agree. That pairing is the whole
+      idea, so the script below advances all four together rather than running
+      two independent timers.
+    */}
     <header class="hero" id="top">
-      <div class="hero__floatA" aria-hidden="true"></div>
-      <div class="hero__floatB" aria-hidden="true"></div>
-      <div class="deco hero__spin" aria-hidden="true">✳</div>
-      <div class="deco hero__dot1" aria-hidden="true"></div>
-      <div class="deco hero__dot2" aria-hidden="true"></div>
-      <div class="deco hero__dot3" aria-hidden="true"></div>
+      <div class="hero__grid">
+        <div>
+          <div class="hero__badges">
+            <span class="hero__badge">Vancouver &amp; the Lower Mainland</span>
+            <span class="hero__badge hero__badge--fill">One person, not an agency</span>
+          </div>
 
-      <div class="hero__inner">
-        <div class="hero__badges">
-          <span class="hero__badge">Vancouver &amp; the Lower Mainland</span>
-          <span class="hero__badge hero__badge--tilt">One person, not an agency</span>
-        </div>
-
-        <h1 class="hero__h1">
-          <span class="hero__line">A website that</span>
-          <span class="hero__line"
-            >gets you <span class="hero__word-wrap"
-              ><span class="hero__word" data-wd-word>paid.</span><svg
-                viewBox="0 0 220 24"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-                class="hero__underline"
-                ><path
-                  d="M6 15 C 32 8, 56 19, 86 13 S 140 7, 164 15 S 198 18, 214 11"
-                  fill="none"
-                  stroke="#DDD6C7"
-                  stroke-width="7"
-                  stroke-linecap="round"
-                  vector-effect="non-scaling-stroke"></path></svg
+          <h1 class="hero__h1">
+            <span class="hero__line">A website that</span>
+            <span class="hero__line">gets you</span>
+            <span class="hero__line"
+              ><span class="hero__word-wrap"
+                ><span class="hero__word" data-wd-word>found.</span><svg
+                  viewBox="0 0 220 24"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  class="hero__underline"
+                  ><path
+                    d="M6 15 C 32 8, 56 19, 86 13 S 140 7, 164 15 S 198 18, 214 11"
+                    fill="none"
+                    stroke="#EE4A11"
+                    stroke-width="7"
+                    stroke-linecap="round"
+                    vector-effect="non-scaling-stroke"></path></svg
+                ></span
               ></span
-            ></span
-          >
-        </h1>
+            >
+          </h1>
 
-        <div class="hero__row">
           <p class="hero__lede">
             For small businesses and independent professionals. Twelve years building sites inside
             companies (fintech, ecommerce, agency), now available directly.
           </p>
+
           <div class="hero__ctas">
-            <span class="hero__scribble">hand-built or on Webflow — your call ↓</span>
+            <span class="hero__scribble">hand-built or any platform, your call</span>
             <div class="hero__buttons">
-              <span class="starwrap">
-                <a class="wdbtn wdbtn--peach wdbtn--wiggle" href="#start">Start a project</a>
-                <span class="star star--tr" aria-hidden="true">✦</span>
-                <span class="star star--bl" aria-hidden="true">✦</span>
-              </span>
-              <a class="wdbtn wdbtn--outline" href="#work">See the work</a>
+              <a class="hero__btn hero__btn--solid" href="#start">Start a project ↗</a>
+              <a class="hero__btn hero__btn--outline" href="#work">See the work</a>
             </div>
           </div>
         </div>
 
-        <p class="hero__platforms">
-          <span>Webflow</span><span class="hero__ast">✳</span><span>Shopify</span><span
-            class="hero__ast">✳</span
-          ><span>WordPress</span><span class="hero__ast">✳</span><span>Squarespace</span><span
-            class="hero__ast">✳</span
-          ><span>or hand-coded &amp; hosted free, forever</span>
-        </p>
+        <div>
+          <div class="hero__device">
+            <div class="hero__screen">
+              {
+                WORKS.map((work, i) => (
+                  <Image
+                    class:list={['hero__shot', i === 0 && 'is-on']}
+                    src={work.img}
+                    alt={`${work.name} · live site`}
+                    widths={[560, 900]}
+                    sizes="(max-width: 980px) 92vw, 46vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    data-wd-shot={i}
+                  />
+                ))
+              }
+            </div>
+            <Image
+              class="hero__frame"
+              src={laptopFrame}
+              alt=""
+              widths={[760, 1280]}
+              sizes="(max-width: 980px) 96vw, 48vw"
+              loading="eager"
+            />
+            {/*
+              The export pins this badge at a canvas pixel (`left: 1091px`),
+              which only holds at the width it was drawn on. Anchoring it to
+              the laptop's own top-right keeps it where the design puts it at
+              every width.
+            */}
+            <span class="hero__stamp">Real sites. Live now.</span>
+          </div>
+
+          <div class="hero__shotbar">
+            <span class="hero__shotlink">
+              <a href={WORKS[0].href} target="_blank" rel="noopener" data-wd-shotlink
+                >{WORKS[0].link} ↗</a
+              >
+            </span>
+            <span class="hero__dots">
+              {
+                WORKS.map((work, i) => (
+                  <button
+                    type="button"
+                    class:list={['hero__dot', i === 0 && 'is-on']}
+                    data-wd-dot={i}
+                    data-wd-href={work.href}
+                    data-wd-link={work.link}
+                    aria-label={`Show ${work.name}`}
+                  >
+                    <span aria-hidden="true" />
+                  </button>
+                ))
+              }
+            </span>
+            <span class="hero__shotsp"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__marquee" aria-hidden="true">
+        <div class="hero__mq">
+          {
+            [0, 1, 2, 3].map(() => (
+              <div class="hero__mqi">
+                <span>Hand-coded &amp; hosted free, forever</span>
+                <span class="hero__ast">✳</span>
+                <span>Webflow</span>
+                <span class="hero__ast">✳</span>
+                <span>Shopify</span>
+                <span class="hero__ast">✳</span>
+                <span>WordPress</span>
+                <span class="hero__ast">✳</span>
+                <span>Squarespace</span>
+                <span class="hero__ast">✳</span>
+                <span>Framer</span>
+                <span class="hero__ast">✳</span>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </header>
 
@@ -709,20 +784,53 @@ const BUDGETS = [
 
 <script>
   /* ---------------------------------------------------------- word rotor -- */
+  /* One index drives the headline word, the laptop screenshot, the caption
+     link and the active dot, exactly as the export does — they are meant to
+     change together, and two timers would drift apart. */
   const word = document.querySelector<HTMLElement>('[data-wd-word]');
+  const shots = [...document.querySelectorAll<HTMLElement>('[data-wd-shot]')];
+  const dots = [...document.querySelectorAll<HTMLButtonElement>('[data-wd-dot]')];
+  const shotLink = document.querySelector<HTMLAnchorElement>('[data-wd-shotlink]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (word && !reduced) {
-    const words = ['found.', 'booked.', 'called.', 'paid.'];
-    let index = words.length - 1; // starts on the server-rendered "paid."
-    window.setInterval(() => {
-      index = (index + 1) % words.length;
-      word.textContent = words[index];
-      word.style.animation = 'none';
-      // Restart the entrance animation by forcing a reflow between writes.
-      void word.offsetWidth;
-      word.style.animation = `${index % 2 === 0 ? 'wd-in-a' : 'wd-in-b'} .55s cubic-bezier(.2,.8,.2,1) both`;
-    }, 2400);
+  const WORDS = ['found.', 'booked.', 'called.', 'paid.'];
+  let index = 0; // the server-rendered state: "found." and the first shot
+
+  const paint = (next: number, animateWord: boolean) => {
+    index = ((next % WORDS.length) + WORDS.length) % WORDS.length;
+
+    if (word) {
+      word.textContent = WORDS[index];
+      if (animateWord) {
+        word.style.animation = 'none';
+        // Restart the entrance animation by forcing a reflow between writes.
+        void word.offsetWidth;
+        word.style.animation = `${index % 2 === 0 ? 'wd-in-a' : 'wd-in-b'} .55s cubic-bezier(.2,.8,.2,1) both`;
+      }
+    }
+
+    shots.forEach((shot, i) => shot.classList.toggle('is-on', i === index));
+    dots.forEach((dot, i) => dot.classList.toggle('is-on', i === index));
+
+    const active = dots[index];
+    if (shotLink && active) {
+      shotLink.href = active.dataset.wdHref ?? shotLink.href;
+      shotLink.textContent = `${active.dataset.wdLink ?? ''} ↗`;
+    }
+  };
+
+  // Clicking a dot picks that shot and stops the carousel advancing itself,
+  // so the page doesn't move on while someone is reading what they chose.
+  let timer = 0;
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      window.clearInterval(timer);
+      paint(i, !reduced);
+    });
+  });
+
+  if (!reduced && (word || shots.length)) {
+    timer = window.setInterval(() => paint(index + 1, true), 2400);
   }
 
   /* ----------------------------------------------------------- flip cards -- */
@@ -1011,11 +1119,27 @@ const BUDGETS = [
 
   .wd__h2 {
     margin: 0 0 8px;
-    font-size: clamp(36px, 5vw, 64px);
-    font-weight: 800;
+    font-size: clamp(38px, 5vw, 68px);
+    font-weight: 900;
     letter-spacing: -0.02em;
-    line-height: 1;
+    line-height: 0.98;
     text-transform: uppercase;
+  }
+
+  /* Every heading accent in v13 is italic coral — all four W files agree, and
+     it is the main reason the section reads as its own brand. The exception is
+     the closing CTA, whose heading sits on the coral band and takes ink. */
+  .wd__h2 em,
+  .work__title em,
+  .awkward__title em,
+  .faq__title em {
+    font-style: italic;
+    color: var(--wd-coral);
+  }
+
+  .start__title em {
+    font-style: italic;
+    color: var(--wd-ink);
   }
 
   .scribble {
@@ -1170,137 +1294,61 @@ const BUDGETS = [
   }
 
   /* ---------------------------------------------------------------- hero -- */
+  /* Every number here is the v13 export's. The float blobs, spinning asterisk
+     and scattered dots that used to sit in this block were decoration from the
+     previous design; v13 replaces them with the laptop and the marquee. */
   .hero {
     position: relative;
     padding: 96px 24px 0;
-    overflow: hidden;
   }
 
-  .hero__floatA,
-  .hero__floatB {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  .hero__floatA {
-    top: -120px;
-    right: -140px;
-    width: 520px;
-    height: 520px;
-    background: radial-gradient(circle, rgb(245 192 164 / 55%), rgb(245 192 164 / 0%) 65%);
-    animation: wd-float-a 9s ease-in-out infinite;
-  }
-
-  .hero__floatB {
-    bottom: -160px;
-    left: -120px;
-    width: 480px;
-    height: 480px;
-    background: radial-gradient(circle, rgb(173 212 238 / 55%), rgb(173 212 238 / 0%) 65%);
-    animation: wd-float-b 11s ease-in-out infinite;
-  }
-
-  @keyframes wd-float-a {
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-
-    50% {
-      transform: translate(30px, -24px);
-    }
-  }
-
-  @keyframes wd-float-b {
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-
-    50% {
-      transform: translate(-26px, 20px);
-    }
-  }
-
-  .hero__spin {
-    top: 120px;
-    left: 56%;
-    font-size: 44px;
-    color: var(--wd-coral);
-    animation: wd-spin 14s linear infinite;
-    line-height: 1;
-  }
-
-  @keyframes wd-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .hero__dot1 {
-    top: 230px;
-    left: 8%;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--wd-blue);
-  }
-
-  .hero__dot2 {
-    top: 80px;
-    left: 30%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--wd-gold);
-  }
-
-  .hero__dot3 {
-    bottom: 64px;
-    left: 22%;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--wd-peach);
-  }
-
-  .hero__inner {
+  .hero__grid {
     position: relative;
-    max-width: 1180px;
+    max-width: 1320px;
     margin-inline: auto;
+    display: grid;
+    grid-template-columns: 1fr 1.02fr;
+    gap: 48px 56px;
+    align-items: center;
   }
 
   .hero__badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 32px;
+    gap: 8px;
+    margin-bottom: 26px;
   }
 
   .hero__badge {
-    background: var(--wd-peach);
-    border: 1.5px solid var(--wd-ink);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid var(--wd-ink);
+    color: var(--wd-ink);
     font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.08em;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 8px 16px;
+    padding: 8px 14px 7px;
     border-radius: 999px;
   }
 
-  .hero__badge--tilt {
-    background: var(--wd-butter);
-    transform: rotate(-1.5deg);
+  /* Filled in the export with no border of its own; the matching border-colour
+     keeps it exactly the same size as the outlined one beside it. */
+  .hero__badge--fill {
+    background: var(--wd-yellow);
+    border-color: var(--wd-yellow);
   }
 
   .hero__h1 {
     margin: 0;
-    font-size: clamp(54px, 9vw, 142px);
-    line-height: 0.96;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: clamp(40px, 5.2vw, 84px);
+    line-height: 0.94;
+    font-weight: 900;
+    letter-spacing: -0.025em;
     text-transform: uppercase;
+    color: var(--wd-ink);
   }
 
   .hero__line {
@@ -1310,8 +1358,8 @@ const BUDGETS = [
   .hero__word-wrap {
     position: relative;
     display: inline-block;
+    font-style: italic;
     color: var(--wd-coral);
-    min-width: 4.6ch;
   }
 
   .hero__word {
@@ -1321,7 +1369,7 @@ const BUDGETS = [
   @keyframes wd-in-a {
     from {
       opacity: 0;
-      transform: translateY(0.5em) rotate(2deg);
+      transform: translateY(0.5em) rotate(1.5deg);
     }
 
     to {
@@ -1333,7 +1381,7 @@ const BUDGETS = [
   @keyframes wd-in-b {
     from {
       opacity: 0;
-      transform: translateY(0.5em) rotate(-2deg);
+      transform: translateY(0.5em) rotate(-1.5deg);
     }
 
     to {
@@ -1345,69 +1393,250 @@ const BUDGETS = [
   .hero__underline {
     position: absolute;
     left: 0;
-    bottom: -0.1em;
+    bottom: -0.12em;
     width: 100%;
-    height: 0.2em;
+    height: 0.18em;
     overflow: visible;
   }
 
-  .hero__row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-top: 44px;
-  }
-
   .hero__lede {
-    margin: 0;
-    max-width: 540px;
-    font-size: clamp(19px, 2vw, 23px);
-    line-height: 1.5;
+    margin: 26px 0 0;
+    max-width: 520px;
+    font-size: 18.5px;
+    line-height: 1.6;
     color: var(--wd-muted);
   }
 
   .hero__ctas {
     display: flex;
     flex-direction: column;
-    gap: 14px;
     align-items: flex-start;
+    gap: 10px;
+    margin-top: 30px;
   }
 
   .hero__scribble {
     font-family: var(--wd-hand);
-    font-size: 26px;
-    color: var(--wd-scribble);
-    transform: rotate(-3deg);
+    font-size: 24px;
+    color: var(--wd-coral-deep);
+    transform: rotate(-2deg);
   }
 
   .hero__buttons {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
-  .hero__platforms {
-    margin: 56px 0 0;
-    padding: 20px 0 28px;
-    border-top: 1.5px solid #C9C2B2;
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 16.5px;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      transform 0.2s;
+  }
+
+  .hero__btn--solid {
+    background: var(--wd-ink);
+    color: var(--wd-paper);
+    font-weight: 800;
+    padding: 18px 30px 17px;
+  }
+
+  .hero__btn--solid:hover,
+  .hero__btn--solid:focus-visible {
+    background: var(--wd-coral-deep);
+    color: var(--wd-paper);
+    transform: translateY(-2px);
+  }
+
+  .hero__btn--outline {
+    border: 1.5px solid var(--wd-ink);
+    color: var(--wd-ink);
+    font-weight: 700;
+    padding: 16.5px 26px 15.5px;
+  }
+
+  .hero__btn--outline:hover,
+  .hero__btn--outline:focus-visible {
+    background: var(--wd-ink);
+    color: var(--wd-paper);
+  }
+
+  /* ---------------------------------------------------------- hero device -- */
+  /* The percentages place the screenshot inside the laptop art, so they are
+     tied to hero-laptop-frame.png and should only change with the image. */
+  .hero__device {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2560 / 1600;
+  }
+
+  .hero__screen {
+    position: absolute;
+    left: 14.6%;
+    top: 3.9%;
+    width: 68.75%;
+    height: 63%;
+    overflow: hidden;
+    background: var(--wd-blueband);
+  }
+
+  .hero__shot {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+
+  .hero__shot.is-on {
+    opacity: 1;
+  }
+
+  .hero__frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .hero__stamp {
+    position: absolute;
+    z-index: 3;
+    top: 4%;
+    right: 0;
+    background: var(--wd-yellow);
+    border: 1px solid var(--wd-ink);
+    box-shadow: 5px 5px 0 var(--wd-ink);
+    color: var(--wd-ink);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 15px;
+    border-radius: 999px;
+    transform: rotate(3deg);
+    white-space: nowrap;
+  }
+
+  .hero__shotbar {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 6px;
+  }
+
+  /* The spacer opposite the link is what centres the dots under the laptop
+     while the caption stays hard against them. */
+  .hero__shotlink {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .hero__shotlink a {
+    white-space: nowrap;
+    font-family: var(--wd-hand);
+    font-size: 25px;
+    line-height: 1.2;
+    color: var(--wd-coral-deep);
+    text-decoration: none;
+    transform: rotate(-1deg);
+  }
+
+  .hero__shotlink a:hover,
+  .hero__shotlink a:focus-visible {
+    color: var(--wd-ink);
+  }
+
+  .hero__dots {
+    flex: none;
+    display: flex;
+    gap: 2px;
+  }
+
+  .hero__dot {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    gap: 10px 18px;
-    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .hero__dot > span {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    border: 1px solid var(--wd-ink);
+    background: transparent;
+    transition: background 0.3s;
+  }
+
+  .hero__dot.is-on > span {
+    background: var(--wd-coral);
+  }
+
+  .hero__shotsp {
+    flex: 1 1 0;
+  }
+
+  /* -------------------------------------------------------------- marquee -- */
+  .hero__marquee {
+    margin-top: 80px;
+    border-top: 1px solid var(--wd-ink);
+    border-bottom: 1px solid var(--wd-ink);
+    padding: 16px 0;
+    overflow: hidden;
+  }
+
+  /* Four copies, translated by half the track, so the loop is seamless. */
+  .hero__mq {
+    display: flex;
+    gap: 0;
+    width: max-content;
+    animation: wd-marquee 32s linear infinite;
+  }
+
+  @keyframes wd-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .hero__mqi {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    padding-right: 36px;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--wd-faint);
+    color: var(--wd-muted);
+    white-space: nowrap;
   }
 
   .hero__ast {
     color: var(--wd-coral);
   }
+
 
   /* ----------------------------------------------------------------- who -- */
   /* v13 runs this band near-black. Everything inside it inherits, so the
@@ -1924,14 +2153,14 @@ const BUDGETS = [
     padding: 110px 24px;
   }
 
+  /* No text-shadow in v13 — that was needed when this band was peach. */
   .work__title {
-    margin: 0 0 48px;
-    font-size: clamp(36px, 5vw, 64px);
-    font-weight: 800;
+    margin: 0 0 52px;
+    font-size: clamp(38px, 5vw, 68px);
+    font-weight: 900;
     letter-spacing: -0.02em;
-    line-height: 1;
+    line-height: 0.98;
     text-transform: uppercase;
-    text-shadow: 3px 3px 0 var(--wd-card);
   }
 
   .work__grid {
@@ -2229,11 +2458,11 @@ const BUDGETS = [
   }
 
   .start__title {
-    margin: 0 0 20px;
-    font-size: clamp(44px, 6.5vw, 88px);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 0.95;
+    margin: 0 0 22px;
+    font-size: clamp(40px, 5.6vw, 76px);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 0.96;
     text-transform: uppercase;
   }
 
@@ -2451,27 +2680,54 @@ const BUDGETS = [
     }
   }
 
+  /* The export stacks the hero one step earlier than everything else. */
+  @media (max-width: 980px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .hero__h1 {
+      font-size: clamp(40px, 9vw, 72px);
+    }
+  }
+
   @media (max-width: 760px) {
     .deco {
       display: none;
     }
 
     .hero {
-      padding: 56px 18px 0;
+      padding: 64px 18px 0;
     }
 
     .hero__h1 {
-      font-size: clamp(32px, 9.6vw, 142px);
+      font-size: clamp(38px, 11vw, 148px);
     }
 
-    .hero__platforms {
+    /* Caption below the dots once there is no room beside them. */
+    .hero__shotbar {
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .hero__dots {
+      order: 1;
+    }
+
+    .hero__shotlink {
+      order: 2;
+      flex: none;
       justify-content: center;
-      text-align: center;
-      gap: 8px 12px;
-      font-size: 12.5px;
-      letter-spacing: 0.07em;
-      margin-top: 40px;
-      padding-bottom: 24px;
+    }
+
+    .hero__shotsp {
+      display: none;
+    }
+
+    .hero__mqi {
+      font-size: 12px;
+      letter-spacing: 0.12em;
     }
 
     .who,
@@ -2489,16 +2745,25 @@ const BUDGETS = [
     }
 
     /* Once these stack, a left-aligned button sits off to one side of a
-       full-width box. Each wrapped line centres instead, so the CTA has the
-       same air either side of it. */
+       full-width box. The export centres the whole CTA stack and runs the
+       buttons full-width down the page instead. */
     .hero__ctas {
       align-items: center;
+      align-self: stretch;
       text-align: center;
+      gap: 26px;
+      margin-top: 34px;
     }
 
     .hero__buttons {
-      justify-content: center;
       width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .hero__buttons > a {
+      justify-content: center;
     }
 
     .ctabox {

@@ -41,8 +41,9 @@ beyond that.
   refinement. The design is **light only** — there is deliberately no
   `prefers-color-scheme: dark` block, because this palette inverted is a different design
   rather than the same one at night. Don't add one piecemeal.
-- **The two service sections look wrong on purpose.** `src/pages/web-design.astro` (warm
-  cream, peach/blue, Bricolage Grotesque + Caveat) and, since v13, the four consulting
+- **The two service sections look wrong on purpose.** `src/pages/web-design.astro` (cool
+  paper, coral/yellow, Archivo + Caveat — v13 re-skinned it, dropping the peach/blue pair
+  and Bricolage Grotesque the earlier version used) and, since v13, the four consulting
   pages (warm cream, terracotta and deep green, Clash Display + Switzer) each carry their
   own palette, faces and rounded shapes. That difference is the point: these are the things
   being sold, and they read as an offer rather than as another chapter of the portfolio.

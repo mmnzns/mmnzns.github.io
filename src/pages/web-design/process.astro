@@ -173,16 +173,17 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
 
   .wdhero__title {
     margin-top: 22px;
-    font-size: clamp(38px, 5.8vw, 76px);
-    font-weight: 800;
-    line-height: 0.99;
-    letter-spacing: -0.03em;
+    font-size: clamp(40px, 6vw, 92px);
+    font-weight: 900;
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
     text-wrap: balance;
   }
 
   .wdhero__title em {
-    font-style: normal;
-    color: var(--wd-coral-deep);
+    font-style: italic;
+    color: var(--wd-coral);
   }
 
   .wdhero__body {
@@ -236,11 +237,12 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     letter-spacing: 0.06em;
   }
 
+  /* Every h3 on the export's Process page uses this one size and weight. */
   .wdh3 {
     margin-top: 12px;
-    font-size: clamp(20px, 2vw, 26px);
-    font-weight: 800;
-    letter-spacing: -0.018em;
+    font-size: clamp(21px, 2vw, 25px);
+    font-weight: 900;
+    letter-spacing: -0.01em;
     line-height: 1.15;
   }
 

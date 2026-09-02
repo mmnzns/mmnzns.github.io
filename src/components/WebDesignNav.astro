@@ -6,16 +6,18 @@ import logoM from '../assets/logo-m-transparent.png';
  * The web design section's nav, shared by `web-design.astro` and the three
  * sub-pages that render through `WebDesignLayout`.
  *
- * It exists as a component because it used to exist twice, and the two copies
- * drifted: different padding (24px vs 44px), different max-width (none vs
- * 1180px), one sticky and one not, one carrying a Home link and one not, and
- * two spellings of the CTA. Clicking between the main page and a sub-page
- * therefore shifted the header sideways and changed its height. One nav, one
- * set of numbers.
+ * Every value here comes from the v13 export, where all four `Monzones-W-*`
+ * files carry a byte-identical nav: 14px/28px padding, a 38px mark, 14px/700
+ * links at .02em, and a **black** pill CTA that goes coral on hover. It
+ * shipped yellow-on-outline before, which is the single most visible thing
+ * that kept the live section reading as the old design.
  *
- * FAQ deliberately never takes `aria-current`: it is an anchor on the main
- * page rather than a page of its own, so there is no state in which it is
- * "the current page".
+ * The export has no current-page state at all — on each page the current item
+ * simply points at `#top`. Miguel asked for one, so `aria-current` colours the
+ * item coral: the accent the design already uses for nav hover, rather than a
+ * decoration invented for the purpose.
+ *
+ * FAQ never takes `aria-current`: it is an anchor on the main page, not a page.
  */
 interface Props {
   current: 'home' | 'work' | 'process' | 'pricing';
@@ -23,8 +25,6 @@ interface Props {
 
 const { current } = Astro.props;
 
-/* v13's nav is plain text links — the coloured dots were a leftover from the
-   previous design and are not in the export. */
 const LINKS = [
   { label: 'Home', href: '/web-design/', key: 'home' },
   { label: 'Work', href: '/web-design/work/', key: 'work' },
@@ -35,7 +35,7 @@ const LINKS = [
 
 <nav class="wdnav" aria-label="Web design">
   <a class="wdnav__brand" href="/web-design/">
-    <Image src={logoM} alt="" width={84} height={84} loading="eager" />
+    <Image src={logoM} alt="" width={76} height={76} loading="eager" />
     <span class="wdnav__brandtext">
       <span class="wdnav__brandname">Sites that sell.</span>
       <span class="wdnav__brandsub">by Miguel Monzones</span>
@@ -124,23 +124,24 @@ const LINKS = [
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 14px 24px;
-    background: rgb(244 241 234 / 94%);
+    padding: 14px 28px;
+    background: rgb(244 241 234 / 92%);
     backdrop-filter: blur(8px);
-    border-bottom: 1.5px solid var(--wd-ink);
+    border-bottom: 1px solid var(--wd-ink);
+    color: var(--wd-ink);
   }
 
   .wdnav__brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 11px;
     color: var(--wd-ink);
     text-decoration: none;
   }
 
   .wdnav__brand :global(img) {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     display: block;
   }
 
@@ -151,100 +152,97 @@ const LINKS = [
   }
 
   .wdnav__brandname {
-    font-weight: 800;
-    font-size: 17px;
+    font-weight: 900;
+    font-size: 16px;
     letter-spacing: 0.01em;
   }
 
   .wdnav__brandsub {
     font-family: var(--wd-hand);
-    font-size: 16px;
-    color: var(--wd-scribble, #D8400C);
+    font-size: 15px;
+    color: var(--wd-coral-deep);
     transform: rotate(-1deg);
   }
 
   .wdnav__list {
     display: flex;
     align-items: center;
-    gap: 22px;
-    font-size: 15px;
-    font-weight: 600;
+    gap: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   .wdnav__hq {
     display: inline-block;
     font-family: var(--wd-hand);
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--wd-muted);
     transform: rotate(-2deg);
     white-space: nowrap;
     text-decoration: none;
-    transition:
-      transform 0.2s,
-      color 0.2s;
+    transition: color 0.2s;
   }
 
   .wdnav__hq:hover,
   .wdnav__hq:focus-visible {
     color: var(--wd-coral-deep);
-    transform: rotate(0deg);
   }
 
   .wdnav__div {
-    width: 1.5px;
-    height: 18px;
-    background: rgb(23 19 16 / 25%);
+    width: 1px;
+    height: 16px;
+    background: rgb(23 19 16 / 30%);
     flex: none;
   }
 
   .wdnav__sec {
     color: var(--wd-ink);
     text-decoration: none;
-    text-underline-offset: 6px;
     white-space: nowrap;
+    transition: color 0.2s;
   }
 
   .wdnav__sec:hover,
   .wdnav__sec:focus-visible {
-    color: var(--wd-coral-deep);
-    text-decoration: underline wavy #D8400C 2px;
+    color: var(--wd-coral);
   }
 
-  /* The current page is marked with the same wavy underline the hover uses,
-     so the two read as one idea rather than two decorations. */
+  /* The export has no current-page state; this is the one addition Miguel
+     asked for, using the nav's own hover accent rather than a new decoration. */
   .wdnav__sec[aria-current='page'] {
-    font-weight: 800;
-    text-decoration: underline wavy var(--wd-coral) 2px;
+    color: var(--wd-coral);
   }
-
 
   .wdnav__cta {
-    background: var(--wd-peach);
-    color: var(--wd-ink);
+    background: var(--wd-ink);
+    color: var(--wd-paper);
     font-weight: 700;
-    padding: 10px 18px;
+    font-size: 14px;
+    padding: 11px 22px;
     border-radius: 999px;
-    border: 1.5px solid var(--wd-ink);
     text-decoration: none;
     white-space: nowrap;
+    transition: background 0.2s;
   }
 
   .wdnav__cta:hover,
   .wdnav__cta:focus-visible {
-    background: var(--wd-butter);
-    color: var(--wd-ink);
+    background: var(--wd-coral-deep);
+    color: var(--wd-paper);
   }
 
   .wdnav__burger {
     display: none;
+    flex: none;
     width: 44px;
     height: 44px;
     align-items: center;
     justify-content: center;
     background: none;
-    border: 2px solid var(--wd-ink);
-    border-radius: 12px;
+    border: 1.5px solid var(--wd-ink);
+    border-radius: 10px;
     padding: 0;
     cursor: pointer;
   }
@@ -253,12 +251,12 @@ const LINKS = [
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: 20px;
+    width: 18px;
   }
 
   .wdnav__burgerlines span {
     display: block;
-    height: 2.5px;
+    height: 2px;
     background: var(--wd-ink);
   }
 
@@ -269,25 +267,25 @@ const LINKS = [
     right: 0;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     background: var(--wd-paper);
-    border-bottom: 1.5px solid var(--wd-ink);
-    padding: 6px 16px 16px;
+    border-bottom: 1px solid var(--wd-ink);
+    padding: 6px 20px 18px;
   }
 
   .wdnav__panel a {
     display: block;
     padding: 13px 0;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--wd-ink);
     text-align: center;
     text-decoration: none;
-    border-bottom: 1.5px solid #DDD6C7;
+    border-bottom: 1px solid var(--wd-rule);
   }
 
   .wdnav__panel a[aria-current='page'] {
-    text-decoration: underline wavy var(--wd-coral) 2px;
-    text-underline-offset: 6px;
+    color: var(--wd-coral);
   }
 
   .wdnav__panelhq {
@@ -296,15 +294,22 @@ const LINKS = [
 
   .wdnav__panel .wdnav__panelcta {
     margin-top: 14px;
-    background: var(--wd-peach);
+    background: var(--wd-ink);
+    color: var(--wd-paper);
     font-weight: 800;
+    font-size: 16px;
     padding: 14px 20px;
     border-radius: 999px;
-    border: 2px solid var(--wd-ink);
-    box-shadow: 3px 3px 0 var(--wd-ink);
+    border-bottom: 0;
   }
 
-  @media (max-width: 760px) {
+  /* The export switches to the burger at 860px, not 760px. */
+  @media (max-width: 860px) {
+    .wdnav {
+      gap: 14px;
+      padding: 12px 16px;
+    }
+
     .wdnav__hq,
     .wdnav__div,
     .wdnav__sec,

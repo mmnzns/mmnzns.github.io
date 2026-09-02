@@ -38,7 +38,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
   </Fragment>
@@ -212,18 +212,32 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--wd-coral-deep);
   }
 
+  /* Uppercase, 900, and much larger than the previous design ran them — the
+     three W sub-pages all use this one scale. */
   .wd .wdh2 {
     margin-top: 8px;
-    font-size: clamp(30px, 4.2vw, 52px);
-    font-weight: 800;
-    line-height: 1.04;
-    letter-spacing: -0.024em;
+    font-size: clamp(38px, 5vw, 68px);
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
     text-wrap: balance;
   }
 
   .wd .wdh2 em {
-    font-style: normal;
-    color: var(--wd-coral-deep);
+    font-style: italic;
+    color: var(--wd-coral);
+  }
+
+  /* The closing CTA heading is a step larger again on every sub-page. */
+  .wd .wdcta .wdh2 {
+    font-size: clamp(38px, 5.4vw, 72px);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+  }
+
+  .wd .wdcta .wdh2 em {
+    color: var(--wd-ink);
   }
 
   .wd .wdlede {
