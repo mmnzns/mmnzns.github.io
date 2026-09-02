@@ -138,6 +138,8 @@ function isCurrent(href: string) {
 
 <style>
   .header {
+    /* `sticky` is also what makes this the containing block the reading
+       progress bar positions against. */
     position: sticky;
     top: 0;
     z-index: 40;
@@ -389,7 +391,14 @@ function isCurrent(href: string) {
     color: var(--ink);
   }
 
+  /* Taken out of flow on purpose. In flow it added its 2px to the header, so
+     the header was 76px everywhere and 78px on an article — and every
+     navigation between the two nudged the whole page down or up by two
+     pixels. Absolute keeps one header height across the site. */
   .header__progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
     height: 2px;
     background: var(--accent);
     width: 0;
