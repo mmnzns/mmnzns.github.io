@@ -748,3 +748,47 @@ export const TESTIMONIAL_SLOTS = [
   { num: '02', line: 'Reserved for founding client two.', note: 'unedited, whatever it says' },
   { num: '03', line: 'Reserved for founding client three.', note: 'three spots after this one' },
 ] as const;
+
+/* ------------------------------------------- the main page's pricing summary */
+
+/**
+ * The condensed price list on `/web-design/` itself. These are "from" figures
+ * pointing at the full pricing page — the same numbers as SMALL_TIERS and
+ * LARGE_TIERS above, and subject to the same rule: verbatim from the design,
+ * never recomputed. The three smaller sites quote the hand-built rate, which
+ * is why they read "from".
+ */
+export const SUMMARY_TIERS = [
+  { name: 'One-Page Site', sub: 'just the page, done properly · 1 week', price: 'from $305' },
+  {
+    name: 'Get Found',
+    sub: 'page + domain, Google profile, indexed · 10 days',
+    price: 'from $465',
+    tag: 'Recommended',
+  },
+  {
+    name: 'Portfolio Site',
+    sub: 'up to 3 pages, free-forever hosting available · 2 weeks',
+    price: 'from $670',
+  },
+  { name: 'Small Business Site', sub: '5–7 pages you edit yourself · 4 weeks', price: '$2,470' },
+  { name: 'Shop', sub: 'online store, up to 25 products · 5 weeks', price: '$4,015' },
+  {
+    name: 'Company Site',
+    sub: 'CMS, tracking, integrations · quoted · 8–10 weeks',
+    price: 'from $8,240',
+  },
+] as const;
+
+export const SUMMARY_EXTRAS = [
+  {
+    name: 'Site Check',
+    sub: 'paid diagnostic, credited toward a build within 60 days',
+    price: '$405',
+  },
+  {
+    name: 'Website Care',
+    sub: 'monitoring, updates, changes · monthly, after any build',
+    price: 'from $50/mo',
+  },
+] as const;
