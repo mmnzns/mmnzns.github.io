@@ -44,6 +44,7 @@ const PICKS = [
     name: 'Get Found',
     price: '$465 hand-built',
     note: 'One page plus the plumbing: domain, Google Business Profile verified, indexed, analytics. Already have those? The One-Page Site is $305.',
+    care: 'Not editing it yourself: after the first 30 days, changes come through me at $30/hr (one-hour minimum), or the $50/mo Care plan keeps them flowing.',
   },
   {
     key: '1|No|Yes',
@@ -58,6 +59,7 @@ const PICKS = [
     name: 'Portfolio Site',
     price: '$670 hand-built',
     note: 'Hand-built and hosted free, forever. Changes after launch come through me.',
+    care: 'Not editing it yourself: after the first 30 days, changes come through me at $30/hr (one-hour minimum), or the $50/mo Care plan keeps them flowing.',
   },
   {
     key: '2–3|No|Yes',
@@ -72,6 +74,7 @@ const PICKS = [
     name: 'Small Business Site',
     price: '$2,470',
     note: 'Built on a platform either way; you can leave the editing to me with a Care plan.',
+    care: 'Not editing it yourself: a Care plan (from $50/mo) keeps the changes flowing, with me monitoring the site.',
   },
   {
     key: '4–7|No|Yes',
@@ -86,6 +89,7 @@ const PICKS = [
     name: 'Company Site',
     price: 'from $8,240',
     note: 'Quoted to your scope. CMS, conversion tracking, and a documented handover.',
+    care: 'Not editing it yourself: a Care plan (from $50/mo) keeps the changes flowing, with me monitoring the site.',
   },
   {
     key: 'More|No|Yes',
@@ -208,6 +212,16 @@ const buildClass = (build: string) =>
                     <strong class="wdpick__price">{pick.price}</strong>
                     <a class="wdpick__more" href="#websites">See what’s included ↓</a>
                     <span class="wdpick__note">{pick.note}</span>
+                    {/*
+                      Picking "No" to editing means changes come through me, so
+                      the answer says how that is charged rather than leaving it
+                      to the tier cards further down.
+                    */}
+                    {'care' in pick ? (
+                      <span class="wdpick__care">
+                        {pick.care} <a href="#care">See Website Care ↓</a>
+                      </span>
+                    ) : null}
                   </td>
                 </tr>
               ))
@@ -1097,6 +1111,24 @@ const buildClass = (build: string) =>
     font-size: 14px;
     line-height: 1.6;
     color: var(--wd-muted);
+  }
+
+  .wdpick__care {
+    flex-basis: 100%;
+    margin-top: -4px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--wd-body);
+  }
+
+  .wdpick__care a {
+    color: var(--wd-coral-deep);
+    font-weight: 700;
+  }
+
+  .wdpick__care a:hover,
+  .wdpick__care a:focus-visible {
+    color: var(--wd-ink);
   }
 
   /* Once the script is running the matrix is one row, so its row headings
