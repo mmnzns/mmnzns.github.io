@@ -3,8 +3,8 @@
  * The sketch that sits beside each featured case on the home page.
  *
  * Each one draws the same idea the case text describes — the before state next
- * to the after state — so the diagram is doing explanatory work rather than
- * decorating the card. They're inline SVG (and, for the winback, plain boxes)
+ * to the after state (Sportserve keeps only the after, since v16) — so the
+ * diagram is doing explanatory work rather than decorating the card. They're inline SVG (and, for the winback, plain boxes)
  * so they inherit the palette and cost no extra request. The drawings are the
  * v8 export's, ported verbatim.
  *
@@ -21,7 +21,7 @@ const { slug } = Astro.props;
 const CAPTIONS: Record<string, string> = {
   'mogo-lifecycle': 'From calendar time to what people did.',
   winback: 'Two audiences, two products, four different pitches.',
-  'sportserve-payments-division': 'Eight departments, before and after.',
+  'sportserve-payments-division': 'Eight departments, one mission control.',
   'lead-enrichment': 'Signup to sales-ready lead, with validation in the middle.',
 };
 ---
@@ -33,15 +33,15 @@ const CAPTIONS: Record<string, string> = {
         <svg viewBox="0 0 250 130">
           <path
             d="M14 66 C70 62, 130 70, 236 64"
-            stroke="#1F1C19"
+            stroke="#212121"
             stroke-opacity=".45"
             stroke-width="2"
             fill="none"
             stroke-linecap="round"
           />
-          <path d="M52 52 L53 80" stroke="#1F1C19" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
-          <path d="M124 55 L122 83" stroke="#1F1C19" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
-          <path d="M198 53 L200 81" stroke="#1F1C19" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M52 52 L53 80" stroke="#212121" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M124 55 L122 83" stroke="#212121" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M198 53 L200 81" stroke="#212121" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
           <text x="52" y="44" text-anchor="middle" font-size="11" fill="#6B6560">Day 1</text>
           <text x="123" y="47" text-anchor="middle" font-size="11" fill="#6B6560">Day 3</text>
           <text x="199" y="45" text-anchor="middle" font-size="11" fill="#6B6560">Day 7</text>
@@ -49,9 +49,9 @@ const CAPTIONS: Record<string, string> = {
         </svg>
         <svg viewBox="0 0 250 130">
           <path d="M14 66 C68 71, 132 60, 236 67" stroke="#F2603F" stroke-width="3" fill="none" stroke-linecap="round" />
-          <path d="M46 52 L47 80" stroke="#1F1C19" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
-          <path d="M126 56 L124 84" stroke="#1F1C19" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
-          <path d="M204 53 L206 81" stroke="#1F1C19" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M46 52 L47 80" stroke="#212121" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M126 56 L124 84" stroke="#212121" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M204 53 L206 81" stroke="#212121" stroke-opacity=".45" stroke-width="2" fill="none" stroke-linecap="round" />
           <circle cx="46" cy="68" r="4.2" fill="#F2603F" />
           <circle cx="125" cy="66" r="4.2" fill="#F2603F" />
           <circle cx="205" cy="67" r="4.2" fill="#F2603F" />
@@ -117,34 +117,7 @@ const CAPTIONS: Record<string, string> = {
     slug === 'sportserve-payments-division' && (
       <div class="diagram__pair" aria-hidden="true">
         <svg viewBox="0 0 250 190">
-          <g stroke="#1F1C19" stroke-opacity=".2" stroke-width="2" fill="none" stroke-linecap="round">
-            <path d="M62 44 C96 66, 74 96, 120 108" />
-            <path d="M158 52 C130 88, 176 104, 150 140" />
-            <path d="M40 118 C82 130, 96 150, 132 158" />
-          </g>
-          <g stroke="#1F1C19" stroke-width="2" fill="none" stroke-linecap="round">
-            <rect x="14" y="24" width="70" height="24" transform="rotate(-2.2 49 36)" />
-            <rect x="120" y="18" width="80" height="24" transform="rotate(1.8 160 30)" />
-            <rect x="24" y="66" width="72" height="24" transform="rotate(1.4 60 78)" />
-            <rect x="132" y="62" width="78" height="24" transform="rotate(-1.6 171 74)" />
-            <rect x="12" y="108" width="66" height="24" transform="rotate(-1.2 45 120)" />
-            <rect x="112" y="104" width="66" height="24" transform="rotate(2.4 145 116)" />
-            <rect x="30" y="150" width="76" height="24" transform="rotate(1.1 68 162)" />
-            <rect x="140" y="148" width="88" height="24" transform="rotate(-2 184 160)" />
-          </g>
-          <g font-size="11" fill="#1F1C19">
-            <text x="24" y="40">Product</text>
-            <text x="130" y="34">Engineering</text>
-            <text x="34" y="82">Payments</text>
-            <text x="142" y="78">Compliance</text>
-            <text x="22" y="124">Support</text>
-            <text x="122" y="120">Creative</text>
-            <text x="40" y="166">Marketing</text>
-            <text x="150" y="164">Regional Ops</text>
-          </g>
-        </svg>
-        <svg viewBox="0 0 250 190">
-          <g stroke="#1F1C19" stroke-width="2" fill="none" stroke-linecap="round">
+          <g stroke="#212121" stroke-width="2" fill="none" stroke-linecap="round">
             <rect x="8" y="20" width="62" height="20" />
             <rect x="8" y="50" width="62" height="20" />
             <rect x="8" y="80" width="62" height="20" />
@@ -155,7 +128,7 @@ const CAPTIONS: Record<string, string> = {
             <rect x="78" y="110" width="62" height="20" />
             <path d="M142 30 L176 68 M142 60 L176 74 M142 90 L176 84 M142 120 L176 92" stroke-opacity=".3" />
           </g>
-          <g font-size="9" fill="#1F1C19">
+          <g font-size="9" fill="#212121">
             <text x="13" y="34">Product</text>
             <text x="13" y="64">Payments</text>
             <text x="13" y="94">Support</text>
@@ -166,11 +139,11 @@ const CAPTIONS: Record<string, string> = {
             <text x="83" y="124">Regional Ops</text>
           </g>
           <path d="M180 18 C183 70, 182 108, 179 148" stroke="#3E8FD8" stroke-width="4" fill="none" stroke-linecap="round" />
-          <path d="M182 152 C196 158, 204 160, 224 160" stroke="#1F1C19" stroke-width="2" fill="none" stroke-linecap="round" />
+          <path d="M182 152 C196 158, 204 160, 224 160" stroke="#212121" stroke-width="2" fill="none" stroke-linecap="round" />
           <text x="196" y="84" text-anchor="middle" transform="rotate(-90 196 84)" font-size="11" fill="#2A6FB0" font-weight="700">
             Payments Ops
           </text>
-          <text x="200" y="178" font-size="11" fill="#1F1C19">Launch</text>
+          <text x="200" y="178" font-size="11" fill="#212121">Launch</text>
         </svg>
       </div>
     )
@@ -179,7 +152,7 @@ const CAPTIONS: Record<string, string> = {
   {
     slug === 'lead-enrichment' && (
       <svg class="diagram__flow" viewBox="0 0 340 200" aria-hidden="true">
-        <g stroke="#1F1C19" stroke-width="2" fill="none" stroke-linecap="round">
+        <g stroke="#212121" stroke-width="2" fill="none" stroke-linecap="round">
           <rect x="4" y="14" width="100" height="70" />
           <rect x="120" y="14" width="100" height="70" />
           <rect x="236" y="14" width="100" height="70" />
@@ -194,7 +167,7 @@ const CAPTIONS: Record<string, string> = {
           <rect x="4" y="120" width="100" height="70" />
           <path d="M118 155 L107 155 M111 151.5 L106.5 155 L111 158.5" />
         </g>
-        <g font-size="9" font-weight="700" fill="#1F1C19" letter-spacing=".06em">
+        <g font-size="9" font-weight="700" fill="#212121" letter-spacing=".06em">
           <text x="14" y="41">SIGNUP</text>
           <text x="130" y="41">FILTER</text>
           <text x="246" y="41">ENRICH</text>
@@ -204,17 +177,17 @@ const CAPTIONS: Record<string, string> = {
           <text x="14" y="147" fill="#2E8567">ROUTE</text>
         </g>
         <g font-size="8" fill="#6B6560">
-          <text x="14" y="57" fill="#1F1C19">DTC Newsletter</text>
+          <text x="14" y="57" fill="#212121">DTC Newsletter</text>
           <text x="14" y="70">~300/day</text>
-          <text x="130" y="57" fill="#1F1C19">Remove generic</text>
+          <text x="130" y="57" fill="#212121">Remove generic</text>
           <text x="130" y="70">email addresses</text>
-          <text x="246" y="57" fill="#1F1C19">StoreLeads · Clay</text>
+          <text x="246" y="57" fill="#212121">StoreLeads · Clay</text>
           <text x="246" y="70">LinkedIn · LindyAI</text>
-          <text x="246" y="162" fill="#1F1C19">ChatGPT API</text>
+          <text x="246" y="162" fill="#212121">ChatGPT API</text>
           <text x="246" y="175">Fit · persona · QA</text>
-          <text x="130" y="163" fill="#1F1C19">HubSpot</text>
+          <text x="130" y="163" fill="#212121">HubSpot</text>
           <text x="130" y="176">~70% pre-filled</text>
-          <text x="14" y="163" fill="#1F1C19">Slack → Sales</text>
+          <text x="14" y="163" fill="#212121">Slack → Sales</text>
           <text x="14" y="176">high value, real time</text>
         </g>
       </svg>

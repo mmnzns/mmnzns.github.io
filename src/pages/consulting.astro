@@ -485,11 +485,11 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     align-items: baseline;
     gap: 12px;
     padding: 16px 26px;
-    border: 1px solid rgb(34 30 26 / 8%);
+    border: 1px solid rgb(33 33 33 / 8%);
     border-radius: 999px;
     background: var(--c-card);
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 22%),
+      0 1px 2px rgb(33 33 33 / 7%), 0 24px 48px -20px rgb(33 33 33 / 22%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
     animation: cfloaty 5.5s ease-in-out infinite;
   }
@@ -525,7 +525,13 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .chero__chip-num {
     font-size: 22px;
     font-weight: 600;
-    color: var(--c-terra);
+    /* v16 sets the figure in a terracotta gradient. The export's light stop is
+       #e08a5e, which measures 2.6:1 on the card; #d47a4a keeps the same warmth
+       at 3.1:1, the floor for large text. */
+    background-image: linear-gradient(120deg, #a94f2e, #c0603c 50%, #d47a4a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -619,7 +625,13 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1;
-    color: var(--c-terra);
+    /* v16 sets the figure in a terracotta gradient. The export's light stop is
+       #e08a5e, which measures 2.6:1 on the card; #d47a4a keeps the same warmth
+       at 3.1:1, the floor for large text. */
+    background-image: linear-gradient(120deg, #a94f2e, #c0603c 50%, #d47a4a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -670,7 +682,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* ------------------------------------------------------- engagements -- */
   .cengs {
     margin-top: 36px;
-    border-top: 1px solid rgb(34 30 26 / 14%);
+    border-top: 1px solid rgb(33 33 33 / 14%);
   }
 
   .ceng {
@@ -679,7 +691,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     gap: clamp(16px, 2.5vw, 44px);
     align-items: center;
     padding-block: 24px;
-    border-bottom: 1px solid rgb(34 30 26 / 12%);
+    border-bottom: 1px solid rgb(33 33 33 / 12%);
   }
 
   .ceng__name {
@@ -725,7 +737,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     text-transform: uppercase;
     color: var(--c-ink);
     rotate: -1.5deg;
-    box-shadow: 0 1px 2px rgb(34 30 26 / 10%), 0 16px 32px -16px rgb(34 30 26 / 30%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 10%), 0 16px 32px -16px rgb(33 33 33 / 30%);
   }
 
   .ccontact__avail .chero__dot {
@@ -767,7 +779,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     background: var(--c-card);
     color: var(--c-ink);
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 10%), 0 44px 80px -28px rgb(60 20 10 / 45%),
+      0 1px 2px rgb(33 33 33 / 10%), 0 44px 80px -28px rgb(60 20 10 / 45%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
   }
 
@@ -784,14 +796,14 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .cfield textarea {
     width: 100%;
     padding: 14px 18px;
-    border: 1px solid rgb(34 30 26 / 15%);
+    border: 1px solid rgb(33 33 33 / 15%);
     border-radius: 14px;
     background: var(--c-paper);
     color: var(--c-ink);
     font-family: inherit;
     font-size: 16px;
     font-weight: 400;
-    box-shadow: inset 0 1px 2px rgb(34 30 26 / 6%);
+    box-shadow: inset 0 1px 2px rgb(33 33 33 / 6%);
   }
 
   .cfield textarea {
@@ -817,9 +829,9 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     align-self: flex-start;
     padding: 16px 34px;
     border: 0;
-    background: var(--c-green);
+    background: linear-gradient(180deg, #3b7262, #2a554a);
     color: var(--c-paper);
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 16px 32px -16px rgb(47 93 80 / 50%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%), 0 16px 32px -16px rgb(47 93 80 / 50%);
   }
 
   .cform .cbtn--send:hover:not(:disabled),

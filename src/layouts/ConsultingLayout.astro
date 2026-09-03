@@ -225,7 +225,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c {
     --c-paper: #f4efe6;
     --c-card: #fffdf9;
-    --c-ink: #221e1a;
+    --c-ink: #212121;
     /* The export's three quieter inks: body copy, labels, notes. */
     --c-ink-2: #5e574f;
     --c-ink-3: #6b635a;
@@ -233,20 +233,20 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     --c-terra: #c0603c;
     --c-green: #2f5d50;
     --c-butter: #f6e7b2;
-    --c-line: rgb(34 30 26 / 10%);
+    --c-line: rgb(33 33 33 / 10%);
 
     --c-raised:
-      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 16%),
+      0 1px 2px rgb(33 33 33 / 7%), 0 24px 48px -20px rgb(33 33 33 / 16%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
     --c-float:
-      0 1px 2px rgb(34 30 26 / 8%), 0 44px 80px -28px rgb(34 30 26 / 32%),
+      0 1px 2px rgb(33 33 33 / 8%), 0 44px 80px -28px rgb(33 33 33 / 32%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
     /* Cards on the green band throw a green-tinted shadow. */
     --c-raised-green:
-      0 1px 2px rgb(34 30 26 / 8%), 0 24px 48px -20px rgb(14 30 26 / 40%),
+      0 1px 2px rgb(33 33 33 / 8%), 0 24px 48px -20px rgb(14 30 26 / 40%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
     --c-float-green:
-      0 1px 2px rgb(34 30 26 / 10%), 0 48px 90px -30px rgb(14 30 26 / 55%),
+      0 1px 2px rgb(33 33 33 / 10%), 0 48px 90px -30px rgb(14 30 26 / 55%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
 
     --c-disp: 'Clash Display', 'General Sans', 'Helvetica Neue', sans-serif;
@@ -332,7 +332,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     display: inline-flex;
     align-items: center;
     padding: 8px 16px;
-    border: 1px solid rgb(34 30 26 / 15%);
+    border: 1px solid rgb(33 33 33 / 15%);
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
@@ -371,7 +371,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     justify-content: center;
     padding: 14px 26px;
     border-radius: 999px;
-    border: 1px solid rgb(34 30 26 / 15%);
+    border: 1px solid rgb(33 33 33 / 15%);
     background: transparent;
     color: var(--c-ink);
     font-size: 15px;
@@ -392,15 +392,16 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--c-card);
   }
 
-  /* The hero pair: bigger, with the raised shadow. */
+  /* The hero pair: bigger, with the raised shadow. v16 gives the solid one a
+     soft vertical gradient (the hover still goes flat ink). */
   .c .cbtn--solid {
     padding: 18px 34px;
-    background: var(--c-terra);
+    background: linear-gradient(180deg, #cf6f46, #b8593a);
     border-color: var(--c-terra);
     color: var(--c-card);
     font-size: 16px;
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(192 96 60 / 45%);
+      0 1px 2px rgb(33 33 33 / 7%), 0 24px 48px -20px rgb(192 96 60 / 45%);
   }
 
   .c .cbtn--solid:hover,
@@ -410,16 +411,16 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     border-color: var(--c-ink);
     color: var(--c-card);
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 10%), 0 32px 56px -20px rgb(34 30 26 / 35%);
+      0 1px 2px rgb(33 33 33 / 10%), 0 32px 56px -20px rgb(33 33 33 / 35%);
   }
 
   .c .cbtn--ghost {
     padding: 18px 34px;
     background: var(--c-card);
-    border-color: rgb(34 30 26 / 12%);
+    border-color: rgb(33 33 33 / 12%);
     color: var(--c-ink);
     font-size: 16px;
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%);
   }
 
   .c .cbtn--ghost:hover,
@@ -434,10 +435,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* The ink button that closes the services list. */
   .c .cbtn--ink {
     padding: 16px 30px;
-    background: var(--c-ink);
+    background: linear-gradient(180deg, #3a3a3a, #1a1a1a);
     border-color: var(--c-ink);
     color: var(--c-paper);
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 16px 32px -16px rgb(34 30 26 / 40%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%), 0 16px 32px -16px rgb(33 33 33 / 40%);
   }
 
   .c .cbtn--ink:hover,
@@ -476,11 +477,11 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     padding: 14px 26px;
     border: 1px solid var(--c-green);
     border-radius: 999px;
-    background: var(--c-green);
+    background: linear-gradient(180deg, #386c5d, #2a554a);
     color: var(--c-paper);
     font-size: 15px;
     font-weight: 600;
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 16px 32px -16px rgb(47 93 80 / 50%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%), 0 16px 32px -16px rgb(47 93 80 / 50%);
     transition:
       transform 0.3s cubic-bezier(0.2, 0.8, 0.25, 1),
       background 0.25s ease,
@@ -496,14 +497,22 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--c-paper);
   }
 
+  /* v16: the green bands get a lit top edge and a darker foot so the cards on
+     them stand off the ground. */
   .c .csection--green {
-    background: var(--c-green);
+    background:
+      radial-gradient(1200px 700px at 50% -10%, rgb(120 190 170 / 32%), transparent 60%),
+      radial-gradient(900px 600px at 100% 100%, rgb(20 45 38 / 55%), transparent 60%),
+      linear-gradient(180deg, #4a8a78 0%, #2f5d50 48%, #1c3d34 100%);
     color: var(--c-paper);
   }
 
+  /* v16's gradient lights the top of the band to about #427c6a, where the
+     export's 75% kicker and 76% lede fall to 3.8-4.0:1. Full paper for the
+     kicker and 92% for the lede keep both at or above 4.5:1. */
   .c .csection--green .ckicker {
     border-color: rgb(244 239 230 / 25%);
-    color: rgb(244 239 230 / 75%);
+    color: var(--c-paper);
   }
 
   .c .csection--green .clink {
@@ -521,7 +530,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .csection--green .clede {
-    color: rgb(244 239 230 / 76%);
+    color: rgb(244 239 230 / 92%);
   }
 
   .c .csection--green .cbtn {
@@ -539,7 +548,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   /* The terracotta band every page ends on, its top corners rounded off the
      paper above. The footer continues the colour. */
   .c .csection--terra {
-    background: var(--c-terra);
+    background:
+      radial-gradient(1200px 700px at 50% -10%, rgb(255 200 160 / 35%), transparent 60%),
+      radial-gradient(900px 600px at 100% 40%, rgb(90 30 15 / 30%), transparent 60%),
+      linear-gradient(180deg, #de8558 0%, #c0603c 50%, #9e4a2b 100%);
     color: var(--c-ink);
     border-radius: clamp(28px, 4vw, 52px) clamp(28px, 4vw, 52px) 0 0;
     padding-block: clamp(64px, 8vw, 112px) clamp(64px, 8vw, 104px);
@@ -559,7 +571,9 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     margin: 22px 0 0;
     max-width: 600px;
     font-size: clamp(16px, 1.6vw, 18px);
-    color: rgb(255 253 249 / 82%);
+    /* Full cream, not the export's 82%: the gradient's lighter top puts the
+       lede on about #c86a43, where 82% cream reads at 3:1. */
+    color: var(--c-card);
   }
 
   .c .csection--terra .ctarow {
@@ -574,7 +588,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     border-color: var(--c-card);
     color: var(--c-terra);
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 10%), 0 24px 48px -20px rgb(60 20 10 / 45%),
+      0 1px 2px rgb(33 33 33 / 10%), 0 24px 48px -20px rgb(60 20 10 / 45%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
   }
 
@@ -608,7 +622,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     gap: clamp(18px, 2.2vw, 32px);
     padding: clamp(28px, 3.2vw, 44px);
     margin-bottom: -96px;
-    border: 1px solid rgb(34 30 26 / 8%);
+    border: 1px solid rgb(33 33 33 / 8%);
     border-radius: 30px;
     background: var(--c-card);
     color: var(--c-ink);
@@ -655,7 +669,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     border: 1px solid var(--c-line);
     border-radius: 999px;
     background: var(--c-card);
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), inset 0 1px 0 rgb(255 255 255 / 90%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%), inset 0 1px 0 rgb(255 255 255 / 90%);
   }
 
   .c .cprac__tab {
@@ -675,10 +689,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .cprac__tab[aria-selected='true'] {
-    background: var(--c-green);
+    background: linear-gradient(180deg, #3b7262, #2a554a);
     color: var(--c-paper);
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 10%),
+      0 1px 2px rgb(33 33 33 / 10%),
       0 10px 20px -10px rgb(47 93 80 / 60%);
   }
 
@@ -688,7 +702,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(24px, 3vw, 48px);
     padding: clamp(28px, 3.4vw, 52px);
-    border: 1px solid rgb(34 30 26 / 8%);
+    border: 1px solid rgb(33 33 33 / 8%);
     border-radius: 32px;
     background: var(--c-card);
     color: var(--c-ink);
@@ -711,7 +725,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   .c .csteps--overlap .cstep {
-    border-color: rgb(34 30 26 / 8%);
+    border-color: rgb(33 33 33 / 8%);
   }
 
   .c .cprac__panel > div {
@@ -739,7 +753,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     rotate: -2deg;
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%);
   }
 
   .c .cprac__name {
@@ -771,7 +785,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c .cprac__tools {
     margin: auto 0 0;
     padding-top: 18px;
-    border-top: 1px solid rgb(34 30 26 / 12%);
+    border-top: 1px solid rgb(33 33 33 / 12%);
     font-size: 13px;
     line-height: 1.7;
     color: var(--c-ink-3);
@@ -894,8 +908,8 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     text-wrap: pretty;
   }
 
-  /* The hero, shared by all four pages, with the export's two soft radial
-     washes behind it. */
+  /* The hero, shared by all four pages. v16 dropped the home hero's two radial
+     washes (it sits on plain paper now); the sub-pages keep their one, below. */
   .c .chero {
     position: relative;
     overflow: clip;
@@ -907,9 +921,6 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image:
-      radial-gradient(900px 520px at 86% -14%, rgb(192 96 60 / 13%), transparent 62%),
-      radial-gradient(700px 460px at -6% 110%, rgb(47 93 80 / 8%), transparent 62%);
   }
 
   .c .chero__grid {
@@ -992,12 +1003,12 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     flex-direction: column;
     margin-top: 22px;
     padding: 10px 26px 12px;
-    border: 1px solid rgb(34 30 26 / 8%);
+    border: 1px solid rgb(33 33 33 / 8%);
     border-radius: 24px;
     background: var(--c-card);
     rotate: 1.5deg;
     box-shadow:
-      0 1px 2px rgb(34 30 26 / 7%), 0 24px 48px -20px rgb(34 30 26 / 22%),
+      0 1px 2px rgb(33 33 33 / 7%), 0 24px 48px -20px rgb(33 33 33 / 22%),
       inset 0 1px 0 rgb(255 255 255 / 90%);
     animation: cfloat 5.5s ease-in-out infinite;
   }
@@ -1148,7 +1159,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     border: 1px solid var(--c-line);
     border-radius: 11px;
     background: var(--c-card);
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%);
   }
 
   .c .cnav__mark {
@@ -1173,7 +1184,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c .cnav__sub {
     padding: 6px 12px;
     border-radius: 999px;
-    background: var(--c-green);
+    background: linear-gradient(180deg, #3b7262, #2a554a);
     color: var(--c-paper);
     font-size: 11px;
     font-weight: 700;
@@ -1207,7 +1218,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c .cnav__pipe {
     width: 1px;
     height: 16px;
-    background: rgb(34 30 26 / 15%);
+    background: rgb(33 33 33 / 15%);
   }
 
   /* The export marks the current sub-page bold terracotta. The weight is kept;
@@ -1224,10 +1235,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   .c .cnav__cta {
     padding: 13px 24px;
     border-radius: 999px;
-    background: var(--c-terra);
+    background: linear-gradient(180deg, #cf6f46, #b8593a);
     color: var(--c-card);
     font-weight: 600;
-    box-shadow: 0 1px 2px rgb(34 30 26 / 7%), 0 12px 24px -12px rgb(192 96 60 / 50%);
+    box-shadow: 0 1px 2px rgb(33 33 33 / 7%), 0 12px 24px -12px rgb(192 96 60 / 50%);
     transition:
       background 0.25s ease,
       color 0.25s ease,
@@ -1249,7 +1260,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     align-items: center;
     justify-content: center;
     padding: 0;
-    border: 1px solid rgb(34 30 26 / 15%);
+    border: 1px solid rgb(33 33 33 / 15%);
     border-radius: 999px;
     background: var(--c-card);
     cursor: pointer;
@@ -1343,9 +1354,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
   }
 
   /* ------------------------------------------------------------ footer -- */
-  /* Continues the terracotta band above it; a hairline separates the two. */
+  /* Sits under the terracotta band in the rust its gradient ends on (v16); a
+     hairline separates the two. */
   .c .cfoot {
-    background: var(--c-terra);
+    background: #9e4a2b;
     color: var(--c-card);
     padding: 0 28px 36px;
   }

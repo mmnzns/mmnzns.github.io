@@ -5,7 +5,7 @@
  * the opposite of the old soft-card look: 3px ink borders, hard offset shadows
  * with no blur, no border radius anywhere, uppercase micro-labels with wide
  * tracking, and 700-weight display type set tight. Sections are numbered, and
- * several run as full-bleed colour bands (terracotta, sun, sky, dark) with a
+ * several run as full-bleed colour bands (coral, sun, sky, dark) with a
  * 3px ink rule top and bottom.
  *
  * One typeface (General Sans) does all the interface work; Newsreader is held
@@ -81,7 +81,7 @@
   --paper: #fbf9f6;
   --wash: #f4f1ec;
   --card: #fbf9f6;
-  --ink: #1f1c19;
+  --ink: #212121;
   --ink-deck: #3d3833;
   --ink-2: #6b6560;
   /* The export's quietest ink on paper is #6b6560 — the same as --ink-2. The
@@ -93,7 +93,7 @@
   --rule-soft: #eae4dc;
 
   /* On the dark bands */
-  --dark: #1f1c19;
+  --dark: #212121;
   --on-dark: #fbf9f6;
   --on-dark-2: #c8c0b7;
   --on-dark-3: #9a938b;
@@ -111,7 +111,8 @@
   /* Ink shades for text sitting on the sun and sky bands. */
   --sun-ink: #5a4614;
   --sky-ink: #0f2c46;
-  /* The terracotta band behind section 01 on the home page. */
+  /* Unused since the v16 export turned the home page's section 01 band coral;
+     kept so `.band--terracotta` still resolves. */
   --terracotta: #d9a183;
   /* The interaction accent: links, focus, selection, active indicators. */
   --accent: var(--coral);

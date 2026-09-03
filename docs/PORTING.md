@@ -31,7 +31,7 @@ so invoke Astro directly.
 # top level of a version folder is current — the nested "Website bold/",
 # "Website standalone/" and "mnmonzones-site/" directories are older
 # snapshots of the same pages. The scripts take paths, so only D changes.
-D="../Website - Main Site/mnmonzones v15"
+D="../Website - Main Site/mnmonzones v16"
 node scripts/gen-cases.mjs      "$D/Monzones-D-Case-Bold.dc.html"
 node scripts/gen-home.mjs       "$D/Monzones-D-Bold.dc.html"
 node scripts/gen-about.mjs      "$D/Monzones-D-About-Bold.dc.html"
@@ -190,14 +190,14 @@ anything behind an interaction (a tab panel that isn't the default, a hover stat
 
 | Page | 375 | 1440 | Notes |
 | --- | --- | --- | --- |
-| home | 0 | 0 | ported to v14 2026-09-02 |
+| home | 0 | 0 | ported to v16 2026-09-02 (ink #212121, coral band 01, 720px shelf card, MSOps copy) |
 | about | 13 | 17 | the roles/years column, Switzer vs Clash Display on one label |
 | work | 2 | 40 | card grid columns 59px right of the design's |
 | thinking | 16 | 20 | — |
 | 404 | 3 | 2 | — |
 | case | 2 | 18 | tech table columns |
 | article | 24 | 30 | author block, TOC |
-| consulting (4 pages) | 0 | 0–1 | ported to v14 2026-09-02; the 1 is the nav's current-page label kept ink (the export's terracotta measures 3.68:1) |
+| consulting (4 pages) | 0 | 0–1 | ported to v16 2026-09-02 (ink #212121, gradient bands/buttons; band ledes lifted to 92%/full cream for contrast); the 1 is the nav's current-page label kept ink (the export's terracotta measures 3.68:1) |
 | web-design | 0 | 0 | ported; the two design-only MEDs are the Formspree note (deliberate) and the pricing intro's added link |
 | web-design work | 0 | 1 | ported; the 1 is the nav's current item (ink + coral rule, not coral text — contrast) |
 | web-design process | 0 | 1 | ported; the 1 is the nav's current item |

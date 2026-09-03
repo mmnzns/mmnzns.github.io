@@ -86,11 +86,11 @@ export const FEATURED_CASES: readonly FeaturedCase[] = [
   },
   {
     slug: 'sportserve-payments-division',
-    client: 'Sportserve · Payments Operations',
-    title: 'Building the payments division',
+    client: 'Sportserve · MSOps Payments',
+    title: 'Building the MSOps payments division',
     category: 'Leadership & Operations',
     brief: [
-      'As Sportserve grew, the company began creating specialist teams for its most important operational areas. I was asked to take ownership of everything related to payments.',
+      'As Sportserve grew, Marketing Services Operations (MSOps) split into specialist divisions. I was asked to build and own the payments one: payment methods, the cashier website, the payment integration system, and the financial marketing campaigns around them.',
     ],
     read: [
       'Payments touched eight departments, twelve markets, and a long list of providers and regulatory requirements. Every team naturally saw the part it owned. What was missing was a shared way to carry a launch from an idea all the way to the customer.',
