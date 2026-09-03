@@ -611,8 +611,8 @@ export const CASES: Record<string, CaseStudy> = {
   },
   'sportserve-payments-division': {
     meta: 'Sportserve · Senior Marketing Projects and Operations Manager · Mar 2014 – Feb 2021',
-    title: 'Building the Payments Operations Division',
-    deck: 'Payment launches touched eight departments and no single function held them together. I made the case for a dedicated division and built it from scratch.',
+    title: 'Building the MSOps payments division',
+    deck: 'Payment launches touched eight departments and no single function held them together. I made the case for a dedicated payments division inside MSOps, the Marketing Services Operations department, and built it from scratch.',
     brief: 'Launches keep slipping. Each delay has its own cause, so keep fixing them one at a time.',
     read: 'The pattern was structural: no system connected the people who had to work together to ship a launch. Fixing launches one at a time would have meant fixing them forever.',
     sections: [
@@ -627,7 +627,7 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The decision',
         paras: [
-          'Solving launches one at a time would have meant solving them forever. I made the case to leadership for a standalone Payments Operations Division, built from zero, rather than another workaround.',
+          'Solving launches one at a time would have meant solving them forever. I made the case to leadership for a standalone payments division inside MSOps (Marketing Services Operations), built from zero, rather than another workaround.',
           'I designed it as an internal agency model: one team owning project management, B2C campaign execution, B2B onboarding coordination, creative production, vendor management, and customer issue resolution for everything payments-related, across all 12 markets.',
         ],
       },

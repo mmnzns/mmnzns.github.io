@@ -31,7 +31,7 @@ export const SCOPE_INTRO =
 export const SCOPE_PROOF = [
   'At Mogo, I joined to turn lifecycle into a more connected growth system. Following the customer journey led into web, analytics, martech, and eventually the automation infrastructure supporting teams across the business.',
   'At DTC Newsletter, I started as an email coordinator. As the company grew, so did the work: website operations, deliverability, martech, lifecycle strategy, and AI-powered lead workflows across DTC, Pilothouse, and its client accounts.',
-  'At Sportserve, I began as an assistant to the department director. Over seven years, I learned the business from the inside, helped connect work across eight departments and twelve markets, and eventually built and led the Payments Operations division.',
+  'At Sportserve, I began as an assistant to the department director. Over seven years, I learned the business from the inside, helped connect work across eight departments and twelve markets, and eventually built and led the payments division of MSOps, the Marketing Services Operations department.',
 ] as const;
 
 /**
@@ -192,7 +192,7 @@ export const ROLES = [
     org: 'Sportserve',
     title: 'Senior Marketing Projects and Operations Manager',
     what:
-      'Global lifecycle and payments operations; built and led the Payments Operations division',
+      'Global lifecycle and payments operations; built and led the MSOps payments division',
     years: '2014–2021',
   },
   {

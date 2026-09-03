@@ -169,7 +169,7 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: 'sportserve-payments-division',
-    title: 'Building Sportserve’s Payments Operations division',
+    title: 'Building Sportserve’s MSOps payments division',
     problem:
       'Payment launches crossed eight departments, twelve markets, and a growing set of regulatory and provider requirements. I built the shared operating model, clarified ownership between teams, and hired and trained a dedicated five-person division to keep the work moving.',
     tags: ['Leadership', 'Operations', 'Team building'],
