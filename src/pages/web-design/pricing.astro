@@ -20,13 +20,92 @@ import {
 } from '../../data/web-design';
 
 /**
- * `/web-design/pricing/` — ported from the v13 export's `Monzones-W-Pricing`.
+ * `/web-design/pricing/` — ported from the v14 export's `Monzones-W-Pricing`.
  *
  * Every number on this page comes from src/data/web-design.ts, transcribed
  * from the design. Don't compute, round or infer one here.
  */
-const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+const phoneHref = `tel:${CONTACT.phone.replace(/[^+0-9]/g, '')}`;
 const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discovery call (30 minutes)')}`;
+
+/* The export sets the two rate names in the hero in ink; the data keeps the
+   paragraph as one string. */
+const STRONG_A = 'founding client rate';
+const STRONG_B = 'scheduled standard rate';
+const heroParts = PRICING_HERO.body.split(new RegExp(`(${STRONG_A}|${STRONG_B})`));
+
+/* The picker's answers, one per combination. Rendered in full so that with no
+   JavaScript the section reads as a plain table of "if you need this, it's
+   that"; the script narrows it to one row. */
+const PICKS = [
+  {
+    key: '1|No|No',
+    when: '1 page, not selling, I’ll handle changes',
+    name: 'Get Found',
+    price: '$465 hand-built',
+    note: 'One page plus the plumbing: domain, Google Business Profile verified, indexed, analytics. Already have those? The One-Page Site is $305.',
+  },
+  {
+    key: '1|No|Yes',
+    when: '1 page, not selling, I’ll edit it myself',
+    name: 'Get Found',
+    price: '$565 platform',
+    note: 'One page plus the plumbing: domain, Google Business Profile verified, indexed, analytics. Already have those? The One-Page Site is $405.',
+  },
+  {
+    key: '2–3|No|No',
+    when: '2–3 pages, not selling, I’ll handle changes',
+    name: 'Portfolio Site',
+    price: '$670 hand-built',
+    note: 'Hand-built and hosted free, forever. Changes after launch come through me.',
+  },
+  {
+    key: '2–3|No|Yes',
+    when: '2–3 pages, not selling, I’ll edit it myself',
+    name: 'Portfolio Site',
+    price: '$770 platform',
+    note: 'Platform build with an editor you drive; the platform subscription is paid directly by you.',
+  },
+  {
+    key: '4–7|No|No',
+    when: '4–7 pages, not selling, I’ll handle changes',
+    name: 'Small Business Site',
+    price: '$2,470',
+    note: 'Built on a platform either way; you can leave the editing to me with a Care plan.',
+  },
+  {
+    key: '4–7|No|Yes',
+    when: '4–7 pages, not selling, I’ll edit it myself',
+    name: 'Small Business Site',
+    price: '$2,470',
+    note: 'Built on a platform with an editor, so it’s yours to drive after launch.',
+  },
+  {
+    key: 'More|No|No',
+    when: 'More pages, not selling, I’ll handle changes',
+    name: 'Company Site',
+    price: 'from $8,240',
+    note: 'Quoted to your scope. CMS, conversion tracking, and a documented handover.',
+  },
+  {
+    key: 'More|No|Yes',
+    when: 'More pages, not selling, I’ll edit it myself',
+    name: 'Company Site',
+    price: 'from $8,240',
+    note: 'Quoted to your scope. CMS, conversion tracking, and a documented handover.',
+  },
+  {
+    key: 'sell',
+    when: 'Selling online, any number of pages',
+    name: 'Shop',
+    price: '$4,015',
+    note: 'Founding rate; standard $6,695. Store setup, checkout, and up to 25 products on Shopify, Webflow or WooCommerce.',
+  },
+] as const;
+
+/* The build-price column reads as a three-step scale. */
+const buildClass = (build: string) =>
+  build === 'Lowest' ? 'wdbuild--low' : build === 'Premium' ? 'wdbuild--high' : undefined;
 ---
 
 <WebDesignLayout
@@ -34,7 +113,7 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
   description="Every web design price in the open: six website packages from $305, Site Check, Care plans, managed domain and SSL, and how the numbers compare to three Vancouver providers."
   current="pricing"
 >
-  <header class="wdwrap wdhero" id="top">
+  <header class="wdwrap wdhero wdhero--pricing" id="top">
     <p class="wdhero__tags">
       <span class="wdtag">{PRICING_HERO.place}</span>
       <span class="wdtag wdtag--butter">{PRICING_HERO.badge}</span>
@@ -42,33 +121,33 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     <h1 class="wdhero__title">
       {PRICING_HERO.titleLead} <em>{PRICING_HERO.titleAccent}</em>
     </h1>
-    <p class="wdlede wdhero__body">{PRICING_HERO.body}</p>
+    <p class="wdhero__body wdhero__body--660">
+      {
+        heroParts.map((part) =>
+          part === STRONG_A || part === STRONG_B ? <strong>{part}</strong> : part,
+        )
+      }
+    </p>
 
     <nav class="wdjumps" aria-label="On this page">
       {PRICING_JUMPS.map((jump) => <a href={jump.href}>{jump.label}</a>)}
     </nav>
   </header>
 
-  {/*
-    The picker. Every combination's answer is rendered as its own row and the
-    script reveals the matching one — so with no JavaScript this reads as a
-    plain table of "if you need this, it's that", which is the same
-    information the widget gives one row at a time.
-  */}
-  <section class="wdband wdband--paper" id="picker">
-    <div class="wdband__inner">
-    <div class="wdcard wdpick" data-pick>
-      <p class="wdkick">in a hurry? three questions</p>
+  {/* ------------------------------------------------------------ picker -- */}
+  <section class="wdpickband" id="picker">
+    <div class="wdpick" data-pick>
+      <p class="wdkick wdpick__kick">in a hurry? three questions</p>
 
       <div class="wdpick__qs" hidden data-pick-qs>
         <div class="wdpick__q">
-          <span class="wdpick__label">How many pages?</span>
+          <span class="wdmono">How many pages?</span>
           <div class="wdpick__opts" role="group" aria-label="How many pages?">
             {
               ['1', '2–3', '4–7', 'More'].map((opt, i) => (
                 <button
                   type="button"
-                  class="wdpick__opt"
+                  class="wdopt"
                   data-pick-pages={opt}
                   aria-pressed={i === 0 ? 'true' : 'false'}
                 >
@@ -80,13 +159,13 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         </div>
 
         <div class="wdpick__q">
-          <span class="wdpick__label">Selling anything online?</span>
+          <span class="wdmono">Selling anything online?</span>
           <div class="wdpick__opts" role="group" aria-label="Selling anything online?">
             {
               ['No', 'Yes'].map((opt, i) => (
                 <button
                   type="button"
-                  class="wdpick__opt"
+                  class="wdopt"
                   data-pick-sell={opt}
                   aria-pressed={i === 0 ? 'true' : 'false'}
                 >
@@ -98,13 +177,13 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
         </div>
 
         <div class="wdpick__q">
-          <span class="wdpick__label">Editing it yourself?</span>
+          <span class="wdmono">Editing it yourself?</span>
           <div class="wdpick__opts" role="group" aria-label="Editing it yourself?">
             {
               ['No', 'Yes'].map((opt, i) => (
                 <button
                   type="button"
-                  class="wdpick__opt"
+                  class="wdopt"
                   data-pick-edit={opt}
                   aria-pressed={i === 0 ? 'true' : 'false'}
                 >
@@ -117,580 +196,541 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       </div>
 
       <div class="wdpick__out" role="status" aria-live="polite">
-        <p class="wdpick__outlabel">My recommendation</p>
+        <span class="wdmono wdpick__outlabel">My recommendation</span>
         <table class="wdpick__table" data-pick-table>
           <tbody>
-            <tr data-pick-row="1|No|No">
-              <th scope="row">1 page, not selling, I’ll handle changes</th>
-              <td>
-                <strong>Get Found</strong> — $465 hand-built.
-                <span
-                  >One page plus the plumbing: domain, Google Business Profile verified, indexed,
-                  analytics. Already have those? The One-Page Site is $305.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="1|No|Yes">
-              <th scope="row">1 page, not selling, I’ll edit it myself</th>
-              <td>
-                <strong>Get Found</strong> — $565 platform.
-                <span
-                  >One page plus the plumbing: domain, Google Business Profile verified, indexed,
-                  analytics. Already have those? The One-Page Site is $405.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="2–3|No|No">
-              <th scope="row">2–3 pages, not selling, I’ll handle changes</th>
-              <td>
-                <strong>Portfolio Site</strong> — $670 hand-built.
-                <span>Hand-built and hosted free, forever. Changes after launch come through me.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="2–3|No|Yes">
-              <th scope="row">2–3 pages, not selling, I’ll edit it myself</th>
-              <td>
-                <strong>Portfolio Site</strong> — $770 platform.
-                <span
-                  >Platform build with an editor you drive; the platform subscription is paid
-                  directly by you.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="4–7|No|No">
-              <th scope="row">4–7 pages, not selling, I’ll handle changes</th>
-              <td>
-                <strong>Small Business Site</strong> — $2,470.
-                <span
-                  >Built on a platform either way; you can leave the editing to me with a Care
-                  plan.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="4–7|No|Yes">
-              <th scope="row">4–7 pages, not selling, I’ll edit it myself</th>
-              <td>
-                <strong>Small Business Site</strong> — $2,470.
-                <span>Built on a platform with an editor, so it’s yours to drive after launch.</span>
-              </td>
-            </tr>
-            <tr data-pick-row="More|No|No">
-              <th scope="row">More pages, not selling, I’ll handle changes</th>
-              <td>
-                <strong>Company Site</strong> — from $8,240.
-                <span>Quoted to your scope. CMS, conversion tracking, and a documented handover.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="More|No|Yes">
-              <th scope="row">More pages, not selling, I’ll edit it myself</th>
-              <td>
-                <strong>Company Site</strong> — from $8,240.
-                <span>Quoted to your scope. CMS, conversion tracking, and a documented handover.</span
-                >
-              </td>
-            </tr>
-            <tr data-pick-row="sell">
-              <th scope="row">Selling online, any number of pages</th>
-              <td>
-                <strong>Shop</strong> — $4,015.
-                <span
-                  >Founding rate; standard $6,695. Store setup, checkout, and up to 25 products on
-                  Shopify, Webflow or WooCommerce.</span
-                >
-              </td>
-            </tr>
+            {
+              PICKS.map((pick) => (
+                <tr data-pick-row={pick.key}>
+                  <th scope="row">{pick.when}</th>
+                  <td>
+                    <strong class="wdpick__name">{pick.name}</strong>
+                    <strong class="wdpick__price">{pick.price}</strong>
+                    <a class="wdpick__more" href="#websites">See what’s included ↓</a>
+                    <span class="wdpick__note">{pick.note}</span>
+                  </td>
+                </tr>
+              ))
+            }
           </tbody>
         </table>
-        <a class="wdpick__more" href="#websites">See what’s included ↓</a>
       </div>
-    </div>
     </div>
   </section>
 
-  <section class="wdband wdband--paper" id="how">
+  {/* --------------------------------------------------------------- how -- */}
+  <section class="wdband wdband--paper wdband--92" id="how">
     <div class="wdband__inner">
-    <p class="wdkick" data-reveal>how the number is decided</p>
-    <h2 class="wdh2" data-reveal>Two questions <em>set the price.</em></h2>
+      <p class="wdkick" data-reveal>how the number is decided</p>
+      <h2 class="wdh2 wdhow__title" data-reveal>Two questions <em>set the price.</em></h2>
 
-    <div class="wdtwo">
-      <div class="wdcard" data-reveal>
-        <span class="wdnum">1</span>
-        <h3 class="wdh3">How much site?</h3>
-        <p class="wdbody">
-          Page count, whether it sells anything, and whether the content changes regularly. A
-          therapist needs one credible page; a store needs checkout, shipping and product pages.
-          Different jobs, different prices, and I’ll happily help you find where you land.
-        </p>
-      </div>
-      <div class="wdcard" data-reveal>
-        <span class="wdnum">2</span>
-        <h3 class="wdh3">Do you want to edit it yourself?</h3>
-        <p class="wdbody">
-          This decides <em>how</em> I build it, not what you get. If yes, we build on a platform with
-          a real editor, and that’s $100 more on the three smaller sites, plus the platform’s own
-          subscription. If you’d rather never think about it, I hand-build it and host it free,
-          forever. Either answer is a good one.
-        </p>
-      </div>
-    </div>
-
-    <p class="wdlede" data-reveal>
-      Short version: the hand-built price is lower because there’s no platform licence behind it, and
-      the platform price buys you an editor you drive yourself. Same design care and launch checklist
-      either way.
-    </p>
-
-    <div class="wdtable" data-reveal>
-      <table>
-        <tbody>
-          <tr>
-            <th>Built on</th>
-            <th>Can you edit it?</th>
-            <th>What you pay monthly</th>
-            <th>Build price</th>
-          </tr>
-          {
-            BUILD_TABLE.map((row) => (
-              <tr>
-                <td>{row.on}</td>
-                <td>{row.edit}</td>
-                <td>{row.monthly}</td>
-                <td>{row.build}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <p class="wdlede" data-reveal>
-      These are delivery methods, not separate product lines: same design care, same launch
-      checklist, whichever way we build. Hand-built costs less because there’s no platform licence;
-      platform builds cost a little more because you get an editor and can run the site without me.
-    </p>
-
-    <div class="wdcard wdcard--butter" data-reveal>
-      <h3 class="wdh3">Where hand-built isn’t the right fit</h3>
-      <p class="wdbody">
-        The hand-built option shines for brochure sites: a few pages, content that rarely changes,
-        nothing sold, nobody logging in. It’s a platform build when:
-      </p>
-      <ul class="wdlist">
-        {NOT_HAND_BUILT.map((item) => <li set:html={item} />)}
-      </ul>
-      <p class="wdnote">when it’s not a fit, I’ll point you to the build that is, cheerfully</p>
-    </div>
-    </div>
-  </section>
-
-  <section class="wdband wdband--paper wdband--tight" id="websites">
-    <div class="wdband__inner">
-    <div class="wdhead" data-reveal>
-      <h2 class="wdh2">The smaller three</h2>
-      <span class="wdnote">hand-built or platform: your pick, $100 apart</span>
-    </div>
-
-    <p class="wdlede" data-reveal>
-      Each of these comes two ways: <strong>hand-built</strong> (I write it by hand and host it free,
-      forever) or <strong>platform</strong> ($100 more, with a real editor you drive yourself; the
-      platform subscription is paid directly by you). Pick one and the cards show that price.
-    </p>
-
-    {/*
-      Both prices are in the markup on every card, and both notes are here.
-      The script narrows each card to the chosen one — so with no JavaScript
-      the section still answers the question, it just answers it twice.
-    */}
-    <div class="wdbuild" data-build>
-      <div class="wdbuild__opts" role="group" aria-label="How it's built" hidden data-build-opts>
-        <button type="button" class="wdpick__opt" data-build-opt="hand" aria-pressed="true">
-          Hand-built · $0/mo hosting
-        </button>
-        <button type="button" class="wdpick__opt" data-build-opt="platform" aria-pressed="false">
-          Platform · you edit it
-        </button>
-      </div>
-
-      <p class="wdbody wdbuild__note" data-build-note="hand">
-        Hand-built: no platform fee, ever, and you own the files. Changes after launch come through
-        me at $30/hr or the $50/mo Care plan.
-      </p>
-      <p class="wdbody wdbuild__note" data-build-note="platform">
-        Platform: $100 more per site, plus the platform’s own subscription, and you get an editor to
-        drive yourself.
-      </p>
-    </div>
-
-    <div class="wdthree">
-      {
-        SMALL_TIERS.map((tier) => (
-          <article class="wdcard wdtier" data-reveal>
-            <h3 class="wdh3">{tier.name}</h3>
-            <p class="wdtier__meta">{tier.meta}</p>
-            <p class="wdbody">{tier.blurb}</p>
-            <ul class="wdlist">
-              {tier.includes.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-            <p class="wdtier__ex">{tier.excludes}</p>
-
-            <div class="wdtier__prices">
-              <p class="wdtier__rate">Founding client rate</p>
-              <p class="wdtier__pair" data-build-price="hand">
-                <span class="wdtier__price">{tier.hand}</span>
-                <span class="wdtier__how">hand-built</span>
-              </p>
-              <p class="wdtier__pair" data-build-price="platform">
-                <span class="wdtier__price">{tier.platform}</span>
-                <span class="wdtier__how">platform</span>
-              </p>
-              <p class="wdtier__std" data-build-std="hand">
-                Scheduled standard rate: {tier.handStd}
-              </p>
-              <p class="wdtier__std" data-build-std="platform">
-                Scheduled standard rate: {tier.platformStd}
-              </p>
-            </div>
-          </article>
-        ))
-      }
-    </div>
-
-    <div class="wdcard wdcard--blue" data-reveal>
-      <p class="wdbody">
-        <strong>Worth knowing before you choose:</strong> a hand-built site doesn’t come with a login.
-        After the first 30 days, changes come through me at $30/hr (one-hour minimum) or through the
-        $50/mo Care plan. If you’d rather edit yourself, the platform option is completely yours to
-        drive. I’ll walk you through both on our call.
-      </p>
-    </div>
-    </div>
-  </section>
-
-  <section class="wdband wdband--paper wdband--tight" id="platform">
-    <div class="wdband__inner">
-    <div class="wdhead" data-reveal>
-      <h2 class="wdh2">The bigger three</h2>
-      <span class="wdnote">platform-built · you edit it yourself</span>
-    </div>
-
-    <p class="wdlede" data-reveal>
-      These need a proper platform: a CMS, ecommerce, or more complex functionality than a static
-      site should carry. Built on Squarespace, Wix, Webflow, WordPress or Shopify; I recommend based
-      on who’s maintaining it after launch, and you make the call. The platform subscription is paid
-      directly by you.
-    </p>
-
-    <div class="wdthree">
-      {
-        LARGE_TIERS.map((tier) => (
-          <article class="wdcard wdtier" data-reveal>
-            <h3 class="wdh3">{tier.name}</h3>
-            <p class="wdtier__meta">{tier.meta}</p>
-            <p class="wdbody">{tier.blurb}</p>
-            <ul class="wdlist">
-              {tier.includes.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-            <p class="wdtier__ex">{tier.excludes}</p>
-
-            <div class="wdtier__prices">
-              <p class="wdtier__rate">Founding client rate</p>
-              <p class="wdtier__pair">
-                <span class="wdtier__price">{tier.price}</span>
-              </p>
-              <p class="wdtier__std">
-                Scheduled standard rate: {tier.standard}
-                {tier.standardNote ? `, ${tier.standardNote}` : ''}
-              </p>
-            </div>
-          </article>
-        ))
-      }
-    </div>
-
-    <p class="wdlede" data-reveal>
-      All three include <strong>one full-site revision</strong> after you review the completed build.
-      And if anything I deliver doesn’t match what we agreed, I fix it free, without touching your
-      revision. Fair’s fair.
-    </p>
-    </div>
-  </section>
-
-  <section class="wdband wdband--paper wdband--tight" id="sitecheck">
-    <div class="wdband__inner">
-    <div class="wdtwo">
-      <div data-reveal>
-        <p class="wdkick">already have a site?</p>
-        <h2 class="wdh2">Site Check: <em>a friendly second opinion.</em></h2>
-        <p class="wdlede">
-          “We get traffic but nobody calls.” “We’re not showing up on Google.” “It looks fine on my
-          laptop but people say it’s broken on their phone.”
-        </p>
-        <p class="wdlede">
-          Often these aren’t design problems at all; they’re structure, speed, or a page that never
-          quite asks for anything. The Site Check finds out which, so you can fix the right thing
-          before spending real money on a rebuild you might not even need.
-        </p>
-        <div class="wdcard wdcard--butter wdcheck">
-          <p class="wdtier__rate">Founding client rate</p>
-          <p class="wdcheck__price">{SITE_CHECK.price}</p>
-          <p class="wdtier__std">
-            Scheduled standard rate: <strong>{SITE_CHECK.standard}</strong> · {SITE_CHECK.turnaround}
+      <div class="wdgrid wdhow__grid">
+        <div class="wdcard wdhow__card" data-reveal>
+          <span class="wdhow__num">1</span>
+          <h3 class="wdhow__h3">How much site?</h3>
+          <p class="wdbody wdbody--sm">
+            Page count, whether it sells anything, and whether the content changes regularly. A
+            therapist needs one credible page; a store needs checkout, shipping and product pages.
+            Different jobs, different prices, and I’ll happily help you find where you land.
           </p>
-          <p class="wdcheck__credit">{SITE_CHECK.credit}</p>
+        </div>
+        <div class="wdcard wdhow__card wdhow__card--two" data-reveal>
+          <span class="wdhow__num wdhow__num--two">2</span>
+          <h3 class="wdhow__h3">Do you want to edit it yourself?</h3>
+          <p class="wdbody wdbody--sm">
+            This decides <em>how</em> I build it, not what you get. If yes, we build on a platform
+            with a real editor, and that’s $100 more on the three smaller sites, plus the platform’s
+            own subscription. If you’d rather never think about it, I hand-build it and host it
+            free, forever. Either answer is a good one.
+          </p>
         </div>
       </div>
 
-      <div class="wdcard" data-reveal="pop">
-        <h3 class="wdh3">What you get</h3>
-        <ul class="wdlist">
-          {SITE_CHECK.gets.map((item) => <li>{item}</li>)}
-        </ul>
-        <p class="wdtier__ex">{SITE_CHECK.excludes}</p>
+      <p class="wddash wdhow__short" data-reveal>
+        Short version: the hand-built price is lower because there’s no platform licence behind it,
+        and the platform price buys you an editor you drive yourself. Same design care and launch
+        checklist either way.
+      </p>
+
+      <div class="wdtable" data-reveal>
+        <table>
+          <tbody>
+            <tr>
+              <th>Built on</th>
+              <th>Can you edit it?</th>
+              <th>What you pay monthly</th>
+              <th>Build price</th>
+            </tr>
+            {
+              BUILD_TABLE.map((row) => (
+                <tr>
+                  <td>{row.on}</td>
+                  <td>{row.edit}</td>
+                  <td>{row.monthly}</td>
+                  <td class:list={[buildClass(row.build)]}>{row.build}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
       </div>
-    </div>
+
+      <p class="wdhow__methods" data-reveal>
+        These are delivery methods, not separate product lines: same design care, same launch
+        checklist, whichever way we build. Hand-built costs less because there’s no platform
+        licence; platform builds cost a little more because you get an editor and can run the site
+        without me.
+      </p>
+
+      <div class="wddashbox wdfit" data-reveal>
+        <h3 class="wdfit__title">Where hand-built isn’t the right fit</h3>
+        <p class="wdbody wdbody--sm wdfit__intro">
+          The hand-built option shines for brochure sites: a few pages, content that rarely changes,
+          nothing sold, nobody logging in. It’s a platform build when:
+        </p>
+        <ul class="wdfit__list">
+          {NOT_HAND_BUILT.map((item) => <li set:html={item} />)}
+        </ul>
+        <p class="wdnote wdfit__note">
+          when it’s not a fit, I’ll point you to the build that is, cheerfully
+        </p>
+      </div>
     </div>
   </section>
 
-  <section class="wdband wdband--dark" id="care">
+  {/* ------------------------------------------------------ smaller three -- */}
+  <section class="wdband wdband--paper wdband--112 wdband--rule" id="websites">
     <div class="wdband__inner">
-    <p class="wdkick" data-reveal>after launch</p>
-    <h2 class="wdh2" data-reveal>Website Care: <em>so it stays fast, safe and found.</em></h2>
-    <p class="wdlede" data-reveal>
-      Every Care client gets a <strong>live dashboard</strong>: uptime, traffic, performance and SEO
-      signals you can check yourself, any time. Care covers your website’s health and performance;
-      the $50/year managed domain &amp; SSL service, hosting and platform licences are their own line
-      items, so you always know exactly what you’re paying for.
-    </p>
+      <div class="wdhead" data-reveal>
+        <h2 class="wdh2 wdh2--sm">The smaller three</h2>
+        <span class="wdhead__sub">hand-built or platform: your pick, $100 apart</span>
+      </div>
 
-    <div class="wdthree">
-      {
-        CARE_PLANS.map((plan) => (
-          <article class="wdcard wdtier" data-reveal>
-            <h3 class="wdh3">{plan.name}</h3>
-            <p class="wdcheck__price">
-              {plan.price}
-              <span class="wdper">{plan.per}</span>
+      <p class="wdintro wdintro--24" data-reveal>
+        Each of these comes two ways: <strong>hand-built</strong> (I write it by hand and host it
+        free, forever) or <strong>platform</strong> ($100 more, with a real editor you drive
+        yourself; the platform subscription is paid directly by you). Pick one and the cards show
+        that price.
+      </p>
+
+      {/*
+        Both prices are in the markup on every card, and both notes are here.
+        The script narrows each card to the chosen one — so with no JavaScript
+        the section still answers the question, it just answers it twice.
+      */}
+      <div class="wdbuild" data-build>
+        <div class="wdtray" role="group" aria-label="How it's built" hidden data-build-opts>
+          <button type="button" class="wdtray__opt" data-build-opt="hand" aria-pressed="true">
+            Hand-built · $0/mo hosting
+          </button>
+          <button type="button" class="wdtray__opt" data-build-opt="platform" aria-pressed="false">
+            Platform · you edit it
+          </button>
+        </div>
+
+        <p class="wdbuild__note" data-build-note="hand">
+          Hand-built: no platform fee, ever, and you own the files. Changes after launch come
+          through me at $30/hr or the $50/mo Care plan.
+        </p>
+        <p class="wdbuild__note" data-build-note="platform">
+          Platform: $100 more per site, plus the platform’s own subscription, and you get an editor
+          to drive yourself.
+        </p>
+      </div>
+
+      <div class="wdgrid wdgrid--3 wdtiers">
+        {
+          SMALL_TIERS.map((tier) => (
+            <article
+              class:list={['wdcard', 'wdtier', tier.name === 'Get Found' && 'wdtier--pick']}
+              data-reveal
+            >
+              <h3 class="wdtier__name">{tier.name}</h3>
+              <p class="wdmono wdtier__meta">{tier.meta}</p>
+              <p class="wdtier__blurb">{tier.blurb}</p>
+              <ul class="wdtier__list">
+                {tier.includes.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+              <p class="wdtier__ex">{tier.excludes}</p>
+
+              <div class="wdtier__prices">
+                <p class="wdmono wdtier__rate">Founding client rate</p>
+                <p class="wdtier__pair" data-build-price="hand">
+                  <strong class="wdtier__price">{tier.hand}</strong>
+                  <span class="wdtier__how">hand-built</span>
+                </p>
+                <p class="wdtier__pair" data-build-price="platform">
+                  <strong class="wdtier__price">{tier.platform}</strong>
+                  <span class="wdtier__how">platform</span>
+                </p>
+                <p class="wdtier__std" data-build-std="hand">
+                  Scheduled standard rate: {tier.handStd}
+                </p>
+                <p class="wdtier__std" data-build-std="platform">
+                  Scheduled standard rate: {tier.platformStd}
+                </p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="wdbutter wdtiers__note" data-reveal>
+        <p>
+          <strong>Worth knowing before you choose:</strong> a hand-built site doesn’t come with a
+          login. After the first 30 days, changes come through me at $30/hr (one-hour minimum) or
+          through the $50/mo Care plan. If you’d rather edit yourself, the platform option is
+          completely yours to drive. I’ll walk you through both on our call.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------- bigger three -- */}
+  <section class="wdband wdband--paper wdband--112 wdband--rule" id="platform">
+    <div class="wdband__inner">
+      <div class="wdhead" data-reveal>
+        <h2 class="wdh2 wdh2--sm">The bigger three</h2>
+        <span class="wdhead__sub">platform-built · you edit it yourself</span>
+      </div>
+
+      <p class="wdintro wdintro--40" data-reveal>
+        These need a proper platform: a CMS, ecommerce, or more complex functionality than a static
+        site should carry. Built on Squarespace, Wix, Webflow, WordPress or Shopify; I recommend
+        based on who’s maintaining it after launch, and you make the call. The platform subscription
+        is paid directly by you.
+      </p>
+
+      <div class="wdgrid wdgrid--3 wdtiers">
+        {
+          LARGE_TIERS.map((tier) => (
+            <article
+              class:list={['wdcard', 'wdtier', tier.name === 'Company Site' && 'wdtier--dark']}
+              data-reveal
+            >
+              <h3 class="wdtier__name">{tier.name}</h3>
+              <p class="wdmono wdtier__meta">{tier.meta}</p>
+              <p class="wdtier__blurb">{tier.blurb}</p>
+              <ul class="wdtier__list">
+                {tier.includes.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+              <p class="wdtier__ex">{tier.excludes}</p>
+
+              <div class="wdtier__prices">
+                <p class="wdmono wdtier__rate wdtier__rate--tight">Founding client rate</p>
+                <p class="wdtier__big">{tier.price}</p>
+                {tier.standardNote ? (
+                  <p class="wdtier__std wdtier__std--plain">
+                    Scheduled standard rate: <strong>{tier.standard}</strong>, {tier.standardNote}
+                  </p>
+                ) : (
+                  <p class="wdtier__std">Scheduled standard rate: {tier.standard}</p>
+                )}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="wdclose" data-reveal>
+        <strong>All three include one full-site revision</strong> after you review the completed
+        build. And if anything I deliver doesn’t match what we agreed, I fix it free, without
+        touching your revision. Fair’s fair.
+      </p>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------- site check -- */}
+  <section class="wdband wdband--paper wdband--112 wdband--rule" id="sitecheck">
+    <div class="wdband__inner">
+      <div class="wdgrid wdcheck">
+        <div data-reveal>
+          <p class="wdkick">already have a site?</p>
+          <h2 class="wdh2 wdh2--sm">Site Check: <em>a friendly second opinion.</em></h2>
+          <p class="wdbody wdcheck__p">
+            “We get traffic but nobody calls.” “We’re not showing up on Google.” “It looks fine on
+            my laptop but people say it’s broken on their phone.”
+          </p>
+          <p class="wdbody wdcheck__p wdcheck__p--last">
+            Often these aren’t design problems at all; they’re structure, speed, or a page that
+            never quite asks for anything. The Site Check finds out which, so you can fix the right
+            thing before spending real money on a rebuild you might not even need.
+          </p>
+          <div class="wdcheck__prices">
+            <p class="wdmono wdtier__rate wdtier__rate--tight">Founding client rate</p>
+            <p class="wdcheck__price">{SITE_CHECK.price}</p>
+            <p class="wdcheck__std">
+              Scheduled standard rate: {SITE_CHECK.standard} · {SITE_CHECK.turnaround}
             </p>
-            <ul class="wdlist">
-              {plan.items.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-            <p class="wdtier__ex">{plan.note}</p>
-          </article>
-        ))
-      }
-    </div>
+            <p class="wdcheck__credit">{SITE_CHECK.credit}</p>
+          </div>
+        </div>
 
-    <ul class="wdterms" data-reveal>
-      {CARE_TERMS.map((term) => <li>{term}</li>)}
-    </ul>
-    </div>
-  </section>
-
-  <section class="wdband wdband--paper" id="domain">
-    <div class="wdband__inner">
-    <p class="wdkick" data-reveal>the unglamorous essentials, handled</p>
-    <h2 class="wdh2" data-reveal>Managed domain &amp; SSL: <em>one small fee.</em></h2>
-
-    <div class="wdtwo">
-      <div class="wdcard" data-reveal>
-        <p class="wdcheck__price">$50<span class="wdper"> /year, standard domain</span></p>
-        <p class="wdbody">
-          Managed domain, DNS, and SSL are $50 a year for a standard domain, billed separately from
-          Website Care. <strong>Your domain is registered in your name, so you remain the legal
-          owner.</strong> If you ever want to take it over yourself, it’s transferred to you at no
-          charge.
-        </p>
-        <ul class="wdlist">
-          {DOMAIN_ITEMS.map((item) => <li>{item}</li>)}
-        </ul>
-      </div>
-
-      <div class="wdcard" data-reveal>
-        <h3 class="wdh3">Three ways in (you pick)</h3>
-        <ul class="wdlist">
-          {DOMAIN_WAYS.map((way) => <li set:html={way} />)}
-        </ul>
-        <p class="wdtier__ex">
-          Specialty domains like .ai and .io, and any paid custom certificate, are quoted before
-          purchase, happily and in writing.
-        </p>
+        <div class="wdcard wdcard--30" data-reveal="pop">
+          <h3 class="wdcaps wdcaps--16">What you get</h3>
+          <ul class="wdlist15">
+            {SITE_CHECK.gets.map((item) => <li>{item}</li>)}
+          </ul>
+          <p class="wdtier__ex wdtier__ex--flush">{SITE_CHECK.excludes}</p>
+        </div>
       </div>
     </div>
-    </div>
   </section>
 
-  <section class="wdband wdband--paper wdband--tight" id="addons">
+  {/* --------------------------------------------------------------- care -- */}
+  <section class="wdband wdband--dark wdband--92" id="care">
     <div class="wdband__inner">
-    <div class="wdhead" data-reveal>
-      <h2 class="wdh2">Extras</h2>
-      <span class="wdnote">a short list, on purpose</span>
-    </div>
-    <p class="wdlede" data-reveal>
-      Most of what you need is already inside the package; these are the few genuine extras. Anything
-      else your project needs, we scope together with a simple written change order, priced for your
-      project.
-    </p>
-
-    <div class="wdtable" data-reveal>
-      <table>
-        <tbody>
-          {
-            ADDONS.map((addon) => (
-              <tr>
-                <td>{addon.what}</td>
-                <td>{addon.price}</td>
-                <td>{addon.note}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <div class="wdcard wdcard--butter" data-reveal>
-      <h3 class="wdh3">A happy note about SEO</h3>
-      <p class="wdbody">
-        Foundational SEO and AEO come built into every website I make: structure, metadata, schema,
-        sitemap, indexing. It’s never an upsell. If you’d like hands-on SEO implementation, content
-        optimization, or dedicated reporting for an existing site, that’s a separate packaged service
-        we scope together, usually after a Site Check, so the plan is based on findings rather than
-        guesses.
+      <p class="wdkick" data-reveal>after launch</p>
+      <h2 class="wdh2 wdmax900" data-reveal>
+        Website Care: <em>so it stays fast, safe and found.</em>
+      </h2>
+      <p class="wdlede wdlede--680 wdlede--44" data-reveal>
+        Every Care client gets a <strong>live dashboard</strong>: uptime, traffic, performance and
+        SEO signals you can check yourself, any time. Care covers your website’s health and
+        performance; the $50/year managed domain &amp; SSL service, hosting and platform licences are
+        their own line items, so you always know exactly what you’re paying for.
       </p>
-    </div>
+
+      <div class="wdgrid wdgrid--3 wdtiers">
+        {
+          CARE_PLANS.map((plan) => (
+            <article
+              class:list={['wdplan', plan.name === 'Managed' && 'wdplan--pick']}
+              data-reveal
+            >
+              <h3 class="wdplan__name">{plan.name}</h3>
+              <p class="wdplan__price">
+                {plan.price} {plan.per}
+              </p>
+              <ul class="wdplan__list">
+                {plan.items.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+              <p class="wdplan__note">{plan.note}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <ul class="wdterms" data-reveal>
+        {
+          CARE_TERMS.map((term) => (
+            <li>
+              <span class="wdterms__tick" aria-hidden="true">
+                ✓
+              </span>{' '}
+              {term}
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <section class="wdband wdband--paper wdband--tight" id="rules">
+  {/* ------------------------------------------------------------- domain -- */}
+  <section class="wdband wdband--paper wdband--92" id="domain">
     <div class="wdband__inner">
-    <p class="wdkick" data-reveal>the fine print, in large print</p>
-    <h2 class="wdh2" data-reveal>How we keep <em>a fixed price fixed.</em></h2>
+      <p class="wdkick" data-reveal>the unglamorous essentials, handled</p>
+      <h2 class="wdh2 wdmax940" data-reveal>Managed domain &amp; SSL: <em>one small fee.</em></h2>
 
-    <div class="wdthree">
-      {
-        FINE_PRINT.map((rule) => (
-          <article class="wdcard" data-reveal>
-            <h3 class="wdh3">{rule.title}</h3>
-            <p class="wdbody">{rule.body}</p>
-          </article>
-        ))
-      }
-    </div>
+      <div class="wdgrid wddomain">
+        <div class="wdcard wdcard--30" data-reveal>
+          <p class="wddomain__price">$50 /year, standard domain</p>
+          <p class="wddomain__body">
+            Managed domain, DNS, and SSL are $50 a year for a standard domain, billed separately
+            from Website Care. <strong
+              >Your domain is registered in your name, so you remain the legal owner.</strong
+            > If you ever want to take it over yourself, it’s transferred to you at no charge.
+          </p>
+          <ul class="wdlist14">
+            {DOMAIN_ITEMS.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
 
-    <div class="wdcard wdcard--blue" data-reveal>
-      <h3 class="wdh3">How you can pay</h3>
-      <p class="wdpays">
-        {PAY_METHODS.map((method) => <span class="wdtag">{method}</span>)}
-      </p>
-      <p class="wdbody">
-        Every invoice is itemized, so you always see exactly what you’re paying for.
-      </p>
-      <p class="wdbody">
-        <strong
-          >Save 3% when you pay by cash, bank deposit, bank transfer, or e-transfer.</strong
-        > The discount shows as its own line on your invoice.
-      </p>
-    </div>
-
-    <p class="wdlede" data-reveal>
-      <strong>You own your website, on every tier.</strong> Ownership transfers at final payment, in
-      writing. Hand-built clients receive the actual files; platform clients receive the account
-      access, design assets and project materials.
-    </p>
+        <div class="wdcard wdcard--30 wdcard--col" data-reveal>
+          <h3 class="wdcaps wdcaps--14">Three ways in (you pick)</h3>
+          <ul class="wdlist14 wdlist14--roomy">
+            {DOMAIN_WAYS.map((way) => <li set:html={way} />)}
+          </ul>
+          <p class="wdtier__ex wdtier__ex--auto">
+            Specialty domains like .ai and .io, and any paid custom certificate, are quoted before
+            purchase, happily and in writing.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="wdband wdband--dark" id="compare">
+  {/* ------------------------------------------------------------- extras -- */}
+  <section class="wdband wdband--paper wdband--112 wdband--rule" id="addons">
     <div class="wdband__inner">
-    <p class="wdkick" data-reveal>please do shop around</p>
-    <h2 class="wdh2" data-reveal>How the numbers <em>compare.</em></h2>
-    <p class="wdlede" data-reveal>
-      You’ve seen my numbers; here’s how they sit next to three well-regarded Vancouver providers
-      with public pricing, package for package. <strong>“Not published”</strong> simply means no
-      comparable package is listed on their site, and most will happily quote one privately.
-    </p>
+      <div class="wdhead wdhead--12" data-reveal>
+        <h2 class="wdh2 wdh2--sm">Extras</h2>
+        <span class="wdhead__sub">a short list, on purpose</span>
+      </div>
+      <p class="wdintro wdintro--36 wdmax680" data-reveal>
+        Most of what you need is already inside the package; these are the few genuine extras.
+        Anything else your project needs, we scope together with a simple written change order,
+        priced for your project.
+      </p>
 
-    <div class="wdtable" data-reveal>
-      <table>
-        <tbody>
-          <tr>
-            <th>What you need</th>
-            <th>Miguel (MNM)</th>
-            <th>Taylor Web Design</th>
-            <th>Angarum Media</th>
-            <th>Brixwork</th>
-          </tr>
-          {
-            COMPARISON.map((row) => (
-              <tr>
-                <td>
-                  {row.need}
-                  <small>{row.detail}</small>
-                </td>
-                <td>
-                  {row.mine}
-                  {row.mineNote ? <small>{row.mineNote}</small> : null}
-                </td>
-                <td>{row.taylor}</td>
-                <td>{row.angarum}</td>
-                <td>{row.brixwork}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
+      <div class="wdtable wdaddons" data-reveal>
+        <table>
+          <tbody>
+            {
+              ADDONS.map((addon) => (
+                <tr>
+                  <td class="wdaddons__what">{addon.what}</td>
+                  <td class="wdaddons__price">{addon.price}</td>
+                  <td>{addon.note}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
 
-    <p class="wdtier__ex" data-reveal>
-      Checked August 2026 against each provider’s public pricing page: <a
-        class="wdlink"
-        href="https://taylornguyen.ca/website-design-service-businesses"
-        target="_blank"
-        rel="noopener">Taylor Web Design</a
-      >, <a
-        class="wdlink"
-        href="https://angarummedia.com/packages-pricing/"
-        target="_blank"
-        rel="noopener">Angarum Media</a
-      >, <a
-        class="wdlink"
-        href="https://www.brixwork.com/realtors/real-estate-website-monthly-pricing/"
-        target="_blank"
-        rel="noopener">Brixwork</a
-      >. All three do good work. Brixwork’s plans are real-estate-specific and include specialized
-      functionality, so the comparison shows that a no-subscription option exists, not that the
-      services are identical. Currencies as listed by each provider.
-    </p>
-    <p class="wdnote" data-reveal>
-      the free-forever hosting option is the one you won’t find elsewhere, and it’s my favourite
-      thing to offer
-    </p>
+      <div class="wddashbox wdseo" data-reveal>
+        <h3 class="wdseo__title">A happy note about SEO</h3>
+        <p class="wdseo__body">
+          Foundational SEO and AEO come built into every website I make: structure, metadata,
+          schema, sitemap, indexing. It’s never an upsell. If you’d like hands-on SEO
+          implementation, content optimization, or dedicated reporting for an existing site, that’s
+          a separate packaged service we scope together, usually after a Site Check, so the plan is
+          based on findings rather than guesses.
+        </p>
+      </div>
     </div>
   </section>
 
-  <section class="wdcta">
+  {/* --------------------------------------------------------- fine print -- */}
+  <section class="wdband wdband--paper wdband--112 wdband--rule" id="rules">
+    <div class="wdband__inner">
+      <p class="wdkick" data-reveal>the fine print, in large print</p>
+      <h2 class="wdh2 wdmax940 wdrules__title" data-reveal>How we keep <em>a fixed price fixed.</em></h2>
+
+      <div class="wdgrid wdgrid--3 wdrules">
+        {
+          FINE_PRINT.map((rule) => (
+            <article class="wdcard wdrule" data-reveal>
+              <h3 class="wdrule__title">{rule.title}</h3>
+              <p class="wdbody wdbody--sm wdrule__body">{rule.body}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="wdcard wdpay" data-reveal>
+        <h3 class="wdcaps wdcaps--14">How you can pay</h3>
+        <p class="wdpay__methods">
+          {PAY_METHODS.map((method) => <span class="wdchip">{method}</span>)}
+        </p>
+        <p class="wdpay__body">
+          Every invoice is itemized, so you always see exactly what you’re paying for.
+        </p>
+      </div>
+
+      <div class="wdbutter wdpay__save" data-reveal>
+        <p>
+          <strong>Save 3% when you pay by cash, bank deposit, bank transfer, or e-transfer.</strong>
+          The discount shows as its own line on your invoice.
+        </p>
+      </div>
+
+      <p class="wdclose wdclose--26" data-reveal>
+        <strong>You own your website, on every tier.</strong> Ownership transfers at final payment,
+        in writing. Hand-built clients receive the actual files; platform clients receive the
+        account access, design assets and project materials.
+      </p>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------ compare -- */}
+  <section class="wdband wdband--dark wdband--92" id="compare">
+    <div class="wdband__inner">
+      <p class="wdkick" data-reveal>please do shop around</p>
+      <h2 class="wdh2 wdmax900" data-reveal>How the numbers <em>compare.</em></h2>
+      <p class="wdlede wdlede--680 wdlede--44" data-reveal>
+        You’ve seen my numbers; here’s how they sit next to three well-regarded Vancouver providers
+        with public pricing, package for package. <strong>“Not published”</strong> simply means no
+        comparable package is listed on their site, and most will happily quote one privately.
+      </p>
+
+      <div class="wdtable wdcompare" data-reveal>
+        <table>
+          <tbody>
+            <tr>
+              <th>What you need</th>
+              <th class="wdcompare__mine">Miguel (MNM)</th>
+              <th>Taylor Web Design</th>
+              <th>Angarum Media</th>
+              <th>Brixwork</th>
+            </tr>
+            {
+              COMPARISON.map((row) => (
+                <tr>
+                  <td class="wdcompare__need">
+                    {row.need}
+                    <small>{row.detail}</small>
+                  </td>
+                  <td class="wdcompare__mine">
+                    {row.mine}
+                    {row.mineNote ? <small>{row.mineNote}</small> : null}
+                  </td>
+                  <td>{row.taylor}</td>
+                  <td>{row.angarum}</td>
+                  <td>{row.brixwork}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="wdcompare__foot" data-reveal>
+        Checked August 2026 against each provider’s public pricing page: <a
+          href="https://taylornguyen.ca/website-design-service-businesses"
+          target="_blank"
+          rel="noopener">Taylor Web Design</a
+        >, <a href="https://angarummedia.com/packages-pricing/" target="_blank" rel="noopener"
+          >Angarum Media</a
+        >, <a
+          href="https://www.brixwork.com/realtors/real-estate-website-monthly-pricing/"
+          target="_blank"
+          rel="noopener">Brixwork</a
+        >. All three do good work. Brixwork’s plans are real-estate-specific and include specialized
+        functionality, so the comparison shows that a no-subscription option exists, not that the
+        services are identical. Currencies as listed by each provider.
+      </p>
+      <p class="wdnote wdcompare__note" data-reveal>
+        the free-forever hosting option is the one you won’t find elsewhere, and it’s my favourite
+        thing to offer
+      </p>
+    </div>
+  </section>
+
+  {/* On this page the closing band sits left-aligned in a wider column. */}
+  <section class="wdcta wdcta--left">
     <span class="wdcta__m" aria-hidden="true">M.</span>
     <div class="wdcta__inner">
-    <h2 class="wdh2" data-reveal>Let’s find <em>your number.</em></h2>
-    <p class="wdlede" data-reveal>
-      Five questions, two minutes, and I’ll usually come back with a price, not a pitch, within two
-      business days. Or just book the free call and we’ll talk it through.
-    </p>
-    <p class="wdnote" data-reveal>
-      one build at a time, and you get a real start date before you pay anything
-    </p>
-    <div class="wdctarow" data-reveal>
-      <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
-      <a class="wdbtn wdbtn--ghost" href={callHref}>Book a free 30-min call</a>
-      <a class="wdbtn wdbtn--ghost" href={phoneHref}>{CONTACT.phone}</a>
-    </div>
+      <h2 class="wdh2" data-reveal>Let’s find <em>your number.</em></h2>
+      <p class="wdlede" data-reveal>
+        Five questions, two minutes, and I’ll usually come back with a price, not a pitch, within
+        two business days. Or just book the free call and we’ll talk it through.
+      </p>
+      <p class="wdnote" data-reveal>
+        one build at a time, and you get a real start date before you pay anything
+      </p>
+      <div class="wdctarow" data-reveal>
+        <a class="wdbtn wdbtn--solid" href="/web-design/#start">Start a project ↗</a>
+        <a class="wdbtn wdbtn--ghost" href={callHref}>Book a free 30-min call</a>
+        <a class="wdbtn wdbtn--ghost" href={phoneHref}>{CONTACT.phone}</a>
+      </div>
     </div>
   </section>
 </WebDesignLayout>
@@ -747,7 +787,9 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     const buttons = [...build.querySelectorAll<HTMLButtonElement>('[data-build-opt]')];
     /* The prices live in the cards below, not inside [data-build]. */
     const swappable = [
-      ...document.querySelectorAll<HTMLElement>('[data-build-note], [data-build-price], [data-build-std]'),
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-build-note], [data-build-price], [data-build-std]',
+      ),
     ];
 
     if (buttons.length && swappable.length) {
@@ -770,109 +812,214 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
 </script>
 
 <style>
-  .wdhero {
-    padding-block: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 36px);
+  /* Page-unique styles; the shared vocabulary is in WebDesignLayout.astro.
+     Values are the v14 export's (`Monzones-W-Pricing`). */
+
+  .wdhero.wdhero--pricing {
+    padding-bottom: 88px;
   }
 
-  .wdhero__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  .wdhero__body.wdhero__body--660 {
+    max-width: 660px;
   }
 
-  .wdtag {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 14px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 999px;
-    background: var(--wd-bright);
-    font-size: 13px;
-    font-weight: 600;
+  /* Small helpers the page uses more than once. */
+  .wdmax900 {
+    max-width: 900px;
   }
 
-  .wdtag--butter {
-    background: var(--wd-butter);
+  .wdmax940 {
+    max-width: 940px;
   }
 
-  .wdhero__title {
-    margin-top: 22px;
-    font-size: clamp(40px, 6vw, 92px);
-    font-weight: 900;
-    line-height: 0.94;
-    letter-spacing: -0.025em;
-    text-transform: uppercase;
-    text-wrap: balance;
+  .wdmax680 {
+    max-width: 680px;
   }
 
-  .wdhero__title em {
-    font-style: italic;
-    color: var(--wd-coral);
+  .wdlede.wdlede--680 {
+    max-width: 680px;
   }
 
-  .wdhero__body {
-    margin-top: 22px;
+  .wdlede.wdlede--44 {
+    margin-bottom: 44px;
   }
 
-  .wdjumps {
+  /* The paragraph under a `.wdhead`. */
+  .wdintro {
+    margin: 0;
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdintro strong {
+    color: var(--wd-ink);
+  }
+
+  .wdintro--24 {
+    margin-bottom: 24px;
+  }
+
+  .wdintro--36 {
+    margin-bottom: 36px;
+  }
+
+  .wdintro--40 {
+    margin-bottom: 40px;
+  }
+
+  /* A closing paragraph under a grid. */
+  .wdclose {
+    margin: 22px 0 0;
+    max-width: 720px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdclose strong {
+    color: var(--wd-ink);
+  }
+
+  .wdclose--26 {
     margin-top: 26px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
   }
 
-  .wdjumps a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 40px;
-    padding: 8px 15px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 999px;
-    background: var(--wd-bright);
+  /* Small caps card heading. */
+  .wdcaps {
+    margin: 0 0 14px;
     font-size: 14px;
-    font-weight: 600;
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wd-ink);
   }
 
-  .wdjumps a:hover,
-  .wdjumps a:focus-visible {
-    transform: translateY(-2px);
-    background: var(--wd-butter);
+  .wdcaps--16 {
+    margin-bottom: 16px;
   }
 
-  /* ------------------------------------------------------------ picker -- */
+  .wdcard.wdcard--30 {
+    padding: 30px 28px;
+  }
+
+  .wdcard--col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Bulleted lists keep the browser's discs, as the export does. */
+  .wdlist15,
+  .wdlist14 {
+    margin: 0 0 18px;
+    padding-left: 22px;
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--wd-body);
+  }
+
+  .wdlist14 {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.85;
+  }
+
+  .wdlist14--roomy {
+    margin-bottom: 16px;
+    font-size: 14.5px;
+    line-height: 1.9;
+  }
+
+  /* Dashed paper box: a short aside or an explainer. */
+  .wddash {
+    margin: 0;
+    max-width: 820px;
+    padding: 20px 26px;
+    border: 1px dashed var(--wd-ink);
+    border-radius: 12px;
+    background: var(--wd-card);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--wd-body);
+    text-wrap: pretty;
+  }
+
+  .wddashbox {
+    max-width: 820px;
+    padding: 28px 30px;
+    border: 1px dashed var(--wd-ink);
+    border-radius: 12px;
+    background: var(--wd-card);
+  }
+
+  /* Yellow callout. */
+  .wdbutter {
+    padding: 20px 26px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 12px;
+    background: var(--wd-yellow);
+  }
+
+  .wdbutter p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--wd-ink);
+    text-wrap: pretty;
+  }
+
+  /* -------------------------------------------------------------- picker -- */
+  .wdpickband {
+    padding: 0 24px 8px;
+  }
+
+  .wdpick {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: 32px clamp(22px, 3vw, 40px);
+    border: 1px solid var(--wd-ink);
+    border-radius: 14px;
+    background: var(--wd-card);
+    box-shadow: 8px 8px 0 var(--wd-ink);
+  }
+
+  .wdkick.wdpick__kick {
+    margin-bottom: 6px;
+    font-size: 26px;
+  }
+
   .wdpick__qs {
-    margin-top: 18px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-  }
-
-  .wdpick__label {
-    display: block;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .wdpick__opts {
-    margin-top: 10px;
+    margin: 18px 0 22px;
     display: flex;
     flex-wrap: wrap;
+    gap: 18px 40px;
+  }
+
+  .wdpick__q {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
-  .wdpick__opt {
-    min-width: 52px;
+  .wdpick__opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* A choice pill; pressed goes ink. */
+  .wdopt {
     min-height: 44px;
-    padding: 10px 14px;
-    border: 2px solid var(--wd-ink);
+    padding: 11px 16px;
+    border: 1px solid var(--wd-ink);
     border-radius: 999px;
-    background: var(--wd-bright);
+    background: var(--wd-card);
     color: var(--wd-ink);
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
     transition:
@@ -880,54 +1027,75 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
       color 0.2s ease;
   }
 
-  .wdpick__opt[aria-pressed='true'] {
+  .wdopt[aria-pressed='true'] {
     background: var(--wd-ink);
-    color: var(--wd-bright);
+    color: var(--wd-card);
   }
 
   .wdpick__out {
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 2px solid var(--wd-ink);
+    padding-top: 20px;
+    border-top: 1px dashed var(--wd-rule-strong);
   }
 
-  .wdpick__outlabel {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--wd-muted);
+  .wdmono.wdpick__outlabel {
+    margin-bottom: 10px;
   }
 
   .wdpick__table {
-    margin-top: 12px;
     width: 100%;
     border-collapse: collapse;
   }
 
   .wdpick__table th,
   .wdpick__table td {
+    padding: 6px 0;
     text-align: left;
-    vertical-align: top;
-    padding: 10px 0;
+    vertical-align: baseline;
   }
 
   .wdpick__table th {
-    padding-right: 20px;
-    font-size: 15px;
+    padding-right: 22px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--wd-muted);
+    white-space: nowrap;
   }
 
-  .wdpick__table td strong {
-    font-size: clamp(19px, 2vw, 24px);
+  .wdpick__table td {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 22px;
   }
 
-  .wdpick__table td span {
-    display: block;
-    margin-top: 6px;
-    font-size: 15px;
-    line-height: 1.55;
+  .wdpick__name {
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .wdpick__price {
+    font-family: var(--wd-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--wd-coral-deep);
+  }
+
+  .wdpick__more {
+    padding-bottom: 2px;
+    border-bottom: 2.5px solid var(--wd-coral);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .wdpick__more:hover,
+  .wdpick__more:focus-visible {
+    color: var(--wd-coral);
+  }
+
+  .wdpick__note {
+    flex-basis: 100%;
+    font-size: 14px;
+    line-height: 1.6;
     color: var(--wd-muted);
   }
 
@@ -942,128 +1110,139 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     white-space: nowrap;
   }
 
-  .wdpick__more {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    margin-top: 6px;
-    font-weight: 700;
-    color: var(--wd-bluelink);
+  [data-pick-on] .wdpick__table td {
+    padding: 0;
   }
 
-  .wdpick__more:hover,
-  .wdpick__more:focus-visible {
-    color: var(--wd-coral-deep);
+  /* ----------------------------------------------------------------- how -- */
+  .wdh2.wdhow__title {
+    margin-bottom: 44px;
+    max-width: 900px;
   }
 
-  .wdbuild {
-    margin-top: 22px;
-  }
-
-  .wdbuild__opts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-
-  .wdbuild__note {
-    margin-top: 0;
-  }
-
-  /* ------------------------------------------------------------ blocks -- */
-  .wdtwo {
-    margin-top: 32px;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .wdgrid.wdhow__grid {
     gap: 22px;
-    align-items: start;
+    margin-bottom: 44px;
   }
 
-  .wdthree {
-    margin-top: 32px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 22px;
-    align-items: start;
+  .wdcard.wdhow__card {
+    padding: 30px 28px;
   }
 
-  .wdhead {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px 24px;
+  .wdcard.wdhow__card--two {
+    box-shadow: 6px 6px 0 var(--wd-coral);
   }
 
-  .wdnum {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--wd-ink);
-    border-radius: 50%;
-    background: var(--wd-peach);
+  .wdhow__num {
+    display: block;
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--wd-blueband);
+  }
+
+  .wdhow__num--two {
+    color: var(--wd-coral);
+  }
+
+  .wdhow__h3 {
+    margin: 14px 0 10px;
+    font-size: 22px;
     font-weight: 800;
   }
 
-  .wdh3 {
-    margin-top: 12px;
-    font-size: clamp(20px, 2vw, 26px);
-    font-weight: 800;
-    letter-spacing: -0.018em;
-    line-height: 1.15;
+  .wdhow__short {
+    margin-bottom: 44px;
   }
 
-  .wdbody {
-    margin-top: 12px;
-    font-size: 16px;
+  /* The build-price scale. */
+  .wdtable td.wdbuild--low {
+    font-weight: 800;
+    color: var(--wd-coral);
+  }
+
+  .wdtable td.wdbuild--high {
+    font-weight: 800;
+    color: var(--wd-ink);
+  }
+
+  .wdhow__methods {
+    margin: 18px 0 44px;
+    max-width: 720px;
+    font-size: 14px;
     line-height: 1.6;
     color: var(--wd-muted);
     text-wrap: pretty;
   }
 
-  .wdbody strong {
-    color: var(--wd-ink);
+  .wdfit__title {
+    margin: 0 0 12px;
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
-  .wdlist {
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    padding: 0;
-    list-style: none;
+  .wdbody.wdfit__intro {
+    margin-bottom: 14px;
   }
 
-  .wdlist li {
-    position: relative;
+  .wdfit__list {
+    margin: 0 0 14px;
     padding-left: 22px;
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--wd-body);
+  }
+
+  .wdnote.wdfit__note {
+    font-size: 23px;
+  }
+
+  /* --------------------------------------------------------------- tiers -- */
+  /* The hand-built / platform toggle: two pills in one outlined tray. */
+  .wdbuild {
+    margin-top: 0;
+  }
+
+  .wdtray {
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding: 4px;
+    border: 1px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-card);
+  }
+
+  .wdtray__opt {
+    padding: 12px 22px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--wd-ink);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .wdtray__opt[aria-pressed='true'] {
+    background: var(--wd-ink);
+    color: var(--wd-card);
+  }
+
+  .wdbuild__note {
+    margin: 0 0 26px;
+    max-width: 640px;
+    font-size: 14px;
+    line-height: 1.6;
     color: var(--wd-muted);
-    text-wrap: pretty;
   }
 
-  .wdlist li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.5em;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--wd-coral);
-  }
-
-  .wdcard--butter {
-    margin-top: 28px;
-    background: var(--wd-butter);
-  }
-
-  .wdcard--blue {
-    margin-top: 28px;
-    background: var(--wd-blueband);
+  .wdgrid.wdtiers {
+    gap: 18px;
   }
 
   .wdtier {
@@ -1072,81 +1251,197 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     height: 100%;
   }
 
-  .wdtier__meta {
-    margin-top: 6px;
-    font-family: var(--wd-hand);
-    font-size: 20px;
-    color: var(--wd-coral-deep);
+  /* The recommended tier takes a coral frame and drop. */
+  .wdcard.wdtier--pick {
+    border-color: var(--wd-coral);
+    box-shadow: 8px 8px 0 var(--wd-coral);
   }
 
-  .wdtier__ex {
-    margin-top: 16px;
-    font-size: 13px;
-    line-height: 1.55;
+  .wdtier__name {
+    margin: 0 0 4px;
+    font-size: 21px;
+    font-weight: 800;
+  }
+
+  .wdmono.wdtier__meta {
+    margin-bottom: 16px;
+  }
+
+  .wdtier__blurb {
+    margin: 0 0 18px;
+    font-size: 14.5px;
+    line-height: 1.6;
     color: var(--wd-muted);
     text-wrap: pretty;
   }
 
-  .wdtier__prices {
-    margin-top: auto;
-    padding-top: 18px;
+  .wdtier__list {
+    margin: 0 0 20px;
+    padding-left: 22px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--wd-body);
   }
 
-  .wdtier__rate {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .wdtier__ex {
+    margin: 0 0 18px;
+    font-size: 13px;
+    line-height: 1.55;
+    font-style: italic;
     color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdtier__ex--flush {
+    margin-bottom: 0;
+  }
+
+  .wdtier__ex--auto {
+    margin: auto 0 0;
+  }
+
+  .wdtier__prices {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px dashed var(--wd-rule-strong);
+  }
+
+  .wdmono.wdtier__rate {
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+
+  .wdmono.wdtier__rate--tight {
+    margin-bottom: 0;
+  }
+
+  .wdcard.wdtier--pick .wdmono.wdtier__rate,
+  .wdcard.wdtier--pick .wdtier__price {
+    color: var(--wd-coral-deep);
   }
 
   .wdtier__pair {
-    margin-top: 6px;
+    margin: 0;
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    gap: 12px;
   }
 
   .wdtier__price {
-    font-size: clamp(26px, 2.8vw, 34px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-family: var(--wd-mono);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--wd-ink);
   }
 
   .wdtier__how {
-    font-size: 14px;
+    font-family: var(--wd-mono);
+    font-size: 12px;
     font-weight: 600;
     color: var(--wd-muted);
   }
 
   .wdtier__std {
-    margin-top: 10px;
+    margin: 10px 0 0;
+    font-family: var(--wd-mono);
+    font-size: 12px;
+    color: var(--wd-muted);
+  }
+
+  .wdtier__big {
+    margin: 2px 0 6px;
+    font-family: var(--wd-mono);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--wd-ink);
+  }
+
+  .wdtier__big + .wdtier__std {
+    margin-top: 0;
+  }
+
+  .wdtier__std--plain {
+    font-family: var(--wd-font);
+    font-size: 13px;
+  }
+
+  .wdtier__std--plain strong {
+    color: var(--wd-ink);
+  }
+
+  /* Company Site: the one near-black card in the paper section. */
+  .wdcard.wdtier--dark {
+    background: var(--wd-ink-deep);
+    color: var(--wd-paper);
+  }
+
+  .wdcard.wdtier--dark .wdmono.wdtier__meta,
+  .wdcard.wdtier--dark .wdtier__blurb,
+  .wdcard.wdtier--dark .wdtier__ex,
+  .wdcard.wdtier--dark .wdtier__std {
+    color: var(--wd-faint);
+  }
+
+  .wdcard.wdtier--dark .wdtier__list {
+    color: var(--wd-on-dark-soft);
+  }
+
+  .wdcard.wdtier--dark .wdtier__prices {
+    border-top-color: var(--wd-ink-soft);
+  }
+
+  .wdcard.wdtier--dark .wdmono.wdtier__rate,
+  .wdcard.wdtier--dark .wdtier__big {
+    color: var(--wd-yellow);
+  }
+
+  .wdcard.wdtier--dark .wdtier__std--plain strong {
+    color: var(--wd-paper);
+  }
+
+  .wdtiers__note {
+    margin-top: 22px;
+  }
+
+  /* ---------------------------------------------------------- site check -- */
+  .wdgrid.wdcheck {
+    gap: 40px;
+    align-items: start;
+  }
+
+  .wdbody.wdcheck__p {
+    margin-bottom: 16px;
+  }
+
+  .wdbody.wdcheck__p--last {
+    margin-bottom: 24px;
+  }
+
+  .wdcheck__prices {
+    padding-top: 16px;
+    border-top: 1px dashed var(--wd-rule-strong);
+  }
+
+  .wdcheck__price {
+    margin: 2px 0 6px;
+    font-family: var(--wd-mono);
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .wdcheck__std {
+    margin: 0 0 12px;
     font-size: 13px;
     color: var(--wd-muted);
   }
 
-  .wdcheck {
-    margin-top: 24px;
-  }
-
-  .wdcheck__price {
-    margin-top: 6px;
-    font-size: clamp(30px, 3.4vw, 42px);
-    font-weight: 800;
-    letter-spacing: -0.024em;
-  }
-
-  .wdper {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--wd-muted);
-  }
-
-  /* A pill in the export, not a handwritten line — and ink, because coral on
-     the yellow face measures 3.09:1. */
+  /* A tilted yellow pill, in ink — coral on the yellow measures 3.09:1. */
   .wdcheck__credit {
     display: inline-block;
-    margin-top: 10px;
+    margin: 0;
     padding: 8px 16px;
     border: 1px solid var(--wd-ink);
     border-radius: 999px;
@@ -1157,72 +1452,300 @@ const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discover
     transform: rotate(-0.6deg);
   }
 
+  /* ---------------------------------------------------------------- care -- */
+  .wdplan {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 28px 26px;
+    border: 1px solid var(--wd-ink-soft);
+    border-radius: 12px;
+    background: var(--wd-card-darker);
+  }
+
+  /* Managed: the recommended plan, warmer face and a coral glow. */
+  .wdplan--pick {
+    border-color: var(--wd-coral);
+    background: var(--wd-card-warm);
+    box-shadow:
+      0 0 0 1px var(--wd-coral),
+      0 12px 32px rgb(238 74 17 / 25%);
+  }
+
+  .wdplan__name {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--wd-paper);
+  }
+
+  .wdplan__price {
+    margin: 0 0 18px;
+    font-family: var(--wd-mono);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--wd-paper);
+  }
+
+  .wdplan__list {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--wd-on-dark-soft);
+  }
+
+  .wdplan__note {
+    margin: auto 0 0;
+    font-size: 13px;
+    line-height: 1.55;
+    font-style: italic;
+    color: var(--wd-faint);
+    text-wrap: pretty;
+  }
+
   .wdterms {
-    margin-top: 26px;
+    margin: 32px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--wd-ink-soft);
+    list-style: none;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 24px;
-    padding: 0;
-    list-style: none;
+    gap: 12px 32px;
   }
 
   .wdterms li {
-    position: relative;
-    padding-left: 24px;
     font-size: 14px;
+    color: var(--wd-faint);
+  }
+
+  .wdterms__tick {
+    color: var(--wd-yellow);
+  }
+
+  /* -------------------------------------------------------------- domain -- */
+  .wdgrid.wddomain {
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  .wddomain__price {
+    margin: 0 0 18px;
+    font-family: var(--wd-mono);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--wd-ink);
+  }
+
+  .wddomain__body {
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--wd-body);
+    text-wrap: pretty;
+  }
+
+  .wddomain__body strong {
+    color: var(--wd-ink);
+  }
+
+  /* -------------------------------------------------------------- extras -- */
+  .wdhead.wdhead--12 {
+    margin-bottom: 12px;
+  }
+
+  .wdtable td.wdaddons__what {
+    width: 32%;
+  }
+
+  .wdtable.wdaddons td.wdaddons__price {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--wd-coral);
+  }
+
+  .wdseo {
+    margin-top: 36px;
+    padding: 26px 30px;
+  }
+
+  .wdseo__title {
+    margin: 0 0 10px;
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .wdseo__body {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--wd-body);
+    text-wrap: pretty;
+  }
+
+  /* ---------------------------------------------------------- fine print -- */
+  .wdh2.wdrules__title {
+    margin-bottom: 44px;
+  }
+
+  .wdgrid.wdrules {
+    gap: 18px;
+  }
+
+  .wdcard.wdrule {
+    padding: 26px 24px;
+  }
+
+  .wdrule__title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 800;
+  }
+
+  .wdbody.wdrule__body {
+    font-size: 14.5px;
+  }
+
+  .wdcard.wdpay {
+    margin-top: 22px;
+    padding: 26px 28px;
+  }
+
+  .wdpay__methods {
+    margin: 0 0 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .wdpay__body {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
     color: var(--wd-muted);
   }
 
-  .wdterms li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    font-weight: 800;
-    color: var(--wd-coral-deep);
-  }
-
-  .wdpays {
+  .wdpay__save {
     margin-top: 14px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
   }
 
-  .wdlink {
-    color: var(--wd-bluelink);
+  /* ------------------------------------------------------------- compare -- */
+  .wdtable.wdcompare th {
+    padding: 14px 16px;
+    border-bottom-color: var(--wd-paper);
+    color: var(--wd-paper);
+  }
+
+  .wdtable.wdcompare th.wdcompare__mine {
+    border-bottom-color: var(--wd-yellow);
+    color: var(--wd-yellow);
+    background: var(--wd-card-dark);
+  }
+
+  .wdtable.wdcompare td {
+    padding: 16px;
+    border-bottom-color: var(--wd-ink-soft);
+    font-size: 14px;
+    color: var(--wd-faint);
+  }
+
+  .wdtable.wdcompare td.wdcompare__need {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--wd-paper);
+  }
+
+  .wdtable.wdcompare td.wdcompare__mine {
+    font-weight: 800;
+    color: var(--wd-yellow);
+    background: var(--wd-card-dark);
+  }
+
+  .wdtable.wdcompare small {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--wd-faint);
+  }
+
+  .wdtable.wdcompare td.wdcompare__mine small {
+    font-size: 12.5px;
+  }
+
+  .wdcompare__foot {
+    margin: 22px 0 0;
+    max-width: 820px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--wd-faint);
+    text-wrap: pretty;
+  }
+
+  /* The export leaves these in the footnote's own colour, underlined. */
+  .wdcompare__foot a {
+    color: var(--wd-faint);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 
-  .wdlink:hover,
-  .wdlink:focus-visible {
-    color: var(--wd-coral-deep);
+  .wdcompare__foot a:hover,
+  .wdcompare__foot a:focus-visible {
+    color: var(--wd-yellow);
   }
 
-  .wdcta {
-    text-align: center;
+  .wdnote.wdcompare__note {
+    margin-top: 26px;
   }
 
-  .wdcta .wdlede {
-    margin-inline: auto;
+  /* ----------------------------------------------------------------- CTA -- */
+  .wdcta.wdcta--left {
+    padding-block: 112px;
+    text-align: left;
   }
 
-  .wdcta .wdctarow {
-    justify-content: center;
+  .wdcta.wdcta--left .wdcta__inner {
+    max-width: 1120px;
   }
 
-  /* ---------------------------------------------------------- responsive */
-  @media (max-width: 980px) {
-    .wdthree {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .wdcta.wdcta--left .wdh2 {
+    margin-bottom: 18px;
+    max-width: 820px;
   }
 
+  .wdcta.wdcta--left .wdlede {
+    margin: 0 0 8px;
+    max-width: 540px;
+  }
+
+  .wdcta.wdcta--left .wdnote {
+    margin-bottom: 30px;
+  }
+
+  .wdcta.wdcta--left .wdctarow {
+    justify-content: flex-start;
+  }
+
+  .wdcta.wdcta--left .wdbtn--solid {
+    padding: 18px 30px 17px;
+  }
+
+  /* Both outlined buttons take the full paper here, at 700. */
+  .wdcta.wdcta--left .wdbtn--ghost,
+  .wdcta.wdcta--left .wdbtn--ghost + .wdbtn--ghost {
+    padding: 16.5px 26px 15.5px;
+    border-color: var(--wd-card);
+    font-weight: 700;
+  }
+
+  /* ---------------------------------------------------------- responsive -- */
   @media (max-width: 760px) {
-    .wdtwo,
-    .wdthree,
-    .wdpick__qs {
-      grid-template-columns: minmax(0, 1fr);
+    .wdpickband {
+      padding-inline: 18px;
+    }
+
+    .wdcta.wdcta--left {
+      padding-block: 72px;
     }
   }
 </style>
