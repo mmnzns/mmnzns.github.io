@@ -803,11 +803,18 @@ const { title, description, current } = Astro.props;
       padding-block: 64px 72px;
     }
 
+    /* A long tag wraps rather than running off a phone screen. */
+    .wd .wdtag {
+      white-space: normal;
+      line-height: 1.2;
+    }
+
+    /* v15 opens the phone rhythm up to 96px a band. */
     .wd .wdband,
     .wd .wdband--112,
     .wd .wdband--92,
     .wd .wdcta {
-      padding: 72px 18px;
+      padding: 96px 18px;
     }
 
     .wd .wdband--rule {

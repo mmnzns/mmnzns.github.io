@@ -821,3 +821,21 @@ button:active {
     scroll-behavior: auto !important;
   }
 }
+
+/* ------------------------------------------------------------ phone rhythm -- */
+/* Miguel asked for more air between sections on a phone (2026-09-02): the
+   clamps above bottom out at 60-88px, which reads compact next to the 96px the
+   service sections use. */
+@media (max-width: 760px) {
+  .section {
+    padding-top: 96px;
+  }
+
+  .section--tight {
+    padding-top: 88px;
+  }
+
+  .band {
+    padding-block: 88px;
+  }
+}

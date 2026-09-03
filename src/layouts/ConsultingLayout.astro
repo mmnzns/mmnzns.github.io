@@ -1060,8 +1060,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
       grid-template-columns: minmax(0, 1fr);
     }
 
-    /* The export flattens its section rhythm on tablet and phone: every
-       section gets 64px, the hero 44px on top, and the overlap disappears. */
+    /* The export flattens its section rhythm on tablet and phone to 64px;
+       Miguel asked for more air between sections on a phone (2026-09-02), so
+       every section gets 96px, the hero 56px on top, and the overlap
+       disappears. */
     .c .csection,
     .c .csection--overlap,
     .c .csection--after-overlap,
@@ -1070,12 +1072,12 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     .c .csection--deep,
     .c .csection--terra,
     .c--sub .csection--overlap {
-      padding-block: 64px;
+      padding-block: 96px;
     }
 
     .c .chero,
     .c--sub .chero {
-      padding-block: 44px 64px;
+      padding-block: 56px 88px;
     }
 
     .c .cstats,

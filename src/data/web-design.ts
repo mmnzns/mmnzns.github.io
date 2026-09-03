@@ -42,7 +42,13 @@ export const PRICING_HERO = {
   badge: 'Founding-client rates, first five projects',
   titleLead: 'Every price,',
   titleAccent: 'out in the open.',
-  body: 'No “contact us for a quote” wall. Every offer and everything included, right here. Each shows the founding client rate for my first five qualifying projects (in exchange for an honest testimonial and permission to feature the work), with the scheduled standard rate noted underneath. Not sure which fits? That’s what the free call is for.',
+  /* v15 breaks the old single paragraph into a struck-through claim, a coral
+     sub-line and the small print. */
+  claimLead: 'No',
+  claimStruck: '“contact us for a quote”',
+  claimTail: 'wall.',
+  sub: 'See what it costs first, then decide if it’s worth a conversation.',
+  fine: 'Every offer and everything included, right here. Prices show the founding client rate for my first five qualifying projects, given in exchange for an honest testimonial. The scheduled standard rate sits underneath each one.',
 } as const;
 
 export const PRICING_JUMPS = [
@@ -53,8 +59,10 @@ export const PRICING_JUMPS = [
   { label: 'Domain & SSL', href: '#domain' },
   { label: 'Extras', href: '#addons' },
   { label: 'The fine print', href: '#rules' },
-  { label: 'How it compares ↓', href: '#compare' },
 ] as const;
+
+/* v15 pulls the comparison out of the jump list into its own yellow button. */
+export const PRICING_COMPARE_JUMP = { label: 'How it compares', href: '#compare' } as const;
 
 /** The three smaller sites, priced hand-built or on a platform. */
 export const SMALL_TIERS: readonly Tier[] = [

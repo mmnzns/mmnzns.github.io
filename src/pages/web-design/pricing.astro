@@ -13,6 +13,7 @@ import {
   LARGE_TIERS,
   NOT_HAND_BUILT,
   PAY_METHODS,
+  PRICING_COMPARE_JUMP,
   PRICING_HERO,
   PRICING_JUMPS,
   SITE_CHECK,
@@ -20,7 +21,9 @@ import {
 } from '../../data/web-design';
 
 /**
- * `/web-design/pricing/` — ported from the v14 export's `Monzones-W-Pricing`.
+ * `/web-design/pricing/` — ported from the v15 export's `Monzones-W-Pricing`
+ * (v15 changed only this page: the hero's claim, the jump list, the picker's
+ * aside and the phone layout of the build toggle).
  *
  * Every number on this page comes from src/data/web-design.ts, transcribed
  * from the design. Don't compute, round or infer one here.
@@ -28,11 +31,11 @@ import {
 const phoneHref = `tel:${CONTACT.phone.replace(/[^+0-9]/g, '')}`;
 const callHref = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Discovery call (30 minutes)')}`;
 
-/* The export sets the two rate names in the hero in ink; the data keeps the
-   paragraph as one string. */
+/* The export sets the two rate names in the small print in ink; the data keeps
+   the paragraph as one string. */
 const STRONG_A = 'founding client rate';
 const STRONG_B = 'scheduled standard rate';
-const heroParts = PRICING_HERO.body.split(new RegExp(`(${STRONG_A}|${STRONG_B})`));
+const heroParts = PRICING_HERO.fine.split(new RegExp(`(${STRONG_A}|${STRONG_B})`));
 
 /* The picker's answers, one per combination. Rendered in full so that with no
    JavaScript the section reads as a plain table of "if you need this, it's
@@ -125,17 +128,18 @@ const buildClass = (build: string) =>
     <h1 class="wdhero__title">
       {PRICING_HERO.titleLead} <em>{PRICING_HERO.titleAccent}</em>
     </h1>
-    <p class="wdhero__body wdhero__body--660">
+    <p class="wdhero__claim">
+      {PRICING_HERO.claimLead} <s class="wdhero__struck">{PRICING_HERO.claimStruck}</s>{' '}
+      {PRICING_HERO.claimTail}
+    </p>
+    <p class="wdhero__sub">{PRICING_HERO.sub}</p>
+    <p class="wdhero__fine">
       {
         heroParts.map((part) =>
           part === STRONG_A || part === STRONG_B ? <strong>{part}</strong> : part,
         )
       }
     </p>
-
-    <nav class="wdjumps" aria-label="On this page">
-      {PRICING_JUMPS.map((jump) => <a href={jump.href}>{jump.label}</a>)}
-    </nav>
   </header>
 
   {/* ------------------------------------------------------------ picker -- */}
@@ -197,6 +201,16 @@ const buildClass = (build: string) =>
             }
           </div>
         </div>
+
+        {/* The handwritten aside changes with the editing answer. */}
+        <p class="wdpick__aside">
+          <span data-pick-aside="No">
+            no login to learn: edits come through me, a small fee or a care plan
+          </span>
+          <span data-pick-aside="Yes" hidden>
+            yes = a real editor, and the keys are yours
+          </span>
+        </p>
       </div>
 
       <div class="wdpick__out" role="status" aria-live="polite">
@@ -229,6 +243,30 @@ const buildClass = (build: string) =>
           </tbody>
         </table>
       </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------- jump to -- */}
+  <section class="wdjump" id="jump">
+    <div class="wdjump__inner">
+      <a class="wdjump__compare" href={PRICING_COMPARE_JUMP.href}>
+        {PRICING_COMPARE_JUMP.label} <span aria-hidden="true">↓</span>
+      </a>
+      <nav class="wdjump__list" aria-label="On this page">
+        <p class="wdjump__label">
+          <span>Jump to</span><span class="wdjump__rule" aria-hidden="true"></span>
+        </p>
+        <div class="wdjump__grid">
+          {
+            PRICING_JUMPS.map((jump, i) => (
+              <a href={jump.href}>
+                <span class="wdjump__num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="wdjump__text">{jump.label}</span>
+              </a>
+            ))
+          }
+        </div>
+      </nav>
     </div>
   </section>
 
@@ -769,6 +807,9 @@ const buildClass = (build: string) =>
         rows.forEach((row) => {
           row.hidden = row.dataset.pickRow !== key;
         });
+        pick.querySelectorAll<HTMLElement>('[data-pick-aside]').forEach((el) => {
+          el.hidden = el.dataset.pickAside !== state.edit;
+        });
       };
 
       const wire = (attr: 'pages' | 'sell' | 'edit') => {
@@ -833,8 +874,145 @@ const buildClass = (build: string) =>
     padding-bottom: 88px;
   }
 
-  .wdhero__body.wdhero__body--660 {
-    max-width: 660px;
+  /* The claim: one bold line with the cliché struck through in coral. */
+  .wdhero__claim {
+    margin: 30px 0 0;
+    max-width: 820px;
+    font-size: clamp(23px, 2.6vw, 34px);
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--wd-ink);
+  }
+
+  .wdhero__struck {
+    color: #8a8275;
+    text-decoration: line-through;
+    text-decoration-thickness: 3px;
+    text-decoration-color: var(--wd-coral);
+  }
+
+  .wdhero__sub {
+    margin: 12px 0 0;
+    max-width: 700px;
+    font-size: clamp(17px, 1.7vw, 20px);
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--wd-coral-deep);
+  }
+
+  /* The export runs this in #958d7f (3.2:1); the muted token keeps the same
+     quiet register at 4.9:1. */
+  .wdhero__fine {
+    margin: 20px 0 0;
+    max-width: 580px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--wd-muted);
+    text-wrap: pretty;
+  }
+
+  .wdhero__fine strong {
+    color: #3a342c;
+  }
+
+  /* ------------------------------------------------------------- jump to -- */
+  .wdjump {
+    padding: 34px 24px 8px;
+  }
+
+  .wdjump__inner {
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  .wdjump__compare {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border: 1.5px solid var(--wd-ink);
+    border-radius: 999px;
+    background: var(--wd-yellow);
+    box-shadow: 5px 5px 0 var(--wd-coral);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--wd-ink);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .wdjump__compare span {
+    font-size: 16px;
+  }
+
+  .wdjump__compare:hover,
+  .wdjump__compare:focus-visible {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 var(--wd-coral);
+    color: var(--wd-ink);
+  }
+
+  .wdjump__list {
+    margin-top: 34px;
+  }
+
+  /* Small labels: the export's #8a8275/#a79e8d sit under 3:1 at this size, so
+     they take the muted token. */
+  .wdjump__label {
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--wd-muted);
+  }
+
+  .wdjump__rule {
+    flex: 1;
+    height: 1px;
+    background: var(--wd-rule);
+  }
+
+  .wdjump__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: 2px 32px;
+  }
+
+  .wdjump__grid a {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    padding: 7px 0;
+    border-bottom: 1px solid #e2dcce;
+    transition: border-color 0.2s ease;
+  }
+
+  .wdjump__grid a:hover,
+  .wdjump__grid a:focus-visible {
+    border-color: var(--wd-coral);
+  }
+
+  .wdjump__num {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--wd-muted);
+  }
+
+  .wdjump__text {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--wd-ink);
   }
 
   /* Small helpers the page uses more than once. */
@@ -1022,6 +1200,20 @@ const buildClass = (build: string) =>
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+  }
+
+  .wdpick__aside {
+    margin: 0;
+    align-self: center;
+    flex: 1;
+    min-width: 200px;
+    max-width: 340px;
+    font-family: var(--wd-hand);
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--wd-coral-deep);
+    transform: rotate(-1deg);
+    text-wrap: pretty;
   }
 
   /* A choice pill; pressed goes ink. */
@@ -1240,6 +1432,7 @@ const buildClass = (build: string) =>
   .wdtray {
     display: inline-flex;
     flex-wrap: wrap;
+    gap: 4px;
     margin-bottom: 14px;
     padding: 4px;
     border: 1px solid var(--wd-ink);
@@ -1772,12 +1965,29 @@ const buildClass = (build: string) =>
 
   /* ---------------------------------------------------------- responsive -- */
   @media (max-width: 760px) {
-    .wdpickband {
+    .wdpickband,
+    .wdjump {
       padding-inline: 18px;
     }
 
     .wdcta.wdcta--left {
-      padding-block: 72px;
+      padding-block: 96px;
+    }
+
+    /* The build toggle stacks into a column of soft-cornered buttons. */
+    .wdtray {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+    }
+
+    .wdtray__opt {
+      padding: 14px 18px;
+      border-radius: 12px;
+      white-space: normal;
     }
   }
 </style>
