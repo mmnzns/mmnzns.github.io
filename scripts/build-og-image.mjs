@@ -97,11 +97,17 @@ const OUT_DIR = 'public/og/';
  */
 const CHROME = findChrome();
 
-const PAPER = '#fbf9f6';
-const ON_DARK = '#fbf9f6';
-const INK = '#1f1c19';
-const INK_DECK = '#3d3833';
-const INK_3 = '#9a938b';
+/* Read from global.css rather than restated. These were hardcoded hexes until
+   the v16 export moved the ink from #1f1c19 to #212121 and left the cards a
+   shade behind — the drift is invisible in a diff and only shows up next to the
+   real page, which is exactly where a link preview is seen. RULE_2 stays a
+   literal because it is the only one with no token to read. */
+const TOKENS = await cssTokens();
+const PAPER = token(TOKENS, '--paper');
+const ON_DARK = token(TOKENS, '--on-dark');
+const INK = token(TOKENS, '--ink');
+const INK_DECK = token(TOKENS, '--ink-deck');
+const INK_3 = token(TOKENS, '--ink-3');
 const RULE_2 = '#d9d1c6';
 
 /** Strings the cards set, read from src/config.ts. */
@@ -392,16 +398,15 @@ async function render(html, out, work) {
 const work = await mkdtemp(join(tmpdir(), 'og-'));
 try {
   await checkPillars();
-  const tokens = await cssTokens();
   const [{ title: siteTitle }, colours, posts] = await Promise.all([
     siteCopy(),
-    tagColours(tokens),
+    tagColours(TOKENS),
     articles(),
   ]);
 
   await mkdir(path(OUT_DIR), { recursive: true });
 
-  await render(await siteCard(tokens), path('public/og-image.png'), work);
+  await render(await siteCard(TOKENS), path('public/og-image.png'), work);
   console.log('public/og-image.png');
 
   for (const post of posts) {
