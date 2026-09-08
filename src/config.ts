@@ -12,7 +12,7 @@ export const SITE = {
   title: 'Miguel N. Monzones',
   /** Shown after the page title in the browser tab: "The Work · Miguel N. Monzones" */
   titleSeparator: '·',
-  role: 'Lifecycle & GTM Strategist',
+  role: 'Lifecycle, GTM & WebOps Strategist',
   description:
     "Senior lifecycle and GTM strategist with 12 years in fintech, SaaS, and ecommerce. I read what's actually wrong, decide what should exist, then build it.",
   author: 'Miguel N. Monzones',
@@ -24,8 +24,9 @@ export const SITE = {
   /**
    * Link-preview image for Open Graph / Twitter cards, relative to the site
    * root. Built by `node scripts/build-og-image.mjs`, which composes the hero
-   * portrait with this file's `title` and `role` — so changing either of those
-   * means regenerating the image, or the unfurl and the site disagree.
+   * portrait with this file's `title`, `role`, `location` and CONTACT.entity —
+   * so changing any of those means regenerating the image, or the unfurl and
+   * the site disagree.
    *
    * Set to null to omit the image meta tags entirely rather than point them at
    * a URL that 404s; BaseLayout also drops `twitter:card` back to `summary`.

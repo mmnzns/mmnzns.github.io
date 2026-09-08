@@ -28,12 +28,18 @@ const cardData = posts.map((post) => ({
 }));
 
 /* The hero's four service slabs — the same four accents the categories use,
-   but named as disciplines rather than archive groups. */
+   but named as disciplines rather than archive groups, and paired differently:
+   sky is Automation here where CATEGORY_ACCENT gives it Leadership & Operations.
+   The site card in scripts/build-og-image.mjs mirrors this row, so the two are
+   read side by side whenever someone shares a link — change both or neither.
+
+   "Web Operations" rather than "Operations": the general kind is already part of
+   every other slab, so naming it alone claims something broader than the work. */
 const SLABS = [
   { name: 'Lifecycle', accent: 'var(--coral)' },
   { name: 'GTM', accent: 'var(--sun)' },
   { name: 'Automation', accent: 'var(--sky)' },
-  { name: 'Operations', accent: 'var(--moss)' },
+  { name: 'Web Operations', accent: 'var(--moss)' },
 ] as const;
 
 /* Career-wide figures. Each one exists elsewhere on the site — the years in
@@ -799,9 +805,15 @@ const DEFAULT_RECEIPT = 1;
     background: var(--ink);
   }
 
+  /* An explicit grid, not a wrapping flex row. Wrapping broke the four names
+     wherever they happened to run out of width — at 375px they fell 2 / 1 / 1,
+     which reads as three ideas of uneven weight instead of four of equal
+     weight. The grid steps 4 → 2x2 → 1 at the page's own breakpoints, so every
+     size shows a deliberate shape. Columns are max-content so the marks line up
+     down each column and the labels stay left-aligned. */
   .slabs {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
     gap: 14px 44px;
     padding-top: 26px;
   }
@@ -1586,6 +1598,10 @@ const DEFAULT_RECEIPT = 1;
   }
 
   @media (max-width: 760px) {
+    .slabs {
+      grid-template-columns: repeat(2, max-content);
+    }
+
     .method__tabs {
       flex-wrap: wrap;
       row-gap: 4px;
@@ -1656,7 +1672,8 @@ const DEFAULT_RECEIPT = 1;
     }
 
     .slabs {
-      gap: 12px 26px;
+      grid-template-columns: max-content;
+      gap: 12px;
     }
   }
 </style>
