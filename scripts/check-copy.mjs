@@ -43,6 +43,13 @@ function walk(dir) {
 const norm = (s) =>
   s
     .replace(/&nbsp;| /g, ' ')
+    // Numeric entities first: the exports write ·, → and ↗ this way, and an
+    // undecoded one reports a sentence as missing when it is on the page.
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&middot;/g, '·')
+    .replace(/&eacute;/g, 'é')
+    .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
     .replace(/&#x27;|&#39;/g, "'")
     .replace(/[‘’]/g, "'")

@@ -13,9 +13,11 @@ import shotII from '../../assets/webdesign/intelligent-investing.jpg';
 import shotDTC from '../../assets/webdesign/dtc-newsletter.jpg';
 import shotKatty from '../../assets/webdesign/kattyco.jpg';
 import shotSLP from '../../assets/webdesign/east-van-slp.jpg';
+import shotSeb from '../../assets/webdesign/sebastian-munera.png';
 
 /**
- * `/web-design/work/` — ported from the v14 export's `Monzones-W-Work`.
+ * `/web-design/work/` — ported from the v14 export's `Monzones-W-Work`, with
+ * the fifth build added in v17.
  *
  * The screenshots are the ones already committed for the main web design
  * page, keyed by the build's slug so the data file doesn't have to import
@@ -26,12 +28,13 @@ const SHOTS = {
   'dtc-newsletter': shotDTC,
   kattyco: shotKatty,
   'east-van-slp': shotSLP,
+  'sebastian-munera': shotSeb,
 } as const;
 ---
 
 <WebDesignLayout
   title="Work · Web Design"
-  description="Four live websites, written up with what was going on, what I built and what happened next — plus how to judge any portfolio, including this one."
+  description="Five live websites, written up with what was going on, what I built and what happened next — plus how to judge any portfolio, including this one."
   current="work"
 >
   <header class="wdwrap wdhero" id="top">
@@ -69,7 +72,7 @@ const SHOTS = {
           <div class="wdband__inner">
             {i === 0 ? (
               <p class="wdkick wdcase__kick" data-reveal>
-                one of four
+                one of five
               </p>
             ) : null}
 
@@ -217,7 +220,7 @@ const SHOTS = {
       <div class="wdmeantime" data-reveal="pop">
         <p class="wdmeantime__line">In the meantime, the live sites are the reference.</p>
         <p class="wdmeantime__body">
-          Four of them, up there, all clickable. Judge the work rather than the adjectives, and if
+          Five of them, up there, all clickable. Judge the work rather than the adjectives, and if
           you’d like to talk to me about any of it, the call is free and I love these conversations.
         </p>
       </div>

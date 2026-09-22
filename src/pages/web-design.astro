@@ -8,6 +8,7 @@ import shotII from '../assets/webdesign/intelligent-investing.jpg';
 import shotDTC from '../assets/webdesign/dtc-newsletter.jpg';
 import shotKatty from '../assets/webdesign/kattyco.jpg';
 import shotSLP from '../assets/webdesign/east-van-slp.jpg';
+import shotSeb from '../assets/webdesign/sebastian-munera.png';
 import laptopFrame from '../assets/webdesign/hero-laptop-frame.png';
 import iconSells from '../assets/webdesign/icon-sells.png';
 import iconBuild from '../assets/webdesign/icon-build.png';
@@ -120,6 +121,16 @@ const WORKS = [
     href: 'https://eastvanslp.ca/',
     link: 'eastvanslp.ca',
   },
+  {
+    name: 'Sebastian Munera',
+    tag: 'Personal CV page · hand-built',
+    img: shotSeb,
+    blurb:
+      'A newly graduated financial analyst chasing his first role, given one link that says more than a PDF: the story, the numbers, the CFA track, the way he thinks.',
+    stat: 'one link a recruiter can actually read',
+    href: 'https://sebastian-munera.github.io/',
+    link: 'sebastian-munera.github.io',
+  },
 ] as const;
 
 const FAQS = [
@@ -220,8 +231,7 @@ const BUDGETS = [
       laptop showing the live work on the right. In the export a single piece
       of state drives the rotating word AND the screenshot, so the word, the
       caption link and the active dot always agree. That pairing is the whole
-      idea, so the script below advances all four together rather than running
-      two independent timers.
+      idea, so the script below advances them on one timer rather than two.
     */}
     <header class="hero" id="top">
       <div class="hero__grid">
@@ -607,7 +617,7 @@ const BUDGETS = [
           }
         </div>
         <p class="work__note" data-wd-reveal="up">
-          Four builds, written up honestly instead of padded to twelve. The live sites are the
+          Five builds, written up honestly instead of padded to twelve. The live sites are the
           proof, so please click through. There's more detail on each one over on the <a
             href="/web-design/work/">work page</a
           >. And if the site's fine but the funnel behind it isn't, that's the <a
@@ -807,13 +817,21 @@ const BUDGETS = [
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const WORDS = ['found.', 'booked.', 'called.', 'paid.'];
+
+  /* The export cycles on a hardcoded four — the count the words and the
+     screenshots happened to share until v17 added a fifth build. Cycling on
+     the shots instead keeps every build reachable: at four, the fifth dot
+     showed the first screenshot and the rotation never arrived at it at all.
+     The four words repeat underneath; what matters is that the word, the shot
+     and the caption still move together. */
+  const count = shots.length || WORDS.length;
   let index = 0; // the server-rendered state: "found." and the first shot
 
   const paint = (next: number, animateWord: boolean) => {
-    index = ((next % WORDS.length) + WORDS.length) % WORDS.length;
+    index = ((next % count) + count) % count;
 
     if (word) {
-      word.textContent = WORDS[index];
+      word.textContent = WORDS[index % WORDS.length];
       if (animateWord) {
         word.style.animation = 'none';
         // Restart the entrance animation by forcing a reflow between writes.

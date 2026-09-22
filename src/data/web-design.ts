@@ -636,7 +636,12 @@ export const PROMISE = {
 
 export interface Build {
   /** Matches the filename in src/assets/webdesign/. */
-  slug: 'intelligent-investing' | 'dtc-newsletter' | 'kattyco' | 'east-van-slp';
+  slug:
+    | 'intelligent-investing'
+    | 'dtc-newsletter'
+    | 'kattyco'
+    | 'east-van-slp'
+    | 'sebastian-munera';
   meta: string;
   titleLead: string;
   titleAccent: string;
@@ -649,15 +654,15 @@ export interface Build {
 }
 
 export const WORK_HERO = {
-  tags: ['Four builds, all live', 'Every link opens the real thing'],
-  titleLead: 'Four builds,',
-  titleAccent: 'not forty.',
-  body: 'I could pad this page. Plenty of people do. Instead here are the four websites I’d genuinely put my name on, written up with what was going on, what I built, and what happened next. Every one is live, so please poke at them on your phone.',
+  tags: ['Five builds, all live', 'Every link opens the real thing'],
+  titleLead: 'Five builds,',
+  titleAccent: 'not fifty.',
+  body: 'I could pad this page. Plenty of people do. Instead here are the five websites I’d genuinely put my name on, written up with what was going on, what I built, and what happened next. Every one is live, so please poke at them on your phone.',
   bodyStrong: 'That’s the only proof that counts.',
 } as const;
 
 export const WORK_JUMPS = [
-  { label: 'The four builds ↓', href: '#cases' },
+  { label: 'The five builds ↓', href: '#cases' },
   { label: 'Where the instincts came from', href: '#background' },
   { label: 'How to judge them yourself', href: '#judge' },
   { label: 'The testimonial wall', href: '#testimonials' },
@@ -720,6 +725,21 @@ export const BUILDS: readonly Build[] = [
     href: 'https://eastvanslp.ca/',
     linkLabel: 'eastvanslp.ca ↗',
     alt: 'East Van SLP website',
+  },
+  {
+    slug: 'sebastian-munera',
+    meta: 'Personal CV page · hand-built · one page',
+    titleLead: 'Sebastian',
+    titleAccent: 'Munera.',
+    situation:
+      'A newly graduated financial analyst going after his first role, competing against hundreds of near-identical résumés. A PDF attachment gets skimmed for ten seconds and closed.',
+    built:
+      'One page, structured like a pitch rather than a job history: what he is aiming for up top, the numbers that prove the operational work, then profile, experience, skills and education, with contact and LinkedIn always a click away.',
+    happened:
+      'He now has one link to put in an application, a message or a signature: fast on a phone, readable in ten seconds, and it looks like someone who takes himself seriously.',
+    href: 'https://sebastian-munera.github.io/',
+    linkLabel: 'sebastian-munera.github.io ↗',
+    alt: 'Sebastian Munera CV page',
   },
 ];
 
