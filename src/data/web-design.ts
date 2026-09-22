@@ -717,8 +717,8 @@ export const BUILDS: readonly Build[] = [
     built:
       'Five hand-built pages that structure all seven service areas plainly, so a parent can find their situation, understand the work, and know what to do next without decoding clinical language.',
     happened: 'It’s the $0-a-month option, live in the wild. Hosted free, and it will stay that way.',
-    href: 'https://east-van-slp.github.io/',
-    linkLabel: 'east-van-slp.github.io ↗',
+    href: 'https://eastvanslp.ca/',
+    linkLabel: 'eastvanslp.ca ↗',
     alt: 'East Van SLP website',
   },
 ];
