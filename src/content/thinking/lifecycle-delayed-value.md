@@ -4,9 +4,9 @@ date: 2026-08-18
 tag: "Lifecycle"
 featured: true
 excerpt: "Lifecycle gets deferred hardest in the businesses where value is invisible, because slow-compounding work loses to fast-reading work, and the measurement history lost in the gap cannot be rebuilt."
+image: "../../assets/thinking/lifecycle-delayed-value-hero.jpg"
+imageAlt: "A customer looking through a translucent wall at the operational work happening behind a delayed-value service"
 ---
-![A customer looking through a translucent wall at the operational work happening behind a delayed-value service](../../assets/thinking/lifecycle-delayed-value-hero.jpg)
-
 When I want to understand how a business grows, I go through its funnel myself. I sign up. I walk the onboarding.
 
 I read what it sends me, look at when it sends it, and try to work out what triggered it. I do this before I form an opinion, because the journey usually tells me more than the company's description of it.

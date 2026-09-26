@@ -1,33 +1,27 @@
 /**
  * Build the favicon set from the brand mark.
  *
- * Run with `node scripts/build-icons.mjs` after changing the source SVG. The
- * output is committed, so this is not part of the build — it's a one-off tool.
+ * Run with `node scripts/build-icons.mjs` after changing the mark. The output
+ * is committed, so this is not part of the build — it's a one-off tool.
  *
- * Why PNG and ICO rather than an SVG favicon: the previous favicon was an SVG
- * that drew its "M" with a <text> element. Browsers rasterise favicons in a
- * restricted context where a system font is not guaranteed to resolve, so the
- * letter silently vanished and the tab showed an empty tile. Raster formats
- * have no such dependency. The brand SVG itself is 112KB of embedded bitmap,
- * so shipping it as-is would be worse on every axis.
- *
- * The mark is dark ink with a small accent dot. On its own it disappears
- * against a dark tab strip, so every size is composited onto paper.
+ * Source: the v19 script-M mark with its amber dot (src/assets/brand/
+ * mark-full.png), committed so this script doesn't reach outside the repo.
+ * Raster rather than SVG because favicons are rasterised where fonts aren't
+ * guaranteed. The mark is dark ink, invisible on a dark tab strip, so every
+ * size is composited onto the site's paper.
  */
 import sharp from 'sharp';
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 // sharp wants a path, not a URL, once options are also being passed.
-const SRC = fileURLToPath(
-  new URL('../../Website Logos & Icons/MNMonzones.svg', import.meta.url),
-);
-const PAPER = { r: 251, g: 249, b: 246, alpha: 1 };
+const SRC = fileURLToPath(new URL('../src/assets/brand/mark-full.png', import.meta.url));
+const PAPER = { r: 248, g: 244, b: 236, alpha: 1 };
 
 /** Mark on paper, with breathing room so it isn't clipped by rounded masks. */
 async function tile(size, padRatio = 0.12) {
   const inner = Math.round(size * (1 - padRatio * 2));
-  const mark = await sharp(SRC, { density: 600 })
+  const mark = await sharp(SRC)
     .resize(inner, inner, { fit: 'contain', background: { ...PAPER, alpha: 0 } })
     .toBuffer();
 

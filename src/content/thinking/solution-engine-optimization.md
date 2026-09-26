@@ -3,7 +3,9 @@ title: "Your Buyer's Brain Has Changed: Why SEO Now Means 'Solution Engine Optim
 shortTitle: "Your buyer's brain has changed"
 date: 2025-10-08
 tag: "Search"
-excerpt: "AI answer engines are replacing search clicks. How B2B teams redesign sites for AEO and GEO using authority, problem-led content, and conversion-first architecture."
+excerpt: "AI answer engines are replacing search clicks. How B2B teams redesign sites for AEO and GEO with authority, problem-led content and conversion-first architecture."
+dek: "AI answers are replacing search clicks. How B2B teams rebuild their sites for AEO and GEO."
+image: "../../assets/art/01-look-underneath.webp"
 ---
 Over the past three years, we've witnessed an exponential change in how the world finds information. The era of patiently clicking through a dozen blue links on Google is fading. We're now in the age of AI, where buyers ask specific, complex questions and expect direct, comprehensive answers. This isn't just a trend; it's a fundamental rewiring of the buyer's brain.
 
@@ -69,19 +71,19 @@ Adopting this framework is more than a marketing tactic; it's an organizational 
 
 The old world of SEO conditioned us to obsess over vanity metrics: keyword rankings, raw traffic, and the sheer volume of "Marketing Qualified Leads" (MQLs). A demand capture model requires a more sophisticated view of success. Ranking #1 for a keyword is useless if it doesn't attract high-intent buyers. A flood of MQLs is a liability if the sales team has to waste time disqualifying them all.
 
-***The Challenge: **You must shift your focus from volume to value. This means measuring things like pipeline created from your content, conversion rates on high-intent pages, and the sales cycle velocity of the leads who engaged with your authoritative content. It requires deep alignment between marketing and sales on what a truly qualified prospect looks like.*
+***The Challenge:** You must shift your focus from volume to value. This means measuring things like pipeline created from your content, conversion rates on high-intent pages, and the sales cycle velocity of the leads who engaged with your authoritative content. It requires deep alignment between marketing and sales on what a truly qualified prospect looks like.*
 
 ### Challenge #2: Your Experts Aren't Your Writers (And Vice Versa)
 
 In the old model, content was a commodity. You could hire a freelance writer, give them a keyword, and get a passable article. That approach is now a recipe for invisibility. The deep, problem-solving content that AI engines and savvy buyers crave cannot be faked; it must come from genuine subject matter expertise.
 
-***The Challenge: **You must build a culture where content is treated as a core product, not a marketing checklist item. This means your marketing team's most important skill is no longer just writing, but interviewing. They need to become expert facilitators, pulling the invaluable knowledge out of the heads of your best sales engineers, product managers, and strategists, and then shaping that expertise into compelling content.*
+***The Challenge:** You must build a culture where content is treated as a core product, not a marketing checklist item. This means your marketing team's most important skill is no longer just writing, but interviewing. They need to become expert facilitators, pulling the invaluable knowledge out of the heads of your best sales engineers, product managers, and strategists, and then shaping that expertise into compelling content.*
 
 ### Challenge #3: This Is a Marathon, Not a Sprint
 
 Building a brand and becoming the trusted authority in your space doesn't happen overnight. A keyword-focused campaign might yield a temporary traffic boost, but the authority-building required for demand capture is a long-term investment. The results are not linear; they compound over time, creating a durable competitive advantage that is incredibly difficult for others to replicate.
 
-***The Challenge: **You need to secure genuine leadership buy-in and have the patience to see the strategy through to completion. The goal isn't a quick spike in leads for the next board meeting; it's to build a gravitational pull for your brand that attracts a steady stream of your ideal customers for years to come.*
+***The Challenge:** You need to secure genuine leadership buy-in and have the patience to see the strategy through to completion. The goal isn't a quick spike in leads for the next board meeting; it's to build a gravitational pull for your brand that attracts a steady stream of your ideal customers for years to come.*
 
 Confronting these challenges head-on is what separates the companies that win the future from those that are left wondering why their old playbook stopped working.
 

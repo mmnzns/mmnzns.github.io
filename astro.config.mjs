@@ -85,6 +85,30 @@ const LEGACY_URLS = {
 };
 
 /**
+ * The service pages that moved to the studio in the v19 relaunch.
+ *
+ * Web design and consulting now live at Craft Concepts Digital, so these
+ * permanently redirect there rather than 404, keeping whatever search
+ * standing and inbound links the old pages earned. Web design maps to the
+ * studio's /build page; consulting spanned its growth and automation work,
+ * so it goes to the studio's front page. Same two outputs as LEGACY_URLS:
+ * a real 301 on Cloudflare, a meta-refresh stub anywhere else.
+ */
+const STUDIO_ORIGIN = 'https://craftconceptsdigital.com';
+const SERVICE_REDIRECTS = {
+  '/web-design': `${STUDIO_ORIGIN}/build`,
+  '/web-design/work': `${STUDIO_ORIGIN}/build`,
+  '/web-design/process': `${STUDIO_ORIGIN}/build`,
+  '/web-design/pricing': `${STUDIO_ORIGIN}/build`,
+  '/consulting': `${STUDIO_ORIGIN}/`,
+  '/consulting/services': `${STUDIO_ORIGIN}/`,
+  '/consulting/process': `${STUDIO_ORIGIN}/`,
+  '/consulting/results': `${STUDIO_ORIGIN}/`,
+};
+
+const REDIRECTS = { ...LEGACY_URLS, ...SERVICE_REDIRECTS };
+
+/**
  * Writes `_redirects` alongside the built pages.
  *
  * Cloudflare reads that file and answers with a real 301 before it looks for a
@@ -140,10 +164,10 @@ export default defineConfig({
   // A user site (mmnzns.github.io) is served from the domain root, so no `base`
   // is needed. A project site (github.com/mmnzns/<repo>) would need
   // `base: '/<repo>'` here.
-  redirects: LEGACY_URLS,
+  redirects: REDIRECTS,
 
   integrations: [
-    redirectsFile(LEGACY_URLS),
+    redirectsFile(REDIRECTS),
     sitemap({
       /**
        * `lastmod` only where a real date exists — the articles. Google acts on

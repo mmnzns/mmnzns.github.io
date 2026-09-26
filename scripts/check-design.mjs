@@ -38,7 +38,7 @@
  *
  * Usage:
  *   node scripts/check-design.mjs "<design export dir>" dist
- *       [--widths 375,1440] [--pages home,web-design] [--json report.json]
+ *       [--widths 375,1440] [--pages home,about] [--json report.json]
  *       [--examples 3] [--all]
  *
  * Needs Chrome or Edge installed (see lib/browser.mjs) and network access for
@@ -83,31 +83,24 @@ const JSON_OUT = flag('json', null);
  * time from the ones both the export's data array and dist/ have.
  */
 const PAGES = [
-  { id: 'home', file: /^Monzones-D(-Paper|-Bold)?\.dc\.html$/, route: '/' },
-  { id: 'about', file: /^Monzones-D-About(-Bold)?\.dc\.html$/, route: '/about/' },
-  { id: 'work', file: /^Monzones-D-Work(-Bold)?\.dc\.html$/, route: '/work/' },
-  { id: 'thinking', file: /^Monzones-D-Thinking(-Bold)?\.dc\.html$/, route: '/thinking/' },
-  { id: '404', file: /^Monzones-D-404(-Bold)?\.dc\.html$/, route: '/404.html' },
+  { id: 'home', file: /^Monzones-D(-Paper|-Bold|-Home(-V\d+)?)?\.dc\.html$/, route: '/' },
+  { id: 'about', file: /^Monzones-D-About(-Bold|-V\d+)?\.dc\.html$/, route: '/about/' },
+  { id: 'work', file: /^Monzones-D-Work(-Bold|-V\d+)?\.dc\.html$/, route: '/work/' },
+  { id: 'thinking', file: /^Monzones-D-(Thinking|Writing)(-Bold|-V\d+)?\.dc\.html$/, route: '/thinking/' },
+  { id: 'privacy', file: /^Monzones-D-Privacy(-V\d+)?\.dc\.html$/, route: '/privacy/' },
+  { id: '404', file: /^Monzones-D-404(-Bold|-V\d+)?\.dc\.html$/, route: '/404.html' },
   {
     id: 'case',
-    file: /^Monzones-D-Case(-Bold)?\.dc\.html$/,
+    file: /^Monzones-D-Case(-Bold|-V\d+)?\.dc\.html$/,
     route: '/work/{slug}/',
     dynamic: { array: 'CASES', dir: 'work' },
   },
   {
     id: 'article',
-    file: /^Monzones-D-Article(-Bold)?\.dc\.html$/,
+    file: /^Monzones-D-Article(-Bold|-V\d+)?\.dc\.html$/,
     route: '/thinking/{slug}/',
     dynamic: { array: 'POSTS', dir: 'thinking' },
   },
-  { id: 'consulting', file: /^Monzones-C-Home\.dc\.html$/, route: '/consulting/' },
-  { id: 'consulting-services', file: /^Monzones-C-Services\.dc\.html$/, route: '/consulting/services/' },
-  { id: 'consulting-process', file: /^Monzones-C-Process\.dc\.html$/, route: '/consulting/process/' },
-  { id: 'consulting-results', file: /^Monzones-C-Results\.dc\.html$/, route: '/consulting/results/' },
-  { id: 'web-design', file: /^Monzones-W-Web-Design.*\.dc\.html$/, route: '/web-design/' },
-  { id: 'web-design-work', file: /^Monzones-W-Work\.dc\.html$/, route: '/web-design/work/' },
-  { id: 'web-design-process', file: /^Monzones-W-Process\.dc\.html$/, route: '/web-design/process/' },
-  { id: 'web-design-pricing', file: /^Monzones-W-Pricing\.dc\.html$/, route: '/web-design/pricing/' },
 ];
 
 const designFiles = readdirSync(designDir).filter((f) => f.endsWith('.dc.html'));

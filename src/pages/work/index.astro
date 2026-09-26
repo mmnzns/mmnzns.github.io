@@ -1,251 +1,786 @@
 ---
+/**
+ * The work index — v19 `Monzones-D-Work-V4`.
+ *
+ * Every card is rendered in both views on the server; the filter and the
+ * Clippings/Index switch only toggle `hidden`, and renumber what is left.
+ * With JavaScript off the page is the full grid in category order.
+ */
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ContactBand from '../../components/ContactBand.astro';
-import { PROJECTS, CATEGORY_ORDER, CATEGORY_ACCENT, type Category } from '../../data/site';
+import { PROJECTS, CATEGORY_ORDER, CATEGORY_ACCENT, CATEGORY_SHORT, type Category } from '../../data/site';
+import { art } from '../../data/art';
 
-/** Anchor id for a category, e.g. "Leadership & Operations" → "leadership-operations". */
-function anchor(category: Category) {
-  return category
-    .toLowerCase()
-    .replace(/&/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-const groups = CATEGORY_ORDER.map((category) => ({
-  category,
-  id: anchor(category),
-  accent: CATEGORY_ACCENT[category],
-  items: PROJECTS.filter((project) => project.category === category),
-})).filter((group) => group.items.length > 0);
+const ordered = [...PROJECTS].sort(
+  (a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category),
+);
+const TILT = ['-1.2deg', '.9deg', '-.6deg', '1.3deg', '-1deg', '.5deg'];
+const pad = (n: number) => String(n).padStart(2, '0');
+const count = (c: Category) => PROJECTS.filter((p) => p.category === c).length;
+const filters = [
+  { id: 'all', name: 'Everything', short: 'All', dot: 'var(--ink)', n: PROJECTS.length },
+  ...CATEGORY_ORDER.map((c) => ({ id: c, name: c, short: CATEGORY_SHORT[c], dot: CATEGORY_ACCENT[c], n: count(c) })),
+];
 ---
 
 <BaseLayout
-  title="The Work"
-  description="Systems, journeys, and teams I've helped bring to life — lifecycle rebuilds, AI automation, web and analytics, and the operations behind them."
+  title="Work"
+  description="Problems I've owned, from diagnosis to the number: lifecycle, AI and automation, web and analytics, and the teams behind them."
+  current="Work"
   breadcrumbs={[{ label: 'Work', href: '/work/' }]}
-  footerFlush
 >
-  <section class="section--first wrap workhero" id="top">
-    <div class="dotacc" aria-hidden="true"></div>
-
-    <p class="eyebrow">What I’ve built</p>
-    <h1 class="page-title workhero__title">
-      A collection of systems, journeys, and teams I’ve helped bring to life.
-    </h1>
-    <p class="lede workhero__sub">
-      Most of these projects began with a business problem that crossed more than one team. I’ve
-      written each case around the same questions: What were we seeing? What did we learn? What did
-      we decide to build? And how did we know whether it worked? Filter by area, or open any project
-      for the full story.
-    </p>
-
-    <div class="jump">
-      {
-        groups.map((group) => (
-          <a class="jump__link" href={`#${group.id}`}>
-            <span class="jump__mark" style={`background:${group.accent}`} aria-hidden="true" />
-            <span>{group.category}</span>
-          </a>
-        ))
-      }
+  <section class="whero">
+    <div class="mz-max">
+      <p class="mz-kicker whero__kicker" data-hero>
+        <span>The archive · Selected work</span>
+        <span class="mz-muted">{PROJECTS.length} case studies</span>
+      </p>
+      <div class="whero__grid">
+        <div class="whero__copy">
+          <h1 class="whero__h1">
+            <span data-hero>Problems I've owned,</span>
+            <span data-hero>from <em>diagnosis</em></span>
+            <span data-hero data-word class="whero__word"><span class="mz-swatch whero__swatch">to the number.</span></span>
+          </h1>
+          <p class="whero__lede" data-hero>
+            Each started as a symptom someone handed me. Here's what was underneath, what I did, and what moved.
+          </p>
+        </div>
+        <nav class="index" aria-label="Browse by area" data-hero>
+          <p class="index__head">Index · browse by area</p>
+          {
+            filters.map((f) => (
+              <button type="button" class="index__row" aria-pressed={f.id === 'all' ? 'true' : 'false'} data-area={f.id}>
+                <span class="index__dot" style={`background:${f.dot}`} />
+                <span>{f.name}</span>
+                <span class="index__lead" aria-hidden="true" />
+                <span class="index__n">{pad(f.n)}</span>
+              </button>
+            ))
+          }
+        </nav>
+      </div>
     </div>
   </section>
 
-  <div class="spacer" aria-hidden="true"></div>
-
-  {
-    groups.map((group) => (
-      <section class="wrap group" id={group.id}>
-        <div class="group__rule" aria-hidden="true" />
-        <div class="group__grid">
-          <div>
-            <p class="label-row group__label">
-              <span class="accent-bar" style={`--bar:${group.accent}`} />
-              <span class="eyebrow eyebrow--muted">
-                {group.items.length} {group.items.length === 1 ? 'case' : 'cases'}
-              </span>
-            </p>
-            <h2 class="section-title--sm">{group.category}</h2>
-          </div>
-
-          <div class="group__cases">
-            {group.items.map((project) => (
-              <a class="card card--interactive workcard" href={`/work/${project.slug}/`}>
-                <div class="workcard__grid">
-                  <div>
-                    <p class="workcard__tags">{project.tags.join(' / ')}</p>
-                    <h3 class="workcard__title">{project.title}</h3>
-                    <p class="workcard__summary">{project.problem}</p>
-                  </div>
-
-                  <div class="workcard__metrics">
-                    {project.metrics.map((metric) => (
-                      <div>
-                        <p class="workcard__value">
-                          {metric.value ?? `${metric.from} → ${metric.to}`}
-                        </p>
-                        <p class="workcard__label">{metric.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
+  <section class="archive">
+    <div class="mz-max">
+      <div class="bar">
+        <div class="bar__chips" role="group" aria-label="Filter by area">
+          {
+            filters.map((f) => (
+              <button type="button" class="chip" aria-pressed={f.id === 'all' ? 'true' : 'false'} data-area={f.id}>
+                {f.short}
+              </button>
+            ))
+          }
         </div>
-      </section>
-    ))
-  }
+        <div class="bar__view" role="group" aria-label="View">
+          <button type="button" aria-pressed="true" data-view="grid">Clippings</button>
+          <button type="button" aria-pressed="false" data-view="list">Index</button>
+        </div>
+      </div>
+      <p class="showing" aria-live="polite" data-showing>Showing {PROJECTS.length} of {PROJECTS.length}</p>
 
-  <ContactBand />
+      <div class="grid" data-grid>
+        {
+          ordered.map((p, i) => (
+            <a class="card" href={`/work/${p.slug}/`} data-card data-cat={p.category} data-cursor="Read the case" style={`--tilt:${TILT[i % TILT.length]}`}>
+              <span class:list={['card__img', `card__img--${p.artFit}`]}>
+                <Image src={art(p.art)} alt="" widths={[360, 540, 720]} sizes="(max-width: 760px) 92vw, 420px" />
+                <span class="card__badge">
+                  <span class="card__dot" style={`background:${CATEGORY_ACCENT[p.category]}`} />
+                  {p.category}
+                </span>
+              </span>
+              <span class="card__body">
+                <span class="card__meta"><span data-num>{pad(i + 1)}</span> · {p.tags.join(' / ')}</span>
+                <span class="card__title">{p.title}</span>
+                <span class="card__summary">{p.summary}</span>
+                <span class="card__metric">
+                  <span class="card__mv">{p.card.value}</span>
+                  <span class="card__ml">{p.card.label}</span>
+                </span>
+                <span class="mz-cta">Read the case <span aria-hidden="true">→</span></span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="list" data-list hidden>
+        {
+          ordered.map((p, i) => (
+            <a class="row" href={`/work/${p.slug}/`} data-card data-cat={p.category} data-art={p.slug}>
+              <span class="row__num" data-num>{pad(i + 1)}</span>
+              <span class="row__main">
+                <span class:list={['row__thumb', `row__thumb--${p.artFit}`]}>
+                  <Image src={art(p.art)} alt="" widths={[360, 520]} sizes="92vw" loading="lazy" data-row-img />
+                </span>
+                <span class="row__title">{p.title}</span>
+                <span class="row__meta">
+                  <span class="card__dot" style={`background:${CATEGORY_ACCENT[p.category]}`} />
+                  {p.category} · {p.tags.join(' / ')}
+                </span>
+              </span>
+              <span class="row__metric">
+                <span class="row__mv">{p.card.value}</span>
+                <span class="row__ml">{p.card.label}</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="next">
+    <div class="next__grid">
+      <div>
+        <p class="mz-kicker mz-kicker--dark" data-rv>Next</p>
+        <h2 class="next__h2" data-split>Got a problem that crosses <em>teams?</em></h2>
+      </div>
+      <div class="next__ctas" data-rv data-delay="120">
+        <a href="/#contact" class="next__btn next__btn--amber" data-magnetic>Tell me what's going on <span aria-hidden="true">→</span></a>
+        <a href="/about/" class="next__btn next__btn--line">More about how I work <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <div class="float" aria-hidden="true" data-float><img alt="" data-float-img /></div>
 </BaseLayout>
 
 <style>
-  .workhero {
-    position: relative;
+  .whero {
+    padding: clamp(40px, 6vw, 88px) var(--gutter) clamp(36px, 4vw, 56px);
+  }
+  .whero__kicker {
+    gap: 10px 20px;
+    padding-bottom: 14px;
+  }
+  .whero__grid {
+    margin-top: clamp(36px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: clamp(36px, 6vw, 100px);
+    align-items: end;
+  }
+  .whero__copy {
+    min-width: 0;
+  }
+  .whero__h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(52px, 7vw, 120px);
+    line-height: 0.96;
+    letter-spacing: -0.02em;
+  }
+  .whero__h1 > span {
+    display: block;
+  }
+  .whero__h1 > .whero__word {
+    display: inline-block;
+    margin-top: 0.06em;
+  }
+  .whero__swatch {
+    padding: 0.02em 0.16em 0.04em;
+    transform: rotate(-1.5deg);
+  }
+  .whero__lede {
+    margin-top: clamp(24px, 3vw, 36px);
+    font-size: clamp(18px, 1.5vw, 22px);
+    line-height: 1.5;
+    max-width: 44ch;
+    text-wrap: pretty;
   }
 
-  .workhero__title {
-    margin-top: 26px;
-    max-width: 1000px;
+  .index {
+    padding: 18px 20px 8px;
+    background: var(--card);
+    border: 1px solid var(--ink);
+    transform: rotate(1deg);
+    filter: drop-shadow(0 12px 18px rgba(31, 29, 43, 0.12));
   }
-
-  .workhero__sub {
-    margin-top: 30px;
-    max-width: 620px;
-    font-size: 18px;
-    line-height: 1.65;
-  }
-
-  .jump {
-    margin-top: 44px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .jump__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+  .index__head {
+    padding-bottom: 10px;
+    border-bottom: 3px double var(--ink);
+    font-family: var(--mono);
     font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 12px 18px;
-    border: var(--border);
-    background: var(--paper);
-    transition:
-      background var(--dur-fast) var(--ease),
-      color var(--dur-fast) var(--ease);
+    letter-spacing: 0.08em;
+  }
+  .index__row {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 11px 0;
+    border: 0;
+    border-bottom: 1px dotted rgba(31, 29, 43, 0.4);
+    background: transparent;
+    color: var(--ink);
+    text-align: left;
+    font-size: 17px;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  .index__row:hover,
+  .index__row[aria-pressed='true'] {
+    color: var(--blue);
+  }
+  .index__row[aria-pressed='true'] {
+    font-weight: 700;
+  }
+  .index__dot,
+  .card__dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    align-self: center;
+  }
+  .index__lead {
+    flex: 1;
+    border-bottom: 1px dotted rgba(31, 29, 43, 0.35);
+    transform: translateY(-4px);
+  }
+  .index__n {
+    font-family: var(--mono);
+    font-size: 13px;
   }
 
-  .jump__link:hover,
-  .jump__link:focus-visible {
+  .archive {
+    padding: 0 var(--gutter) clamp(72px, 8vw, 120px);
+  }
+  .bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 12px var(--gutter);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    background: rgba(248, 244, 236, 0.92);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--ink);
+  }
+  .bar__chips {
+    flex: 999 1 auto;
+    min-width: min(100%, 600px);
+    max-width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: -2px 0;
+    padding: 2px 0;
+  }
+  .bar__chips::-webkit-scrollbar {
+    display: none;
+  }
+  .chip {
+    flex: none;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .chip[aria-pressed='true'] {
     background: var(--ink);
     color: var(--paper);
   }
-
-  .jump__mark {
-    width: 22px;
-    height: 11px;
-    flex: none;
-  }
-
-  .spacer {
-    height: clamp(70px, 8vw, 110px);
-  }
-
-  .group {
-    padding-bottom: 96px;
-    scroll-margin-top: 110px;
-  }
-
-  .group__rule {
-    height: 6px;
-    background: var(--ink);
-    margin-bottom: 34px;
-  }
-
-  .group__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 34px;
-  }
-
-  .group__label {
-    margin-bottom: 14px;
-  }
-
-  .group__cases {
+  .bar__view {
+    flex: 1 1 240px;
+    min-width: min(100%, 240px);
     display: flex;
-    flex-direction: column;
-    gap: 18px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    overflow: hidden;
   }
-
-  .workcard {
-    padding: 32px clamp(17px, 4.5vw, 34px);
-  }
-
-  .workcard__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .workcard__tags {
+  .bar__view button {
+    flex: 1;
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--mono);
     font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+  .bar__view button + button {
+    border-left: 1px solid var(--ink);
+  }
+  .bar__view button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .showing {
+    padding: 18px 0 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
   }
 
-  .workcard__title {
-    margin-top: 12px;
-    font-size: 23px;
-    line-height: 1.2;
-    letter-spacing: -0.012em;
+  .grid {
+    margin-top: clamp(20px, 2.4vw, 32px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: clamp(28px, 3vw, 44px) clamp(20px, 2.4vw, 34px);
   }
-
-  .workcard__summary {
-    margin-top: 12px;
-    max-width: 560px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-2);
-  }
-
-  .workcard__metrics {
+  .card {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    padding: 12px 12px 22px;
+    background: var(--card);
+    color: var(--ink);
+    transform: rotate(var(--tilt));
+    clip-path: var(--torn-card);
+    filter: drop-shadow(0 10px 18px rgba(31, 29, 43, 0.14));
+    transition:
+      transform 0.5s var(--ease),
+      filter 0.5s;
+  }
+  .card:hover {
+    transform: rotate(0deg) translateY(-6px);
+    filter: drop-shadow(0 18px 26px rgba(31, 29, 43, 0.2));
+    color: var(--ink);
+  }
+  .card__img {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #f3eee3;
+    clip-path: var(--torn-card-img);
+  }
+  .card__img img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    transition: transform 0.7s var(--ease);
+  }
+  .card__img--contain img {
+    object-fit: contain;
+    padding: 8%;
+  }
+  .card:hover .card__img img {
+    transform: scale(1.06);
+  }
+  .card__badge {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .card__badge .card__dot {
+    width: 7px;
+    height: 7px;
+  }
+  .card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 8px 0;
+  }
+  .card__meta {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .card__title {
+    font-size: clamp(20px, 1.6vw, 24px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .card__summary {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--body);
+    text-wrap: pretty;
+  }
+  .card__metric {
+    margin-top: auto;
+    padding-top: 14px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-top: 1px solid rgba(31, 29, 43, 0.2);
+  }
+  .card__mv {
+    font-family: var(--serif);
+    font-size: clamp(34px, 3vw, 46px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .card__ml {
+    flex: 1;
+    min-width: 140px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--body);
   }
 
-  .workcard__value {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.015em;
-    line-height: 1.1;
+  .list {
+    margin-top: clamp(20px, 2.4vw, 32px);
+    border-top: 3px double var(--ink);
   }
-
-  .workcard__label {
-    margin-top: 3px;
+  .row {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 6px clamp(16px, 2.4vw, 40px);
+    align-items: baseline;
+    padding: clamp(16px, 1.8vw, 24px) 10px;
+    border-bottom: 1px solid var(--ink);
+    color: var(--ink);
+    transition:
+      background 0.3s,
+      padding 0.5s var(--ease);
+  }
+  .row:hover {
+    background: var(--card);
+    padding-left: 22px;
+    color: var(--ink);
+  }
+  .row__num {
+    font-family: var(--mono);
     font-size: 13px;
-    color: var(--ink-3);
+    color: var(--muted);
+  }
+  .row__main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .row__thumb {
+    display: none;
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    aspect-ratio: 3 / 2;
+    margin-bottom: 6px;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid rgba(31, 29, 43, 0.15);
+  }
+  .row__thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .row__thumb--contain img {
+    object-fit: contain;
+    padding: 8%;
+  }
+  .row__title {
+    font-family: var(--serif);
+    font-size: clamp(24px, 2.4vw, 38px);
+    line-height: 1.05;
+  }
+  .row__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .row__meta .card__dot {
+    width: 7px;
+    height: 7px;
+  }
+  .row__metric {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .row__mv {
+    font-family: var(--serif);
+    font-size: clamp(30px, 2.6vw, 40px);
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--blue);
+  }
+  .row__ml {
+    display: none;
+    font-size: 14px;
     line-height: 1.4;
+    color: var(--body);
+    text-wrap: pretty;
+  }
+  /* Touch and narrow screens: the art moves inline, the figure under the title. */
+  @media (hover: none), (pointer: coarse), (max-width: 999px) {
+    .row__thumb {
+      display: block;
+    }
+  }
+  @media (max-width: 899px) {
+    .row {
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 14px 12px;
+      align-items: start;
+      padding: 28px 2px;
+    }
+    .row__main {
+      gap: 10px;
+    }
+    .row__metric {
+      grid-column: 2;
+      align-items: flex-start;
+    }
+    .row__ml {
+      display: block;
+    }
   }
 
-  @media (min-width: 800px) {
-    .group__grid {
-      grid-template-columns: 0.62fr 1.38fr;
-      gap: 48px;
-    }
+  .next {
+    padding: clamp(64px, 7vw, 110px) var(--gutter);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .next__grid {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(32px, 5vw, 80px);
+    align-items: end;
+  }
+  .next__h2 {
+    margin-top: 24px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(44px, 6vw, 96px);
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .next__h2 em {
+    color: var(--amber);
+  }
+  .next__ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .next__btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    transition:
+      translate 0.5s var(--ease),
+      background 0.3s,
+      color 0.3s;
+  }
+  .next__btn--amber {
+    padding: 18px 24px;
+    background: var(--amber);
+    color: var(--ink);
+    font-size: 17px;
+  }
+  .next__btn--amber:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .next__btn--line {
+    padding: 16px 24px;
+    border: 1.5px solid var(--paper);
+    color: var(--paper);
+    font-size: 16px;
+  }
+  .next__btn--line:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
 
-    .workcard__grid {
-      grid-template-columns: 1fr 220px;
-      gap: 40px;
-    }
+  .float {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 45;
+    width: 260px;
+    padding: 8px 8px 20px;
+    background: var(--card);
+    clip-path: var(--torn-snap);
+    filter: drop-shadow(0 10px 16px rgba(31, 29, 43, 0.25));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    will-change: transform;
+  }
+  .float img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: #f3eee3;
+    mix-blend-mode: multiply;
   }
 </style>
+
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE = 'cubic-bezier(.16,1,.3,1)';
+  const TILT = ['-1.2deg', '.9deg', '-.6deg', '1.3deg', '-1deg', '.5deg'];
+  const TOTAL = document.querySelectorAll('[data-grid] [data-card]').length;
+
+  const grid = document.querySelector<HTMLElement>('[data-grid]')!;
+  const list = document.querySelector<HTMLElement>('[data-list]')!;
+  const showing = document.querySelector<HTMLElement>('[data-showing]')!;
+  const areaBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-area]'));
+  const viewBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-view]'));
+  let area = 'all';
+  let view: 'grid' | 'list' = 'grid';
+
+  /** Cards arrive one after another after a filter or view change. */
+  const deal = (box: HTMLElement) => {
+    if (reduced) return;
+    const cards = Array.from(box.querySelectorAll<HTMLElement>('[data-card]:not([hidden])'));
+    cards.forEach((c, i) => {
+      c.style.transition = 'none';
+      c.style.opacity = '0';
+      c.style.translate = '0 40px';
+      c.style.scale = '.96';
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          const d = Math.min(i, 8) * 70;
+          c.style.transition = `opacity .8s ${EASE} ${d}ms, translate 1s ${EASE} ${d}ms, scale 1s ${EASE} ${d}ms`;
+          c.style.opacity = '';
+          c.style.translate = '';
+          c.style.scale = '';
+          window.setTimeout(() => (c.style.transition = ''), d + 1100);
+        }),
+      );
+    });
+  };
+
+  const apply = () => {
+    let n = 0;
+    for (const box of [grid, list]) {
+      let i = 0;
+      box.querySelectorAll<HTMLElement>('[data-card]').forEach((card) => {
+        const show = area === 'all' || card.dataset.cat === area;
+        card.hidden = !show;
+        if (!show) return;
+        const num = card.querySelector('[data-num]');
+        if (num) num.textContent = String(i + 1).padStart(2, '0');
+        card.style.setProperty('--tilt', TILT[i % TILT.length]);
+        i++;
+      });
+      n = i;
+    }
+    areaBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.area === area)));
+    viewBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    grid.hidden = view !== 'grid';
+    list.hidden = view !== 'list';
+    showing.textContent = `Showing ${n} of ${TOTAL}${area === 'all' ? '' : ` · ${area}`}`;
+    deal(view === 'grid' ? grid : list);
+  };
+
+  areaBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      if (area === b.dataset.area) return;
+      area = b.dataset.area ?? 'all';
+      apply();
+    }),
+  );
+  viewBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      const next = b.dataset.view === 'list' ? 'list' : 'grid';
+      if (view === next) return;
+      view = next;
+      apply();
+    }),
+  );
+
+  /* In the Index view on a wide fine pointer, the case's art follows the row. */
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1000px)');
+  const floatEl = document.querySelector<HTMLElement>('[data-float]');
+  const floatImg = document.querySelector<HTMLImageElement>('[data-float-img]');
+  if (floatEl && floatImg && !reduced) {
+    let px = 0;
+    let py = 0;
+    let fx = 0;
+    let fy = 0;
+    let on = false;
+    let raf = 0;
+    const tick = () => {
+      fx += (px + 28 - fx) * 0.16;
+      fy += (py - 100 - fy) * 0.16;
+      floatEl.style.transform = `translate3d(${fx.toFixed(1)}px,${fy.toFixed(1)}px,0) rotate(-3deg)`;
+      raf = on ? requestAnimationFrame(tick) : 0;
+    };
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        px = e.clientX;
+        py = e.clientY;
+      },
+      { passive: true },
+    );
+    list.querySelectorAll<HTMLElement>('[data-card]').forEach((row) => {
+      const img = row.querySelector<HTMLImageElement>('[data-row-img]');
+      row.addEventListener('mouseenter', () => {
+        if (!fine.matches || !img) return;
+        floatImg.src = img.currentSrc || img.src;
+        if (!on) {
+          fx = px + 28;
+          fy = py - 100;
+        }
+        on = true;
+        floatEl.style.opacity = '1';
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+      row.addEventListener('mouseleave', () => {
+        on = false;
+        floatEl.style.opacity = '0';
+      });
+    });
+  }
+</script>

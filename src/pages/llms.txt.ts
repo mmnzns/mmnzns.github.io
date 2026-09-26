@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
-import { SITE, CONTACT, NAV_LINKS, NAV_SERVICES } from '../config';
+import { SITE, CONTACT, NAV_LINKS, STUDIO } from '../config';
 import { PROJECTS } from '../data/site';
 
 /**
@@ -32,14 +32,14 @@ export async function GET(context: APIContext) {
     '',
     `> ${SITE.description}`,
     '',
-    /* No trailing full stop after the entity — it already ends in "Ltd." */
-    `Based in ${SITE.location}.`,
-    `Consulting entity: ${CONTACT.entity}`,
+    `Based in ${SITE.location}. The site is run through ${CONTACT.entity}`,
     `Contact: ${CONTACT.email} · ${CONTACT.linkedin}`,
+    /* The home page's own line about the studio, where the services now live. */
+    `Studio: ${STUDIO.name} (${STUDIO.url}) — websites, lifecycle and automation, the hands-on version.`,
     '',
     '## Pages',
     '',
-    ...[...NAV_LINKS, ...NAV_SERVICES].map((link) => `- [${link.label}](${url(link.href)})`),
+    ...[...NAV_LINKS, { label: 'Privacy', href: '/privacy/' }].map((link) => `- [${link.label}](${url(link.href)})`),
     '',
     '## Work',
     '',

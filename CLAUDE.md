@@ -1,27 +1,33 @@
 # Working in this repository
 
-Personal portfolio site — Astro 7 (static output) + TypeScript, served by a Cloudflare
-Worker as static assets. Cloudflare's git integration builds and deploys every push to
-`main`; there is no deploy workflow in this repo (GitHub Pages was retired 2026-08-26).
+Personal portfolio and writing site — Astro 7 (static output) + TypeScript, served by a
+Cloudflare Worker as static assets. Cloudflare's git integration builds and deploys every
+push to `main`; there is no deploy workflow in this repo (GitHub Pages was retired
+2026-08-26).
+
+**What the site is, since v19 (2026-09):** Miguel's personal portfolio and a home for his
+writing — Home, Work (13 case studies), Writing, About, Privacy. It sells nothing. The web
+design and consulting services moved to his studio, **Craft Concepts Digital**
+(craftconceptsdigital.com), and the site points there from one chip in the header and menu
+and one card on the home page (`STUDIO` in `src/config.ts`). The old `/web-design/` and
+`/consulting/` URLs 301 to the studio (see Discoverability). Don't re-add service pages,
+pricing or a service nav here; that work belongs on the studio's site.
 
 ## Commands
 
 - `npm run dev` — dev server on port 4321
 - `npm run build` — static build into `dist/`
 - `npm run check` — Astro/TypeScript diagnostics; this is what CI gates on
-- `npm run og` — regenerate the link-preview cards; needed after adding an article.
-  Output is deterministic, so running it with nothing new leaves the tree clean
 
-**Porting a new design export: follow `docs/PORTING.md`.** It is the playbook — the
-script-per-file table, the recipe, the surfaces no script covers, and the verification
-baselines. The short version: `scripts/gen-{cases,home,about}.mjs` regenerate their data
-file wholesale from the design (never hand-edit prose in a generated file),
-`scripts/sync-projects(-apply).mjs` patch `site.ts`, and two verifiers prove the port:
-`scripts/check-copy.mjs` reports design sentences missing from `dist/`, and
-`scripts/check-design.mjs` renders each export beside its built page in Chrome and
-reports where they *look* different — type, colour, background, alignment, overflow,
-contrast. **Words matching is not the port being done.** Every visual regression that
-has shipped passed check-copy; check-design is what would have caught them.
+**Porting a new design export: follow `docs/PORTING.md`.** It is the playbook — what each
+script owns, the recipe, the surfaces no script covers, and the verification baselines.
+The short version: `scripts/gen-cases.mjs` regenerates `src/data/cases.ts` from the design
+(never hand-edit prose in that file); everything else is hand-maintained from the export;
+and two verifiers prove the port: `scripts/check-copy.mjs` reports design sentences missing
+from `dist/`, and `scripts/check-design.mjs` renders each export beside its built page in
+Chrome and reports where they *look* different — type, colour, background, alignment,
+overflow, contrast. **Words matching is not the port being done.** Every visual regression
+that has shipped passed check-copy; check-design is what would have caught them.
 
 **Diff against the design, not against the previous export.** This repo has drifted from
 what was shipped before, so a small vN-1 → vN diff can hide a page's worth of divergence.
@@ -33,103 +39,122 @@ references with the ones in `dist/`. Ad-hoc checks (grepping one CSS bundle, eye
 a screenshot) have reported both false "not live" and false "live" before.
 
 Run `npm run check && npm run build` before committing. There is no test suite or linter
-beyond that.
+beyond that. (On the Google Drive checkout, `node_modules/.bin` symlinks arrive broken —
+invoke `node ./node_modules/astro/bin/astro.mjs check|build` directly.)
 
 ## Conventions
 
-- **Site metadata lives in `src/config.ts`.** Title, description, nav, contact details and
-  the Formspree endpoint are read from there. Don't hardcode them in pages or components.
-  The nav is split on purpose: `NAV_LINKS` is the plain site links, `NAV_SERVICES` is the
-  boxed Consulting/Web Design pair in the header, and llms.txt lists both.
-- **`BaseLayout.astro` owns `<head>`.** Pages pass `title` and `description` as props rather
-  than writing their own meta tags. Canonical URL, Open Graph, Twitter tags and the Person
-  JSON-LD are derived.
-- **Styling is plain CSS with tokens** in `src/styles/global.css` (`--paper`, `--ink`,
-  `--coral`, …). When adding a colour, define a token rather than inlining a hex value.
-  The v8 "Bold" language is structural: 3px ink borders (`--border`), hard offset shadows
-  with no blur (`--shadow*`), no border radius, uppercase micro-labels, 700-weight display
-  type. A rounded corner or a soft blurred shadow is a regression to the old design, not a
-  refinement. The design is **light only** — there is deliberately no
-  `prefers-color-scheme: dark` block, because this palette inverted is a different design
-  rather than the same one at night. Don't add one piecemeal.
-- **The two service sections look wrong on purpose.** `src/pages/web-design.astro` (cool
-  paper, coral/yellow, Archivo + Caveat — v13 re-skinned it, dropping the peach/blue pair
-  and Bricolage Grotesque the earlier version used) and, since v13, the four consulting
-  pages (warm cream, terracotta and deep green, Clash Display + Switzer) each carry their
-  own palette, faces and rounded shapes. That difference is the point: these are the things
-  being sold, and they read as an offer rather than as another chapter of the portfolio.
-  Both opt out of the site chrome via BaseLayout's `standalone` flag and ship their own
-  nav, footer and motion. Don't "align" either with global.css, don't move their styles
-  there, and don't apply the Bold rules above to them — rounded corners and soft shadows
-  are correct *here* and nowhere else. Both forms POST to the same Formspree endpoint with
-  a `service` field (`web-design` / `consulting`) so the leads are tellable apart in the
-  inbox; that field is easy to drop when a page is rebuilt from a new export, and dropping
-  it silently merges the two lead streams.
-- **Consulting is four pages behind one layout.** v13 split it into `/consulting/` plus
-  `services/`, `process/` and `results/`. `src/layouts/ConsultingLayout.astro` owns the
-  sub-brand: the `--c-*` tokens, the grain, the section nav, the footer, the reveal script,
-  and every class more than one page uses (`.cbtn`, `.chead`, `.cstats`, `.cprac*`,
-  `.cstep*`, `.chero*`, `.cjump`). Those live in an `is:global` block on purpose —
-  **scoped styles cannot reach markup passed through a `<slot />`**, so a shared class
-  defined in a page simply misses on the other three. Page-unique styling stays scoped in
-  its page. The reveal animates `translate` and clears it to `none` inline, which outranks
-  any stylesheet rule: if an element needs a permanent offset, use a margin (see the raised
-  middle card in `.ccase:nth-child(2)`), not `translate`.
-- **`gen-consulting.mjs` was deleted.** It read the single-page
-  `Monzones-D-Consulting-Bold` export, which v13 replaced with the four-file C-series.
-  `src/data/consulting.ts` is now hand-maintained from those files; it is the one data file
-  with no generator.
-- **Four accents, each bound to a category** — coral/Lifecycle, sky/Leadership &
-  Operations, moss/AI & Automation, sun/Web & Analytics. The mapping is declared once in
-  `CATEGORY_ACCENT` (`src/data/site.ts`); read it from there rather than picking a colour
-  by eye. The category strings themselves are display copy (they appear as the work
-  index's group headings), so renaming one is a design decision, not a refactor.
+- **Site metadata lives in `src/config.ts`.** Title, description, role, availability line,
+  nav, contact details, the studio link and the Formspree endpoint are read from there.
+  Don't hardcode them in pages or components. `NAV_LINKS` is the four site links and
+  `NAV_CTA` the "Work with me" button; llms.txt reads both.
+- **`BaseLayout.astro` owns `<head>`.** Pages pass `title` and `description` (plus
+  `current`, `overlay`, `progress`, `article`, `breadcrumbs` where relevant) rather than
+  writing their own meta tags. Canonical URL, Open Graph, Twitter tags and the Person
+  JSON-LD are derived. It also renders the chrome every page shares — `SiteHeader`,
+  `SiteFooter`, `Motion`, `ConsentBanner` — so no page ships its own nav or footer.
+- **The v19 design language** ("Monzones-D-*-V4"): warm paper `--paper` #F8F4EC and ink
+  `--ink` #1F1D2B, cards on `--card`, four accents (`--blue`, `--green`, `--amber`,
+  `--red`); Instrument Serif for display, Bricolage Grotesque for text, Courier Prime for
+  mono labels — all three self-hosted from `public/fonts/` (no Google Fonts request, which
+  also keeps the privacy page's "nothing else loads" claim true). The look is collage:
+  torn-paper edges (`--torn-*` clip-paths in global.css), tape strips, tilted taped photos,
+  soft drop-shadows, pill buttons. Colours are tokens in `src/styles/global.css`; when
+  adding one, define a token rather than inlining a hex. The design is **light only** —
+  there is deliberately no `prefers-color-scheme: dark` block; the palette inverted is a
+  different design, not the same one at night.
+- **Four accents, each bound to a category** — blue/Lifecycle, green/AI & Automation,
+  amber/Web & Analytics, red/Leadership & Operations. Declared once in `CATEGORY_ACCENT`
+  (`src/data/site.ts`); the Writing tags have their own map in `src/data/writing.ts`
+  (blue/Lifecycle, green/AI & automation, amber/Search, red/Positioning). Read colours
+  from those maps rather than picking one by eye. The category strings are display copy,
+  so renaming one is a design decision, not a refactor.
+- **Public copy never names a currency and never says "GitHub Pages"** — hosting is
+  described as "hosted by me". The footer's entity line ("MNM Alaminos Consulting Ltd. —
+  lifecycle and GTM, Vancouver.") stays exactly as it is. Both rules come from the v19
+  launch handoff.
 - **A scoped rule beats a global one, so restate what it cancels.** Astro compiles component
   styles with an attribute selector, so `.thing { color }` inside a component scores higher
   than a bare `a:hover { color }` in global.css. Any component that sets its own link colour
   must set its own `:hover` and `:focus-visible` colour, or the link silently stops
   responding. The same trap applies to `display`: a scoped `display: grid` outranks the
   `hidden` attribute's own rule, which is why global.css forces `[hidden] { display: none }`.
-  Both of these shipped broken. When a hover or a toggle "does nothing", check specificity
-  before anything else.
-- **The mobile nav is inferred, not designed.** The export's `Monzones-D-Nav-Bold`
-  component never shipped — below 900px the export simply has no navigation. SiteHeader's
-  toggle-and-panel is this repo's own accessible pattern restyled to match; if a future
-  export ships the real component, replace the panel's look with it. (The two service pages
-  are the exception: their designs *do* ship a burger and a panel, so those are ported.)
-- **Check a phone before shipping, and don't trust headless for it.** Two rounds running,
-  the export's own mobile bugs were a row of things that couldn't shrink — a nowrap tab
-  row, a spine label, a heading pinned with `white-space: nowrap`. Desktop Chrome paints
-  over `body { overflow-x: clip }`; a phone widens the layout viewport instead. Measure
-  with a 375px-wide **iframe** (`documentElement.scrollWidth` should equal the viewport)
-  and screenshot through one too — headless Chrome's `--window-size` does *not* give a
-  375px layout viewport, and its screenshots will look broken on pages that are fine.
+  And **scoped styles cannot reach Markdown output** — article prose is styled through
+  `.post-body :global(...)` in the article template. When a hover or a toggle "does
+  nothing", check specificity before anything else.
+- **A column flexbox shrink-wraps `.mz-wrap`.** The wrap centres itself with auto side
+  margins, and in a `flex-direction: column` parent auto margins beat `stretch`, so the
+  wrap collapses to its content and centres. Give it `width: 100%` there (see
+  `.career__head` on About). `.mz-wrap` is `box-sizing: border-box`: its 1400px includes
+  the gutters, which is what puts content 76px in at 1440, as the design has it.
+- **The header and mobile menu are designed** (`Monzones-D-Nav-V4`). Below 900px the MENU
+  pill opens a full-screen menu: `aria-expanded` on the toggle, the label swaps to
+  "Close ×", scroll locks, Escape and any link close it and focus returns to the toggle.
+  The header hides on scroll down past 220px; on `overlay` pages (home) it sits over the
+  hero and turns solid past 30px.
+- **The sound toggle is opt-out.** A looping ambient track (`public/websound.mp3`, volume
+  0.3) starts on the visitor's first tap or click anywhere, unless they've turned it off —
+  the choice is remembered in `localStorage` (`mnm-sound`). Browsers forbid audio before a
+  gesture, so there is no autoplay on load. The toggle is a real button with
+  `aria-pressed`.
+- **Check a phone before shipping, and don't trust headless for it.** Every export so far
+  has shipped its own mobile bugs — v19's were client names breaking mid-word in the
+  two-column logo grid and the email address splitting inside its pill (home and About);
+  both are fixed here, not copied. Desktop Chrome paints over `overflow-x: clip`; a phone
+  widens the layout viewport instead. Measure with a 375px-wide **iframe**
+  (`documentElement.scrollWidth` should equal the viewport) and screenshot through one
+  too — headless Chrome's `--window-size` does *not* give a 375px layout viewport. Check
+  320px as well.
 - **Components are `.astro` by default and no framework is installed.** Interactive pieces
-  are progressively enhanced: every state is rendered server-side, and a small vanilla
-  `<script>` toggles `aria-pressed` / `hidden`. Don't reach for React or a `client:*`
-  directive — nothing here has needed one.
-- **Animation must not gate content.** Every scroll-driven effect lives in
-  `src/components/Motion.astro`, which BaseLayout renders on every page. Two rules keep it
-  from hiding the site:
+  are progressively enhanced: every state is rendered server-side (the Work grid *and*
+  list views, every skills panel, every certificate), and a small vanilla `<script>`
+  toggles `hidden` / `aria-*`. Don't reach for React or a `client:*` directive.
+- **Animation must not gate content.** Every scroll-driven effect goes through
+  `src/components/Motion.astro` (`data-hero`, `data-rv`, `data-split`, `data-clip`,
+  `data-count`, `data-magnetic`), which BaseLayout renders on every page. The rules that
+  keep it from hiding the site:
   - **Never write a hidden starting state in CSS.** `opacity: 0` in a stylesheet applies
     whether or not the script that clears it ever runs. Motion.astro sets those states from
-    JavaScript instead, and carries a failsafe (a timer plus a `visibilitychange` listener)
-    that clears everything still pending. The worst case is a page that appears without
-    animating.
-  - **Prefer a transition to a keyframe animation whenever the "from" state is wrong.**
-    An animation with `from { width: 0 }` holds zero width for as long as its clock is
-    stopped — a background tab, a throttled document — so the bar reads `0%`, which is a
-    wrong number rather than a missing effect. A transition rests at the real value and
-    only moves if something pushes it off. See `.bars__fill` on the home page.
+    JavaScript, and a failsafe (2600ms, plus a `visibilitychange` listener) reveals
+    anything still pending at or above the viewport. The worst case is a page that appears
+    without animating.
+  - **Reveals animate `translate` / `rotate`, never `transform`,** so an element's own
+    tilt (set with `transform: rotate(...)` in CSS) survives the reveal. A component with
+    its own `transition` must list `translate` in it, or `data-magnetic` stops easing.
+  - **A page that inserts new elements after load must dispatch `mz:scan`** on `document`
+    so Motion arms them. None does today — the Work filters, Writing search and About
+    certificates only toggle `hidden` on server-rendered markup, which the observers
+    already track.
+  - **Prefer a transition to a keyframe animation whenever the "from" state is wrong** — an
+    animation's `from` holds for as long as its clock is stopped (a background tab), so a
+    bar reads `0%`.
 
-  Both of these have shipped broken before. If you add an effect that can hide something,
-  test it with the page hidden (`document.visibilityState === 'hidden'`), because that is
-  the condition under which observers and `requestAnimationFrame` never fire.
+  Test any effect that can hide something with the page hidden
+  (`document.visibilityState === 'hidden'`) — the condition under which observers and
+  `requestAnimationFrame` never fire. Everything sits behind
+  `@media (prefers-reduced-motion: reduce)` and degrades to instant; About's pinned career
+  strip isn't pinned at all under reduced motion or below 900px.
 - **Routing is file-based** under `src/pages/`; `build.format: 'directory'` means routes end
   in a trailing slash (`/about/`). Keep internal links trailing-slashed to avoid redirects.
 - **Interactive elements are real buttons and links** with correct ARIA state, keyboard
-  operation and a visible focus ring. Every animation sits behind
-  `@media (prefers-reduced-motion: reduce)` and degrades to instant.
+  operation and a visible focus ring.
+
+## Consent and analytics
+
+- **Consent Mode defaults run before gtag loads** (`Analytics.astro`): everything denied,
+  `wait_for_update: 500`. The banner (`ConsentBanner.astro`, `Monzones-D-Cookies-V4`) shows
+  450ms after load on a first visit, stores `{ analytics, v: 1, ts }` under
+  `mnm-consent-v1`, and sends a consent `update` that grants `analytics_storage` only —
+  every `ad_*` signal stays denied. Declining also clears `_ga`, `_gid` and `_gat`. Any
+  element with `data-cookie-settings` reopens it (the footer link, the privacy page
+  button). The storage key and shape are shared with `Analytics.astro`; change one and
+  change the other, or GA stops respecting the visitor's answer.
+- **The contact form is Formspree** (`FORM_ENDPOINT`). The home page's chat UI is a skin
+  over one real `<form>` that POSTs there: it's visible and works without JavaScript; the
+  script hides it until a reply is picked and submits in place. It sends `_subject`
+  ("{topic} · from {name}"), `topic` and a `_gotcha` honeypot. The design's own chat and
+  privacy copy described a `mailto:` form — that's wrong for this site, and both were
+  rewritten to say Formspree. **Never test-submit to the live endpoint.**
 
 ## Deployment constraints
 
@@ -149,38 +174,49 @@ beyond that.
 
 ## Where content lives
 
-- `src/data/site.ts` — the project record: title, tags, category, headline metrics. Read by
-  the home page and the work index.
+- `src/data/site.ts` — the project record: title, summary, card figure, category, tags,
+  headline metrics, the illustration each card uses. Read by the home page and the work
+  index.
 - `src/data/cases.ts` — the long-form case body for each project, joined to the above by
-  slug. A project with no case body fails the build rather than rendering an empty page.
-  It also owns the detail page's own `title` and `deck`, which are longer than the card's.
+  slug, **generated by `scripts/gen-cases.mjs`**. A project with no case body fails the
+  build rather than rendering an empty page. It also owns the detail page's `title`,
+  `deck` and the `meta` line (Where · Role · When).
+- **The Sportserve division is "the MSOps payments division."** Commit 4c7f62f named it
+  that everywhere, matching Professional History (the division sat inside MSOps, the
+  Marketing Services Operations department). v19's export calls it a standalone
+  "Payments Operations Division"; `SPORTSERVE_FIXES` in `gen-cases.mjs` keeps the repo's
+  wording until Miguel decides otherwise. Don't "sync" it back to the design.
 - **Job titles appear in two places** — `ROLES` in `src/data/about.ts` and the `meta` line
   of every case in `cases.ts`. Change one and change the other, or the about page and a
-  case page show a recruiter two different job titles for the same employer. The v6 export
-  disagreed with itself here (Mogo and CraftConcepts); that was reconciled against
-  Professional History via `TITLE_FIXES` in `scripts/gen-cases.mjs`, so regeneration keeps
-  the fix. If a future export introduces a *new* conflict, ask before reconciling — picking
-  one is a claim about Miguel's employment history, not a formatting decision.
-- `src/data/home.ts`, `consulting.ts`, `about.ts` — page-specific copy, kept out of the
-  templates so wording stays reviewable in one place.
-- `src/content/thinking/*.md` — articles. Frontmatter is `title`, `date`, `tag`, `excerpt`,
-  plus optional `shortTitle`, `featured` and `draft`; the schema in `src/content.config.ts`
-  validates it at build time. `shortTitle` is the home page card's headline where the full
-  title would wrap into a wall — the article page and writing index always use `title`.
-  Since v8 the writing index's top slot is literally the **newest** post ("Latest"), so
-  `featured` is currently read by nothing; it stays in the schema in case a curated slot
-  returns. Reading time is computed from word count, never typed by hand.
-
-Contact forms POST to Formspree (`FORM_ENDPOINT` in `src/config.ts`). The plain HTML POST is
-the fallback; a script upgrades it to submit in place. Keep it working without JavaScript.
+  case page show a recruiter two different job titles for the same employer. About uses
+  the full recorded titles (e.g. "Senior Marketing Operations Manager (Lifecycle and
+  MarTech)") where v19's About shortened them; `TITLE_FIXES` in `gen-cases.mjs` reconciles
+  the case pages against Professional History. If a future export introduces a *new*
+  conflict, ask before reconciling — picking one is a claim about Miguel's employment
+  history, not a formatting decision.
+- `src/data/home.ts`, `about.ts`, `writing.ts` — page-specific copy and lists,
+  **hand-maintained** from the v19 exports (v19 rebuilt both pages from scratch, and the
+  old `gen-home` / `gen-about` scrapers were retired with the layouts they read).
+- `src/data/art.ts` — the collage illustrations in `src/assets/art/*.webp`, looked up by
+  name; an unknown name throws at build time rather than rendering a broken image.
+- `src/content/thinking/*.md` — articles. Frontmatter is `title`, `date`, `tag`,
+  `excerpt`, plus optional `dek`, `image`, `imageAlt`, `shortTitle`, `featured` and
+  `draft`; the schema in `src/content.config.ts` validates it at build time. `excerpt` is
+  the article page's deck and the meta description; `dek` is the shorter line the Writing
+  cards use (falls back to `excerpt`); `image` is the hero illustration
+  (`../../assets/art/<name>.webp`); `shortTitle` is the home page row's headline. The
+  Writing page's lead slot is the **newest** post, and the home page lists the newest
+  three — both read the collection, so a new post appears without touching a template.
+  Reading time is computed from word count, never typed by hand. Watch for bold written
+  as `**Label: **text` — CommonMark won't close a `**` that follows a space, so the
+  asterisks render literally; write `**Label:** text`.
 
 ## Discoverability
 
 - **`robots.txt`, `llms.txt` and `llms-full.txt` are generated routes** under `src/pages/`,
   not files in `public/`. A static one drifted once already: moving to the custom domain
   updated `SITE.url`, the sitemap followed, and the hand-typed `Sitemap:` line kept pointing
-  at the old host — which a crawler ignores rather than follows, so the sitemap went unread.
-  Never re-add a static copy; read the origin from config.
+  at the old host. Never re-add a static copy; read the origin from config.
 - **Structured data lives in `BaseLayout` as one `@graph`**, with `@id`s that don't change
   (`#person`, `#website`). Pages opt into extra nodes by passing props — `article={{…}}` adds
   `BlogPosting` and the `article:*` OG tags, `breadcrumbs={[…]}` adds `BreadcrumbList`. Don't
@@ -188,40 +224,35 @@ the fallback; a script upgrades it to submit in place. Keep it working without J
   two different authors.
 - **Never add `dateModified`, and don't backfill it.** No frontmatter records when a post was
   edited, and a freshness date search engines act on is exactly the kind of invented fact the
-  rules below forbid. If `updated` is ever added to the schema, `astro.config.mjs` and the
-  `BlogPosting` node both need to read it.
+  rules below forbid.
 - **The AI crawlers are allowed on purpose.** `src/pages/robots.txt.ts` names GPTBot,
   ClaudeBot, PerplexityBot, Google-Extended and the rest explicitly even though `*` already
   permits them, as a record that being quotable was chosen over being withheld. Reversing
   that is a decision for Miguel, not a cleanup.
-- **Old URLs live in `LEGACY_URLS` in `astro.config.mjs`, and that map feeds two outputs.**
-  The previous Wix site used `/blog/`, `/post/` and `/systemscales/` prefixes, and Google
-  still crawls them. Astro's `redirects` compiles each to an HTML file with a zero-second
-  meta refresh, a canonical and noindex, which is all GitHub Pages can do without a server;
-  the `redirectsFile` integration writes the same map to `dist/_redirects`, which Cloudflare
-  answers with a real 301. Add an entry once — whichever host holds the domain picks it up.
+- **One share card for every page.** `public/og-image.png` is the final 1200×630 card from
+  the v19 launch handoff (Miguel at his desk, "The problem is usually upstream."). Don't
+  regenerate or crop it. BaseLayout emits exactly one absolute `og:image` per page; the old
+  per-article cards and their generator were retired with v19. After changing it, re-scrape
+  with LinkedIn's Post Inspector and Facebook's Sharing Debugger — both cache the old image.
+- **Old URLs live in `astro.config.mjs`, and one map feeds two outputs.** `LEGACY_URLS`
+  holds the previous Wix site's `/blog/`, `/post/` and `/systemscales/` paths;
+  `SERVICE_REDIRECTS` sends `/web-design/…` to `craftconceptsdigital.com/build` and
+  `/consulting/…` to `craftconceptsdigital.com/`. Both are merged into `REDIRECTS`, which
+  Astro's `redirects` compiles to meta-refresh stubs and the `redirectsFile` integration
+  writes to `dist/_redirects`, which Cloudflare answers with a real 301. Add an entry once.
   **This is also the only way to rename an article slug without losing it**: change the
-  filename and add the old path here, or every existing link to that piece dies. Confirm a
-  mapping against the article's title rather than inferring it from the URL; the old slugs
-  kept full stops and turned apostrophes into `-s` inconsistently.
+  filename and add the old path here. Confirm a mapping against the article's title rather
+  than inferring it from the URL.
 - **Don't hand-edit `_redirects`, and don't trust it by reading it.** Two of its rules are
-  non-obvious and both were found by running `wrangler dev` and curling for the status code,
-  not by reasoning: every path needs a trailing-slash twin (an unmatched path falls through
-  to the asset, so `/post/x/` was answering 200 and serving the meta-refresh stub), and
-  sources must be percent-encoded, because Cloudflare normalises the path before it consults
-  the file — a rule containing a literal `’` never fires. If you change the generator, verify
-  the same way; `curl -o /dev/null -w '%{http_code}'` is the whole test.
-- **Publishing an article requires one manual step.** The sitemap, both `llms` files and the
-  RSS feed all read the `thinking` collection, so a new Markdown file appears in all of them
-  by itself — if you find yourself hand-listing an article somewhere, that's a bug. The
-  exception is its link-preview card: run `npm run og` and commit
-  `public/og/<slug>.png`. The article template throws when a card is missing, so this cannot
-  ship broken, but the build does stop until you run it.
-- **Every article has its own preview card, so don't point one at the site card.** The card
-  carries the headline and the topic accent, which is why `og:image:alt` differs on an article
-  from everywhere else. Titles longer than about 95 characters drop to the smallest headline
-  size in the generator; past roughly 120 they will start to crowd the card, which is a reason
-  to shorten the title rather than to change the layout.
+  non-obvious and both were found by running `wrangler dev` and curling for the status code:
+  every path needs a trailing-slash twin (an unmatched path falls through to the asset, so
+  `/post/x/` was answering 200 and serving the meta-refresh stub), and sources must be
+  percent-encoded, because Cloudflare normalises the path before it consults the file — a
+  rule containing a literal `’` never fires. If you change the generator, verify the same
+  way; `curl -o /dev/null -w '%{http_code}'` is the whole test.
+- **Publishing an article is one Markdown file.** The sitemap, both `llms` files, the RSS
+  feed, the Writing page and the home page all read the `thinking` collection — if you find
+  yourself hand-listing an article somewhere, that's a bug.
 
 ## Content and facts
 
