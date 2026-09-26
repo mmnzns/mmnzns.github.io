@@ -67,6 +67,35 @@ for (const c of cases) {
   }
 }
 
+/*
+ * The Sportserve division sat inside MSOps (Marketing Services Operations) —
+ * commit 4c7f62f named it that everywhere, matching Professional History. v19
+ * went back to calling it a standalone "Payments Operations Division", so the
+ * repo's wording is restored here until Miguel decides otherwise.
+ */
+const SPORTSERVE_FIXES = [
+  ['Building the Payments Operations Division', 'Building the MSOps payments division'],
+  [
+    'I made the case for a dedicated division and built it from scratch.',
+    'I made the case for a dedicated payments division inside MSOps, the Marketing Services Operations department, and built it from scratch.',
+  ],
+  [
+    'a standalone Payments Operations Division, built from zero',
+    'a standalone payments division inside MSOps (Marketing Services Operations), built from zero',
+  ],
+];
+const fixText = (v) =>
+  typeof v === 'string'
+    ? SPORTSERVE_FIXES.reduce((s, [wrong, right]) => s.split(wrong).join(right), v)
+    : Array.isArray(v)
+      ? v.map(fixText)
+      : v && typeof v === 'object'
+        ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fixText(x)]))
+        : v;
+for (const c of cases) {
+  if (c.slug === 'sportserve-payments-division') Object.assign(c, fixText(c));
+}
+
 const bySlug = new Map(cases.map((c) => [c.slug, c]));
 const missing = ORDER.filter((s) => !bySlug.has(s));
 const extra = cases.map((c) => c.slug).filter((s) => !ORDER.includes(s));

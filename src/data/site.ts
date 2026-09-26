@@ -17,10 +17,19 @@ export interface Metric {
 export interface Project {
   slug: string;
   title: string;
+  /** The longer framing — read by llms.txt and llms-full.txt. */
   problem: string;
   tags: readonly string[];
   metrics: readonly Metric[];
   category: Category;
+  /** The work-index card's one-paragraph read, from the v19 export. */
+  summary: string;
+  /** The single figure the card leads with, and what it measures. */
+  card: { value: string; label: string };
+  /** Collage illustration in src/assets/art/, without the extension. */
+  art: string;
+  /** Full-bleed art is `cover`; cut-out objects sit padded on the paper (`contain`). */
+  artFit: 'cover' | 'contain';
 }
 
 export type Category = 'Leadership & Operations' | 'Lifecycle' | 'AI & Automation' | 'Web & Analytics';
@@ -33,15 +42,22 @@ export const CATEGORY_ORDER: readonly Category[] = [
 ];
 
 /**
- * Category → accent colour. Declared once here so the marker on a home page
- * card, a work index group and a case study header always agree. The values
- * are the CSS custom properties defined in src/styles/global.css.
+ * Category → the dot colour on a card, a filter chip and a case header.
+ * Declared once so the three always agree. Values are tokens in global.css.
  */
 export const CATEGORY_ACCENT: Record<Category, string> = {
-  Lifecycle: 'var(--coral)',
-  'AI & Automation': 'var(--moss)',
-  'Web & Analytics': 'var(--sun)',
-  'Leadership & Operations': 'var(--sky)',
+  Lifecycle: 'var(--blue)',
+  'AI & Automation': 'var(--green)',
+  'Web & Analytics': 'var(--amber)',
+  'Leadership & Operations': 'var(--red)',
+};
+
+/** The shorter name the work index's filter chips use. */
+export const CATEGORY_SHORT: Record<Category, string> = {
+  Lifecycle: 'Lifecycle',
+  'AI & Automation': 'AI & automation',
+  'Web & Analytics': 'Web & analytics',
+  'Leadership & Operations': 'Leadership',
 };
 
 export const PROJECTS: readonly Project[] = [
@@ -56,6 +72,11 @@ export const PROJECTS: readonly Project[] = [
       { from: '78%', to: '62%', label: '7-day drop-off' },
     ],
     category: 'Lifecycle',
+    summary:
+      'Emails performed; the post-click experience didn’t. I joined lifecycle, web and measurement into one journey with Product, Creative and Analytics.',
+    card: { value: '24% → 38%', label: 'Activation; 7-day drop-off 78% → 62%' },
+    art: '02-lifecycle-connected-journey',
+    artFit: 'cover',
   },
   {
     slug: 'winback',
@@ -65,6 +86,11 @@ export const PROJECTS: readonly Project[] = [
     tags: ['Lifecycle', 'Retention', 'Cross-sell'],
     metrics: [{ value: '~54K', label: 'activated or returned across two rounds' }],
     category: 'Lifecycle',
+    summary:
+      '~900K people had gone quiet on investing or never started. Splitting them by audience turned one campaign into four conversations.',
+    card: { value: '~54K', label: 'People activated or returned' },
+    art: '03-winback-four-paths',
+    artFit: 'cover',
   },
   {
     slug: 'behavioral-trigger-layer',
@@ -76,6 +102,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '~24%', label: 'funded-idle to first trade, where there was no path before' },
     ],
     category: 'Lifecycle',
+    summary:
+      'The lifecycle ran on days elapsed. I rebuilt it around real actions: connecting a bank, depositing, making a first trade.',
+    card: { value: '~24%', label: 'Funded, idle customers making a first trade' },
+    art: '08-never-miss-inquiry',
+    artFit: 'contain',
   },
   {
     slug: 'esp-migration',
@@ -88,6 +119,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '200K+', label: 'subscribers migrated' },
     ],
     category: 'Lifecycle',
+    summary:
+      'Falling opens traced back to a damaged shared IP. I moved 200K+ subscribers to healthier sending infrastructure.',
+    card: { value: '20s → 90+', label: 'Sender score; 200K+ subscribers migrated' },
+    art: '09-inbox-under-control',
+    artFit: 'contain',
   },
   {
     slug: 'dafabet-sfmc',
@@ -100,6 +136,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '+10–20%', label: '7-day reactivation' },
     ],
     category: 'Lifecycle',
+    summary:
+      'Twelve regulated markets, no connected lifecycle. I built six cross-channel journeys, from first bet to safer gambling.',
+    card: { value: '+8–15%', label: 'First-bet conversion; +10–20% 7-day reactivation' },
+    art: '10-social-on-autopilot',
+    artFit: 'contain',
   },
   {
     slug: 'agentic-ops',
@@ -112,6 +153,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '15+', label: 'workflows in production' },
     ],
     category: 'AI & Automation',
+    summary:
+      'Leadership wanted AI; teams needed a platform they could own. I set it up with DevOps, shipped the first workflows, and handed them to Ops.',
+    card: { value: '15+', label: 'Production workflows; ~30% better underwriter close rate' },
+    art: '05-self-hosted-n8n',
+    artFit: 'contain',
   },
   {
     slug: 'lead-enrichment',
@@ -121,6 +167,11 @@ export const PROJECTS: readonly Project[] = [
     tags: ['AI', 'RevOps', 'Lead enrichment'],
     metrics: [{ value: '~70%', label: 'lead data pre-populated' }],
     category: 'AI & Automation',
+    summary:
+      'Signups hit HubSpot with no context. My workflow researches each lead, fills the CRM, and alerts Sales to high-value ones.',
+    card: { value: '~70%', label: 'Of lead data ready before Sales opens it' },
+    art: '04-lead-enrichment',
+    artFit: 'cover',
   },
   {
     slug: 'compliance-workflow',
@@ -130,6 +181,11 @@ export const PROJECTS: readonly Project[] = [
     tags: ['AI', 'Quality assurance', 'Compliance'],
     metrics: [{ value: '−50%', label: 'review cycles: 4–5 rounds → 1–2' }],
     category: 'AI & Automation',
+    summary:
+      'The first validator missed what Compliance actually checks. I rebuilt it with the reviewers, so Marketing can check drafts themselves.',
+    card: { value: '4–5 → 1–2', label: 'Compliance review rounds per email' },
+    art: '11-client-intake-onboarding',
+    artFit: 'contain',
   },
   {
     slug: 'mogo-web',
@@ -142,6 +198,11 @@ export const PROJECTS: readonly Project[] = [
       { from: '~5%', to: '~14%', label: 'organic traffic share in 90 days' },
     ],
     category: 'Web & Analytics',
+    summary:
+      'Every page needed DevOps. I led the Webflow rebuild and moved web ownership into Marketing.',
+    card: { value: '+15%', label: 'Conversion from lifecycle traffic' },
+    art: '04-agencies',
+    artFit: 'contain',
   },
   {
     slug: 'dtc-newsletter',
@@ -154,6 +215,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '+27%', label: 'signups' },
     ],
     category: 'Web & Analytics',
+    summary:
+      'Great editorial, weak conversion. Three rebuilds reworked the CMS, site structure, SEO and signup journey.',
+    card: { value: '70% → 38%', label: 'Bounce rate; +27% organic newsletter signups' },
+    art: '01-automation-audit',
+    artFit: 'contain',
   },
   {
     slug: 'analytics-rebuild',
@@ -166,6 +232,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '~$18K', label: 'annual stack savings' },
     ],
     category: 'Web & Analytics',
+    summary:
+      'Years of undocumented tags made reports hard to trust. I rebuilt GA4 and GTM and set clear ownership.',
+    card: { value: '40% → 80%', label: 'Data accuracy; ~$18K/yr martech savings found' },
+    art: '06-automation-care',
+    artFit: 'contain',
   },
   {
     slug: 'sportserve-payments-division',
@@ -178,6 +249,11 @@ export const PROJECTS: readonly Project[] = [
       { value: '2x', label: 'campaign throughput' },
     ],
     category: 'Leadership & Operations',
+    summary:
+      'Payment launches crossed eight departments and twelve markets. I built the operating model and hired a five-person division to run it.',
+    card: { value: '0 → 5', label: 'Person team built; 2× launch throughput' },
+    art: '05-operations-launch-board',
+    artFit: 'cover',
   },
   {
     slug: 'craftconcepts',
@@ -190,5 +266,10 @@ export const PROJECTS: readonly Project[] = [
       { value: '26', label: 'businesses served' },
     ],
     category: 'Leadership & Operations',
+    summary:
+      'Small businesses needed to rebuild online after the pandemic; new marketers needed real work. I brought them together.',
+    card: { value: '26', label: 'Businesses supported; 3 → 20+ contributors at peak' },
+    art: '01-local-small-businesses',
+    artFit: 'contain',
   },
 ];

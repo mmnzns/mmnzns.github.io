@@ -1,290 +1,300 @@
 ---
 /**
- * The site's motion layer. One behaviour per thing, nothing decorative.
+ * The v19 motion vocabulary, shared by every page. Pages opt in with data
+ * attributes rather than scripts of their own:
  *
- *   1. Hero — its parts rise in sequence on load.
- *   2. Sections — one fade and rise as each crosses into view, once.
- *   3. Framed images — settle out of a slight scale-up with their section.
- *   4. Paragraph groups — `data-reveal-group` fades its paragraphs individually.
- *   5. Counters — `data-count` counts up when it first appears.
- *   6. Header — lifts off the page once you scroll.
- *   7. Footer wordmark — drifts slowly as the footer arrives.
+ *   data-hero      rises in on load, in document order (data-word adds a tilt)
+ *   data-rv        fades up when scrolled into view (data-delay in ms)
+ *   data-split     heading whose words slide up out of a mask
+ *   data-clip      a taped photo that drops in and settles to its own tilt
+ *   data-count     counts its last number up from zero
+ *   data-magnetic  drifts toward the pointer (fine pointers only)
  *
- * Everything here is an enhancement. The starting states are written by this
- * script and never by the stylesheet, so a browser that doesn't run it, or a
- * visitor who has asked for reduced motion, gets the finished page immediately.
- * The failsafe below covers the other direction: if the script runs but the
- * observer never reports back, everything is shown anyway rather than left
- * invisible. An animation that can hide content has to be able to give up.
+ * The rules that keep motion from hiding the site (see CLAUDE.md):
+ *
+ *  - Starting states are written here, in JavaScript, never in CSS. No
+ *    script, no hidden content.
+ *  - Reveals animate the individual `translate` / `rotate` properties, not
+ *    `transform`, so a card's own tilt (set in CSS) is never overwritten.
+ *  - A failsafe shows anything still pending at or above the fold after
+ *    2600ms, and again whenever the tab becomes visible — the conditions under
+ *    which observers and rAF quietly never fire. Content further down stays
+ *    armed for its scroll reveal.
  */
 ---
 
 <script>
-  const EASE = 'cubic-bezier(.16,.86,.34,1)';
-
-  /** If an element is still waiting this long after load, just show it. */
+  const EASE = 'cubic-bezier(.16,1,.3,1)';
   const FAILSAFE_MS = 2600;
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(pointer: fine)').matches;
   const canObserve = typeof IntersectionObserver === 'function';
 
-  if (!reduced && canObserve) {
-    /* ---------------------------------------------------------- helpers -- */
+  type Armed = HTMLElement & { _words?: HTMLElement[]; _count?: CountState };
+  interface CountState {
+    node: Text;
+    text: string;
+    pre: string;
+    post: string;
+    value: number;
+    decimals: number;
+  }
 
-    /** Elements hidden and still waiting to be revealed. */
-    const pending = new Set<HTMLElement>();
-    const done = new WeakSet<HTMLElement>();
+  const pending = new Set<Armed>();
 
-    function hide(el: HTMLElement, y: number, dim = 0) {
-      el.style.opacity = String(dim);
-      el.style.transform = `translate3d(0,${y}px,0)`;
-      el.style.willChange = 'opacity, transform';
-      pending.add(el);
+  /* Words are wrapped in a clipping span so each can rise out of its own line.
+     Elements inside the heading (an <em>) are walked, not flattened. */
+  function splitWords(el: Armed) {
+    if (el._words) return el._words;
+    const out: HTMLElement[] = [];
+    const walk = (node: Node) => {
+      for (const child of Array.from(node.childNodes)) {
+        if (child.nodeType === Node.TEXT_NODE) {
+          const text = (child.nodeValue ?? '').replace(/\s+/g, ' ');
+          if (!text.trim()) continue;
+          const frag = document.createDocumentFragment();
+          text.split(' ').forEach((word, i, all) => {
+            if (word) {
+              const mask = document.createElement('span');
+              mask.className = 'mz-word';
+              const inner = document.createElement('span');
+              inner.textContent = word;
+              mask.appendChild(inner);
+              frag.appendChild(mask);
+              out.push(inner);
+            }
+            if (i < all.length - 1) frag.appendChild(document.createTextNode(' '));
+          });
+          child.replaceWith(frag);
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          walk(child);
+        }
+      }
+    };
+    walk(el);
+    return (el._words = out);
+  }
+
+  function armCount(el: Armed) {
+    const node = Array.from(el.childNodes).find(
+      (n): n is Text => n.nodeType === Node.TEXT_NODE && /\d/.test(n.nodeValue ?? ''),
+    );
+    if (!node) return;
+    const text = node.nodeValue ?? '';
+    const matches = Array.from(text.matchAll(/\d+(?:\.\d+)?/g));
+    const last = matches[matches.length - 1];
+    if (!last || last.index === undefined) return;
+    el._count = {
+      node,
+      text,
+      pre: text.slice(0, last.index),
+      post: text.slice(last.index + last[0].length),
+      value: parseFloat(last[0]),
+      decimals: (last[0].split('.')[1] ?? '').length,
+    };
+    node.nodeValue = el._count.pre + (0).toFixed(el._count.decimals) + el._count.post;
+  }
+
+  function playCount(el: Armed, delay: number) {
+    const k = el._count;
+    if (!k) return;
+    const start = performance.now() + delay;
+    const step = (now: number) => {
+      const p = Math.min(1, Math.max(0, (now - start) / 1700));
+      const eased = 1 - Math.pow(1 - p, 4);
+      k.node.nodeValue = k.pre + (k.value * eased).toFixed(k.decimals) + k.post;
+      if (p < 1) requestAnimationFrame(step);
+      else k.node.nodeValue = k.text;
+    };
+    requestAnimationFrame(step);
+  }
+
+  function arm(el: Armed) {
+    if (el.hasAttribute('data-rv')) {
+      el.style.opacity = '0';
+      el.style.translate = '0 40px';
     }
+    if (el.hasAttribute('data-split')) {
+      for (const w of splitWords(el)) w.style.translate = '0 110%';
+    }
+    if (el.hasAttribute('data-clip')) {
+      el.style.opacity = '0';
+      el.style.translate = '0 50px';
+      el.style.rotate = '-6deg';
+    }
+    if (el.hasAttribute('data-count')) armCount(el);
+    pending.add(el);
+  }
 
-    function show(el: HTMLElement, duration: number, delay = 0) {
-      if (!pending.delete(el)) return;
-      el.style.transition =
-        `opacity ${duration}ms ${EASE} ${delay}ms, transform ${duration}ms ${EASE} ${delay}ms`;
-      el.style.opacity = '1';
-      el.style.transform = 'translate3d(0,0,0)';
-      // Hand the element back to the stylesheet once it has arrived, so nothing
-      // downstream inherits a stuck transform or an idle compositor layer.
+  /** Reveal. `instant` skips the animation — the failsafe and skipped-past path. */
+  function play(el: Armed, instant = false) {
+    if (!pending.delete(el)) return;
+    const d = instant ? 0 : Number(el.dataset.delay ?? 0);
+    const t = (ms: number) => (instant ? 'none' : `${ms}ms ${EASE} ${d}ms`);
+
+    if (el.hasAttribute('data-rv')) {
+      el.style.transition = instant ? '' : `opacity ${t(1000)}, translate ${t(1100)}`;
+      el.style.opacity = '';
+      el.style.translate = '';
+    }
+    if (el.hasAttribute('data-split')) {
+      (el._words ?? []).forEach((w, i) => {
+        w.style.transition = instant ? '' : `translate 1100ms ${EASE} ${d + i * 60}ms`;
+        w.style.translate = '';
+      });
+    }
+    if (el.hasAttribute('data-clip')) {
+      el.style.transition = instant ? '' : `opacity ${t(1000)}, translate ${t(1400)}, rotate ${t(1400)}`;
+      el.style.opacity = '';
+      el.style.translate = '';
+      el.style.rotate = '';
+    }
+    if (el.hasAttribute('data-count')) {
+      if (instant && el._count) el._count.node.nodeValue = el._count.text;
+      else playCount(el, d + 150);
+    }
+    if (!instant) {
+      // Hand the element back to its stylesheet once it has arrived.
       window.setTimeout(() => {
         el.style.transition = '';
-        el.style.transform = '';
-        el.style.willChange = '';
-      }, duration + delay + 80);
+      }, d + 1500);
     }
+  }
 
-    /** Show everything still waiting, with no animation. */
-    function flush() {
-      for (const el of [...pending]) {
-        pending.delete(el);
-        el.style.transition = '';
-        el.style.opacity = '1';
-        el.style.transform = '';
-        el.style.willChange = '';
-      }
-      for (const run of afterFlush) run();
-      afterFlush.length = 0;
-    }
-
-    const afterFlush: Array<() => void> = [];
-
-    /* An image in a clipped frame settles out of a slight scale-up. */
-    function armImage(scope: HTMLElement) {
-      const img = scope.querySelector('img');
-      const frame = img?.parentElement;
-      if (!img || !frame || getComputedStyle(frame).overflow !== 'hidden') return null;
-
-      img.style.transform = 'scale(1.06)';
-      img.style.willChange = 'transform';
-      return () => {
-        img.style.transition = `transform 1400ms ${EASE}`;
-        img.style.transform = 'none';
-        window.setTimeout(() => {
-          img.style.transition = '';
-          img.style.willChange = '';
-        }, 1500);
-      };
-    }
-
-    /* ------------------------------------------------- section reveals -- */
-
-    const settle = new WeakMap<HTMLElement, () => void>();
-
-    const sectionIO = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const el = entry.target as HTMLElement;
-          // Anything scrolled clean past in one jump — an anchor link, a flick
-          // scroll — is already behind the reader. Snap it visible instead.
-          const passed = !entry.isIntersecting && entry.boundingClientRect.bottom < 60;
-          if (!entry.isIntersecting && !passed) continue;
-          sectionIO.unobserve(el);
-          show(el, passed ? 0 : 760);
-          settle.get(el)?.();
-        }
-      },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.02 },
-    );
-
-    const main = document.querySelector('main') ?? document.body;
-    const sections = [...main.querySelectorAll<HTMLElement>(':scope > section, :scope > * > section')];
-    const viewport = window.innerHeight;
-    let heroDone = false;
-
-    for (const [index, section] of sections.entries()) {
-      if (done.has(section)) continue;
-      done.add(section);
-
-      // Paragraph groups run their own reveal; leave the section alone.
-      if (section.querySelector('[data-reveal-group]')) continue;
-
-      const aboveFold = section.getBoundingClientRect().top < viewport * 0.85;
-
-      // The hero doesn't wait for a scroll — its parts rise in sequence on load.
-      if (!heroDone && index === 0 && aboveFold) {
-        heroDone = true;
-        /* A row laid out as grid or flex is split into its children so they
-           arrive one after another. The stagger is capped, because six beats at
-           80ms already means 480ms before the last one starts moving.
-           
-           A row is only split if the whole of it fits inside what's left of that
-           cap. Splitting one across the boundary is what broke the work page:
-           its four category chips are a single flex row, the first three landed
-           inside the cap and the fourth fell outside, so "Leadership &
-           Operations" sat at full opacity from the start while its three
-           neighbours rose in beside it. A row arriving together is fine; half a
-           row arriving is a bug you can see. */
-        const MAX_PARTS = 6;
-        const parts: HTMLElement[] = [];
-
-        for (const child of [...section.children] as HTMLElement[]) {
-          if (parts.length >= MAX_PARTS) break;
-          const display = getComputedStyle(child).display;
-          const row =
-            child.children.length > 1 && (display === 'grid' || display === 'flex')
-              ? ([...child.children] as HTMLElement[])
-              : [child];
-          parts.push(...(parts.length + row.length <= MAX_PARTS ? row : [child]));
-        }
-
-        const arrive = armImage(section);
-        for (const part of parts) hide(part, 15);
-        requestAnimationFrame(() => {
-          parts.forEach((part, i) => show(part, 720, 70 + i * 80));
-          arrive?.();
+  function hero() {
+    const parts = Array.from(document.querySelectorAll<HTMLElement>('[data-hero]'));
+    parts.forEach((p) => {
+      p.style.opacity = '0';
+      p.style.translate = p.hasAttribute('data-word') ? '0 40px' : '0 28px';
+      if (p.hasAttribute('data-word')) p.style.rotate = '-5deg';
+    });
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        parts.forEach((p, i) => {
+          const d = 160 + i * 110;
+          p.style.transition = `opacity 1s ${EASE} ${d}ms, translate 1.2s ${EASE} ${d}ms, rotate 1.2s ${EASE} ${d}ms`;
+          p.style.opacity = '';
+          p.style.translate = '';
+          p.style.rotate = '';
+          window.setTimeout(() => (p.style.transition = ''), d + 1300);
         });
-        continue;
-      }
+      }),
+    );
+    // Same guarantee as the scroll reveals: a stalled rAF can't leave the hero blank.
+    window.setTimeout(() => {
+      parts.forEach((p) => {
+        if (p.style.opacity === '0') {
+          p.style.transition = '';
+          p.style.opacity = '';
+          p.style.translate = '';
+          p.style.rotate = '';
+        }
+      });
+    }, FAILSAFE_MS);
+  }
 
-      // Already on screen: no reveal to run, but the image still settles.
-      if (aboveFold) {
-        armImage(section)?.();
-        continue;
-      }
-
-      const arrive = armImage(section);
-      if (arrive) settle.set(section, arrive);
-      hide(section, 22);
-      sectionIO.observe(section);
+  /** Show whatever is pending at or above the bottom of the viewport. */
+  function flushVisible() {
+    const limit = window.innerHeight;
+    for (const el of [...pending]) {
+      if (el.getBoundingClientRect().top < limit) play(el, true);
     }
+  }
 
-    /* ----------------------------------------- per-paragraph reveals -- */
-
-    const paragraphIO = new IntersectionObserver(
+  if (!reduced && canObserve) {
+    const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          paragraphIO.unobserve(entry.target);
-          show(entry.target as HTMLElement, 500);
+          const el = entry.target as Armed;
+          // Jumped clean past (an anchor link, a flick): already behind the reader.
+          const passed = !entry.isIntersecting && entry.boundingClientRect.bottom < 0;
+          if (!entry.isIntersecting && !passed) continue;
+          io.unobserve(el);
+          play(el, passed);
         }
       },
-      { rootMargin: '-10% 0px -20%' },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.05 },
     );
 
-    for (const group of document.querySelectorAll<HTMLElement>('[data-reveal-group]')) {
-      for (const paragraph of group.querySelectorAll<HTMLElement>('p')) {
-        // Dimmed rather than invisible: the words are still readable while the
-        // reveal is pending, which keeps the page usable if it never arrives.
-        hide(paragraph, 10, 0.32);
-        paragraphIO.observe(paragraph);
-      }
-    }
+    const scan = (root: ParentNode = document) => {
+      root
+        .querySelectorAll<Armed>('[data-rv],[data-split],[data-clip],[data-count]')
+        .forEach((el) => {
+          if (pending.has(el) || el.dataset.mzArmed) return;
+          el.dataset.mzArmed = '1';
+          arm(el);
+          io.observe(el);
+        });
+    };
 
-    /* ------------------------------------------------------- counters -- */
+    hero();
+    scan();
+    // Pages that render new cards (filters, "show more") ask for another pass.
+    document.addEventListener('mz:scan', () => scan());
 
-    const counters = document.querySelectorAll<HTMLElement>('[data-count]');
-
-    if (counters.length) {
-      const countIO = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (!entry.isIntersecting) continue;
-            countIO.unobserve(entry.target);
-            countUp(entry.target as HTMLElement);
-          }
-        },
-        { threshold: 0.4 },
-      );
-      for (const counter of counters) countIO.observe(counter);
-    }
-
-    function countUp(el: HTMLElement) {
-      const target = Number(el.dataset.count);
-      if (!Number.isFinite(target)) return;
-      const suffix = el.dataset.suffix ?? '';
-      const started = performance.now();
-      const duration = 900;
-
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - started) / duration);
-        const eased = 1 - (1 - progress) ** 3;
-        el.textContent = Math.round(target * eased) + suffix;
-        if (progress < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }
-
-    /* -------------------------------------------------------- failsafe -- */
-
-    // Two ways this fires. Either the observer never reported back within a
-    // couple of seconds, or the tab was hidden while the page loaded — in which
-    // case nothing intersected and every entry is still queued.
-    window.setTimeout(flush, FAILSAFE_MS);
+    window.setTimeout(flushVisible, FAILSAFE_MS);
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && pending.size) flush();
+      if (document.visibilityState === 'visible') flushVisible();
     });
   }
 
-  /* ------------------------------------------- scroll-linked pieces -- */
-  // These run regardless of the reduced-motion setting: the header shadow is a
-  // depth cue rather than an animation, and the wordmark's drift is bounded by
-  // the same media query in the stylesheet.
-
-  const header = document.querySelector<HTMLElement>('.header');
-  const wordmark = document.querySelector<HTMLElement>('[data-wordmark]');
-  const wordmarkFrame = wordmark?.closest('footer');
-  const progressBar = document.querySelector<HTMLElement>('[data-reading-progress]');
-
-  if (header || wordmark || progressBar) {
-    let ticking = false;
-
+  /* ------------------------------------------------------------ magnetics */
+  if (!reduced && fine) {
+    let magnets = Array.from(document.querySelectorAll<HTMLElement & { _mx?: number; _my?: number }>('[data-magnetic]'));
+    document.addEventListener('mz:scan', () => {
+      magnets = Array.from(document.querySelectorAll('[data-magnetic]'));
+    });
+    let px = -999;
+    let py = -999;
+    let queued = false;
     const frame = () => {
-      ticking = false;
-
-      if (header) header.classList.toggle('header--lifted', window.scrollY > 10);
-
-      if (progressBar) {
-        const doc = document.documentElement;
-        const scrollable = doc.scrollHeight - doc.clientHeight;
-        const pct = scrollable > 0 ? Math.min(100, (doc.scrollTop / scrollable) * 100) : 0;
-        progressBar.style.width = `${pct.toFixed(1)}%`;
-      }
-
-      // Driven by the footer's entry, not the wordmark's own box — the wordmark
-      // only ever reaches the bottom sliver of the viewport, so its own
-      // position would barely move. The range brackets the resting offset so
-      // the crop still looks deliberate when you stop scrolling.
-      if (wordmark && wordmarkFrame && !reduced) {
-        const box = wordmarkFrame.getBoundingClientRect();
-        if (box.top <= window.innerHeight && box.bottom >= 0) {
-          const t = Math.min(1, Math.max(0, (window.innerHeight - box.top) / (window.innerHeight * 0.5 + box.height)));
-          wordmark.style.transform = `translateY(${(21 - 13 * t).toFixed(2)}%)`;
+      queued = false;
+      for (const m of magnets) {
+        const r = m.getBoundingClientRect();
+        const ox = m._mx ?? 0;
+        const oy = m._my ?? 0;
+        const dx = px - (r.left - ox + r.width / 2);
+        const dy = py - (r.top - oy + r.height / 2);
+        if (Math.abs(dx) < r.width / 2 + 40 && Math.abs(dy) < r.height / 2 + 40) {
+          m._mx = dx * 0.2;
+          m._my = dy * 0.3;
+          m.style.translate = `${m._mx.toFixed(1)}px ${m._my.toFixed(1)}px`;
+        } else if (m._mx || m._my) {
+          m._mx = 0;
+          m._my = 0;
+          m.style.translate = '';
         }
       }
     };
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(frame);
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    frame();
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        px = e.clientX;
+        py = e.clientY;
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(frame);
+        }
+      },
+      { passive: true },
+    );
   }
 </script>
+
+<style is:global>
+  /* The mask each split word rises out of. Padding keeps descenders and the
+     italic overhang inside it. */
+  .mz-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+    padding-right: 0.12em;
+    margin-right: -0.12em;
+  }
+  .mz-word > span {
+    display: inline-block;
+  }
+</style>

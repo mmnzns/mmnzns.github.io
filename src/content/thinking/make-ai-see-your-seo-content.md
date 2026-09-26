@@ -3,7 +3,9 @@ title: "Your SEO Content Already Works. Here's How to Make AI See It Too."
 shortTitle: "Your SEO content already works. Make AI see it too."
 date: 2026-02-14
 tag: "Search"
-excerpt: "Why AI ignores high-ranking content: it is not structured for extraction. Zero-click search, LLM behaviour, and a six-step retrofit that makes pages citation-worthy."
+excerpt: "Why AI ignores high-ranking content: it isn’t structured for extraction. Zero-click search, LLM behaviour, and a six-step retrofit that makes pages citation-worthy."
+dek: "Why AI skips high-ranking pages, and a six-step retrofit to make yours citation-worthy."
+image: "../../assets/art/07-ai-visible-content.webp"
 ---
 To optimize content for AI search, you don't need to rewrite it. You need to retrofit it. Most pages fail to get cited by AI systems, not because the content is weak, but because the structure isn't built for extraction. AI models chunk pages into sections and evaluate each one independently. If your answers are buried, your headings are vague, or your schema is missing, the model moves on regardless of how good your content actually is.
 
@@ -195,15 +197,11 @@ Start with five pages this week. Open Search Console, identify your highest-impr
 
 Open Search Console. Find the pages with the highest impressions. Then for each one:
 
-Rewrite headings as questions people actually ask
-
-Add a 40 to 60-word answer block at the top of each section
-
-Implement FAQ or Article schema
-
-Add a visible "Last Updated" date
-
-Check internal links to related content and fill any gaps
+- Rewrite headings as questions people actually ask
+- Add a 40 to 60-word answer block at the top of each section
+- Implement FAQ or Article schema
+- Add a visible "Last Updated" date
+- Check internal links to related content and fill any gaps
 
 Five pages. A few hours of work per page. Measure over the next 30 to 60 days. Watch for changes in AI Overview inclusion, branded search volume, and referral traffic from AI platforms.
 

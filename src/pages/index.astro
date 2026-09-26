@@ -1,1679 +1,2265 @@
 ---
-import { getCollection } from 'astro:content';
+/**
+ * Home — the v19 export's `Monzones-D-Home-V4`.
+ *
+ * Departures from the export, each for a reason:
+ *
+ *  - The chat at the bottom POSTs to Formspree like every form on the site
+ *    rather than building a mailto: link, so it works on devices with no mail
+ *    app. Its "sent" bubble says the message arrived instead of "your email
+ *    app should now be open". Without JavaScript the form simply shows under
+ *    the suggested replies and posts normally.
+ *  - "How I think about it" lists the three newest posts from the collection,
+ *    not a hand-picked three, so a new article appears here on its own.
+ *  - The export writes its layout breakpoints in JavaScript (matchMedia into
+ *    state). They are media queries here, so the first paint is already right.
+ */
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LogoMarquee from '../components/LogoMarquee.astro';
-import CaseDiagram from '../components/CaseDiagram.astro';
-import ContactSection from '../components/ContactSection.astro';
-import portrait from '../assets/miguel.png';
-import { SYMPTOMS, FEATURED_CASES, METHOD, RECEIPTS } from '../data/home';
-import { CATEGORY_ACCENT } from '../data/site';
+import { SITE, CONTACT, FORM_ENDPOINT, STUDIO } from '../config';
+import { PROJECTS } from '../data/site';
+import { LEDGER, TEAMS, SYMPTOMS, HOME_CASES, STEPS, TOPICS } from '../data/home';
+import { art } from '../data/art';
 import { tagAccent } from '../data/writing';
-import { formatDate, readingTime } from '../utils/format';
+import { getPosts, postHref } from '../utils/posts';
+import portrait from '../assets/art/12-miguel-editorial-portrait.webp';
+import telephone from '../assets/art/vintage-telephone.webp';
+import tapeYellow from '../assets/brand/tape-yellow.webp';
+import tapeBlue from '../assets/brand/tape-blue.webp';
+import tapePaper from '../assets/brand/tape-paper-white.webp';
+import aboutPoster from '../assets/brand/about-poster.webp';
+import ccdCream from '../assets/brand/ccd-logo-cream.png';
+import miguel from '../assets/brand/miguel.webp';
 
-const posts = (await getCollection('thinking', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+const posts = (await getPosts()).slice(0, 3);
+const project = (slug: string) => {
+  const p = PROJECTS.find((x) => x.slug === slug);
+  if (!p) throw new Error(`Home links to unknown case "${slug}".`);
+  return p;
+};
 
-/* The card grid runs six to a page; the chips filter it. Both are enhancements
-   on top of a server-rendered first page. */
-const PER_PAGE = 6;
-const CHIPS = ['All', 'Lifecycle', 'AI & automation', 'Search', 'Positioning'] as const;
-
-const cardData = posts.map((post) => ({
-  slug: post.id,
-  tag: post.data.tag,
-  title: post.data.shortTitle ?? post.data.title,
-  meta: `${formatDate(post.data.date)} · ${readingTime(post.body ?? '')} min read`,
-}));
-
-/* The hero's four service slabs — the same four accents the categories use,
-   but named as disciplines rather than archive groups, and paired differently:
-   sky is Automation here where CATEGORY_ACCENT gives it Leadership & Operations.
-   The site card in scripts/build-og-image.mjs mirrors this row, so the two are
-   read side by side whenever someone shares a link — change both or neither.
-
-   "Web Operations" rather than "Operations": the general kind is already part of
-   every other slab, so naming it alone claims something broader than the work. */
-const SLABS = [
-  { name: 'Lifecycle', accent: 'var(--coral)' },
-  { name: 'GTM', accent: 'var(--sun)' },
-  { name: 'Automation', accent: 'var(--sky)' },
-  { name: 'Web Operations', accent: 'var(--moss)' },
-] as const;
-
-/* Career-wide figures. Each one exists elsewhere on the site — the years in
-   the site description, the markets and users in the About page's totals, the
-   activation lift in the Mogo case — so nothing here is claimed only once. */
-const HERO_STATS = [
-  { value: '12', label: 'Years building growth systems', accent: 'var(--coral)' },
-  { value: '14', label: 'Markets shipped into worldwide', accent: 'var(--sun)' },
-  { value: '24 → 38%', label: 'Activation lift in two months', accent: 'var(--sky)' },
-  { value: '1.5M+', label: 'Users managed across lifecycles', accent: 'var(--moss)' },
-] as const;
-
-/* The design opens the numbers band on Retention rather than the first tab. */
-const DEFAULT_RECEIPT = 1;
+const NOTE_TILT = ['-1.4deg', '1.1deg', '0.8deg', '-1deg'];
+const NOTE_TAPE = [
+  ['18%', '-6deg'],
+  ['58%', '5deg'],
+  ['40%', '-3deg'],
+  ['22%', '7deg'],
+];
+const pad = (n: number) => String(n).padStart(2, '0');
+const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
+const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\//, '').replace(/\/$/, '');
 ---
 
-<BaseLayout footerFlush>
+<BaseLayout current="Home" overlay>
   {/* ------------------------------------------------------------- hero -- */}
-  <section class="section--first wrap--home" id="top">
-    <div class="kicker">
-      <span class="eyebrow">Vancouver, BC</span>
-      <span class="kicker__rule" aria-hidden="true"></span>
-      <span class="kicker__avail eyebrow"
-        ><span class="kicker__dot" aria-hidden="true"></span>Available</span
-      >
-    </div>
-
-    <h1 class="display hero__line">Hi, I’m Miguel.</h1>
-
-    <div class="hero__rule" aria-hidden="true"></div>
-
-    <div class="slabs">
-      {
-        SLABS.map((slab) => (
-          <span class="slabs__item">
-            <span class="slabs__mark" style={`background:${slab.accent}`} aria-hidden="true" />
-            {slab.name}
-          </span>
-        ))
-      }
-    </div>
-
-    <div class="statgrid">
-      {
-        HERO_STATS.map((stat) => (
-          <div class="card statcard">
-            <span class="statcard__mark" style={`background:${stat.accent}`} aria-hidden="true" />
-            <span class="statcard__value">{stat.value}</span>
-            <span class="statcard__label">{stat.label}</span>
-          </div>
-        ))
-      }
-    </div>
-
-    <div class="split">
-      <div>
-        <p class="split__tagline">
-          I work across lifecycle, GTM, and automation, usually where the problem is a little
-          upstream from the obvious one.
+  <section class="hero" id="top">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="mz-kicker hero__kicker" data-hero>
+          <span>{SITE.role}</span><span class="mz-muted">{SITE.location}</span>
         </p>
-
-        <div class="split__id">
-          <div class="split__photo">
-            {/*
-              The source is 1024x1536. Keep the ratio and let `object-fit:
-              cover` with `object-position` do the cropping, exactly as the
-              design does — resizing to a square first would squash the face.
-            */}
-            <Image
-              src={portrait}
-              alt="Miguel Monzones"
-              width={336}
-              height={504}
-              loading="eager"
-              fetchpriority="high"
-            />
-          </div>
-          <div class="split__status">
-            <span class="eyebrow eyebrow--muted">Status</span>
-            <p>Consulting, and open to the right senior role.</p>
-          </div>
+        <h1 class="hero__h1">
+          <span data-hero>The problem</span>
+          <span data-hero class="hero__h1-grot">is usually</span>
+          <span data-hero data-word><span class="mz-swatch hero__swatch">upstream.</span></span>
+        </h1>
+        <p class="hero__lede" data-hero>
+          I'm Miguel. When growth stalls between marketing, product and systems, teams hand me the
+          problem. I find the real break and own the fix until the numbers move.
+        </p>
+        <div class="hero__ctas" data-hero>
+          <a href="#work" class="mz-btn mz-btn--solid" data-magnetic>See the work <span aria-hidden="true">↓</span></a>
+          <a href="#contact" class="mz-btn mz-btn--ghost" data-magnetic>Let's talk <span aria-hidden="true">→</span></a>
         </div>
+        <p class="hero__status" data-hero>
+          <span class="hero__dot" aria-hidden="true"></span>
+          <span>{SITE.availability}<span class="hero__caret" aria-hidden="true"></span></span>
+        </p>
       </div>
 
-      <div class="split__intro" data-reveal-group>
-        <p>
-          I’ve spent the last twelve years helping teams understand why customers stall, drop off,
-          or walk away, and building the systems that help them move forward.
-        </p>
-        <p>
-          Most of my work starts before anything gets built. A number is heading the wrong way, a
-          customer journey feels off, or a team is spending too much time holding a process
-          together. I talk to the people closest to it, follow the experience from end to end, and
-          work out what’s getting in the way.
-        </p>
-        <p>
-          Sometimes the answer is in the message. Often it’s in what happens after the click, the
-          data behind the journey, or the way the systems connect.
-        </p>
-        <p>
-          Lately, much of that work has involved automation: building lifecycle systems that
-          respond to what people actually do, stay reliable in production, and are
-          straightforward for teams to own.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  {/* ------------------------------------------- 01 · the symptom card -- */}
-  <section class="band band--coral symptom-band">
-    <div class="wrap--home">
-      <h2 class="symptom-band__title">What that looks like in practice</h2>
-
-      <div class="card card--raised symptom" data-symptom>
-        <div class="symptom__body">
-          <p class="eyebrow eyebrow--muted symptom__label" data-symptom-label>
-            What we were seeing
-          </p>
-          <p class="symptom__text" data-symptom-text>{SYMPTOMS[0].ask}</p>
-        </div>
-
-        <div class="symptom__controls">
-          <button type="button" class="btn" data-symptom-flip aria-pressed="false">
-            Look underneath
-          </button>
-          <button type="button" class="btn btn--ghost" data-symptom-next>Show me another</button>
-          <p class="symptom__count" data-symptom-count>1 / {SYMPTOMS.length}</p>
+      <div class="hero__photo" data-hero>
+        <div class="hero__frame" data-tilt>
+          <div class="hero__paper">
+            <div class="hero__img">
+              <Image
+                src={portrait}
+                alt="Miguel Monzones, editorial portrait"
+                widths={[480, 720, 1040]}
+                sizes="(max-width: 900px) 92vw, 520px"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
+            <p class="hero__caption"><span>Fig. 1 — Miguel Monzones</span><span>Vancouver</span></p>
+          </div>
+          <Image src={tapeYellow} alt="" aria-hidden="true" width={140} densities={[1, 2]} class="mz-tape hero__tape" />
         </div>
       </div>
     </div>
   </section>
 
-  <script is:inline define:vars={{ SYMPTOMS }}>
-    // Inlined so the copy is available without a second request. The card
-    // renders its first state server-side, so this only ever changes it.
-    (() => {
-      const root = document.querySelector('[data-symptom]');
-      if (!root) return;
-
-      const label = root.querySelector('[data-symptom-label]');
-      const text = root.querySelector('[data-symptom-text]');
-      const flip = root.querySelector('[data-symptom-flip]');
-      const next = root.querySelector('[data-symptom-next]');
-      const count = root.querySelector('[data-symptom-count]');
-
-      let index = 0;
-      let flipped = false;
-
-      function render() {
-        const item = SYMPTOMS[index];
-        label.textContent = flipped ? 'What was happening underneath' : 'What we were seeing';
-        text.textContent = flipped ? item.found : item.ask;
-        // The flipped answer is prose, not a headline, so it renders at body
-        // size rather than the front's larger, tighter-set question.
-        root.dataset.flipped = String(flipped);
-        flip.textContent = flipped ? '← Back to the start' : 'Look underneath';
-        flip.setAttribute('aria-pressed', String(flipped));
-        count.textContent = `${index + 1} / ${SYMPTOMS.length}`;
-      }
-
-      flip.addEventListener('click', () => {
-        flipped = !flipped;
-        render();
-      });
-
-      next.addEventListener('click', () => {
-        index = (index + 1) % SYMPTOMS.length;
-        flipped = false;
-        render();
-      });
-    })();
-  </script>
-
-  <LogoMarquee />
-
-  {/* -------------------------------------------------------- 02 · work -- */}
-  <section class="section" id="work">
-    <div class="wrap--home">
-      <h2 class="work__title">A few things I’ve helped build.</h2>
-
-      <div class="work__head">
-        <p class="lede work__sub">
-          Each one started with a business problem. The useful part was understanding what sat
-          underneath it, then working with the people closest to the problem to build something
-          better.
-        </p>
-
-        <div class="segmented" role="group" aria-label="Layout">
-          <button type="button" class="segmented__btn" data-view="shelf" aria-pressed="true">
-            Shelf
-          </button>
-          <button type="button" class="segmented__btn" data-view="grid" aria-pressed="false">
-            Grid
-          </button>
-        </div>
-      </div>
-    </div>
-
-    {/* Shelf: one case open, the rest collapsed to spines beside it. */}
-    <div class="shelf" data-view-panel="shelf">
-      {
-        FEATURED_CASES.map((item, i) => (
-          <article class="card card--raised shelf__case" data-case-panel={i} hidden={i !== 0}>
-            <div class="shelf__visual">
-              <CaseDiagram slug={item.slug} />
-            </div>
-
-            <div class="shelf__text">
-              <p class="label-row">
-                <span class="accent-bar" style={`--bar:${CATEGORY_ACCENT[item.category]}`} />
-                <span class="eyebrow">{item.client}</span>
-              </p>
-
-              <h3 class="shelf__title">
-                <a href={`/work/${item.slug}/`}>{item.title}</a>
-              </h3>
-
-              <div class="segmented" role="group" aria-label="Which part of the story">
-                <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
-                  Starting point
-                </button>
-                <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
-                  What we learned
-                </button>
-              </div>
-
-              <div class="shelf__copy" data-copy="ask">
-                {item.brief.map((para) => (
-                  <p>{para}</p>
-                ))}
-              </div>
-              <div class="shelf__copy" data-copy="found" hidden>
-                {item.read.map((para) => (
-                  <p>{para}</p>
-                ))}
-              </div>
-
-              <p class="shelf__metric">
-                <span class="shelf__metric-value">{item.metric}</span>
-                <span class="shelf__metric-note">{item.note}</span>
-              </p>
-            </div>
-          </article>
-        ))
-      }
-
-      <div class="shelf__spines">
+  {/* ------------------------------------------------------------ ledger -- */}
+  <section class="ledger" aria-label="By the numbers">
+    <div class="mz-max">
+      <p class="ledger__head mz-double" data-rv>
+        <span>The record, in four figures</span>
+        <span class="mz-muted">Every number links to the work behind it</span>
+      </p>
+      <div class="ledger__grid">
         {
-          FEATURED_CASES.map((item, i) => (
-            <button
-              type="button"
-              class="shelf__spine"
-              data-spine={i}
-              hidden={i === 0}
-              style={`--bar:${CATEGORY_ACCENT[item.category]}`}
-              title={item.client}
-            >
-              <span>{item.title}</span>
-            </button>
+          LEDGER.map((n, i) => (
+            <a class="ledger__cell" href={n.href} data-rv data-delay={i * 90}>
+              <span class="ledger__fig">{n.fig}</span>
+              <span class="ledger__value" data-count>{n.value}</span>
+              <span class="ledger__label">{n.label}</span>
+              <span class="ledger__cta">
+                {n.cta} <span aria-hidden="true">→</span>
+              </span>
+            </a>
           ))
         }
       </div>
     </div>
+  </section>
 
-    {/* Grid: all four at once, for anyone who'd rather scan than click. */}
-    <div class="wrap--home grid-view" data-view-panel="grid" hidden>
+  {/* ------------------------------------------------------------- teams -- */}
+  <section class="teams" id="teams">
+    <p class="mz-kicker" data-rv>
+      <span>01 / Teams I've built with</span>
+      <span class="mz-muted teams__hint">hover a name</span>
+    </p>
+    <div class="teams__grid" data-rv data-delay="100">
       {
-        FEATURED_CASES.map((item) => (
-          <article class="card grid-view__card">
-            <p class="label-row">
-              <span class="accent-bar" style={`--bar:${CATEGORY_ACCENT[item.category]}`} />
-              <span class="eyebrow">{item.client}</span>
-            </p>
-
-            <h3 class="grid-view__title">
-              <a href={`/work/${item.slug}/`}>{item.title}</a>
-            </h3>
-
-            <div class="segmented" role="group" aria-label="Which part of the story">
-              <button type="button" class="segmented__btn" data-mode="ask" aria-pressed="true">
-                Starting point
-              </button>
-              <button type="button" class="segmented__btn" data-mode="found" aria-pressed="false">
-                What we learned
-              </button>
-            </div>
-
-            <div class="grid-view__copy" data-copy="ask">
-              {item.brief.map((para) => (
-                <p>{para}</p>
-              ))}
-            </div>
-            <div class="grid-view__copy" data-copy="found" hidden>
-              {item.read.map((para) => (
-                <p>{para}</p>
-              ))}
-            </div>
-
-            <p class="shelf__metric">
-              <span class="grid-view__metric-value">{item.metric}</span>
-              <span class="shelf__metric-note">{item.note}</span>
-            </p>
-          </article>
+        TEAMS.map((t, i) => (
+          <a class="teams__cell" href="/work/" data-team>
+            <span class="teams__meta">
+              <span>{pad(i + 1)}</span>
+              <span class="teams__kind">{t.kind}</span>
+            </span>
+            <span class="teams__row">
+              <Image src={t.logo} alt="" width={120} height={72} class="teams__thumb" data-team-img loading="lazy" />
+              <span class="teams__name">{t.name}</span>
+            </span>
+          </a>
         ))
       }
     </div>
   </section>
 
-  {/* ------------------------------------------------------ 03 · method -- */}
-  <section class="band band--sun method-band" id="method">
-    <div class="wrap--home">
-      <div class="method">
-        <div class="method__intro">
-          <span class="eyebrow">How I work</span>
-          <h2 class="method__title">Understand first. Then build.</h2>
-          <p class="method__sub">
-            The problems change, but the rhythm is usually the same: listen to the people closest
-            to the work, trace what’s happening, agree on what success looks like, build, and learn
-            from the result.
-          </p>
-        </div>
-
-        <div class="method__panel" data-method>
-          <div class="method__tabs" role="tablist" aria-label="Method steps">
-            {
-              METHOD.map((step, i) => (
-                <button
-                  type="button"
-                  role="tab"
-                  class="method__tab"
-                  id={`method-tab-${i}`}
-                  aria-controls={`method-panel-${i}`}
-                  aria-selected={i === 0 ? 'true' : 'false'}
-                  tabindex={i === 0 ? 0 : -1}
-                  data-step={i}
-                >
-                  <span class="method__num">0{i + 1}</span>
-                  {step.name}
-                </button>
-              ))
-            }
-            <span
-              class="method__indicator"
-              aria-hidden="true"
-              style={`width:${100 / METHOD.length}%`}
-              data-method-indicator></span>
-          </div>
-
-          <div class="card card--raised method__body">
-            {
-              METHOD.map((step, i) => (
-                <div
-                  role="tabpanel"
-                  id={`method-panel-${i}`}
-                  aria-labelledby={`method-tab-${i}`}
-                  data-step-panel={i}
-                  hidden={i !== 0}
-                >
-                  <p class="eyebrow eyebrow--muted method__source">{step.source}</p>
-                  <p class="method__example">{step.example}</p>
-                </div>
-              ))
-            }
+  {/* ---------------------------------------------------- look underneath -- */}
+  <section class="under" id="upstream">
+    <div class="mz-wrap">
+      <p class="mz-kicker mz-kicker--dark" data-rv>
+        <span>02 / Look underneath</span>
+        <span class="under__hint"><span class="only-hover">Hover a note to look underneath</span><span class="only-tap">Tap a note to look underneath</span></span>
+      </p>
+      <div class="under__intro">
+        <h2 class="mz-h2 under__h2" data-split>What I get asked, and what was <em>really</em> going on.</h2>
+        <div class="under__clip" data-clip>
+          <div class="under__paper">
+            <div class="under__img">
+              <Image
+                src={art('01-look-underneath')}
+                alt="A sheet of paper peeling back to reveal a network of systems beneath"
+                widths={[480, 720, 1120]}
+                sizes="(max-width: 900px) 92vw, 560px"
+              />
+            </div>
           </div>
         </div>
+      </div>
+      <div class="under__notes">
+        {
+          SYMPTOMS.map((q, i) => (
+            <div class="note" data-rv data-delay={i * 80} style={`--tilt:${NOTE_TILT[i]}`}>
+              <button type="button" class="note__card" aria-pressed="false" data-note>
+                <span class="note__front">
+                  <span class="note__label">What I heard · {pad(i + 1)}</span>
+                  <span class="note__heard">{q.heard}</span>
+                  <span class="note__cue" aria-hidden="true">
+                    <span class="only-hover">Hover to look underneath</span>
+                    <span class="only-tap">Tap to look underneath</span>
+                  </span>
+                </span>
+                <span class="note__back">
+                  <span class="note__label">What was underneath · {pad(i + 1)}</span>
+                  <span class="note__under">{q.under}</span>
+                </span>
+              </button>
+              <Image
+                src={tapePaper}
+                alt=""
+                aria-hidden="true"
+                width={110}
+                densities={[1, 2]}
+                class="note__tape"
+                style={`left:${NOTE_TAPE[i][0]};rotate:${NOTE_TAPE[i][1]}`}
+              />
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  {/* -------------------------------------------------- 04 · receipts -- */}
-  <section class="band receipts" id="numbers">
-    <div class="wrap--home">
-      <h2 class="receipts__title">A few numbers, and the work behind them.</h2>
+  {/* -------------------------------------------------------------- work -- */}
+  <section class="work" id="work">
+    <div class="mz-wrap">
+      <p class="mz-kicker" data-rv>
+        <span>03 / Selected work</span><span class="mz-muted">drag or use the arrows</span>
+      </p>
+      <div class="work__top">
+        <h2 class="mz-h2 work__h2" data-split>A few problems I've owned end to end.</h2>
+        <div class="work__controls" data-rv>
+          <a class="mz-more" href="/work/">All the work <span aria-hidden="true">→</span></a>
+          <span class="work__arrows">
+            <button type="button" class="work__arrow" aria-label="Previous case" data-track-prev>←</button>
+            <button type="button" class="work__arrow" aria-label="Next case" data-track-next>→</button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="track" data-track data-rv data-delay="120">
+      {
+        HOME_CASES.map((c, i) => {
+          const p = project(c.slug);
+          return (
+            <a class="tcard" href={`/work/${c.slug}/`} draggable="false" data-cursor="Read the case" style={`--tilt:${NOTE_TILT[(i + 1) % 4]}`}>
+              <span class="tcard__img">
+                <Image src={art(p.art)} alt="" widths={[440, 660, 880]} sizes="(max-width: 900px) 300px, 440px" draggable="false" />
+              </span>
+              <span class="tcard__body">
+                <span class="tcard__meta">
+                  <span>{c.client}</span>
+                  <span>{pad(i + 1)}</span>
+                </span>
+                <span class="tcard__metric">{c.metric}</span>
+                <span class="tcard__title">{c.title}</span>
+                <span class="tcard__note">{c.note}</span>
+                <span class="mz-cta tcard__cta">
+                  Read the case <span aria-hidden="true">→</span>
+                </span>
+              </span>
+            </a>
+          );
+        })
+      }
+      <span class="track__end" aria-hidden="true"></span>
+    </div>
+  </section>
 
-      <div class="receipts__head">
-        <p class="receipts__sub">The result matters. So does the context that explains why it moved.</p>
-
-        <div class="receipts__tabs" role="tablist" aria-label="Numbers">
+  {/* ------------------------------------------------------------ method -- */}
+  <section class="method" id="method" data-steps>
+    <div class="method__grid">
+      <div class="method__visual">
+        <div class="method__clip" data-clip>
+          <div class="method__paper">
+            <div class="method__img">
+              {
+                STEPS.map((s, i) => (
+                  <Image
+                    src={art(s.art)}
+                    alt={s.alt}
+                    widths={[480, 720, 1040]}
+                    sizes="(max-width: 900px) 92vw, 620px"
+                    class:list={['method__shot', i === 0 && 'is-on']}
+                    data-step-img={i}
+                  />
+                ))
+              }
+            </div>
+            <p class="method__caption">
+              <span>Fig. <span data-step-fig>2</span> — <span data-step-cap>{STEPS[0].caption}</span></span>
+              <span><span data-step-idx>01</span> / 03</span>
+            </p>
+          </div>
+        </div>
+        <Image src={tapeBlue} alt="" aria-hidden="true" width={130} densities={[1, 2]} class="mz-tape method__tape" />
+      </div>
+      <div class="method__copy">
+        <p class="mz-kicker" data-rv>04 / How I work</p>
+        <h2 class="mz-h2 method__h2" data-split>Read. Decide. <em>Own it.</em></h2>
+        <div class="method__steps">
           {
-            RECEIPTS.map((r, i) => (
+            STEPS.map((s, i) => (
               <button
                 type="button"
-                role="tab"
-                class="chip"
-                id={`receipt-tab-${i}`}
-                aria-controls={`receipt-panel-${i}`}
-                aria-selected={i === DEFAULT_RECEIPT ? 'true' : 'false'}
-                aria-pressed={i === DEFAULT_RECEIPT ? 'true' : 'false'}
-                tabindex={i === DEFAULT_RECEIPT ? 0 : -1}
-                data-receipt={i}
+                class:list={['step', i === 0 && 'is-on']}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+                data-step={i}
+                data-rv
+                data-delay={i * 100}
+                data-caption={s.caption}
               >
-                {r.name}
+                <span class="step__num">{pad(i + 1)}</span>
+                <span class="step__text">
+                  <span class="step__name">{s.name}</span>
+                  <span class="step__line">{s.line}</span>
+                </span>
               </button>
             ))
           }
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="receipts__body">
+  {/* ----------------------------------------------------------- writing -- */}
+  <section class="writing" id="writing">
+    <div class="mz-wrap">
+      <p class="mz-kicker writing__kicker" data-rv>05 / Writing</p>
+      <div class="writing__top">
+        <h2 class="mz-h2" data-split>How I think about it.</h2>
+        <div data-rv>
+          <a class="mz-more writing__all" href="/thinking/">All the writing <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <div class="writing__list" data-rv>
         {
-          RECEIPTS.map((r, i) => (
-            <div
-              role="tabpanel"
-              id={`receipt-panel-${i}`}
-              aria-labelledby={`receipt-tab-${i}`}
-              class="receipts__panel"
-              data-receipt-panel={i}
-              hidden={i !== DEFAULT_RECEIPT}
-            >
-              <div>
-                {r.bars ? (
-                  <div class="bars">
-                    <div class="bars__row">
-                      <p class="bars__legend">
-                        <span>Before</span>
-                        <span>{r.bars.beforeLabel}</span>
-                      </p>
-                      <div class="bars__track">
-                        <div class="bars__fill" style={`width:${r.bars.before}%`} />
-                      </div>
-                    </div>
-                    <div class="bars__row">
-                      <p class="bars__legend">
-                        <span>After</span>
-                        <span>{r.bars.afterLabel}</span>
-                      </p>
-                      <div class="bars__track">
-                        <div class="bars__fill bars__fill--accent" style={`width:${r.bars.after}%`} />
-                      </div>
-                    </div>
-                  </div>
+          posts.map((post, i) => (
+            <a class="wrow" href={postHref(post)} data-cursor="Read">
+              <span class="wrow__num">{pad(i + 1)}</span>
+              <span class="wrow__thumb">
+                {post.data.image ? (
+                  <Image src={post.data.image} alt="" width={208} height={139} class="wrow__img" />
                 ) : (
-                  <div>
-                    <p class="receipts__single">{r.headline}</p>
-                    <p class="receipts__single-sub">{r.single}</p>
-                  </div>
+                  <span class="wrow__ph" style={`background:${tagAccent(post.data.tag)}`} />
                 )}
-                <p class="receipts__window">{r.window}</p>
-              </div>
-
-              <div>
-                <p class="receipts__headline">{r.bars ? r.headline : r.name}</p>
-                <p class="receipts__read">{r.read}</p>
-              </div>
-            </div>
+              </span>
+              <span class="wrow__title">{post.data.shortTitle ?? post.data.title}</span>
+              <span class="wrow__tag">{post.data.tag}</span>
+            </a>
           ))
         }
       </div>
     </div>
   </section>
 
-  {/* --------------------------------------------------- 05 · writing -- */}
-  <section class="section wrap--home" id="writing">
-    <h2 class="work__title">Things I’ve written.</h2>
-
-    <div class="writing__head">
-      <p class="lede writing__sub">
-        Mostly lifecycle, AI, and how search is changing. I write to work out what I think, and to
-        share what I’ve learned doing the work.
-      </p>
-
-      <div class="writing__chips" data-writing-chips>
-        {
-          CHIPS.map((chip) => (
-            <button type="button" class="chip" data-chip={chip} aria-pressed={chip === 'All' ? 'true' : 'false'}>
-              {chip}
-            </button>
-          ))
-        }
-      </div>
-    </div>
-
-    <div class="postgrid" data-postgrid>
-      {
-        cardData.map((post, i) => (
-          <a
-            class="card card--interactive postcard"
-            href={`/thinking/${post.slug}/`}
-            data-post-tag={post.tag}
-            hidden={i >= PER_PAGE}
-          >
-            <span class="postcard__tag" style={`background:${tagAccent(post.tag)}`}>
-              {post.tag}
+  {/* --------------------------------------------------------- elsewhere -- */}
+  <section class="more" id="more">
+    <p class="mz-kicker" data-rv>06 / Elsewhere</p>
+    <div class="more__grid">
+      <a class="more__about" href="/about/" data-rv data-cursor="About me">
+        <span class="more__snap">
+          <span class="more__snap-paper">
+            <span class="more__snap-img">
+              <Image src={aboutPoster} alt="Miguel laughing at a café table" widths={[320, 480, 640]} sizes="(max-width: 900px) 45vw, 300px" />
             </span>
-            <span class="postcard__title">{post.title}</span>
-            <span class="postcard__meta">{post.meta}</span>
-          </a>
-        ))
-      }
-    </div>
-
-    <div class="writing__foot">
-      <p class="writing__showing" data-writing-showing aria-live="polite">
-        Showing 1–{Math.min(PER_PAGE, cardData.length)} of {cardData.length}
-      </p>
-      <div class="writing__pager" data-writing-pager></div>
+          </span>
+          <Image src={tapeYellow} alt="" aria-hidden="true" width={95} densities={[1, 2]} class="mz-tape more__tape" />
+        </span>
+        <span class="more__about-copy">
+          <span class="more__eyebrow">About</span>
+          <span class="more__about-h">Newsroom-trained, systems-minded, and still following problems upstream.</span>
+          <span class="more__link">More about me <span aria-hidden="true">→</span></span>
+        </span>
+      </a>
+      <a class="studio" href={STUDIO.url} target="_blank" rel="noopener" data-rv data-delay="120" data-cursor="Visit the studio ↗">
+        <span class="studio__eyebrow">My studio · hands-on work</span>
+        <Image src={ccdCream} alt={STUDIO.name} width={340} densities={[1, 2]} class="studio__logo" />
+        <span class="studio__foot">
+          <span class="studio__line">
+            Need the hands-on version? Websites, lifecycle and automation live at Craft Concepts, my studio.
+          </span>
+          <span class="studio__visit">Visit <span aria-hidden="true">↗</span></span>
+        </span>
+      </a>
     </div>
   </section>
 
-  <script is:inline define:vars={{ PER_PAGE }}>
-    // Filter chips and pagination for the card grid. The first page renders
-    // server-side; this only re-slices what's visible.
-    (() => {
-      const grid = document.querySelector('[data-postgrid]');
-      const chipsWrap = document.querySelector('[data-writing-chips]');
-      const showing = document.querySelector('[data-writing-showing]');
-      const pagerWrap = document.querySelector('[data-writing-pager]');
-      if (!grid || !chipsWrap || !showing || !pagerWrap) return;
+  {/* ----------------------------------------------------------- contact -- */}
+  <section class="contact" id="contact">
+    <div class="contact__grid">
+      <div class="contact__copy">
+        <div>
+          <p class="mz-kicker" data-rv>07 / Say hi</p>
+          <div class="contact__title">
+            <h2 class="contact__h2" data-wave>Let's talk.</h2>
+            <a class="phone" href={phoneHref} data-cursor="Give me a ring" aria-label={`Call Miguel at ${CONTACT.phone}`}>
+              <Image src={telephone} alt="" width={132} densities={[1, 2]} class="phone__img" />
+              <span class="phone__tag" aria-hidden="true">ring ring</span>
+            </a>
+          </div>
+          <p class="contact__lede" data-rv>
+            Hiring for a senior seat, or stuck on a growth problem nobody owns? Pick a reply in the chat.
+          </p>
+        </div>
+        <div class="contact__pills" data-rv>
+          <a class="pill" href={`mailto:${CONTACT.email}`}>
+            <span class="pill__text"><span class="pill__k">Email</span><span class="pill__v">{CONTACT.email}</span></span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a class="pill" href={phoneHref}>
+            <span class="pill__text"><span class="pill__k">Phone</span><span class="pill__v">{CONTACT.phone}</span></span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a class="pill" href={CONTACT.linkedin} target="_blank" rel="noopener">
+            <span class="pill__text"><span class="pill__k">LinkedIn</span><span class="pill__v">{linkedinHandle}</span></span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
 
-      const cards = Array.from(grid.querySelectorAll('[data-post-tag]'));
-      const chips = Array.from(chipsWrap.querySelectorAll('[data-chip]'));
-      let chip = 'All';
-      let page = 0;
+      <div class="chat" data-rv data-delay="120" data-chat>
+        <div class="chat__head">
+          <span class="chat__avatar"><Image src={miguel} alt="" width={38} height={38} densities={[1, 2]} /></span>
+          <span class="chat__who">
+            <span class="chat__name">Miguel Monzones</span>
+            <span class="chat__status"><span class="chat__online" aria-hidden="true"></span>Usually replies within a couple of days</span>
+          </span>
+        </div>
+        <div class="chat__body" aria-live="polite">
+          <p class="bub bub--in" style="--d:.1s">Hi! Thanks for scrolling all the way down here.</p>
+          <p class="bub bub--in" style="--d:.5s">What brings you by?</p>
 
-      function render() {
-        const filtered = cards.filter(
-          (card) => chip === 'All' || card.dataset.postTag === chip,
-        );
-        const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-        page = Math.min(page, totalPages - 1);
-        const from = page * PER_PAGE;
-        const shown = filtered.slice(from, from + PER_PAGE);
+          <div class="chat__ask" data-chat-ask>
+            <span class="chat__hint">Suggested replies · tap one</span>
+            <div class="chat__topics">
+              {
+                TOPICS.map((t) => (
+                  <button
+                    type="button"
+                    class="chat__topic"
+                    data-topic={t.id}
+                    data-label={t.label}
+                    data-reply={t.reply}
+                    data-placeholder={t.placeholder}
+                    data-subject={t.subject}
+                  >
+                    {t.label} <span aria-hidden="true">↵</span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
 
-        for (const card of cards) card.hidden = !shown.includes(card);
+          {/* Rendered visible so it works with JavaScript off; the script hides it until a reply is picked. */}
+          <div class="chat__picked" data-chat-picked>
+            <p class="bub bub--out" data-chat-label hidden></p>
+            <p class="bub bub--in" style="--d:.45s" data-chat-reply hidden></p>
+            <form class="chat__form" action={FORM_ENDPOINT} method="POST" data-chat-form>
+              <input type="hidden" name="_subject" value="Hello from mnmonzones.com" data-chat-subject />
+              <input type="hidden" name="topic" value="" data-chat-topic />
+              <div class="chat__fields">
+                <input type="text" name="name" required autocomplete="name" placeholder="Your name" aria-label="Your name" />
+                <input type="email" name="email" required autocomplete="email" placeholder="Your email" aria-label="Your email" />
+              </div>
+              <textarea name="message" rows="3" required placeholder="What's on your mind…" aria-label="Your message" data-chat-msg></textarea>
+              {/* Formspree discards any submission that fills this in. */}
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="chat__honey" />
+              <div class="chat__actions">
+                <button type="button" class="chat__back" data-chat-reset hidden>← Pick something else</button>
+                <button type="submit" class="chat__send">Send <span aria-hidden="true">→</span></button>
+              </div>
+            </form>
+          </div>
 
-        showing.textContent = filtered.length
-          ? `Showing ${from + 1}–${from + shown.length} of ${filtered.length}`
-          : 'Nothing here for that yet.';
+          <div class="chat__sent" data-chat-sent hidden>
+            <p class="bub bub--out" data-chat-label-sent></p>
+            <p class="bub bub--in" style="--d:.4s">Perfect, thank you! Your message is with me now, and I'll get back to you soon.</p>
+            <button type="button" class="chat__topic chat__again" data-chat-reset>Start a new message ↵</button>
+          </div>
 
-        for (const c of chips) c.setAttribute('aria-pressed', String(c.dataset.chip === chip));
+          <p class="bub bub--in" data-chat-error hidden>
+            That didn’t send. Email me directly at <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> and I’ll pick it up.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        pagerWrap.replaceChildren();
-        if (totalPages <= 1) return;
-
-        const btn = (label, cls, disabled, go) => {
-          const b = document.createElement('button');
-          b.type = 'button';
-          b.textContent = label;
-          b.className = cls;
-          b.disabled = disabled;
-          b.addEventListener('click', () => {
-            page = go;
-            render();
-          });
-          return b;
-        };
-
-        // The numbers are grouped so a phone can lift them onto their own
-        // row above the arrows — see .writing__pagenums.
-        const numbers = document.createElement('div');
-        numbers.className = 'writing__pagenums';
-        for (let i = 0; i < totalPages; i++) {
-          const b = btn(String(i + 1), 'chip writing__page', false, i);
-          b.setAttribute('aria-current', String(i === page));
-          if (i === page) b.setAttribute('aria-pressed', 'true');
-          numbers.append(b);
-        }
-
-        pagerWrap.append(
-          btn('← Newer', 'chip writing__arrow', page === 0, Math.max(0, page - 1)),
-          numbers,
-          btn(
-            'Older →',
-            'chip writing__arrow',
-            page === totalPages - 1,
-            Math.min(totalPages - 1, page + 1),
-          ),
-        );
-      }
-
-      for (const c of chips) {
-        c.addEventListener('click', () => {
-          chip = c.dataset.chip;
-          page = 0;
-          render();
-        });
-      }
-
-      render();
-    })();
-  </script>
-
-  {/* --------------------------------------------------- 06 · contact -- */}
-  <ContactSection
-    display
-    title="Let’s talk."
-    intro="If you’re working through a difficult customer journey, building something new, or hiring for a role you think might fit, I’d love to hear about it."
-    submitLabel="Send it"
-    vancouverBox="sun"
-  />
+  {/* Home-only pointer effects: the clipping that follows a hovered team, and the custom cursor. */}
+  <div class="float" aria-hidden="true" data-float><img alt="" data-float-img /></div>
+  <div class="cur" aria-hidden="true" data-cur></div>
+  <div class="cur-label" aria-hidden="true" data-cur-label></div>
 </BaseLayout>
 
-<script>
-  /* ------------------------------------------------- shelf / grid view -- */
-  const viewButtons = document.querySelectorAll<HTMLButtonElement>('[data-view]');
-  const viewPanels = document.querySelectorAll<HTMLElement>('[data-view-panel]');
-
-  for (const button of viewButtons) {
-    button.addEventListener('click', () => {
-      const view = button.dataset.view;
-      for (const b of viewButtons) b.setAttribute('aria-pressed', String(b === button));
-      for (const panel of viewPanels) panel.hidden = panel.dataset.viewPanel !== view;
-    });
-  }
-
-  /* ----------------------------------------------------------- spines -- */
-  const spines = document.querySelectorAll<HTMLButtonElement>('[data-spine]');
-  const casePanels = document.querySelectorAll<HTMLElement>('[data-case-panel]');
-
-  for (const spine of spines) {
-    spine.addEventListener('click', () => {
-      const index = spine.dataset.spine;
-      for (const panel of casePanels) panel.hidden = panel.dataset.casePanel !== index;
-      for (const s of spines) s.hidden = s === spine;
-    });
-  }
-
-  /* -------------------------------------------- ask / found switchers -- */
-  // Scoped per card: the shelf panels and the grid cards each carry their own
-  // pair of buttons and copy blocks.
-  for (const scope of document.querySelectorAll<HTMLElement>(
-    '[data-case-panel], .grid-view__card',
-  )) {
-    const buttons = scope.querySelectorAll<HTMLButtonElement>('[data-mode]');
-    const copies = scope.querySelectorAll<HTMLElement>('[data-copy]');
-    for (const button of buttons) {
-      button.addEventListener('click', () => {
-        const mode = button.dataset.mode;
-        for (const b of buttons) b.setAttribute('aria-pressed', String(b === button));
-        for (const copy of copies) copy.hidden = copy.dataset.copy !== mode;
-      });
-    }
-  }
-
-  /* ------------------------------------------------------ method tabs -- */
-  const methodRoot = document.querySelector<HTMLElement>('[data-method]');
-
-  if (methodRoot) {
-    const tabs = [...methodRoot.querySelectorAll<HTMLButtonElement>('[data-step]')];
-    const panels = methodRoot.querySelectorAll<HTMLElement>('[data-step-panel]');
-    const indicator = methodRoot.querySelector<HTMLElement>('[data-method-indicator]');
-    let current = 0;
-    let touched = false;
-
-    function select(index: number) {
-      current = index;
-      tabs.forEach((tab, i) => {
-        tab.setAttribute('aria-selected', String(i === index));
-        tab.tabIndex = i === index ? 0 : -1;
-      });
-      for (const panel of panels) panel.hidden = panel.dataset.stepPanel !== String(index);
-      /* Hidden below 760px, where the tabs wrap and a single sliding bar
-         can no longer point at the right one. Nothing scrolls either way —
-         autoplay must never move the page under someone's thumb. */
-      if (indicator) indicator.style.transform = `translateX(${index * 100}%)`;
-    }
-
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', () => {
-        touched = true;
-        select(index);
-      });
-      // Standard tablist keyboard behaviour: arrows move, Home/End jump.
-      tab.addEventListener('keydown', (event) => {
-        const moves: Record<string, number> = {
-          ArrowRight: index + 1,
-          ArrowLeft: index - 1,
-          Home: 0,
-          End: tabs.length - 1,
-        };
-        const to = moves[event.key];
-        if (to === undefined) return;
-        event.preventDefault();
-        touched = true;
-        const next = ((to % tabs.length) + tabs.length) % tabs.length;
-        select(next);
-        tabs[next].focus();
-      });
-    });
-
-    /* The steps advance on their own until the reader takes over. Reduced
-       motion means no autoplay at all — an interface changing by itself is
-       exactly what that setting asks to stop. */
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const timer = window.setInterval(() => {
-        if (touched) {
-          window.clearInterval(timer);
-          return;
-        }
-        select((current + 1) % tabs.length);
-      }, 5000);
-    }
-  }
-
-  /* ----------------------------------------------------- receipt tabs -- */
-  const receiptTabs = [...document.querySelectorAll<HTMLButtonElement>('[data-receipt]')];
-  const receiptPanels = document.querySelectorAll<HTMLElement>('[data-receipt-panel]');
-
-  receiptTabs.forEach((tab, index) => {
-    const select = (i: number) => {
-      receiptTabs.forEach((t, n) => {
-        t.setAttribute('aria-selected', String(n === i));
-        t.setAttribute('aria-pressed', String(n === i));
-        t.tabIndex = n === i ? 0 : -1;
-      });
-      for (const panel of receiptPanels) panel.hidden = panel.dataset.receiptPanel !== String(i);
-    };
-
-    tab.addEventListener('click', () => select(index));
-    tab.addEventListener('keydown', (event) => {
-      const moves: Record<string, number> = {
-        ArrowRight: index + 1,
-        ArrowLeft: index - 1,
-        Home: 0,
-        End: receiptTabs.length - 1,
-      };
-      const to = moves[event.key];
-      if (to === undefined) return;
-      event.preventDefault();
-      const next = ((to % receiptTabs.length) + receiptTabs.length) % receiptTabs.length;
-      select(next);
-      receiptTabs[next].focus();
-    });
-  });
-</script>
-
 <style>
-  /* ---------------------------------------------------------------- hero -- */
-  .kicker {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+  /* Shown to fine pointers on wide screens (hover works), else to touch. */
+  .only-tap {
+    display: none;
+  }
+  @media not ((hover: hover) and (pointer: fine) and (min-width: 1000px)) {
+    .only-hover {
+      display: none;
+    }
+    .only-tap {
+      display: inline;
+    }
   }
 
-  .kicker__rule {
-    flex: 1;
-    min-width: 24px;
-    height: 3px;
-    background: var(--ink);
+  /* -------------------------------------------------------------- hero */
+  .hero {
+    position: relative;
+    padding: clamp(96px, 12vw, 120px) var(--gutter) clamp(48px, 5vw, 80px);
   }
-
-  .kicker__avail {
-    display: flex;
-    align-items: center;
-    gap: 9px;
+  @media (min-width: 900px) {
+    .hero {
+      padding-top: 150px;
+    }
   }
-
-  .kicker__dot {
-    width: 10px;
-    height: 10px;
-    background: var(--moss);
-    flex: none;
-  }
-
-  .hero__line {
-    margin-top: clamp(48px, 5.6vw, 76px);
-  }
-
-  .hero__rule {
-    margin-top: clamp(52px, 6vw, 84px);
-    height: 8px;
-    background: var(--ink);
-  }
-
-  /* An explicit grid, not a wrapping flex row. Wrapping broke the four names
-     wherever they happened to run out of width — at 375px they fell 2 / 1 / 1,
-     which reads as three ideas of uneven weight instead of four of equal
-     weight. The grid steps 4 → 2x2 → 1 at the page's own breakpoints, so every
-     size shows a deliberate shape. Columns are max-content so the marks line up
-     down each column and the labels stay left-aligned. */
-  .slabs {
+  .hero__grid {
+    max-width: var(--max);
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(4, max-content);
-    gap: 14px 44px;
-    padding-top: 26px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: clamp(48px, 6vw, 96px);
+    align-items: stretch;
   }
-
-  .slabs__item {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .slabs__mark {
-    width: 16px;
-    height: 16px;
-    flex: none;
-  }
-
-  .statgrid {
-    margin-top: clamp(56px, 7vw, 92px);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-
-  .statcard {
-    box-shadow: 8px 8px 0 var(--ink);
-    padding: clamp(20px, 2.4vw, 30px);
+  .hero__copy {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    transition:
-      transform var(--dur) var(--ease),
-      box-shadow var(--dur) var(--ease);
+    min-width: 0;
   }
-
-  .statcard:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 11px 11px 0 var(--ink);
+  .hero__kicker {
+    gap: 10px 18px;
+    padding-bottom: 14px;
   }
-
-  .statcard__mark {
-    width: 26px;
-    height: 12px;
-  }
-
-  .statcard__value {
-    font-size: clamp(32px, 3.4vw, 52px);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 0.95;
-  }
-
-  .statcard__label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    color: var(--ink-2);
+  .hero__h1 {
+    margin: clamp(40px, 6vh, 84px) 0 clamp(28px, 3vw, 40px);
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(52px, 7.2vw, 128px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
     text-wrap: balance;
-    max-width: 22ch;
   }
-
-  .split {
-    margin-top: clamp(72px, 9vw, 124px);
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: clamp(46px, 6vw, 92px);
-    align-items: start;
+  .hero__h1 > span {
+    display: inline-block;
   }
-
-  .split__tagline {
-    font-size: clamp(23px, 2.5vw, 34px);
-    line-height: 1.24;
-    font-weight: 600;
-    letter-spacing: -0.018em;
+  .hero__h1-grot {
+    font-family: var(--sans);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    font-size: 0.82em;
   }
-
-  .split__id {
-    margin-top: 44px;
+  .hero__swatch {
+    transform: rotate(-2deg);
+  }
+  .hero__lede {
+    font-size: clamp(18px, 1.5vw, 23px);
+    line-height: 1.42;
+    max-width: 36ch;
+    text-wrap: pretty;
+  }
+  .hero__ctas {
+    margin-top: clamp(28px, 3vw, 40px);
     display: flex;
-    align-items: stretch;
-    gap: 26px;
+    gap: 12px;
     flex-wrap: wrap;
   }
-
-  .split__photo {
-    position: relative;
-    width: 168px;
-    height: 168px;
-    flex: none;
-    border: var(--border);
-    box-shadow: 10px 10px 0 var(--coral);
-    overflow: hidden;
+  .hero__status {
+    margin-top: auto;
+    padding-top: clamp(40px, 5vw, 72px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 13px;
   }
-
-  .split__photo :global(img) {
+  .hero__dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+  .hero__caret {
+    display: inline-block;
+    width: 0.6em;
+    height: 1em;
+    margin-left: 4px;
+    vertical-align: -0.15em;
+    background: var(--ink);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  .hero__photo {
+    position: relative;
+    justify-self: end;
+    width: 100%;
+    max-width: 520px;
+    padding: 24px 16px 24px 8px;
+  }
+  .hero__frame {
+    position: relative;
+    transform: rotate(2deg);
+    filter: drop-shadow(0 16px 24px rgba(31, 29, 43, 0.22));
+    will-change: transform;
+  }
+  .hero__paper {
+    position: relative;
+    background: var(--card);
+    padding: 12px 12px 44px;
+    clip-path: var(--torn-portrait);
+  }
+  .hero__img {
+    position: relative;
+    aspect-ratio: 1122 / 1402;
+    overflow: hidden;
+    background: var(--paper);
+    clip-path: var(--torn-portrait-img);
+  }
+  .hero__img img,
+  .under__img img,
+  .method__img img,
+  .tcard__img img,
+  .more__snap-img img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 18%;
     display: block;
   }
-
-  .split__status {
+  .hero__caption,
+  .method__caption {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 10px;
-    max-width: 250px;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .hero__tape {
+    top: -20px;
+    left: 50%;
+    width: 140px;
+    margin-left: -70px;
+    rotate: -5deg;
   }
 
-  .split__status p {
-    font-size: 20px;
-    line-height: 1.3;
-    font-weight: 600;
-    letter-spacing: -0.012em;
+  /* ------------------------------------------------------------ ledger */
+  .ledger {
+    padding: 0 var(--gutter) clamp(8px, 1vw, 16px);
   }
-
-  .split__intro {
+  .ledger__head {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    font-size: 17px;
-    line-height: 1.64;
-    color: var(--ink-2);
-    border-left: var(--border);
-    padding-left: clamp(20px, 2.4vw, 34px);
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    padding: 16px 0 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
-
-  /* --------------------------------------------------------- symptom -- */
-  .symptom-band {
-    margin-top: clamp(80px, 10.5vw, 148px);
-    padding-block: clamp(74px, 9.6vw, 130px);
-  }
-
-  .symptom-band__title {
-    font-size: clamp(30px, 4.4vw, 66px);
-    line-height: 0.98;
-    letter-spacing: -0.032em;
-  }
-
-  .symptom {
-    margin-top: clamp(42px, 5vw, 68px);
-    padding: clamp(30px, 4.4vw, 56px);
+  .ledger__grid {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: clamp(32px, 4.2vw, 58px);
-    align-items: center;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--ink);
+    border-right: 1px solid var(--ink);
+    margin-left: 1px;
   }
-
-  .symptom__label {
-    margin-bottom: 18px;
+  @media (max-width: 999px) {
+    .ledger__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
-
-  .symptom__text {
-    font-size: clamp(24px, 2.9vw, 40px);
-    line-height: 1.14;
-    font-weight: 600;
-    letter-spacing: -0.018em;
-    min-height: 6.4em;
+  @media (max-width: 559px) {
+    .ledger__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
-
-  [data-flipped='true'] .symptom__text {
-    font-size: clamp(17px, 1.5vw, 19px);
-    line-height: 1.6;
-  }
-
-  .symptom__controls {
+  .ledger__cell {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    align-items: stretch;
-    min-width: min(100%, 226px);
-  }
-
-  .symptom__controls .btn {
-    justify-content: flex-start;
-    text-align: left;
-  }
-
-  .symptom__count {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-  }
-
-  /* ------------------------------------------------------------ work -- */
-  .work__title {
-    font-size: clamp(34px, 5.6vw, 86px);
-    line-height: 0.94;
-    letter-spacing: -0.036em;
-  }
-
-  .work__head {
-    margin-top: 36px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 32px;
-    flex-wrap: wrap;
-    border-top: var(--border);
-    padding-top: 30px;
-  }
-
-  .work__sub {
-    max-width: 620px;
-  }
-
-  .shelf {
-    max-width: var(--wrap-wide);
-    margin: clamp(42px, 5vw, 66px) auto 0;
-    padding-inline: 28px;
-    display: flex;
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  /* v16 pins the open case to one height so the shelf stops jumping when the
-     copy length changes between cases; the copy scrolls inside instead. */
-  .shelf__case {
-    flex: 1;
-    min-width: 0;
-    height: 720px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
-    grid-auto-rows: minmax(0, 1fr);
-  }
-
-  .shelf__visual {
-    position: relative;
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-    background: var(--wash);
-    border-right: var(--border);
-    padding: 40px 34px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .shelf__text {
-    min-width: 0;
-    min-height: 0;
-    padding: clamp(30px, 4.4vw, 52px);
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
-  }
-
-  .shelf__title {
-    font-size: clamp(28px, 3vw, 40px);
-    line-height: 1.02;
-    letter-spacing: -0.028em;
-  }
-
-  .shelf__copy {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    min-height: 9em;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding-right: 8px;
-    scrollbar-width: thin;
-    scrollbar-color: #c9c2b8 transparent;
-  }
-
-  .shelf__copy p {
-    font-size: 17px;
-    line-height: 1.64;
-    color: var(--ink-2);
-  }
-
-  .shelf__metric {
-    margin-top: auto;
-    padding-top: 22px;
-    border-top: var(--border);
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .shelf__metric-value {
-    font-size: clamp(34px, 3.6vw, 50px);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1;
-  }
-
-  .shelf__metric-note {
-    font-size: 14px;
-    line-height: 1.45;
-    color: var(--ink-2);
-    max-width: 280px;
-  }
-
-  .shelf__spines {
-    display: flex;
-    gap: 14px;
-    align-items: stretch;
-  }
-
-  .shelf__spine {
-    width: 64px;
-    flex: none;
-    background: var(--bar, var(--wash));
-    border: var(--border);
-    box-shadow: 6px 6px 0 var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 22px 0;
-    transition: transform var(--dur) var(--ease);
-  }
-
-  .shelf__spine:hover {
-    transform: translate(-3px, -3px);
-  }
-
-  .shelf__spine span {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    padding: clamp(20px, 2.2vw, 30px) clamp(16px, 1.8vw, 26px);
+    margin-left: -1px;
+    border-left: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
     color: var(--ink);
+    transition: background 0.35s;
+  }
+  .ledger__cell:hover {
+    background: var(--card);
+    color: var(--ink);
+  }
+  .ledger__fig {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .ledger__value {
+    font-family: var(--serif);
+    font-size: clamp(52px, 5vw, 84px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
     white-space: nowrap;
+    transition: color 0.35s;
   }
-
-  .grid-view {
-    margin-top: clamp(42px, 5vw, 66px);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+  .ledger__cell:hover .ledger__value {
+    color: var(--blue);
   }
-
-  .grid-view__card {
-    box-shadow: var(--shadow);
-    padding: clamp(22px, 3vw, 34px);
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+  .ledger__label {
+    font-size: clamp(16px, 1.2vw, 18px);
+    line-height: 1.4;
+    max-width: 28ch;
+    text-wrap: pretty;
   }
-
-  .grid-view__title {
-    font-size: clamp(24px, 2.2vw, 30px);
-    line-height: 1.06;
-    letter-spacing: -0.024em;
-  }
-
-  .grid-view__copy {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-height: 14em;
-  }
-
-  .grid-view__copy p {
-    font-size: 16px;
-    line-height: 1.62;
-    color: var(--ink-2);
-  }
-
-  .grid-view__metric-value {
-    font-size: clamp(28px, 2.6vw, 36px);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-
-  /* ---------------------------------------------------------- method -- */
-  .method-band {
-    padding-block: clamp(74px, 9.6vw, 134px);
-  }
-
-  .method {
-    display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
-    gap: clamp(36px, 5vw, 68px);
-    align-items: start;
-  }
-
-  .method__title {
-    margin-top: 24px;
-    font-size: clamp(34px, 4.6vw, 68px);
-    line-height: 0.94;
-    letter-spacing: -0.036em;
-  }
-
-  .method__sub {
-    margin-top: 28px;
-    font-size: 17px;
-    line-height: 1.58;
-    color: var(--sun-ink);
-    max-width: 380px;
-  }
-
-  /* Both columns must be allowed to shrink below their content, or the tab
-     row's min-content width blows the grid track past the viewport on a
-     phone — the page then pans sideways instead of clipping. */
-  .method__intro,
-  .method__panel {
-    min-width: 0;
-  }
-
-  .method__tabs {
-    display: flex;
-    border-bottom: 5px solid var(--ink);
-    position: relative;
-  }
-
-  .method__tab {
-    flex: 1;
-    min-width: 0;
-    padding: 0 22px 20px 0;
-    border: 0;
-    background: transparent;
-    text-align: left;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: rgb(33 33 33 / 74%);
-    transition: color var(--dur-fast) var(--ease);
-  }
-
-  .method__tab[aria-selected='true'] {
-    color: var(--ink);
-  }
-
-  .method__num {
-    display: block;
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    margin-bottom: 8px;
-    color: rgb(33 33 33 / 72%);
-  }
-
-  .method__tab[aria-selected='true'] .method__num {
-    color: #7a3312;
-  }
-
-  .method__indicator {
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    height: 5px;
-    background: var(--coral);
-    transition: transform 320ms var(--ease);
-  }
-
-  .method__body {
-    margin-top: 40px;
-    padding: clamp(28px, 3.6vw, 46px);
-  }
-
-  .method__source {
-    margin-bottom: 16px;
-  }
-
-  .method__example {
-    font-size: clamp(19px, 1.7vw, 22px);
-    line-height: 1.5;
-    letter-spacing: -0.012em;
-    font-weight: 500;
-    min-height: 7.2em;
-  }
-
-  /* -------------------------------------------------------- receipts -- */
-  .receipts {
-    margin-top: 0;
-    padding-block: clamp(78px, 10.5vw, 150px);
-  }
-
-  .receipts__title {
-    font-size: clamp(32px, 5vw, 78px);
-    line-height: 0.94;
-    letter-spacing: -0.036em;
-    color: var(--on-dark);
-  }
-
-  .receipts__head {
-    margin-top: 36px;
-    border-top: 3px solid var(--on-dark);
-    padding-top: 30px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-
-  .receipts__sub {
-    font-size: 17px;
-    line-height: 1.56;
-    color: var(--on-dark-2);
-    max-width: 460px;
-  }
-
-  .receipts__tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .receipts__body {
-    margin-top: clamp(54px, 6.4vw, 94px);
-  }
-
-  .receipts__panel {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(36px, 5vw, 68px);
-    align-items: center;
-  }
-
-  .bars {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  .bars__legend {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--on-dark-2);
-    margin-bottom: 11px;
-  }
-
-  .bars__track {
-    height: 26px;
-    border: 3px solid var(--on-dark);
-  }
-
-  /* A transition rather than an animation, on purpose: an animation's
-     `from { width: 0 }` holds zero width while a background tab's clock is
-     stopped, which reads as a wrong number rather than a missing effect. */
-  .bars__fill {
-    height: 20px;
-    background: var(--ink-2);
-    transition: width var(--dur-slow) var(--ease);
-  }
-
-  .bars__fill--accent {
-    background: var(--coral);
-  }
-
-  .receipts__single {
-    font-size: clamp(64px, 9vw, 148px);
-    line-height: 0.86;
-    font-weight: 700;
-    letter-spacing: -0.05em;
-    color: var(--coral);
-  }
-
-  .receipts__single-sub {
-    margin-top: 16px;
-    font-size: 18px;
-    line-height: 1.5;
-    color: var(--on-dark-2);
-    max-width: 400px;
-    text-wrap: balance;
-  }
-
-  .receipts__window {
-    margin-top: 28px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--on-dark-3);
-  }
-
-  .receipts__headline {
-    font-size: clamp(44px, 5.6vw, 86px);
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 0.9;
-    color: var(--on-dark);
-  }
-
-  .receipts__read {
-    margin-top: 24px;
-    font-size: 17px;
-    line-height: 1.66;
-    color: var(--on-dark-2);
-    max-width: 480px;
-    min-height: 15em;
-  }
-
-  /* --------------------------------------------------------- writing -- */
-  .writing__head {
-    margin-top: 36px;
-    border-top: var(--border);
-    padding-top: 30px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 28px;
-    flex-wrap: wrap;
-  }
-
-  .writing__sub {
-    max-width: 520px;
-  }
-
-  .writing__chips {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .postgrid {
-    margin-top: clamp(42px, 5vw, 64px);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-    gap: 28px;
-  }
-
-  .postcard {
-    box-shadow: none;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .postcard:hover {
-    box-shadow: var(--shadow);
-  }
-
-  .postcard__tag {
-    align-self: flex-start;
-    padding: 6px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-
-  .postcard__title {
-    font-size: 22px;
-    line-height: 1.14;
-    font-weight: 700;
-    letter-spacing: -0.022em;
-  }
-
-  .postcard__meta {
+  .ledger__cta {
     margin-top: auto;
-    font-size: 13px;
+    padding-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-3);
+    color: var(--blue);
+    transition: gap 0.35s var(--ease);
   }
-
-  .writing__foot {
-    margin-top: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .ledger__cell:hover .ledger__cta {
     gap: 16px;
-    flex-wrap: wrap;
   }
 
-  .writing__showing {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-2);
+  /* ------------------------------------------------------------- teams */
+  .teams {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: clamp(64px, 7vw, 110px) var(--gutter) 0;
   }
-
-  .writing__pager {
+  .teams__hint {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .teams__hint {
+      display: inline;
+    }
+  }
+  .teams__grid {
+    margin-top: clamp(22px, 2.5vw, 36px);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  @media (max-width: 999px) {
+    .teams__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 559px) {
+    .teams__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .teams__cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 112px;
+    padding: 16px 18px 14px;
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    color: var(--ink);
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .teams__cell:hover,
+  .teams__cell:focus-visible {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .teams__meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  .teams__kind {
+    opacity: 0.6;
+  }
+  .teams__row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
   }
-
-  .writing__pager :global(button[disabled]) {
-    color: #b5ada3;
-    cursor: default;
+  /* Touch and narrow screens get the logo inline; wide fine pointers get it as the floating clipping. */
+  .teams__thumb {
+    flex: none;
+    width: 60px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(31, 29, 43, 0.2);
   }
-
-  .writing__pager :global(button[disabled]:hover) {
-    background: transparent;
-    color: #b5ada3;
-  }
-
-  .writing__pager :global(.writing__page) {
-    min-width: 44px;
-    padding: 11px 12px;
-  }
-
-  /* ------------------------------------------------------ responsive -- */
-  @media (max-width: 1120px) {
-    .statgrid {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .split,
-    .grid-view,
-    .method,
-    .receipts__panel {
-      grid-template-columns: 1fr;
-    }
-
-    .shelf {
-      flex-direction: column;
-    }
-
-    .shelf__spines {
-      flex-wrap: wrap;
-    }
-
-    .shelf__spine {
-      width: auto;
-      flex: 1 1 0;
-      padding: 16px 10px;
-    }
-
-    /* Horizontal spines carry full case titles, which nowrap would push
-       past the viewport edge — the widest was 452px on a 375px screen. */
-    .shelf__spine span {
-      writing-mode: horizontal-tb;
-      transform: none;
-      white-space: normal;
-      line-height: 1.3;
-    }
-
-    .receipts__read {
-      min-height: 0;
-    }
-
-    .shelf__copy,
-    .grid-view__copy {
-      min-height: 0;
-    }
-
-    .symptom {
-      grid-template-columns: 1fr;
-    }
-
-    .symptom__text {
-      min-height: 0;
-    }
-
-    .method__example {
-      min-height: 0;
-    }
-  }
-
-  /* Below this the five tabs stop fitting on one line. They wrap instead of
-     scrolling: a wrapped row keeps every step visible and reachable, and the
-     sliding indicator — which can only track one row — steps aside for the
-     selected tab's own colour. */
-  /* Below this the shelf card is stacked, so it grows to fit and the copy no
-     longer scrolls (v16's 880px rule). */
-  @media (max-width: 880px) {
-    .shelf__case {
-      height: auto;
-    }
-
-    .shelf__copy {
-      flex: 0 0 auto;
-      overflow: visible;
-      padding-right: 0;
-    }
-  }
-
-  @media (max-width: 760px) {
-    .slabs {
-      grid-template-columns: repeat(2, max-content);
-    }
-
-    .method__tabs {
-      flex-wrap: wrap;
-      row-gap: 4px;
-    }
-
-    .method__tab {
-      flex: 0 0 auto;
-      font-size: 12px;
-      padding: 0 16px 14px 0;
-    }
-
-    .method__num {
-      font-size: 11px;
-      margin-bottom: 5px;
-    }
-
-    .method__indicator {
+  @media (hover: hover) and (pointer: fine) and (min-width: 1000px) {
+    .teams__thumb {
       display: none;
     }
-
-    .method__body {
-      margin-top: 28px;
-      box-shadow: 7px 7px 0 var(--ink);
+  }
+  .teams__name {
+    min-width: 0;
+    font-weight: 700;
+    font-size: clamp(17px, 1.3vw, 21px);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    line-height: 1.1;
+    overflow-wrap: break-word;
+  }
+  /* Two columns leave a name about 130px, so the logo goes above it and the
+     type steps down until the longest word ("Intelligent") fits whole. */
+  @media (max-width: 559px) {
+    .teams__cell {
+      padding: 14px 14px 14px;
     }
-
-    /* Page numbers get their own centred row above the two arrows, which
-       then split the width evenly instead of wrapping one to a line. */
-    .writing__pager {
-      width: 100%;
-      gap: 8px;
+    .teams__row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
-
-    /* :global throughout — the pager's children are built in the script
-       below, so they never carry the scoping attribute. */
-    .writing__pager :global(.writing__pagenums) {
-      order: -1;
-      flex: 1 0 100%;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .writing__pager :global(.writing__pagenums .writing__page) {
-      min-width: 36px;
-      padding: 10px 8px;
-    }
-
-    .writing__pager :global(.writing__arrow) {
-      flex: 1 1 0;
-      min-width: 0;
-      text-align: center;
-      padding: 10px 8px;
-      font-size: 11px;
-      letter-spacing: 0.05em;
+    .teams__name {
+      font-size: clamp(13px, 4vw, 17px);
     }
   }
 
-  @media (max-width: 600px) {
-    .shelf__spine {
-      flex: 1 1 100%;
+  /* ------------------------------------------------------ underneath */
+  .under {
+    margin-top: clamp(64px, 7vw, 110px);
+    padding: clamp(64px, 7vw, 110px) 0 clamp(80px, 8vw, 130px);
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .under__hint {
+    color: var(--lav);
+  }
+  .under__intro {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: clamp(28px, 4vw, 64px);
+    align-items: center;
+  }
+  .under__h2 {
+    max-width: 27ch;
+  }
+  .under__h2 em {
+    color: var(--amber);
+  }
+  .under__clip {
+    position: relative;
+    justify-self: end;
+    width: 100%;
+    max-width: 560px;
+    transform: rotate(1.5deg);
+    filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.35));
+  }
+  .under__paper {
+    background: var(--card);
+    padding: 10px 10px 12px;
+    clip-path: var(--torn-frame);
+  }
+  .under__img {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    clip-path: var(--torn-frame-img);
+  }
+  .under__notes {
+    margin-top: clamp(40px, 4.5vw, 68px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(20px, 2.4vw, 34px) clamp(18px, 2vw, 28px);
+  }
+  @media (max-width: 559px) {
+    .under__notes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .note {
+    position: relative;
+    padding-top: 12px;
+  }
+  .note__card {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: clamp(240px, 21vw, 300px);
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: var(--card);
+    color: var(--ink);
+    text-align: left;
+    transform: rotate(var(--tilt));
+    clip-path: var(--torn-note);
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.3));
+  }
+  .note__front,
+  .note__back {
+    position: absolute;
+    inset: 0;
+    padding: clamp(20px, 2vw, 28px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .note__back {
+    background: var(--amber);
+    color: var(--ink);
+    transform: translate3d(0, 101%, 0);
+    transition: transform 0.65s var(--ease);
+  }
+  .note__card[aria-pressed='true'] .note__back {
+    transform: none;
+  }
+  @media (hover: hover) and (pointer: fine) and (min-width: 1000px) {
+    .note__card:hover .note__back {
+      transform: none;
+    }
+  }
+  .note__label {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .note__back .note__label {
+    color: var(--ink);
+  }
+  .note__heard,
+  .note__under {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 4px;
+    text-wrap: balance;
+  }
+  .note__heard {
+    font-family: var(--serif);
+    font-size: clamp(28px, 2.4vw, 38px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+  .note__under {
+    font-size: clamp(18px, 1.5vw, 22px);
+    line-height: 1.34;
+    font-weight: 500;
+  }
+  .note__cue {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--grey);
+  }
+  .note__tape {
+    position: absolute;
+    top: -14px;
+    width: 110px;
+    height: auto;
+    pointer-events: none;
+  }
+
+  /* -------------------------------------------------------------- work */
+  .work {
+    padding: clamp(72px, 8vw, 120px) 0 clamp(56px, 6vw, 96px);
+  }
+  .work__top,
+  .writing__top {
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px 48px;
+  }
+  .work__h2 {
+    max-width: 22ch;
+  }
+  .work__controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+  }
+  .work__arrows {
+    display: flex;
+    gap: 8px;
+  }
+  .work__arrow {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 18px;
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .work__arrow:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  /* The track bleeds to the viewport edge but its first card lines up with the page gutter. */
+  .track {
+    --edge: max(var(--gutter), calc((100% - var(--max)) / 2 + var(--gutter)));
+    margin-top: clamp(36px, 4vw, 60px);
+    display: flex;
+    gap: 26px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 16px var(--edge) 28px;
+    scroll-padding-left: var(--edge);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    scrollbar-width: none;
+  }
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+  .track.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .track__end {
+    flex: none;
+    width: 1px;
+  }
+  .tcard {
+    flex: none;
+    width: clamp(300px, 34vw, 440px);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 24px;
+    background: var(--card);
+    color: var(--ink);
+    transform: rotate(var(--tilt));
+    clip-path: var(--torn-card);
+    filter: drop-shadow(0 10px 18px rgba(31, 29, 43, 0.16));
+    transition:
+      transform 0.5s var(--ease),
+      filter 0.5s;
+  }
+  .tcard:hover {
+    transform: rotate(0deg) translateY(-6px);
+    filter: drop-shadow(0 18px 26px rgba(31, 29, 43, 0.22));
+    color: var(--ink);
+  }
+  .tcard__img {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--paper);
+    clip-path: var(--torn-card-img);
+  }
+  .tcard__img img {
+    transition: transform 0.7s var(--ease);
+  }
+  .tcard:hover .tcard__img img {
+    transform: scale(1.05);
+  }
+  .tcard__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 10px 0;
+  }
+  .tcard__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .tcard__metric {
+    font-family: var(--serif);
+    font-size: clamp(46px, 4.2vw, 72px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .tcard__title {
+    font-size: clamp(19px, 1.5vw, 23px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: pretty;
+  }
+  .tcard__note {
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--body);
+    text-wrap: pretty;
+  }
+  .tcard__cta {
+    margin-top: auto;
+    padding-top: 10px;
+  }
+
+  /* ------------------------------------------------------------ method */
+  .method {
+    padding: clamp(40px, 5vw, 72px) var(--gutter) clamp(80px, 8vw, 130px);
+  }
+  .method__grid {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: clamp(48px, 6vw, 110px);
+    align-items: center;
+  }
+  .method__visual {
+    position: relative;
+    padding: 20px 18px 30px 8px;
+  }
+  .method__clip {
+    position: relative;
+    transform: rotate(-2deg);
+    filter: drop-shadow(0 14px 22px rgba(31, 29, 43, 0.2));
+  }
+  .method__paper {
+    position: relative;
+    background: var(--card);
+    padding: 12px 12px 40px;
+    clip-path: var(--torn-frame);
+  }
+  .method__img {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--paper);
+    clip-path: var(--torn-frame-img);
+  }
+  .method__img .method__shot {
+    opacity: 0;
+    transform: scale(1.06);
+    transition:
+      opacity 0.7s ease,
+      transform 1.1s var(--ease);
+  }
+  .method__img .method__shot.is-on {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .method__tape {
+    top: 0;
+    right: 14px;
+    width: 130px;
+    rotate: 7deg;
+  }
+  .method__copy {
+    display: flex;
+    flex-direction: column;
+  }
+  .method__h2 {
+    margin-top: 26px;
+    max-width: 14ch;
+  }
+  .method__steps {
+    margin-top: clamp(28px, 3vw, 44px);
+    display: flex;
+    flex-direction: column;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px clamp(18px, 2vw, 28px);
+    align-items: start;
+    padding: clamp(18px, 2vw, 26px) 0;
+    border: 0;
+    border-top: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    text-align: left;
+  }
+  /* Opacity is the dimming of the inactive rows; it lives on the text so the
+     row's own reveal (which animates the row's opacity) never fights it. */
+  .step__text,
+  .step__num {
+    opacity: 0.55;
+    transition:
+      opacity 0.4s,
+      background 0.4s,
+      color 0.4s;
+  }
+  .step.is-on .step__text,
+  .step.is-on .step__num {
+    opacity: 1;
+  }
+  .step__num {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .step.is-on .step__num {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .step__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .step__name {
+    font-family: var(--serif);
+    font-size: clamp(26px, 2.4vw, 38px);
+    line-height: 1.05;
+  }
+  .step__line {
+    font-size: clamp(16px, 1.25vw, 19px);
+    line-height: 1.45;
+    color: var(--body);
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+
+  /* ----------------------------------------------------------- writing */
+  .writing {
+    padding: clamp(64px, 7vw, 110px) 0;
+    background: var(--green);
+    color: var(--paper);
+  }
+  .writing__kicker {
+    border-bottom-color: rgba(248, 244, 236, 0.45);
+  }
+  .writing__all {
+    color: var(--paper);
+  }
+  .writing__all:hover {
+    color: var(--amber);
+  }
+  .writing__list {
+    margin-top: clamp(32px, 3.6vw, 52px);
+    border-bottom: 1px solid rgba(248, 244, 236, 0.45);
+  }
+  .wrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px clamp(20px, 3vw, 40px);
+    padding: clamp(14px, 1.6vw, 20px) 10px;
+    border-top: 1px solid rgba(248, 244, 236, 0.45);
+    border-radius: 6px;
+    color: var(--paper);
+    transition:
+      background 0.4s var(--ease),
+      padding 0.55s var(--ease),
+      color 0.3s;
+  }
+  .wrow:hover {
+    background: var(--paper);
+    padding-left: 26px;
+    padding-right: 26px;
+    color: var(--ink);
+  }
+  .wrow__num {
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .wrow__thumb {
+    flex: 0 0 auto;
+    width: 104px;
+    padding: 5px 5px 6px;
+    background: var(--card);
+    transform: rotate(-3deg);
+    clip-path: var(--torn-thumb);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.2));
+    transition: transform 0.5s var(--ease);
+  }
+  .wrow:hover .wrow__thumb {
+    transform: rotate(2deg) scale(1.08);
+  }
+  .wrow__img,
+  .wrow__ph {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+  .wrow__title {
+    flex: 1 1 360px;
+    font-family: var(--serif);
+    font-size: clamp(24px, 2.2vw, 36px);
+    line-height: 1.1;
+  }
+  .wrow__tag {
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------------------------------------------------------- elsewhere */
+  .more {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: clamp(72px, 8vw, 120px) var(--gutter);
+  }
+  .more__grid {
+    margin-top: clamp(28px, 3vw, 44px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: clamp(28px, 3vw, 44px);
+    align-items: stretch;
+  }
+  .more__about {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 0 clamp(18px, 2vw, 28px);
+    align-items: center;
+    min-height: clamp(300px, 28vw, 380px);
+    color: var(--ink);
+    transition: color 0.3s;
+  }
+  .more__about:hover {
+    color: var(--blue);
+  }
+  .more__snap {
+    position: relative;
+    display: block;
+    transform: rotate(-3deg);
+    filter: drop-shadow(0 12px 20px rgba(31, 29, 43, 0.2));
+  }
+  .more__snap-paper {
+    display: block;
+    background: var(--card);
+    padding: 10px 10px 30px;
+    clip-path: var(--torn-snap);
+  }
+  .more__snap-img {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #d9d0bd;
+    clip-path: var(--torn-snap-img);
+  }
+  .more__snap-img img {
+    object-position: 50% 40%;
+    filter: grayscale(1) contrast(1.05);
+  }
+  .more__tape {
+    top: -13px;
+    left: 22px;
+    width: 95px;
+    rotate: -6deg;
+    filter: none;
+  }
+  .more__about-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 0;
+  }
+  .more__eyebrow,
+  .studio__eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .more__about-h {
+    font-family: var(--serif);
+    font-size: clamp(28px, 2.6vw, 42px);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .more__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .studio {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 28px;
+    min-height: clamp(300px, 28vw, 380px);
+    padding: clamp(24px, 2.6vw, 40px);
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--paper);
+    transition: transform 0.5s var(--ease);
+  }
+  .studio:hover {
+    transform: translateY(-4px);
+    color: var(--paper);
+  }
+  .studio__eyebrow {
+    color: var(--lav);
+  }
+  .studio__logo {
+    display: block;
+    width: min(100%, 340px);
+    height: auto;
+  }
+  .studio__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .studio__line {
+    font-size: clamp(17px, 1.4vw, 21px);
+    line-height: 1.42;
+    max-width: 30ch;
+    text-wrap: pretty;
+  }
+  .studio__visit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border: 1.5px solid var(--paper);
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* ------------------------------------------------------------ contact */
+  .contact {
+    padding: clamp(56px, 6vw, 96px) 0;
+    overflow: hidden;
+    background: var(--amber);
+    color: var(--ink);
+  }
+  .contact__grid {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+  .contact__copy {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(28px, 3vw, 40px);
+  }
+  .contact__title {
+    margin-top: 22px;
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(10px, 1.6vw, 24px);
+  }
+  .contact__h2 {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(56px, 8vw, 132px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+  .contact__h2 :global(.wave-ch) {
+    display: inline-block;
+    transition:
+      translate 0.5s var(--ease),
+      color 0.35s ease;
+  }
+  .phone {
+    position: relative;
+    display: block;
+    flex: none;
+    width: clamp(76px, 8vw, 132px);
+    margin-bottom: 0.4vw;
+    transition: transform 0.5s var(--ease);
+  }
+  .phone:hover {
+    transform: translateY(-4px) scale(1.04);
+  }
+  .phone__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transform-origin: 50% 80%;
+    animation: ring 3.6s ease-in-out infinite;
+    filter: drop-shadow(0 10px 14px rgba(31, 29, 43, 0.22));
+  }
+  @keyframes ring {
+    0%,
+    56%,
+    100% {
+      transform: rotate(0);
+    }
+    60% {
+      transform: rotate(-9deg);
+    }
+    64% {
+      transform: rotate(8deg);
+    }
+    68% {
+      transform: rotate(-7deg);
+    }
+    72% {
+      transform: rotate(6deg);
+    }
+    76% {
+      transform: rotate(-3deg);
+    }
+    80% {
+      transform: rotate(0);
+    }
+  }
+  .phone__tag {
+    position: absolute;
+    right: -6px;
+    top: -10px;
+    padding: 4px 8px;
+    transform: rotate(8deg);
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .contact__lede {
+    margin-top: 22px;
+    font-size: clamp(18px, 1.5vw, 22px);
+    line-height: 1.45;
+    max-width: 36ch;
+    text-wrap: pretty;
+  }
+  .contact__pills {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 460px;
+  }
+  .pill {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 22px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    color: var(--ink);
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .pill:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .pill__text {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    min-width: 0;
+  }
+  .pill__k {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.75;
+  }
+  .pill__v {
+    font-size: clamp(16px, 1.3vw, 19px);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  /* A phone can't fit the label and the email address on one line, so the
+     label goes on top instead of splitting the address. */
+  @media (max-width: 459px) {
+    .pill {
+      padding: 12px 20px;
+    }
+    .pill__text {
+      flex-direction: column;
+      gap: 2px;
     }
   }
 
-  @media (max-width: 520px) {
-    .statgrid {
-      grid-template-columns: 1fr;
+  .chat {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--card);
+    filter: drop-shadow(0 16px 28px rgba(31, 29, 43, 0.18));
+  }
+  .chat__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .chat__avatar {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #d9d0bd;
+  }
+  .chat__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .chat__who {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .chat__name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .chat__status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--lav);
+  }
+  .chat__online {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--online);
+  }
+  .chat__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: clamp(380px, 34vw, 470px);
+    padding: clamp(18px, 2.2vw, 28px);
+  }
+  .bub {
+    align-self: flex-start;
+    max-width: 88%;
+    padding: 12px 16px;
+    border-radius: 16px 16px 16px 4px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: clamp(16px, 1.25vw, 18px);
+    line-height: 1.4;
+    animation: bubble 0.5s var(--ease) var(--d, 0s) both;
+  }
+  .bub a {
+    color: var(--blue);
+    text-decoration: underline;
+  }
+  .bub--out {
+    align-self: flex-end;
+    max-width: 80%;
+    border-radius: 16px 16px 4px 16px;
+    background: var(--blue);
+    color: var(--paper);
+  }
+  @keyframes bubble {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
     }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .chat__ask {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    animation: bubble 0.5s var(--ease) 0.9s both;
+  }
+  .chat__hint {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .chat__topics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .chat__topic {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 11px 18px;
+    border: 1.5px solid var(--blue);
+    border-radius: 22px;
+    background: transparent;
+    color: var(--blue);
+    font-size: 15px;
+    font-weight: 600;
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .chat__topic:hover {
+    background: var(--blue);
+    color: var(--paper);
+  }
+  .chat__picked,
+  .chat__sent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chat__again {
+    align-self: flex-end;
+    margin-top: auto;
+    animation: bubble 0.5s var(--ease) 1.1s both;
+  }
+  .chat__form {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--paper);
+    animation: bubble 0.5s var(--ease) 0.8s both;
+  }
+  .chat__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 10px;
+  }
+  .chat__form input,
+  .chat__form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    font-size: 16px;
+  }
+  .chat__form textarea {
+    resize: vertical;
+  }
+  .chat__form ::placeholder {
+    color: var(--muted);
+    opacity: 1;
+  }
+  .chat__form .chat__honey {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .chat__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+  .chat__back {
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .chat__back:hover {
+    color: var(--ink);
+  }
+  .chat__send {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 24px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 15px;
+    font-weight: 600;
+    transition:
+      background 0.3s,
+      border-color 0.3s;
+  }
+  .chat__send:hover {
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+  .chat__send:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
 
-    .slabs {
-      grid-template-columns: max-content;
-      gap: 12px;
-    }
+  /* ------------------------------------------------- pointer effects */
+  .float {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 45;
+    width: 224px;
+    padding: 8px 8px 22px;
+    background: var(--card);
+    clip-path: var(--torn-snap);
+    filter: drop-shadow(0 10px 16px rgba(31, 29, 43, 0.25));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    will-change: transform;
+  }
+  .float img {
+    display: block;
+    width: 100%;
+    height: 124px;
+    object-fit: cover;
+    clip-path: var(--torn-snap-img);
+  }
+  .cur {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9998;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    background: var(--paper);
+    mix-blend-mode: difference;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      width 0.35s var(--ease),
+      height 0.35s var(--ease),
+      margin 0.35s var(--ease),
+      opacity 0.25s;
+  }
+  .cur.is-big {
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+  }
+  .cur-label {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0;
+    scale: 0.6;
+    pointer-events: none;
+    transition:
+      opacity 0.25s,
+      scale 0.35s var(--ease);
+  }
+  .cur-label.is-on {
+    opacity: 1;
+    scale: 1;
   }
 </style>
+
+<style is:global>
+  html.mz-cur,
+  html.mz-cur * {
+    cursor: none !important;
+  }
+</style>
+
+<script>
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  const wide = window.matchMedia('(min-width: 1000px)');
+  let px = -999;
+  let py = -999;
+
+  /* ------------------------------------------------------ flip the notes */
+  for (const note of document.querySelectorAll<HTMLButtonElement>('[data-note]')) {
+    note.addEventListener('click', () => {
+      const on = note.getAttribute('aria-pressed') === 'true';
+      document.querySelectorAll('[data-note]').forEach((n) => n.setAttribute('aria-pressed', 'false'));
+      note.setAttribute('aria-pressed', String(!on));
+    });
+  }
+
+  /* --------------------------------------------------- the work track */
+  const track = document.querySelector<HTMLElement>('[data-track]');
+  if (track) {
+    const step = (dir: number) => {
+      const card = track.querySelector<HTMLElement>('.tcard');
+      const w = card ? card.getBoundingClientRect().width + 26 : 400;
+      track.scrollBy({ left: dir * w, behavior: reduced ? 'auto' : 'smooth' });
+    };
+    document.querySelector('[data-track-prev]')?.addEventListener('click', () => step(-1));
+    document.querySelector('[data-track-next]')?.addEventListener('click', () => step(1));
+
+    // Mouse drag to scroll; touch already scrolls natively.
+    let down = false;
+    let sx = 0;
+    let sl = 0;
+    let moved = 0;
+    let dragged = false;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      down = true;
+      moved = 0;
+      sx = e.clientX;
+      sl = track.scrollLeft;
+      track.classList.add('is-dragging');
+    });
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        if (!down) return;
+        const dx = e.clientX - sx;
+        moved = Math.max(moved, Math.abs(dx));
+        track.scrollLeft = sl - dx;
+      },
+      { passive: true },
+    );
+    const up = () => {
+      if (!down) return;
+      down = false;
+      track.classList.remove('is-dragging');
+      if (moved > 6) {
+        dragged = true;
+        setTimeout(() => (dragged = false), 60);
+      }
+    };
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+    // A drag that ends over a card must not also open it.
+    track.addEventListener(
+      'click',
+      (e) => {
+        if (dragged) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      true,
+    );
+  }
+
+  /* ------------------------------------------------ how-I-work rotation */
+  const stepsRoot = document.querySelector<HTMLElement>('[data-steps]');
+  const stepBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-step]'));
+  const stepImgs = Array.from(document.querySelectorAll<HTMLElement>('[data-step-img]'));
+  const figEl = document.querySelector('[data-step-fig]');
+  const capEl = document.querySelector('[data-step-cap]');
+  const idxEl = document.querySelector('[data-step-idx]');
+  let current = 0;
+  let rotor = 0;
+  const pick = (i: number) => {
+    current = i;
+    stepBtns.forEach((b, k) => {
+      b.classList.toggle('is-on', k === i);
+      b.setAttribute('aria-pressed', String(k === i));
+    });
+    stepImgs.forEach((img, k) => img.classList.toggle('is-on', k === i));
+    if (figEl) figEl.textContent = String(i + 2);
+    if (capEl) capEl.textContent = stepBtns[i]?.dataset.caption ?? '';
+    if (idxEl) idxEl.textContent = `0${i + 1}`;
+  };
+  const resume = () => {
+    clearInterval(rotor);
+    if (reduced) return;
+    rotor = window.setInterval(() => pick((current + 1) % stepBtns.length), 4200);
+  };
+  stepBtns.forEach((b, i) => {
+    const choose = () => {
+      clearInterval(rotor);
+      if (current !== i) pick(i);
+    };
+    b.addEventListener('mouseenter', choose);
+    b.addEventListener('focus', choose);
+    b.addEventListener('click', choose);
+  });
+  stepsRoot?.addEventListener('mouseleave', resume);
+  resume();
+
+  /* ---------------------------------------------------------- the chat */
+  const chat = document.querySelector<HTMLElement>('[data-chat]');
+  if (chat) {
+    const ask = chat.querySelector<HTMLElement>('[data-chat-ask]')!;
+    const picked = chat.querySelector<HTMLElement>('[data-chat-picked]')!;
+    const sent = chat.querySelector<HTMLElement>('[data-chat-sent]')!;
+    const error = chat.querySelector<HTMLElement>('[data-chat-error]')!;
+    const label = chat.querySelector<HTMLElement>('[data-chat-label]')!;
+    const labelSent = chat.querySelector<HTMLElement>('[data-chat-label-sent]')!;
+    const reply = chat.querySelector<HTMLElement>('[data-chat-reply]')!;
+    const form = chat.querySelector<HTMLFormElement>('[data-chat-form]')!;
+    const subject = chat.querySelector<HTMLInputElement>('[data-chat-subject]')!;
+    const topic = chat.querySelector<HTMLInputElement>('[data-chat-topic]')!;
+    const msg = chat.querySelector<HTMLTextAreaElement>('[data-chat-msg]')!;
+    const back = chat.querySelector<HTMLButtonElement>('.chat__back')!;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    let subjectBase = 'Hello';
+
+    // With JavaScript the form waits for a reply to be picked.
+    picked.hidden = true;
+    back.hidden = false;
+
+    const reset = () => {
+      sent.hidden = true;
+      error.hidden = true;
+      picked.hidden = true;
+      ask.hidden = false;
+      msg.value = '';
+    };
+
+    chat.querySelectorAll<HTMLButtonElement>('[data-topic]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        subjectBase = btn.dataset.subject ?? 'Hello';
+        topic.value = btn.dataset.label ?? '';
+        label.textContent = btn.dataset.label ?? '';
+        labelSent.textContent = btn.dataset.label ?? '';
+        reply.textContent = btn.dataset.reply ?? '';
+        label.hidden = false;
+        reply.hidden = false;
+        msg.placeholder = btn.dataset.placeholder ?? '';
+        ask.hidden = true;
+        error.hidden = true;
+        picked.hidden = false;
+        form.querySelector<HTMLInputElement>('input[name="name"]')?.focus({ preventScroll: true });
+      });
+    });
+    chat.querySelectorAll('[data-chat-reset]').forEach((b) => b.addEventListener('click', reset));
+
+    form.addEventListener('submit', async (e) => {
+      if (!form.checkValidity()) return;
+      e.preventDefault();
+      const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
+      subject.value = subjectBase + (name ? ` · from ${name}` : '');
+      submit.disabled = true;
+      error.hidden = true;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        picked.hidden = true;
+        sent.hidden = false;
+      } catch {
+        error.hidden = false;
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+
+  /* ------------------------------------------- pointer-driven flourishes */
+  if (fine && !reduced) {
+    const photo = document.querySelector<HTMLElement>('[data-tilt]');
+    const hero = document.querySelector<HTMLElement>('#top');
+    const floatEl = document.querySelector<HTMLElement>('[data-float]');
+    const floatImg = document.querySelector<HTMLImageElement>('[data-float-img]');
+    const dot = document.querySelector<HTMLElement>('[data-cur]');
+    const lab = document.querySelector<HTMLElement>('[data-cur-label]');
+    const waveHost = document.querySelector<HTMLElement>('[data-wave]');
+
+    /* "Let's talk." — letters lift toward the pointer. Each word stays one
+       unbreakable unit, and the heading keeps its text as its accessible name. */
+    let chars: HTMLElement[] = [];
+    if (waveHost) {
+      const text = (waveHost.textContent ?? '').trim();
+      waveHost.textContent = '';
+      waveHost.setAttribute('aria-label', text);
+      text.split(' ').forEach((word, i, all) => {
+        const w = document.createElement('span');
+        w.setAttribute('aria-hidden', 'true');
+        w.style.cssText = 'display:inline-block;white-space:nowrap';
+        for (const ch of word) {
+          const c = document.createElement('span');
+          c.className = 'wave-ch';
+          c.textContent = ch;
+          w.appendChild(c);
+          chars.push(c);
+        }
+        waveHost.appendChild(w);
+        if (i < all.length - 1) waveHost.appendChild(document.createTextNode(' '));
+      });
+    }
+
+    let tilt = { x: 0, y: 0 };
+    let fl: { x: number; y: number; vx: number; on: boolean } | null = null;
+    const cur = { x: 0, y: 0, on: false };
+
+    document.querySelectorAll<HTMLElement>('[data-team]').forEach((cell) => {
+      const src = cell.querySelector<HTMLImageElement>('[data-team-img]');
+      const enter = () => {
+        if (!wide.matches || !floatEl || !floatImg || !src) return;
+        floatImg.src = src.currentSrc || src.src;
+        if (!fl) fl = { x: px + 24, y: py + 24, vx: 0, on: true };
+        fl.on = true;
+        floatEl.style.opacity = '1';
+      };
+      const leave = () => {
+        if (floatEl) floatEl.style.opacity = '0';
+        if (fl) fl.on = false;
+      };
+      cell.addEventListener('mouseenter', enter);
+      cell.addEventListener('mouseleave', leave);
+    });
+
+    // Custom cursor: a dot that grows over links, or a label where one is set.
+    document.documentElement.classList.add('mz-cur');
+    document.addEventListener('pointerover', (e) => {
+      const t = (e.target as Element | null)?.closest?.('[data-cursor],a,button,input,textarea,label');
+      const text = t?.getAttribute('data-cursor');
+      if (!dot || !lab) return;
+      if (text) {
+        lab.textContent = text;
+        lab.classList.add('is-on');
+        dot.style.opacity = '0';
+      } else {
+        lab.classList.remove('is-on');
+        dot.style.opacity = cur.on ? '1' : '0';
+        dot.classList.toggle('is-big', !!t);
+      }
+    });
+    document.addEventListener('pointerout', (e) => {
+      if (!e.relatedTarget && dot && lab) {
+        dot.style.opacity = '0';
+        lab.classList.remove('is-on');
+        cur.on = false;
+      }
+    });
+    // A typing caret matters more than the flourish.
+    document.querySelectorAll('input, textarea').forEach((el) => {
+      el.addEventListener('focus', () => document.documentElement.classList.remove('mz-cur'));
+      el.addEventListener('blur', () => document.documentElement.classList.add('mz-cur'));
+    });
+
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        px = e.clientX;
+        py = e.clientY;
+        if (!waveHost || !chars.length) return;
+        const r = waveHost.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) return;
+        const fs = parseFloat(getComputedStyle(waveHost).fontSize);
+        for (const ch of chars) {
+          const cr = ch.getBoundingClientRect();
+          const lift = parseFloat(ch.dataset.lift ?? '0');
+          const d = Math.hypot(px - (cr.left + cr.width / 2), (py - (cr.top + cr.height / 2 - lift)) * 0.7);
+          const k = Math.max(0, 1 - d / (fs * 1.3));
+          const y = -k * fs * 0.16;
+          ch.dataset.lift = String(y);
+          ch.style.translate = `0 ${y.toFixed(1)}px`;
+          ch.style.color = k > 0.5 ? 'var(--blue)' : '';
+        }
+      },
+      { passive: true },
+    );
+
+    const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+    const tick = () => {
+      requestAnimationFrame(tick);
+      if (px < -900) return;
+
+      if (photo && hero) {
+        const r = hero.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < window.innerHeight) {
+          const inside = px >= r.left && px <= r.right && py >= r.top && py <= r.bottom;
+          const tx = inside ? (px - (r.left + r.width / 2)) / r.width : 0;
+          const ty = inside ? (py - (r.top + r.height / 2)) / r.height : 0;
+          tilt.x += (tx - tilt.x) * 0.06;
+          tilt.y += (ty - tilt.y) * 0.06;
+          photo.style.transform = `rotate(${(2 + tilt.x * 2.5).toFixed(2)}deg) translate3d(${(tilt.x * 10).toFixed(1)}px,${(tilt.y * 10).toFixed(1)}px,0)`;
+        }
+      }
+
+      if (fl && floatEl && (fl.on || Math.abs(fl.vx) > 0.1)) {
+        const nx = fl.x + (px + 28 - fl.x) * 0.16;
+        fl.vx += (nx - fl.x - fl.vx) * 0.2;
+        fl.x = nx;
+        fl.y += (py - 80 - fl.y) * 0.16;
+        floatEl.style.transform = `translate3d(${fl.x.toFixed(1)}px,${fl.y.toFixed(1)}px,0) rotate(${clamp(-4 + fl.vx * 0.5, -12, 6).toFixed(2)}deg)`;
+      }
+
+      if (dot && lab) {
+        if (!cur.on) {
+          cur.on = true;
+          cur.x = px;
+          cur.y = py;
+          if (!lab.classList.contains('is-on')) dot.style.opacity = '1';
+        }
+        cur.x += (px - cur.x) * 0.22;
+        cur.y += (py - cur.y) * 0.22;
+        dot.style.transform = `translate3d(${cur.x}px,${cur.y}px,0)`;
+        lab.style.transform = `translate3d(${cur.x + 16}px,${cur.y + 16}px,0)`;
+      }
+    };
+    requestAnimationFrame(tick);
+  }
+</script>

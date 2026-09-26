@@ -4,6 +4,8 @@ shortTitle: "How AI rewrote search"
 date: 2025-08-25
 tag: "Search"
 excerpt: "AI search changes SEO from ranking for links to becoming a credible source answer engines can cite. SEO vs GEO, how each generates results, and what earns a citation."
+dek: "SEO vs GEO: why the goal is now becoming a source AI answers can cite."
+image: "../../assets/art/01-automation-audit.webp"
 ---
 Once upon a time, SEO was the king of search visibility.
 

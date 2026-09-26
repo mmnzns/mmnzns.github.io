@@ -1,0 +1,396 @@
+---
+/**
+ * Privacy — v19 `Monzones-D-Privacy-V4`, copied verbatim with one exception.
+ *
+ * §03's first paragraph in the export describes a mailto form ("it opens your
+ * own email app… nothing leaves your device"). This site's form POSTs to
+ * Formspree, so that sentence would be false. It is replaced with an accurate
+ * one; everything else is the design's wording. If the form ever changes
+ * provider, this paragraph changes with it.
+ */
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT } from '../config';
+import tapeYellow from '../assets/brand/tape-yellow.webp';
+import tapeGreen from '../assets/brand/tape-green.webp';
+import tapeBlue from '../assets/brand/tape-blue.webp';
+
+const UPDATED = '25 September 2026';
+const toc = [
+  { id: 'responsible', label: "Who's responsible" },
+  { id: 'analytics', label: 'Analytics' },
+  { id: 'contact', label: 'When you get in touch' },
+  { id: 'choices', label: 'Your choices' },
+  { id: 'changes', label: 'Changes' },
+];
+const dataRequest = `mailto:${CONTACT.email}?subject=Data%20request`;
+---
+
+<BaseLayout
+  title="Privacy"
+  description="This site collects as little as it can. Here's exactly what, why, and how to make it stop."
+  breadcrumbs={[{ label: 'Privacy', href: '/privacy/' }]}
+>
+  <header class="phead">
+    <div class="mz-max">
+      <div class="mz-head3" data-hero>
+        <a href="/"><span aria-hidden="true">←</span> Back home</a>
+        <span>The fine print</span>
+        <span>Last updated {UPDATED}</span>
+      </div>
+      <h1 class="phead__h1" data-hero>Privacy, <em>plainly.</em></h1>
+      <div class="phead__band mz-double" data-hero>
+        <p>This site collects as little as it can. Here's exactly what, why, and how to make it stop.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="short">
+    <div class="short__grid">
+      <div class="short__card" data-rv style="--tilt:-1.2deg">
+        <Image src={tapeYellow} alt="" aria-hidden="true" width={98} densities={[1, 2]} class="short__tape" style="top:-18px;left:24px;rotate:-5deg" />
+        <div class="short__paper"><span class="short__k">01 · Analytics</span><span class="short__t">Only if you say yes.</span></div>
+      </div>
+      <div class="short__card" data-rv data-delay="100" style="--tilt:.8deg">
+        <Image src={tapeGreen} alt="" aria-hidden="true" width={98} densities={[1, 2]} class="short__tape" style="top:-17px;left:50%;margin-left:-49px;rotate:3deg" />
+        <div class="short__paper"><span class="short__k">02 · Your data</span><span class="short__t">Never sold, never shared.</span></div>
+      </div>
+      <div class="short__card" data-rv data-delay="200" style="--tilt:-.6deg">
+        <Image src={tapeBlue} alt="" aria-hidden="true" width={98} densities={[1, 2]} class="short__tape" style="top:-15px;right:24px;rotate:-3deg" />
+        <div class="short__paper"><span class="short__k">03 · Your say</span><span class="short__t">Ask, and I'll delete it.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="policy">
+    <div class="policy__grid">
+      <nav class="ptoc" aria-label="On this page">
+        <div class="ptoc__inner">
+          <p class="ptoc__head">Contents</p>
+          {
+            toc.map((t, i) => (
+              <a href={`#${t.id}`} class:list={['ptoc__link', i === 0 && 'is-on']} data-ptoc={t.id}>
+                <span class="ptoc__n">{String(i + 1).padStart(2, '0')}</span>
+                <span>{t.label}</span>
+              </a>
+            ))
+          }
+        </div>
+      </nav>
+
+      <div class="policy__body">
+        <div id="responsible" class="sec" data-sec>
+          <p class="sec__n">§ 01</p>
+          <h2 class="sec__h">Who's responsible</h2>
+          <p>
+            This site belongs to Miguel Monzones and is run through MNM Alaminos Consulting Ltd., in Vancouver, BC. I'm the
+            person accountable for your information. You can reach me any time at <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+          </p>
+        </div>
+
+        <div id="analytics" class="sec" data-sec>
+          <p class="sec__n">§ 02</p>
+          <h2 class="sec__h">Analytics (only if you say yes)</h2>
+          <p>
+            With your consent, the site uses Google Analytics 4 to see which pages and pieces people find useful, so I can
+            write better ones. It records page views, the site you came from, device and browser type, and approximate
+            location (city level). Nothing loads until you accept.
+          </p>
+          <div class="facts">
+            <div class="facts__row"><span class="facts__k">Cookies set</span><span class="facts__v facts__v--mono">_ga, _ga_*</span></div>
+            <div class="facts__row"><span class="facts__k">Kept for</span><span class="facts__v">Up to two years</span></div>
+            <div class="facts__row"><span class="facts__k">Advertising</span><span class="facts__v">None. No remarketing or cross-site tracking</span></div>
+          </div>
+          <p>
+            Google processes this data on my behalf and may store it outside Canada, including in the United States. I
+            don't use advertising features, cross-site tracking or remarketing, and I never sell or share your data.
+          </p>
+        </div>
+
+        <div id="contact" class="sec" data-sec>
+          <p class="sec__n">§ 03</p>
+          <h2 class="sec__h">When you get in touch</h2>
+          <p>
+            The contact form on this site is sent through Formspree, a form service, which passes your name, email and
+            message on to me by email. Formspree may store that submission on its servers, including in the United States.
+          </p>
+          <p>
+            Whether you email, call or message me on LinkedIn, I get your name, your contact details and whatever you tell
+            me about your work. I only use that to reply and, if we work together, to run the engagement. I keep enquiries
+            for up to two years, then delete them.
+          </p>
+        </div>
+
+        <div id="choices" class="sec" data-sec>
+          <p class="sec__n">§ 04</p>
+          <h2 class="sec__h">Your choices</h2>
+          <p>
+            Rather not be tracked? Open cookie settings and choose Decline. Analytics stops, and any analytics cookies
+            already set are deleted. You can change your mind any time.
+          </p>
+          <div class="sec__btns">
+            <a href="#cookie-settings" class="mz-btn mz-btn--solid sec__btn" data-cookie-settings data-magnetic>Open cookie settings</a>
+            <a href={dataRequest} class="mz-btn mz-btn--ghost sec__btn">Request my data <span aria-hidden="true">→</span></a>
+          </div>
+          <p>
+            Want to see what I have about you, or have it deleted? Email <a href={dataRequest}>{CONTACT.email}</a> and I'll
+            gladly take care of it.
+          </p>
+          <p>
+            If you're not happy with how I've handled something, please tell me first and I'll do my best to make it
+            right. You can also contact the Office of the Information and Privacy Commissioner for British Columbia or the
+            Office of the Privacy Commissioner of Canada.
+          </p>
+        </div>
+
+        <div id="changes" class="sec" data-sec>
+          <p class="sec__n">§ 05</p>
+          <h2 class="sec__h">Changes</h2>
+          <p>
+            If anything here changes, like a new tool, I'll update this page and the date at the top, and ask for your
+            consent again where it's needed.
+          </p>
+        </div>
+
+        <p class="mz-endmark policy__end" data-rv><span></span>That's everything</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .phead {
+    padding: clamp(28px, 4vw, 56px) var(--gutter) 0;
+  }
+  .phead__h1 {
+    margin-top: clamp(38px, 5.4vw, 70px);
+    text-align: center;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(64px, 12vw, 200px);
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+  }
+  .phead__band {
+    margin-top: clamp(32px, 4.2vw, 51px);
+    padding: 26px 0 46px;
+    border-bottom: 1px solid var(--ink);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+  .phead__band p {
+    margin-top: 6px;
+    max-width: 56ch;
+    font-size: clamp(18px, 1.5vw, 21px);
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+
+  .short {
+    padding: clamp(48px, 6vw, 88px) var(--gutter) 0;
+  }
+  .short__grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: clamp(28px, 3vw, 40px);
+  }
+  .short__card {
+    position: relative;
+    transform: rotate(var(--tilt));
+    filter: drop-shadow(0 12px 18px rgba(31, 29, 43, 0.14));
+  }
+  .short__tape {
+    position: absolute;
+    z-index: 1;
+    width: 98px;
+    height: auto;
+    pointer-events: none;
+  }
+  .short__paper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100%;
+    padding: 28px 24px 24px;
+    background: var(--card);
+  }
+  .short__k {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .short__t {
+    font-family: var(--serif);
+    font-size: 30px;
+    line-height: 1.05;
+  }
+
+  .policy {
+    padding: clamp(64px, 8vw, 120px) var(--gutter) clamp(72px, 8vw, 120px);
+  }
+  .policy__grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px clamp(40px, 5vw, 80px);
+  }
+  .ptoc {
+    flex: 1 1 220px;
+    max-width: 280px;
+  }
+  .ptoc__inner {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+  }
+  .ptoc__head {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .ptoc__link {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(31, 29, 43, 0.18);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+    transition:
+      color 0.2s,
+      padding 0.4s var(--ease);
+  }
+  .ptoc__link:hover {
+    color: var(--ink);
+    padding-left: 6px;
+  }
+  .ptoc__link.is-on {
+    color: var(--ink);
+  }
+  .ptoc__n {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .ptoc__link.is-on .ptoc__n {
+    color: var(--blue);
+  }
+  .policy__body {
+    flex: 1 1 560px;
+    max-width: 700px;
+    min-width: 0;
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--body-deep);
+  }
+  .sec {
+    scroll-margin-top: 100px;
+  }
+  .sec + .sec {
+    margin-top: 64px;
+  }
+  .sec p {
+    margin: 0 0 22px;
+    text-wrap: pretty;
+  }
+  .sec .sec__n {
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .sec__h {
+    margin: 14px 0 18px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(34px, 3.2vw, 46px);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .sec p a {
+    text-decoration: underline;
+    text-decoration-color: var(--amber);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 3px;
+  }
+  .facts {
+    margin: 0 0 22px;
+    border-top: 1px solid var(--ink);
+  }
+  .facts__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+    gap: 4px 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(31, 29, 43, 0.25);
+  }
+  .facts__k {
+    font-family: var(--mono);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .facts__v {
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .facts__v--mono {
+    font-family: var(--mono);
+    font-size: 15px;
+  }
+  .sec__btns {
+    margin: 0 0 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .sec__btn {
+    min-height: 48px;
+    padding: 12px 22px;
+  }
+  .policy__end {
+    margin-top: 56px;
+  }
+</style>
+
+<script>
+  /* The contents rail follows the section being read. */
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-ptoc]'));
+  const secs = Array.from(document.querySelectorAll<HTMLElement>('[data-sec]'));
+  let queued = false;
+  const update = () => {
+    queued = false;
+    let current = secs[0]?.id ?? '';
+    for (const s of secs) if (s.getBoundingClientRect().top < 160) current = s.id;
+    links.forEach((a) => a.classList.toggle('is-on', a.dataset.ptoc === current));
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    },
+    { passive: true },
+  );
+  update();
+</script>

@@ -1,143 +1,138 @@
 ---
-import { getCollection } from 'astro:content';
+/** Not found — v19 `Monzones-D-404-V4`, "Extra edition". */
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CONTACT } from '../config';
-import { PROJECTS } from '../data/site';
+import tapeBlue from '../assets/brand/tape-blue.webp';
+import tapeYellow from '../assets/brand/tape-yellow.webp';
+import tapeGreen from '../assets/brand/tape-green.webp';
 
-const POST_COUNT = (await getCollection('thinking', ({ data }) => !data.draft)).length;
-
-/*
- * Counts are read from the data rather than typed, so a page that says
- * "thirteen write-ups" can't drift out of date the next time one is added.
- */
-const spell = (n: number) =>
-  ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen'][n] ?? String(n);
-
-const destinations = [
-  {
-    href: '/work/',
-    title: 'The work',
-    body: `${spell(PROJECTS.length).replace(/^./, (c) => c.toUpperCase())} write-ups: what I was handed, what I found, and what moved.`,
-  },
-  {
-    href: '/consulting/',
-    title: 'Consulting',
-    body: 'What I take on, how it gets scoped, and who it is not for.',
-  },
-  {
-    href: '/thinking/',
-    title: 'Writing',
-    body: `Lifecycle, AI and how search is changing. ${spell(POST_COUNT).replace(/^./, (c) => c.toUpperCase())} pieces so far.`,
-  },
-  {
-    href: '/about/',
-    title: 'About',
-    body: 'Where I came from, how I work, and what I am like to work with.',
-  },
+const cards = [
+  { href: '/work/', kick: '01 · The work', title: "Problems I've owned end to end.", cta: 'See the work', tape: tapeBlue, tapeStyle: 'top:-15px;left:24px;rotate:-5deg', tilt: '-1.2deg', cursor: 'See the work' },
+  { href: '/thinking/', kick: '02 · Field notes', title: 'Essays on lifecycle, AI and search.', cta: 'Start reading', tape: tapeYellow, tapeStyle: 'top:-18px;left:50%;margin-left:-49px;rotate:3deg', tilt: '.8deg', cursor: 'Read the field notes' },
+  { href: '/about/', kick: '03 · About', title: 'Where I came from, how I work.', cta: 'Meet Miguel', tape: tapeGreen, tapeStyle: 'top:-17px;right:24px;rotate:-3deg', tilt: '-.6deg', cursor: 'Read about me' },
 ];
 ---
 
-<BaseLayout title="Page not found" description="That page doesn't exist.">
-  <section class="section--first wrap notfound">
-    <p class="notfound__kicker">
-      <span class="eyebrow">404</span>
-      <span class="notfound__rule" aria-hidden="true"></span>
-    </p>
-    <h1 class="page-title notfound__title">This page is not here.</h1>
-    <p class="lede notfound__lede">
-      Either it moved or the link was wrong, and neither of those is your fault. Here is where most
-      people are heading anyway.
-    </p>
+<BaseLayout title="Page not found" description="That page moved, got renamed, or never existed. Here's where the good stuff lives.">
+  <section class="nf">
+    <div class="mz-max">
+      <div class="mz-head3" data-hero>
+        <a href="/"><span aria-hidden="true">←</span> Back home</a>
+        <span>Extra edition</span>
+        <span>You've found the edge of the site</span>
+      </div>
+      <h1 class="nf__h1" data-hero>Error <em>404.</em></h1>
+      <div class="nf__band mz-double" data-hero>
+        <p>That page moved, got renamed, or never existed. Here's where the good stuff lives.</p>
+      </div>
+    </div>
+  </section>
 
-    <nav class="notfound__links" aria-label="Site sections">
+  <section class="go">
+    <div class="go__grid">
       {
-        destinations.map((item) => (
-          <a class="card card--interactive notfound__card" href={item.href}>
-            <span class="notfound__card-title">{item.title}</span>
-            <span class="notfound__card-body">{item.body}</span>
+        cards.map((c, i) => (
+          <a class="go__card" href={c.href} data-rv data-delay={i * 100} data-cursor={c.cursor} style={`--tilt:${c.tilt}`}>
+            <Image src={c.tape} alt="" aria-hidden="true" width={98} densities={[1, 2]} class="go__tape" style={c.tapeStyle} />
+            <span class="go__paper">
+              <span class="go__kick">{c.kick}</span>
+              <span class="go__title">{c.title}</span>
+              <span class="mz-cta go__cta">{c.cta} <span aria-hidden="true">→</span></span>
+            </span>
           </a>
         ))
       }
-    </nav>
+    </div>
+  </section>
 
-    <p class="notfound__report">
-      Landed here from a link on my site? <a href={`mailto:${CONTACT.email}`}>Tell me</a> and I’ll fix
-      it.
-    </p>
+  <section class="home">
+    <a href="/" class="mz-btn mz-btn--solid" data-rv data-delay="300" data-magnetic>Take me back home <span aria-hidden="true">→</span></a>
   </section>
 </BaseLayout>
 
 <style>
-  .notfound {
-    padding-bottom: clamp(64px, 10vw, 140px);
+  .nf {
+    padding: clamp(28px, 4vw, 56px) var(--gutter) 0;
   }
-
-  .notfound__kicker {
+  .nf__h1 {
+    margin-top: clamp(32px, 4.8vw, 58px);
+    text-align: center;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(84px, 15vw, 260px);
+    line-height: 0.86;
+    letter-spacing: -0.03em;
+  }
+  .nf__band {
+    margin-top: clamp(32px, 4.2vw, 51px);
+    padding: 26px 0 46px;
+    border-bottom: 1px solid var(--ink);
     display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 26px;
+    justify-content: center;
+    text-align: center;
   }
-
-  .notfound__rule {
-    flex: 1;
-    min-width: 24px;
-    height: 3px;
-    background: var(--ink);
+  .nf__band p {
+    margin-top: 6px;
+    max-width: 56ch;
+    font-size: clamp(18px, 1.5vw, 21px);
+    line-height: 1.5;
+    text-wrap: pretty;
   }
-
-  .notfound__title {
-    max-width: 860px;
+  .go {
+    padding: clamp(48px, 6vw, 88px) var(--gutter) 0;
   }
-
-  .notfound__report {
-    margin-top: 44px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-3);
-  }
-
-  .notfound__report a {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .notfound__lede {
-    margin-top: 30px;
-    max-width: 520px;
-  }
-
-  .notfound__links {
-    margin-top: 52px;
-    max-width: 820px;
+  .go__grid {
+    max-width: 1100px;
+    margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: clamp(28px, 3vw, 40px);
   }
-
-  .notfound__card {
-    padding: 30px 32px;
+  .go__card {
+    position: relative;
+    display: block;
+    transform: rotate(var(--tilt));
+    filter: drop-shadow(0 12px 18px rgba(31, 29, 43, 0.14));
+    transition: transform 0.5s var(--ease);
+  }
+  .go__card:hover {
+    transform: rotate(0deg) translateY(-4px);
+  }
+  .go__tape {
+    position: absolute;
+    z-index: 1;
+    width: 98px;
+    height: auto;
+    pointer-events: none;
+  }
+  .go__paper {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 100%;
+    padding: 28px 24px 24px;
+    background: var(--card);
+    color: var(--ink);
   }
-
-  .notfound__card-title {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.012em;
+  .go__kick {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
   }
-
-  .notfound__card-body {
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-2);
+  .go__title {
+    font-family: var(--serif);
+    font-size: 30px;
+    line-height: 1.05;
   }
-
-  @media (min-width: 760px) {
-    .notfound__links {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .go__cta {
+    margin-top: auto;
+    padding-top: 10px;
+  }
+  .home {
+    padding: clamp(56px, 6vw, 96px) var(--gutter) clamp(96px, 9vw, 140px);
+    display: flex;
+    justify-content: center;
   }
 </style>

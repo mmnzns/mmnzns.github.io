@@ -9,29 +9,28 @@
 export const SITE = {
   /** Absolute origin the site is served from. No trailing slash. */
   url: 'https://mnmonzones.com',
-  title: 'Miguel N. Monzones',
-  /** Shown after the page title in the browser tab: "The Work · Miguel N. Monzones" */
+  title: 'Miguel Monzones',
+  /** Shown after the page title in the browser tab: "Work · Miguel Monzones" */
   titleSeparator: '·',
-  role: 'Lifecycle, GTM & WebOps Strategist',
+  role: 'Senior lifecycle & GTM strategist',
   description:
     "Senior lifecycle and GTM strategist with 12 years in fintech, SaaS, and ecommerce. I read what's actually wrong, decide what should exist, then build it.",
-  author: 'Miguel N. Monzones',
+  author: 'Miguel Monzones',
+  /** The name as it appears on formal records — emitted as schema alternateName. */
+  legalName: 'Miguel N. Monzones',
   location: 'Vancouver, BC',
-  /** Shown against a green dot on every contact card. Set to null to hide. */
-  availability: 'Consulting now · open to the right senior role',
+  /** The green-dot status line under the home hero. */
+  availability: 'Open to senior roles and select consulting work.',
   /** BCP 47 language tag, used for <html lang>. */
   lang: 'en',
   /**
-   * Link-preview image for Open Graph / Twitter cards, relative to the site
-   * root. Built by `node scripts/build-og-image.mjs`, which composes the hero
-   * portrait with this file's `title`, `role`, `location` and CONTACT.entity —
-   * so changing any of those means regenerating the image, or the unfurl and
-   * the site disagree.
-   *
-   * Set to null to omit the image meta tags entirely rather than point them at
-   * a URL that 404s; BaseLayout also drops `twitter:card` back to `summary`.
+   * Link-preview image for every page — articles included, deliberately: the
+   * v19 launch handoff asks for one card sitewide. It is the finished export
+   * from the design's `Monzones-OG-Share-Card`, committed as-is; nothing in
+   * this repo generates or overwrites it.
    */
-  ogImage: '/og-image.png' as string | null,
+  ogImage: '/og-image.png',
+  ogImageAlt: 'Miguel Monzones at his desk — The problem is usually upstream.',
 } as const;
 
 /**
@@ -66,11 +65,7 @@ export const CONTACT = {
   city: 'Vancouver, BC',
 } as const;
 
-/**
- * Primary navigation. The v8 design splits the header in two: these are the
- * plain site links, and the offerings live in NAV_SERVICES as their own
- * boxed group, so "what's here" and "what's for sale" read differently.
- */
+/** Primary navigation — the same four links in the header and the mobile menu. */
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Work', href: '/work/' },
@@ -78,23 +73,19 @@ export const NAV_LINKS = [
   { label: 'About', href: '/about/' },
 ] as const;
 
-/**
- * The services group — rendered inside the sun-outlined box in the header,
- * and appended to the page list in llms.txt so crawlers see both offerings.
- * Web Design deliberately looks nothing like the rest of the site (see
- * src/pages/web-design.astro); it still lives here so it shares the domain's
- * traffic rather than splitting it.
- */
-export const NAV_SERVICES = [
-  { label: 'Consulting', href: '/consulting/' },
-  { label: 'Web Design', href: '/web-design/' },
-] as const;
+/** The header's call to action: the home page's contact section. */
+export const NAV_CTA = { label: 'Work with me', href: '/#contact' } as const;
 
 /**
- * The header's single call to action. It points at the home page's contact
- * section — the v8 home carries the primary form — not the consulting page's.
+ * Miguel's studio. Web design and consulting moved there in the v19 relaunch;
+ * this site is the portfolio and the writing. The old /web-design/ and
+ * /consulting/ URLs redirect to it (see SERVICE_REDIRECTS in astro.config.mjs).
  */
-export const NAV_CTA = { label: 'Work with me', href: '/#contact' } as const;
+export const STUDIO = {
+  name: 'Craft Concepts Digital',
+  short: 'Craft Concepts',
+  url: 'https://craftconceptsdigital.com/',
+} as const;
 
 /**
  * Formspree endpoint behind every contact form on the site. Forms POST here

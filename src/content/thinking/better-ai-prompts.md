@@ -3,7 +3,9 @@ title: "How to Write Better AI Prompts: A Simple Framework for Powerful Results"
 shortTitle: "How to write better AI prompts: a simple framework"
 date: 2025-09-08
 tag: "AI & automation"
-excerpt: "The T-C-R-E-I framework and the iteration tactics that turn vague prompts into professional output, across writing, images, and responsible use."
+excerpt: "The T-C-R-E-I framework and the iteration tactics that turn vague prompts into professional output, across writing, images and responsible use."
+dek: "The T-C-R-E-I framework and iteration tactics that turn vague prompts into strong output."
+image: "../../assets/art/09-prompt-framework.webp"
 ---
 ## Generative AI: Your New Best Friend
 
@@ -105,11 +107,9 @@ With each layer, task clarity, format, context, and references, the response mov
 
 **Shot prompting:**
 
-**Zero shot:** no examples
-
-**Single shot:** one example
-
-**Few shots:** two to five examples, often the sweet spot
+- **Zero shot:** no examples
+- **Single shot:** one example
+- **Few shots:** two to five examples, often the sweet spot
 
 The more relevant the examples, the more accurate and creative the response.
 
@@ -183,29 +183,21 @@ AI can be biased, inaccurate, or inconsistent. It is on us to use it responsibly
 
 **My workplace AI checklist**
 
-✅ Confirm AI is the right tool
-
-✅ Avoid reinforcing bias
-
-✅ Get approval before client-facing use
-
-✅ Protect privacy and sensitive data
-
-✅ Fact check every output
-
-✅ Be transparent about when and how AI is used
+- ✅ Confirm AI is the right tool
+- ✅ Avoid reinforcing bias
+- ✅ Get approval before client-facing use
+- ✅ Protect privacy and sensitive data
+- ✅ Fact check every output
+- ✅ Be transparent about when and how AI is used
 
 Responsible prompting is not paranoia. It is being deliberate.
 
 ## Key takeaways
 
-**Framework:** Task → Context → References → Evaluate → Iterate
-
-**Iteration, ABI:** Always refine. Split tasks, rephrase, and add constraints
-
-**Image or multimodal:** Same framework, plus style, composition, and specs
-
-**Responsible prompting:** Humans verify, fact-check, and disclose AI use
+- **Framework:** Task → Context → References → Evaluate → Iterate
+- **Iteration, ABI:** Always refine. Split tasks, rephrase, and add constraints
+- **Image or multimodal:** Same framework, plus style, composition, and specs
+- **Responsible prompting:** Humans verify, fact-check, and disclose AI use
 
 👉 **Bottom line:** Good prompts are rarely one and done. They are built through clear design and steady iteration.
 

@@ -1,207 +1,92 @@
 ---
+/**
+ * The v19 footer, identical on every page.
+ *
+ * The entity line is the design's wording and is left exactly as it is — the
+ * launch handoff notes new wording is pending from Miguel, since the legal
+ * name isn't meant to be the public brand.
+ */
 import { CONTACT } from '../config';
 
-interface Props {
-  /**
-   * Set when the page ends on a full-bleed colour band: the band's own bottom
-   * edge replaces the footer's usual air, exactly as the design does it.
-   */
-  flush?: boolean;
-}
-
-const { flush = false } = Astro.props;
+const onPrivacy = Astro.url.pathname.startsWith('/privacy');
 ---
 
-<footer class:list={['footer', { 'footer--flush': flush }]}>
-  <div class="footer__card">
-    <p class="footer__tag">{CONTACT.entity} — Vancouver.</p>
-
-    <div class="footer__links footer__meta">
-      {/* Reopens the consent banner — see ConsentBanner.astro, which binds
-          every [data-cookie-settings] link on the page. */}
-      <a class="footer__cookies" href="#cookie-settings" data-cookie-settings>Cookie settings</a>
-      <a class="footer__email" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+<footer class="ft">
+  <div class="ft__row">
+    <p class="ft__line">{CONTACT.entity} — lifecycle and GTM, Vancouver.</p>
+    <div class="ft__links">
+      <a href="/privacy/" class="ft__muted" aria-current={onPrivacy ? 'page' : undefined}>Privacy</a>
+      {/* Reopens the consent banner — ConsentBanner.astro binds every [data-cookie-settings]. */}
+      <a href="#cookie-settings" class="ft__muted" data-cookie-settings>Cookie settings</a>
+      <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
       <a
-        class="footer__social"
+        class="ft__social"
         href={CONTACT.linkedin}
         target="_blank"
         rel="noopener"
         aria-label="Miguel Monzones on LinkedIn"
       >
-        <svg viewBox="0 0 50 50" aria-hidden="true" focusable="false">
-          <path
-            d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"
-          ></path>
-        </svg>
+        <img src="/linkedin.svg" alt="" width="20" height="20" />
       </a>
     </div>
   </div>
-
-  <div class="footer__wordmark" aria-hidden="true" data-wordmark>MONZONES</div>
 </footer>
 
 <style>
-  .footer {
-    margin-top: clamp(75px, 13.4vw, 150px);
-    position: relative;
-    overflow: hidden;
+  .ft {
     background: var(--paper);
-    padding: clamp(62px, 8vw, 108px) var(--gutter) 0;
+    padding: clamp(40px, 5vw, 64px) var(--gutter) clamp(80px, 7vw, 96px);
   }
-
-  /* A page that ends on a full-bleed band shouldn't stack the footer's usual
-     air on top of the band's own bottom padding. */
-  .footer--flush {
-    margin-top: 0;
-  }
-
-  .footer__card {
-    max-width: var(--wrap-home);
-    margin-inline: auto;
-    background: var(--dark);
-    padding: clamp(22px, 3vw, 32px) clamp(24px, 3.4vw, 38px);
+  .ft__row {
+    max-width: var(--max);
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 28px;
+    gap: 16px 32px;
     flex-wrap: wrap;
-    position: relative;
-    z-index: 2;
+    padding-top: 22px;
+    border-top: 1px solid var(--ink);
   }
-
-  .footer__tag {
+  .ft__line {
     font-size: 15px;
-    font-weight: 600;
-    color: var(--on-dark);
   }
-
-  .footer__links {
+  .ft__links {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 8px 24px;
     flex-wrap: wrap;
+    font-family: var(--mono);
     font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
   }
-
-  .footer__links a {
-    color: var(--on-dark);
+  .ft__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
   }
-
-  /* Quieter than the email address beside it — it's a utility, not a contact
-     detail. Setting a colour here outranks the global `a:hover`, so the hover
-     and focus colours have to be restated or the link stops responding. */
-  .footer__cookies {
-    color: rgb(251 249 246 / 60%) !important;
+  .ft__links a.ft__muted {
+    color: var(--muted);
   }
-
-  .footer__cookies:hover,
-  .footer__cookies:focus-visible,
-  .footer__links a:hover,
-  .footer__links a:focus-visible {
-    color: var(--sun) !important;
+  .ft__links a[aria-current='page'] {
+    color: var(--ink);
   }
-
-  .footer__social {
+  .ft__links a:hover {
+    color: var(--blue);
+  }
+  .ft__links a.ft__social {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .ft__social:hover {
+    opacity: 1;
+  }
+  .ft__social img {
     display: block;
     width: 20px;
     height: 20px;
-    opacity: 0.6;
-    transition: opacity var(--dur-fast) var(--ease);
-  }
-
-  .footer__social:hover {
-    opacity: 1;
-  }
-
-  .footer__social svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    fill: var(--on-dark);
-  }
-
-  /* Solid ink wordmark, cropped by the footer's overflow so it reads as the
-     page's floor rather than as a heading. Motion.astro drifts it as the
-     footer arrives; the authored offset here is inside the range it animates
-     over, so it sits correctly either way. */
-  .footer__wordmark {
-    margin-top: 44px;
-    font-size: clamp(52px, 14.6vw, 224px);
-    line-height: 0.78;
-    font-weight: 700;
-    letter-spacing: -0.055em;
-    text-align: center;
-    color: var(--ink);
-    transform: translateY(16%);
-    user-select: none;
-  }
-
-  @media (max-width: 640px) {
-    .footer__card {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    /* Wrapping put the email beside the cookie link and left the LinkedIn mark
-       stranded on a line of its own. Laid out explicitly instead: the utility
-       link takes the first row, and the two contact routes share the second. */
-    .footer__links {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      align-items: center;
-      column-gap: 10px;
-      row-gap: 0;
-    }
-
-    .footer__cookies {
-      grid-area: 1 / 1 / 2 / -1;
-    }
-
-    .footer__social {
-      grid-area: 2 / 1;
-    }
-
-    /* The address is the longest string in the footer and it now shares its
-       row with the 44px LinkedIn target, so it gives up a little tracking
-       rather than breaking across two lines mid-domain. */
-    .footer__email {
-      grid-area: 2 / 2;
-      font-size: 12px;
-      letter-spacing: 0;
-      overflow-wrap: anywhere;
-    }
-  }
-
-  /* Narrower than an iPhone SE there isn't room for the address beside the
-     icon at any tracking, so it takes a row of its own rather than breaking
-     mid-domain. */
-  @media (max-width: 359px) {
-    .footer__email {
-      grid-area: 3 / 1 / 4 / -1;
-    }
-  }
-
-  /* Touch targets. The text links are only as tall as their line box, and the
-     social icon is 20px square — both well under the 44px a finger needs, so
-     they get padded out on small screens without changing how they look. */
-  @media (max-width: 719px) {
-    .footer__links {
-      gap: 10px 18px;
-    }
-
-    .footer__links a:not(.footer__social) {
-      display: inline-flex;
-      align-items: center;
-      min-height: 44px;
-    }
-
-    .footer__social {
-      width: 44px;
-      height: 44px;
-      padding: 12px;
-    }
   }
 </style>

@@ -4,6 +4,7 @@ shortTitle: "Marketing trends for 2024"
 date: 2024-04-25
 tag: "Lifecycle"
 excerpt: "A Q1 2024 view of the trends shaping how businesses reach and serve customers, from AI and voice search to social commerce and data privacy."
+dek: "The Q1 2024 trends shaping how businesses reach customers, from AI to data privacy."
 ---
 As 2024 Q1 closes, we're here to list down the latest trends in online marketing, looking to redefine how businesses connect with their customers.
 

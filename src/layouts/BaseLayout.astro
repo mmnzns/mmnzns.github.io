@@ -11,8 +11,6 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
-  /** Set on article pages to show the reading-progress bar under the header. */
-  progress?: boolean;
   /** Overrides og:type — articles set this to "article". */
   ogType?: 'website' | 'article';
   /**
@@ -31,46 +29,37 @@ interface Props {
    * Search results render this in place of a bare URL.
    */
   breadcrumbs?: readonly { label: string; href: string }[];
+  /** The header link marked aria-current. Omit on pages outside the nav. */
+  current?: 'Home' | 'Work' | 'Writing' | 'About';
   /**
-   * Root-relative path to this page's link-preview image, overriding the site
-   * card. Articles point at their own card in `public/og/`. Whatever it is, it
-   * has to be 1200x630 — the width and height are declared in the tags below,
-   * and scripts/build-og-image.mjs is what guarantees the geometry.
+   * The home page's header starts transparent over the hero and has no spacer
+   * under it — the hero carries its own top padding. Every other page gets
+   * the solid bar and the 76px spacer.
    */
-  ogImage?: string;
-  /** Set when the page's last section is a full-bleed band — see SiteFooter. */
-  footerFlush?: boolean;
-  /**
-   * The two service pages — Web Design and Consulting — opt out of the site
-   * chrome: each ships its own nav, footer and motion, deliberately unlike
-   * the rest of the site. Analytics and the consent banner stay — GA runs
-   * site-wide either way.
-   */
-  standalone?: boolean;
+  overlay?: boolean;
+  /** Article pages swap the thin blue progress bar for a 4px amber one. */
+  progress?: 'blue' | 'amber';
 }
 
 const {
   title,
   description = SITE.description,
-  progress = false,
   ogType = 'website',
   article,
   breadcrumbs,
-  ogImage,
-  footerFlush = false,
-  standalone = false,
+  current,
+  overlay = false,
+  progress = 'blue',
 } = Astro.props;
 
 const pageTitle = title
   ? `${title} ${SITE.titleSeparator} ${SITE.title}`
-  : `${SITE.title} — ${SITE.role}`;
+  : `${SITE.title} ${SITE.titleSeparator} ${SITE.role}`;
 const origin = Astro.site ?? new URL(SITE.url);
 const canonical = new URL(Astro.url.pathname, origin);
-const ogImagePath = ogImage ?? SITE.ogImage;
-const ogImageUrl = ogImagePath ? new URL(ogImagePath, origin) : null;
-/* The card an article points at carries its own headline, so describing it as
-   the site card would be wrong. */
-const ogImageAlt = article ? `${title} — ${SITE.author}` : `${SITE.author} — ${SITE.role}`;
+/* Absolute, built from the configured origin — a relative og:image is
+   ignored by most scrapers. */
+const ogImageUrl = new URL(SITE.ogImage, origin);
 
 /* Structured data so a search result for Miguel's name shows the role and
    employer rather than just a page title.
@@ -86,6 +75,7 @@ const person = {
   '@type': 'Person',
   '@id': personId,
   name: SITE.author,
+  alternateName: SITE.legalName,
   jobTitle: SITE.role,
   description: SITE.description,
   email: `mailto:${CONTACT.email}`,
@@ -97,7 +87,7 @@ const person = {
      something the site doesn't. */
   worksFor: { '@type': 'Organization', name: CONTACT.entity, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' } },
   knowsAbout: CATEGORY_ORDER,
-  ...(ogImageUrl ? { image: ogImageUrl.href } : {}),
+  image: ogImageUrl.href,
 };
 
 const website = {
@@ -128,7 +118,7 @@ const articleNode = article
       isPartOf: { '@id': siteId },
       mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
       ...(article.wordCount ? { wordCount: article.wordCount } : {}),
-      ...(ogImageUrl ? { image: ogImageUrl.href } : {}),
+      image: ogImageUrl.href,
     }
   : null;
 
@@ -157,10 +147,9 @@ const schema = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {/*
-      Raster icons, not SVG. A favicon is rasterised in a context where system
-      fonts aren't guaranteed, so the previous SVG — which drew its monogram
-      with a <text> element — rendered as an empty tile. Built from the brand
-      mark by scripts/build-icons.mjs.
+      Raster icons, not SVG: a favicon is rasterised where web fonts and even
+      system fonts aren't guaranteed. Built from the v19 mark by
+      scripts/build-icons.mjs.
     */}
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
@@ -169,9 +158,9 @@ const schema = {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.title} — Writing`} href="/rss.xml" />
 
-    {/* The two weights above the fold. 700 is the display weight, 400 the body. */}
-    <link rel="preload" href="/fonts/general-sans-400.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/general-sans-700.woff2" as="font" type="font/woff2" crossorigin />
+    {/* The two faces above the fold on every page: serif display, grotesque body. */}
+    <link rel="preload" href="/fonts/instrument-serif-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/bricolage-grotesque-var.woff2" as="font" type="font/woff2" crossorigin />
 
     <slot name="head" />
 
@@ -181,47 +170,43 @@ const schema = {
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="en_CA" />
-    {
-      /* Dimensions are safe to state here because scripts/build-og-image.mjs
-         fails rather than writing anything other than 1200x630. Declaring them
-         lets a scraper reserve the right space before the image arrives. */
-    }
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
-    {ogImageUrl && <meta property="og:image:width" content="1200" />}
-    {ogImageUrl && <meta property="og:image:height" content="630" />}
-    {ogImageUrl && <meta property="og:image:alt" content={ogImageAlt} />}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={SITE.ogImageAlt} />
     {article && <meta property="article:published_time" content={article.published.toISOString()} />}
     {article && <meta property="article:section" content={article.tag} />}
     {article && <meta property="article:author" content={SITE.author} />}
 
-    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <meta name="generator" content={Astro.generator} />
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
 
+    {/* Consent Mode defaults, then gtag.js — in that order, inside one component. */}
     <Analytics />
   </head>
 
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    {!standalone && <SiteHeader progress={progress} />}
+    <SiteHeader current={current} overlay={overlay} progress={progress} />
 
     <main id="main">
       <slot />
     </main>
 
-    {!standalone && <SiteFooter flush={footerFlush} />}
+    <SiteFooter />
 
-    {!standalone && <Motion />}
+    <Motion />
     <ConsentBanner />
   </body>
 </html>

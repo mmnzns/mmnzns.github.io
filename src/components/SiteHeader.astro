@@ -1,518 +1,540 @@
 ---
-import { Image } from 'astro:assets';
-import { SITE, NAV_LINKS, NAV_SERVICES, NAV_CTA } from '../config';
-import logoMark from '../assets/logo-mark.png';
-
 /**
- * The desktop header (`.deskhead` in the export): a dark bar with the plain
- * site links, then the two offerings boxed together behind a small "Services"
- * tab, then the coral CTA.
+ * The shared chrome from the v19 export's `Monzones-D-Nav-V4`: fixed header,
+ * reading-progress bar, paper grain, the full-screen mobile menu and the
+ * ambient-sound toggle. Rendered once by BaseLayout.
  *
- * Below 900px the export swaps it for its `Monzones-D-Nav-Bold` component,
- * which v14 is the first round to ship: a 61px bar with a 3px-bordered toggle,
- * and a full-screen dark panel of 26px links in 68px rows — each with a colour
- * dot on the right, the two services tagged "Service", the CTA as the last
- * row. That component is what the mobile markup below ports; the earlier
- * inferred panel is gone.
+ * Every state is in the markup: the menu is present and `hidden`, the sound
+ * button reads "Sound off". The script below only toggles attributes, so with
+ * JavaScript off the desktop links still work and the menu button does
+ * nothing rather than something broken.
  */
+import { Image } from 'astro:assets';
+import { NAV_LINKS, NAV_CTA, STUDIO } from '../config';
+import logoPrimary from '../assets/brand/logo-primary.png';
+import ccdInk from '../assets/brand/ccd-logo-ink.png';
 
 interface Props {
-  /** Renders the article reading-progress bar along the bottom edge. */
-  progress?: boolean;
+  current?: string;
+  overlay?: boolean;
+  progress?: 'blue' | 'amber';
 }
 
-const { progress = false } = Astro.props;
-const path = Astro.url.pathname;
-
-/** The dot beside each mobile link, as the export's LINKS array assigns them. */
-const DOTS: Record<string, string> = {
-  '/': 'var(--coral)',
-  '/work/': 'var(--sky)',
-  '/thinking/': 'var(--moss)',
-  '/about/': 'var(--coral)',
-  '/consulting/': 'var(--sun)',
-  '/web-design/': 'var(--moss)',
-  [NAV_CTA.href]: 'var(--sun)',
-};
-
-const mobileLinks = [
-  ...NAV_LINKS.map((l) => ({ ...l, service: false, cta: false })),
-  ...NAV_SERVICES.map((l) => ({ ...l, service: true, cta: false })),
-  { ...NAV_CTA, service: false, cta: true },
-];
-
-/**
- * `/work/mogo-lifecycle/` should still light up the "Work" tab. Home is matched
- * exactly — every path starts with "/", so a prefix test would mark it current
- * on every page of the site.
- */
-function isCurrent(href: string) {
-  return href === '/' ? path === '/' : path.startsWith(href);
-}
+const { current, overlay = false, progress = 'blue' } = Astro.props;
 ---
 
-<header class="header">
-  <nav class="header__bar" aria-label="Primary">
-    <a class="brand" href="/">
-      <Image src={logoMark} alt="" width={34} height={26} loading="eager" />
-      <span>{SITE.title.replace('N. ', '')}</span>
-    </a>
+{!overlay && <div class="hd-spacer" aria-hidden="true"></div>}
+<div class="hd-grain" aria-hidden="true"></div>
+<div class:list={['hd-bar', progress === 'amber' && 'hd-bar--amber']} aria-hidden="true" data-hd-bar></div>
 
-    <ul class="navlinks">
+<header class:list={['hd', overlay && 'hd--overlay']} data-hd>
+  <nav class="hd__nav" aria-label="Main">
+    <a class="hd__logo" href="/" aria-label="Miguel Monzones, home">
+      <Image src={logoPrimary} alt="Monzones" height={40} densities={[1, 2]} loading="eager" />
+    </a>
+    <div class="hd__fill"></div>
+    <div class="hd__links">
       {
         NAV_LINKS.map((link) => (
-          <li>
-            <a
-              class="navlinks__link"
-              href={link.href}
-              aria-current={isCurrent(link.href) ? 'page' : undefined}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-
-    <div class="services" aria-label="Services">
-      <span class="services__label">Services</span>
-      {
-        NAV_SERVICES.map((link) => (
-          <a
-            class="services__link"
-            href={link.href}
-            aria-current={isCurrent(link.href) ? 'page' : undefined}
-          >
+          <a href={link.href} class="hd__link" aria-current={current === link.label ? 'page' : undefined}>
             {link.label}
           </a>
         ))
       }
+      <a
+        class="hd__studio"
+        href={STUDIO.url}
+        target="_blank"
+        rel="noopener"
+        aria-label={`${STUDIO.short}, my studio (opens in a new tab)`}
+      >
+        <Image src={ccdInk} alt={STUDIO.short} height={36} densities={[1, 2]} loading="eager" />
+      </a>
+      <a class="hd__cta" href={NAV_CTA.href} data-magnetic>{NAV_CTA.label}</a>
     </div>
-
-    <a class="header__cta" href={NAV_CTA.href}>{NAV_CTA.label}</a>
-
     <button
       type="button"
-      class="header__toggle"
-      aria-label="Open menu"
+      class="hd__menu-btn"
       aria-expanded="false"
-      aria-controls="mobile-nav"
-      data-nav-toggle
+      aria-controls="site-menu"
+      aria-label="Menu"
+      data-hd-toggle
     >
-      <span class="header__bars" aria-hidden="true"></span>
+      <span data-hd-toggle-label>Menu</span>
     </button>
   </nav>
+</header>
 
-  <nav class="mobilenav" id="mobile-nav" aria-label="Menu" hidden data-nav-panel>
+<div class="hd-menu" id="site-menu" hidden data-hd-menu>
+  <div class="hd-menu__links">
     {
-      mobileLinks.map((link) => (
-        <a
-          class:list={['mobilenav__link', { 'mobilenav__link--cta': link.cta }]}
-          href={link.href}
-          aria-current={!link.cta && isCurrent(link.href) ? 'page' : undefined}
-          style={`--dot:${DOTS[link.href] ?? 'var(--coral)'}`}
-        >
-          <span class="mobilenav__label">
-            <span>{link.label}</span>
-            {link.service && <span class="mobilenav__tag">Service</span>}
-          </span>
-          <span class="mobilenav__dot" aria-hidden="true"></span>
+      NAV_LINKS.map((link) => (
+        <a href={link.href} aria-current={current === link.label ? 'page' : undefined}>
+          {link.label}
         </a>
       ))
     }
-  </nav>
+    <a href={NAV_CTA.href} class="hd-menu__talk">Let's talk</a>
+  </div>
+  <a
+    class="hd-menu__studio"
+    href={STUDIO.url}
+    target="_blank"
+    rel="noopener"
+    aria-label={`${STUDIO.short}, my studio (opens in a new tab)`}
+  >
+    <span class="hd-menu__chip">
+      <Image src={ccdInk} alt={STUDIO.short} height={30} densities={[1, 2]} />
+    </span>
+    <span class="hd-menu__studio-label">my studio ↗</span>
+  </a>
+</div>
 
-  {progress && <div class="header__progress" aria-hidden="true" data-reading-progress></div>}
-</header>
-
-<script>
-  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
-  const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
-
-  // The panel covers the viewport, so the page behind it stops scrolling while
-  // it is open — the export locks body overflow the same way.
-  const setOpen = (open: boolean) => {
-    toggle?.setAttribute('aria-expanded', String(open));
-    toggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    panel?.toggleAttribute('hidden', !open);
-    document.body.style.overflow = open ? 'hidden' : '';
-  };
-  const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
-
-  toggle?.addEventListener('click', () => setOpen(!isOpen()));
-
-  // Escape closes it, and returns focus to the control that opened it.
-  document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !isOpen()) return;
-    setOpen(false);
-    toggle?.focus();
-  });
-
-  // Growing past the breakpoint swaps in the desktop bar; an open panel left
-  // behind would keep the body locked.
-  window.addEventListener('resize', () => {
-    if (window.innerWidth >= 900 && isOpen()) setOpen(false);
-  });
-
-  // A same-page link (the CTA to #contact) doesn't navigate, so close by hand.
-  panel?.addEventListener('click', (event) => {
-    if ((event.target as HTMLElement).closest('a')) setOpen(false);
-  });
-</script>
+<button type="button" class="hd-sound" aria-pressed="false" data-sound-toggle>
+  <span class="hd-sound__eq" aria-hidden="true"><span></span><span></span><span></span></span>
+  <span data-sound-label>Sound off</span>
+</button>
 
 <style>
-  .header {
-    /* `sticky` is also what makes this the containing block the reading
-       progress bar positions against. */
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    background: var(--dark);
-    border-bottom: var(--border);
+  .hd-spacer {
+    height: 76px;
   }
 
-  .header__bar {
-    max-width: var(--wrap-home);
-    margin-inline: auto;
-    display: flex;
-    align-items: center;
-    gap: 34px;
-    padding: 14px 28px;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: var(--on-dark);
-    margin-right: auto;
-    white-space: nowrap;
-  }
-
-  /* The mark is ink on transparent; inverted it reads on the dark bar. */
-  .brand :global(img) {
-    height: 24px;
-    width: auto;
-    flex: none;
-    display: block;
-    filter: invert(1);
-  }
-
-  .brand:hover,
-  .brand:focus-visible {
-    color: var(--on-dark);
-  }
-
-  .navlinks {
-    display: none;
-    gap: 24px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .navlinks__link {
-    color: rgb(251 249 246 / 62%);
-    white-space: nowrap;
-    padding-block: 4px;
-  }
-
-  /* Restated here on purpose. Astro scopes component styles with an attribute
-     selector, so `.navlinks__link` outweighs the global `a:hover` and the link
-     would otherwise never change colour. Any component that sets its own link
-     colour has to set its own hover colour too. */
-  .navlinks__link:hover,
-  .navlinks__link:focus-visible {
-    color: var(--sun);
-  }
-
-  .navlinks__link[aria-current='page'] {
-    color: var(--on-dark);
-  }
-
-  /* The boxed services pair: a sun outline with a solid sun label tab. */
-  .services {
-    display: none;
-    align-items: stretch;
-    border: 2px solid var(--sun);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .services__label {
-    display: flex;
-    align-items: center;
-    padding: 6px 10px;
-    background: var(--sun);
-    color: var(--ink);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-  }
-
-  .services__link {
-    display: flex;
-    align-items: center;
-    padding: 6px 14px;
-    color: rgb(251 249 246 / 62%);
-    white-space: nowrap;
-  }
-
-  .services__link + .services__link {
-    border-left: 2px solid rgb(245 184 65 / 40%);
-  }
-
-  .services__link:hover,
-  .services__link:focus-visible {
-    color: var(--sun);
-  }
-
-  .services__link[aria-current='page'] {
-    color: var(--on-dark);
-  }
-
-  .header__cta {
-    display: none;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 12px 20px;
-    background: var(--coral);
-    color: var(--ink);
-    white-space: nowrap;
-    box-shadow: 4px 4px 0 var(--paper);
-    transition: background var(--dur-fast) var(--ease);
-  }
-
-  .header__cta:hover,
-  .header__cta:focus-visible {
-    background: var(--sun);
-    color: var(--ink);
-  }
-
-  /* The export's 44px square: a 3px cream frame that fills coral when open. */
-  .header__toggle {
-    display: grid;
-    place-items: center;
-    flex: none;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 3px solid var(--on-dark);
-    background: transparent;
-    transition: background var(--dur-fast) var(--ease);
-  }
-
-  .header__toggle[aria-expanded='true'] {
-    background: var(--coral);
-  }
-
-  /* Three 18×3 lines drawn from one element: the bar itself plus two shadows,
-     4.5px apart, as the export spaces them. */
-  .header__bars,
-  .header__bars::before,
-  .header__bars::after {
-    display: block;
-    width: 18px;
-    height: 3px;
-    background: var(--on-dark);
-    transition: transform var(--dur) var(--ease);
-  }
-
-  .header__bars::before,
-  .header__bars::after {
-    content: '';
-    position: absolute;
-  }
-
-  .header__bars::before {
-    transform: translateY(-4.5px);
-  }
-
-  .header__bars::after {
-    transform: translateY(4.5px);
-  }
-
-  [aria-expanded='true'] .header__bars {
-    background: transparent;
-  }
-
-  [aria-expanded='true'] .header__bars::before,
-  [aria-expanded='true'] .header__bars::after {
-    background: var(--ink);
-  }
-
-  [aria-expanded='true'] .header__bars::before {
-    transform: rotate(45deg);
-  }
-
-  [aria-expanded='true'] .header__bars::after {
-    transform: rotate(-45deg);
-  }
-
-  /* The export's panel is fixed below its 61px bar and covers the viewport;
-     the page behind is locked by the script while it's open. */
-  .mobilenav {
+  .hd-grain {
     position: fixed;
-    top: 61px;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .hd-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 60;
+    width: 100%;
+    height: 3px;
+    background: var(--blue);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    pointer-events: none;
+  }
+  .hd-bar--amber {
+    z-index: 200;
+    height: 4px;
+    background: var(--amber);
+  }
+
+  .hd {
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    z-index: 55;
-    background: var(--dark);
-    padding: 8px 0 40px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    z-index: 50;
+    background: rgba(248, 244, 236, 0.88);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom: 1px solid rgba(31, 29, 43, 0.14);
+    transition: transform 0.55s var(--ease);
   }
-
-  .mobilenav__link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    min-height: 68px;
-    margin: 0 14px;
-    padding: 0 4px;
-    border-bottom: 3px solid rgb(251 249 246 / 22%);
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: rgb(251 249 246 / 68%);
-    transition: color var(--dur-fast) var(--ease);
-  }
-
-  .mobilenav__link:last-child {
+  /* Home only: clear over the hero until the page moves. */
+  .hd--overlay {
+    background: rgba(248, 244, 236, 0);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     border-bottom-color: transparent;
+    transition:
+      transform 0.55s var(--ease),
+      background 0.35s,
+      border-color 0.35s;
+  }
+  .hd--overlay.is-solid {
+    background: rgba(248, 244, 236, 0.88);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom-color: rgba(31, 29, 43, 0.14);
+  }
+  .hd.is-hidden {
+    transform: translate3d(0, -105%, 0);
   }
 
-  .mobilenav__link:hover,
-  .mobilenav__link:focus-visible {
-    color: var(--sun);
-  }
-
-  .mobilenav__link--cta {
-    color: var(--on-dark);
-  }
-
-  .mobilenav__link[aria-current='page'] {
-    color: var(--sun);
-    --dot: var(--sun);
-  }
-
-  .mobilenav__label {
+  .hd__nav {
+    box-sizing: content-box;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 16px var(--gutter);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 28px;
+  }
+  .hd__logo {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .hd__logo img {
+    display: block;
+    height: 40px;
+    width: auto;
+    margin: -4px 0 -4px -6px;
+  }
+  .hd__fill {
+    flex: 1;
+  }
+  .hd__links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .hd__link {
+    color: var(--ink);
+    padding-bottom: 3px;
+    border-bottom: 1.5px solid transparent;
+  }
+  .hd__link[aria-current='page'] {
+    border-bottom-color: var(--ink);
+  }
+  .hd__link:hover {
+    color: var(--blue);
   }
 
-  .mobilenav__tag {
+  /* The studio badge: a torn cream chip, tilted, that straightens on hover. */
+  .hd__studio {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    padding: 3px 8px;
-    background: var(--sun);
+    padding: 5px 10px;
+    background: var(--card);
+    transform: rotate(-2deg);
+    clip-path: var(--torn-chip);
+    filter: drop-shadow(0 4px 6px rgba(31, 29, 43, 0.18));
+    transition: transform 0.45s var(--ease);
+  }
+  .hd__studio:hover {
+    transform: rotate(1deg) translateY(-2px) scale(1.04);
+  }
+  .hd__studio img {
+    display: block;
+    height: 36px;
+    width: auto;
+  }
+
+  .hd__cta {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    white-space: nowrap;
+    transition:
+      translate 0.5s var(--ease),
+      background 0.3s;
+  }
+  .hd__cta:hover {
+    background: var(--blue);
+    color: var(--paper);
+  }
+
+  .hd__menu-btn {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: transparent;
     color: var(--ink);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    font-family: var(--mono);
+    font-size: 13px;
     text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
-  .mobilenav__dot {
-    flex: none;
-    width: 16px;
-    height: 16px;
-    background: var(--dot);
-  }
-
-  /* Taken out of flow on purpose. In flow it added its 2px to the header, so
-     the header was 76px everywhere and 78px on an article — and every
-     navigation between the two nudged the whole page down or up by two
-     pixels. Absolute keeps one header height across the site. */
-  .header__progress {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2px;
-    background: var(--accent);
-    width: 0;
-    transition: width 120ms linear;
-  }
-
-  /* The desktop bar needs more room than before — six links, the boxed pair
-     and the CTA — so the breakpoint sits higher than the old 860px. Between
-     900 and 1080px the design tightens tracking and hides the Services tab
-     label rather than dropping to the burger. */
-  /* Below the breakpoint the bar is the export's mobile one: 61px tall, 14px
-     gutters, a 22px mark and a 14px brand. */
   @media (max-width: 899px) {
-    .header__bar {
-      min-height: 61px;
-      padding: 0 14px;
-      gap: 12px;
+    .hd__links {
+      display: none;
     }
-
-    .brand {
-      gap: 9px;
-      font-size: 14px;
-      letter-spacing: 0.04em;
-      padding-block: 8px;
-    }
-
-    .brand :global(img) {
-      height: 22px;
-    }
-  }
-
-  @media (min-width: 900px) {
-    .navlinks,
-    .services {
-      display: flex;
-    }
-
-    .header__cta {
+    .hd__menu-btn {
       display: inline-flex;
     }
-
-    .header__toggle {
-      display: none;
-    }
   }
 
-  @media (min-width: 900px) and (max-width: 1080px) {
-    .header__bar {
-      gap: 14px;
-      padding-inline: 16px;
-    }
+  .hd-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 96px clamp(20px, 6vw, 56px) 40px;
+    overflow-y: auto;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .hd-menu__links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .hd-menu__links a {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(248, 244, 236, 0.25);
+    font-family: var(--serif);
+    font-size: clamp(44px, 12vw, 72px);
+    line-height: 1.05;
+    color: var(--paper);
+  }
+  .hd-menu__links a:hover,
+  .hd-menu__links a[aria-current='page'] {
+    color: var(--amber);
+  }
+  .hd-menu__links .hd-menu__talk {
+    border-bottom: 0;
+    font-style: italic;
+    color: var(--amber);
+  }
+  .hd-menu__studio {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--paper);
+  }
+  .hd-menu__studio:hover {
+    color: var(--amber);
+  }
+  .hd-menu__chip {
+    display: inline-flex;
+    padding: 8px 12px;
+    background: var(--card);
+    transform: rotate(-2deg);
+    clip-path: var(--torn-chip);
+  }
+  .hd-menu__chip img {
+    display: block;
+    height: 30px;
+    width: auto;
+  }
+  .hd-menu__studio-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
 
-    .navlinks {
-      gap: 12px;
-      font-size: 12px;
-      letter-spacing: 0.05em;
+  .hd-sound {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 48;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 9px 14px 9px 12px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    filter: drop-shadow(0 6px 10px rgba(31, 29, 43, 0.18));
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .hd-sound:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .hd-sound__eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+  }
+  .hd-sound__eq span {
+    width: 3px;
+    height: 100%;
+    background: currentColor;
+    transform-origin: 50% 100%;
+    transform: scaleY(0.3);
+  }
+  .hd-sound[aria-pressed='true'] .hd-sound__eq span {
+    transform: scaleY(1);
+    animation: hd-eq 1s ease-in-out infinite;
+  }
+  .hd-sound[aria-pressed='true'] .hd-sound__eq span:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+  .hd-sound[aria-pressed='true'] .hd-sound__eq span:nth-child(3) {
+    animation-delay: 0.36s;
+  }
+  @keyframes hd-eq {
+    0%,
+    100% {
+      transform: scaleY(0.3);
     }
-
-    .services__label {
-      display: none;
-    }
-
-    .services__link {
-      padding: 6px 8px;
-    }
-
-    .header__cta {
-      padding: 10px 13px;
-      font-size: 12px;
-      letter-spacing: 0.05em;
+    50% {
+      transform: scaleY(1);
     }
   }
 </style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-hd]');
+  const bar = document.querySelector<HTMLElement>('[data-hd-bar]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-hd-toggle]');
+  const toggleLabel = document.querySelector<HTMLElement>('[data-hd-toggle-label]');
+  const menu = document.querySelector<HTMLElement>('[data-hd-menu]');
+
+  /* ------------------------------------------------ progress + hide on scroll */
+  let lastY = window.scrollY;
+  let hidden = false;
+  let solid: boolean | null = null;
+  let ticking = false;
+
+  const frame = () => {
+    ticking = false;
+    const y = window.scrollY;
+    const dy = y - lastY;
+    lastY = y;
+
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    if (bar) bar.style.transform = `scaleX(${(max > 0 ? Math.min(1, Math.max(0, y / max)) : 0).toFixed(4)})`;
+
+    if (!header) return;
+    if (header.classList.contains('hd--overlay')) {
+      const next = y > 30;
+      if (next !== solid) {
+        solid = next;
+        header.classList.toggle('is-solid', next);
+      }
+    }
+
+    let hide = hidden;
+    if (menu && !menu.hidden) hide = false;
+    else if (y > 220 && dy > 3) hide = true;
+    else if (dy < -3 || y <= 220) hide = false;
+    if (hide !== hidden) {
+      hidden = hide;
+      header.classList.toggle('is-hidden', hide);
+    }
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(frame);
+      }
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', frame, { passive: true });
+  frame();
+
+  /* ------------------------------------------------------------- mobile menu */
+  const setMenu = (open: boolean, restoreFocus = true) => {
+    if (!menu || !toggle) return;
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (toggleLabel) toggleLabel.textContent = open ? 'Close ×' : 'Menu';
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      header?.classList.remove('is-hidden');
+      hidden = false;
+      menu.querySelector<HTMLElement>('a')?.focus();
+    } else if (restoreFocus) {
+      toggle.focus();
+    }
+  };
+
+  toggle?.addEventListener('click', () => setMenu(menu?.hidden ?? true));
+  // A tap on any menu link navigates (or jumps to #contact) — close first.
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false, false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu && !menu.hidden) setMenu(false);
+  });
+  // Widening past the breakpoint with the menu open would leave the page locked.
+  window.matchMedia('(min-width: 900px)').addEventListener('change', (e) => {
+    if (e.matches && menu && !menu.hidden) setMenu(false, false);
+  });
+
+  /* ------------------------------------------------------------ ambient sound */
+  /* Starts on the visitor's first tap anywhere, unless they turned it off last
+     time. The audio element is created lazily so nobody downloads the loop
+     until it is actually going to play. */
+  const soundBtn = document.querySelector<HTMLButtonElement>('[data-sound-toggle]');
+  const soundLabel = document.querySelector<HTMLElement>('[data-sound-label]');
+  const SOUND_KEY = 'mnm-sound';
+  let audio: HTMLAudioElement | null = null;
+  let playing = false;
+
+  const readOff = () => {
+    try {
+      return localStorage.getItem(SOUND_KEY) === 'off';
+    } catch {
+      return false;
+    }
+  };
+  const save = (value: 'on' | 'off') => {
+    try {
+      localStorage.setItem(SOUND_KEY, value);
+    } catch {
+      /* private mode: the choice just won't persist */
+    }
+  };
+  const render = () => {
+    soundBtn?.setAttribute('aria-pressed', String(playing));
+    if (soundLabel) soundLabel.textContent = playing ? 'Sound on' : 'Sound off';
+  };
+  const play = () => {
+    if (!audio) {
+      audio = new Audio('/websound.mp3');
+      audio.loop = true;
+      audio.volume = 0.3;
+    }
+    audio
+      .play()
+      .then(() => {
+        playing = true;
+        render();
+      })
+      .catch(() => {
+        /* Autoplay refused: stay "off" and let the button try again. */
+      });
+  };
+
+  const onFirstTap = (e: PointerEvent) => {
+    if ((e.target as Element | null)?.closest?.('[data-sound-toggle]')) return;
+    document.removeEventListener('pointerdown', onFirstTap, true);
+    if (!readOff()) play();
+  };
+  document.addEventListener('pointerdown', onFirstTap, true);
+
+  soundBtn?.addEventListener('click', () => {
+    document.removeEventListener('pointerdown', onFirstTap, true);
+    if (playing) {
+      audio?.pause();
+      playing = false;
+      save('off');
+      render();
+    } else {
+      save('on');
+      play();
+    }
+  });
+</script>

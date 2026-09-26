@@ -3,7 +3,9 @@ title: "Steal This Strategy: How High-Trust SaaS Companies Practice Transparent 
 shortTitle: "How high-trust SaaS teams market transparently"
 date: 2025-10-09
 tag: "Positioning"
-excerpt: "Transparency as a growth strategy: pricing clarity, honest comparisons, public roadmaps, “we are not for you” filters, and privacy that passes the Grandma Test."
+excerpt: "Transparency as a growth strategy: pricing clarity, honest comparisons, public roadmaps, “we’re not for you” filters, and privacy that passes the Grandma Test."
+dek: "Transparency as a growth strategy: clear pricing, honest comparisons, public roadmaps and privacy that passes the Grandma Test."
+image: "../../assets/art/08-transparent-marketing.webp"
 ---
 It's funny how ideas circle back. While writing my recent article on Search Experience Optimization, I found myself returning to an old, favorite topic: transparent marketing.
 

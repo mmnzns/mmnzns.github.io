@@ -4,6 +4,8 @@ shortTitle: "Conveying your value"
 date: 2025-08-27
 tag: "Positioning"
 excerpt: "A personal reflection on rejection, learning, and communicating your value with more clarity, written after losing an opportunity I was qualified for."
+dek: "A personal reflection on losing an opportunity, and learning to communicate my value clearly."
+image: "../../assets/art/10-conveying-value.webp"
 ---
 This article is really a letter to myself as much as it is for anyone else. Writing it has been my way of acknowledging the rejection I faced and giving myself credit for not shying away from the lessons it brought. I'm sharing it here to hold myself accountable to what I've learned and to my dedication to improve. If you find even a small takeaway in these reflections, I'll be glad. And if you're going through rejection yourself, I hope this reminds you not to be too hard on yourself. You're doing better than you think, and every setback can be the start of growth.
 
