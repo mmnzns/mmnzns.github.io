@@ -69,19 +69,15 @@ for (const c of cases) {
 
 /*
  * The Sportserve division sat inside MSOps (Marketing Services Operations) —
- * commit 4c7f62f named it that everywhere, matching Professional History. v19
- * went back to calling it a standalone "Payments Operations Division"; Miguel
- * confirmed the MSOps wording on 2026-09-25, so it is restored here.
+ * commit 4c7f62f named it that everywhere, matching Professional History, and
+ * Miguel confirmed it on 2026-09-25. v20 adopted the name in the title and
+ * body; only the deck still says "a dedicated division", so that one line is
+ * restored here. Drop the entry once the design says it itself.
  */
 const SPORTSERVE_FIXES = [
-  ['Building the Payments Operations Division', 'Building the MSOps payments division'],
   [
     'I made the case for a dedicated division and built it from scratch.',
     'I made the case for a dedicated payments division inside MSOps, the Marketing Services Operations department, and built it from scratch.',
-  ],
-  [
-    'a standalone Payments Operations Division, built from zero',
-    'a standalone payments division inside MSOps (Marketing Services Operations), built from zero',
   ],
 ];
 const fixText = (v) =>

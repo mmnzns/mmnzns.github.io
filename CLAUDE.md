@@ -103,11 +103,16 @@ invoke `node ./node_modules/astro/bin/astro.mjs check|build` directly.)
   "Close ×", scroll locks, Escape and any link close it and focus returns to the toggle.
   The header hides on scroll down past 220px; on `overlay` pages (home) it sits over the
   hero and turns solid past 30px.
-- **The sound toggle is opt-out.** A looping ambient track (`public/websound.mp3`, volume
-  0.3) starts on the visitor's first tap or click anywhere, unless they've turned it off —
+- **The sound toggle is opt-out.** A looping ambient track (`public/websound.mp3`, at
+  **8% volume** — Miguel's setting, the same as on the Craft Concepts Digital site) starts on the visitor's first tap or click anywhere, unless they've turned it off —
   the choice is remembered in `localStorage` (`mnm-sound`). Browsers forbid audio before a
-  gesture, so there is no autoplay on load. The toggle is a real button with
-  `aria-pressed`.
+  gesture, so there is no autoplay on load. The level is applied through a Web Audio
+  gain node, not `audio.volume` alone, because iOS ignores `volume` and plays media at
+  full loudness. The toggle is a real button with `aria-pressed`.
+- **The résumé is `public/Miguel-Monzones-Resume.pdf`**, served from the site itself and
+  linked from the About hero's "Download my résumé" clipping (v20). To update it,
+  replace that file under the same name. The button only renders when the file exists
+  at build time, so deleting it removes the button rather than shipping a broken link.
 - **Check a phone before shipping, and don't trust headless for it.** Every export so far
   has shipped its own mobile bugs — v19's were client names breaking mid-word in the
   two-column logo grid and the email address splitting inside its pill (home and About);

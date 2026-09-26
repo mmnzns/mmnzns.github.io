@@ -627,7 +627,7 @@ export const CASES: Record<string, CaseStudy> = {
       {
         label: 'The decision',
         paras: [
-          'Solving launches one at a time would have meant solving them forever. I made the case to leadership for a standalone payments division inside MSOps (Marketing Services Operations), built from zero, rather than another workaround.',
+          'Solving launches one at a time would have meant solving them forever. I made the case to leadership for a standalone MSOps payments division, built from zero, rather than another workaround.',
           'I designed it as an internal agency model: one team owning project management, B2C campaign execution, B2B onboarding coordination, creative production, vendor management, and customer issue resolution for everything payments-related, across all 12 markets.',
         ],
       },

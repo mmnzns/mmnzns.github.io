@@ -37,7 +37,7 @@ and on the Google Drive checkout `node_modules/.bin` arrives as broken symlinks,
 Astro directly.
 
 ```bash
-D="../Website - Main Site/mnmonzones v19"
+D="../Website - Main Site/mnmonzones v20"
 node scripts/gen-cases.mjs "$D/Monzones-D-Case-V4.dc.html"   # rewrites src/data/cases.ts
 git diff src/data/cases.ts                                    # empty on a clean v19 tree
 ```
@@ -182,18 +182,19 @@ the same commit.
 
 ## Verification baseline
 
-`check-copy.mjs` reports **7 missing** on a clean v19 tree, all intentional:
+`check-copy.mjs` reports **6 missing** on a clean v20 tree, all intentional (v20 adopted the
+MSOps name, so only one Sportserve sentence is left):
 
 1. `Monzones Logos` — the design's own note about the logo sheet, not site copy.
-2–3. Two Sportserve case sentences — the export's "Payments Operations Division" wording;
-   the repo keeps "the MSOps payments division" (`SPORTSERVE_FIXES`).
-4. The Case page's "That case study isn't here" fallback — unreachable, because a project
+2. The Sportserve case deck — the export says "a dedicated division"; the repo says
+   "a dedicated payments division inside MSOps" (`SPORTSERVE_FIXES`).
+3. The Case page's "That case study isn't here" fallback — unreachable, because a project
    without a case body fails the build.
-5. The home chat's sent reply — the export says an email app opens (`mailto:`); the site
+4. The home chat's sent reply — the export says an email app opens (`mailto:`); the site
    POSTs to Formspree, so it says the message arrived.
-6. Privacy §03's "doesn't store anything … opens your own email app" — same reason; it
+5. Privacy §03's "doesn't store anything … opens your own email app" — same reason; it
    now names Formspree and says submissions may be stored in the United States.
-7. The share card's tagline — it's baked into `public/og-image.png`, not page text.
+6. The share card's tagline — it's baked into `public/og-image.png`, not page text.
 
 More than these means something didn't land — find it before shipping. If a leftover turns
 out to be intentional, update this list in the same commit.

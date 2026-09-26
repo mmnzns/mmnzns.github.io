@@ -12,6 +12,8 @@
  *    JavaScript and only one stays open at a time.
  *  - All eight skill panels are in the markup; the tabs toggle `hidden`.
  */
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { CONTACT } from '../config';
@@ -20,11 +22,22 @@ import desk from '../assets/brand/miguel-desk.webp';
 import poster from '../assets/brand/about-poster.webp';
 import tapeBlue from '../assets/brand/tape-blue.webp';
 import tapeYellow from '../assets/brand/tape-yellow.webp';
+import ctaResume from '../assets/brand/cta-resume.png';
+import ctaLinkedin from '../assets/brand/cta-linkedin.png';
 import neaOnnim from '../assets/art/nea-onnim-newspaper-cutout.webp';
 import cup from '../assets/art/coffee-cup-cutout.webp';
 
 /** Lets a narrow pill break the address after the @ instead of mid-word. */
 const [emailUser, emailDomain] = CONTACT.email.split('@');
+
+/*
+ * The résumé button only renders once the PDF is actually in public/, so the
+ * live site never offers a download that 404s. Drop the file in and rebuild.
+ */
+const RESUME_PATH = '/Miguel-Monzones-Resume.pdf';
+// Resolved from the project root: Astro builds from there, and import.meta.url
+// points into the compiled output rather than src/.
+const hasResume = existsSync(join(process.cwd(), 'public', RESUME_PATH));
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const INK = ['var(--blue)', 'var(--red)', 'var(--green)', 'var(--amber)'];
@@ -65,6 +78,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
           </p>
         </div>
         <div class="ahero__photo" data-hero>
+          <div class="ahero__stage">
           <div class="ahero__frame" data-tilt>
             <div class="ahero__paper">
               <div class="ahero__img">
@@ -77,6 +91,19 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
           <a class="vid" href={INTRO_VIDEO.href} target="_blank" rel="noopener" data-magnetic>
             <span class="vid__play" aria-hidden="true">▶</span>{INTRO_VIDEO.label}
           </a>
+          </div>
+          <div class:list={['ahero__ctas', { 'ahero__ctas--one': !hasResume }]}>
+            {
+              hasResume && (
+                <a class="ahero__cta ahero__cta--resume" href={RESUME_PATH} download="Miguel-Monzones-Resume.pdf">
+                  <Image src={ctaResume} alt="Download my résumé (PDF)" widths={[300, 600]} sizes="(max-width: 599px) 300px, 240px" />
+                </a>
+              )
+            }
+            <a class="ahero__cta ahero__cta--linkedin" href={CONTACT.linkedin} target="_blank" rel="noopener">
+              <Image src={ctaLinkedin} alt="Find me on LinkedIn (opens in a new tab)" widths={[300, 600]} sizes="(max-width: 599px) 300px, 240px" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -295,9 +322,10 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
             ))
           }
         </div>
+        <div class="skills__panels">
         {
           SKILLS.map((g, i) => (
-            <div class="spanel" role="tabpanel" id={`skill-panel-${i}`} aria-labelledby={`skill-tab-${i}`} hidden={i !== 0} data-panel={i}>
+            <div class:list={['spanel', { 'is-off': i !== 0 }]} role="tabpanel" id={`skill-panel-${i}`} aria-labelledby={`skill-tab-${i}`} data-panel={i}>
               <p class="spanel__n">{pad(i + 1)} / {pad(SKILLS.length)}</p>
               <h3 class="spanel__h">{g.name}</h3>
               <p class="spanel__body">{g.skills}</p>
@@ -312,6 +340,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
             </div>
           ))
         }
+        </div>
       </div>
     </div>
   </section>
@@ -413,11 +442,68 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     }
   }
   .ahero__photo {
-    position: relative;
     justify-self: center;
     width: 100%;
     max-width: 29.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 2vw, 22px);
+  }
+  .ahero__stage {
+    position: relative;
     padding: 20px 14px 20px 6px;
+  }
+  /* v20: the two newspaper-clipping buttons under the photo. */
+  .ahero__ctas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: clamp(10px, 2vw, 20px);
+    padding: 0 4px;
+  }
+  .ahero__ctas--one {
+    justify-content: center;
+  }
+  .ahero__cta {
+    display: block;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 15rem;
+    filter: drop-shadow(0 6px 10px rgba(31, 29, 43, 0.16));
+    transition: transform 0.35s var(--ease);
+  }
+  .ahero__cta--resume {
+    transform: rotate(-1.5deg);
+  }
+  .ahero__cta--linkedin {
+    transform: rotate(1.5deg);
+  }
+  .ahero__cta:hover,
+  .ahero__cta:focus-visible {
+    transform: rotate(0deg) translateY(-3px) scale(1.04);
+  }
+  .ahero__cta :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  @media (max-width: 599px) {
+    .ahero__ctas {
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .ahero__cta {
+      flex: none;
+      width: min(100%, 300px);
+      max-width: 300px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ahero__cta:hover,
+    .ahero__cta:focus-visible {
+      transform: none;
+    }
   }
   .ahero__frame {
     position: relative;
@@ -653,7 +739,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     margin-top: 24px;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(2.5rem, 4.6vw, 4.5rem);
+    font-size: clamp(3rem, 4.6vw, 4.5rem);
     line-height: 0.98;
     letter-spacing: -0.02em;
   }
@@ -778,7 +864,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     }
     .career__h2 {
       margin-top: 22px;
-      font-size: clamp(2.375rem, 10vw, 3.25rem);
+      font-size: clamp(2.375rem, 8vw, 3rem);
     }
     .career__track {
       margin-top: 36px;
@@ -1369,17 +1455,42 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     color: var(--body);
     text-wrap: pretty;
   }
+  /*
+   * One fixed size, whatever tab is open. Every panel sits in the same grid
+   * cell and the inactive ones are only made invisible, so the cell is always
+   * as tall as the longest panel (Acquisition & creative, today) and switching
+   * tabs never resizes the box or moves the page below it. On wide screens the
+   * tabs stretch to that same height, so there's no empty strip under 08.
+   */
   .skills__box {
     margin-top: clamp(32px, 3.6vw, 52px);
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    grid-template-columns: minmax(0, 1fr);
     border: 1px solid var(--ink);
     background: var(--card);
   }
   .skills__tabs {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  @media (min-width: 760px) {
+    .skills__box {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .skills__tabs {
+      border-bottom: 0;
+      border-right: 1px solid var(--ink);
+    }
+    .stab {
+      flex: 1 1 auto;
+    }
+  }
+  .skills__panels {
+    display: grid;
+  }
+  .spanel.is-off {
+    visibility: hidden;
   }
   .stab {
     display: flex;
@@ -1397,6 +1508,9 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     transition:
       background 0.3s,
       color 0.3s;
+  }
+  .stab:last-child {
+    border-bottom: 0;
   }
   .stab[aria-selected='true'] {
     background: var(--ink);
@@ -1420,6 +1534,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
     visibility: visible;
   }
   .spanel {
+    grid-area: 1 / 1;
     display: flex;
     flex-direction: column;
     gap: 22px;
@@ -1661,7 +1776,7 @@ const phoneHref = `tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`;
       t.setAttribute('aria-selected', String(k === i));
       t.tabIndex = k === i ? 0 : -1;
     });
-    panels.forEach((p, k) => (p.hidden = k !== i));
+    panels.forEach((p, k) => p.classList.toggle('is-off', k !== i));
     if (focus) tabs[i].focus();
     if (reduced) return;
     panels[i].querySelectorAll<HTMLElement>('[data-tag]').forEach((t, k) => {
