@@ -206,7 +206,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     border: 1px solid var(--ink);
     border-radius: 999px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -221,7 +221,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     text-align: center;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(46px, 6.6vw, 112px);
+    font-size: clamp(2.875rem, 6.6vw, 7rem);
     line-height: 0.94;
     letter-spacing: -0.025em;
     text-wrap: balance;
@@ -237,7 +237,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   .ahead__band p {
     margin-top: 6px;
     max-width: 60ch;
-    font-size: clamp(18px, 1.5vw, 21px);
+    font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
     line-height: 1.5;
     text-wrap: balance;
   }
@@ -253,7 +253,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .ahead__author strong {
     font-weight: 700;
@@ -275,7 +275,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     background: transparent;
     color: var(--ink);
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     transition:
@@ -288,7 +288,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   }
 
   .ahero {
-    max-width: 1080px;
+    max-width: 67.5rem;
     margin: clamp(44px, 5vw, 72px) auto 0;
     padding: 0 var(--gutter);
   }
@@ -330,7 +330,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     padding: clamp(48px, 6vw, 88px) var(--gutter) 0;
   }
   .abody__grid {
-    max-width: 1200px;
+    max-width: 75rem;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -339,7 +339,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   }
   .toc {
     flex: 1 1 220px;
-    max-width: 280px;
+    max-width: 17.5rem;
   }
   .toc__inner {
     position: sticky;
@@ -351,7 +351,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     padding-bottom: 10px;
     border-bottom: 1px solid var(--ink);
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -362,7 +362,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     align-items: baseline;
     padding: 10px 0;
     border-bottom: 1px solid rgba(31, 29, 43, 0.18);
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.4;
     color: var(--muted);
     transition:
@@ -378,7 +378,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   }
   .toc__n {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--muted);
   }
   .toc__link.is-on .toc__n {
@@ -387,12 +387,12 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   .toc__pct {
     margin-top: 14px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--muted);
   }
   .abody__main {
     flex: 1 1 560px;
-    max-width: 700px;
+    max-width: 43.75rem;
     min-width: 0;
   }
   @media (min-width: 700px) and (max-width: 1099px) {
@@ -402,7 +402,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     }
     .toc {
       flex: 0 0 200px;
-      max-width: 200px;
+      max-width: 12.5rem;
     }
     .abody__main {
       flex: 1 1 0;
@@ -414,7 +414,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
       overscroll-behavior: contain;
     }
     .toc__link {
-      font-size: 13px;
+      font-size: 0.8125rem;
       padding: 8px 0;
     }
   }
@@ -431,7 +431,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
 
   /* The body is rendered Markdown, so its elements can only be reached globally. */
   .post-body {
-    font-size: 19px;
+    font-size: 1.1875rem;
     line-height: 1.72;
     color: var(--body-deep);
     counter-reset: sec;
@@ -441,7 +441,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     text-wrap: pretty;
   }
   .post-body > :global(p:first-of-type) {
-    font-size: clamp(20px, 1.6vw, 23px);
+    font-size: clamp(1.25rem, 1.6vw, 1.4375rem);
     line-height: 1.6;
     color: var(--ink);
   }
@@ -457,7 +457,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     margin: 72px 0 20px;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(34px, 3.2vw, 46px);
+    font-size: clamp(2.125rem, 3.2vw, 2.875rem);
     line-height: 1.02;
     letter-spacing: -0.015em;
     color: var(--ink);
@@ -472,13 +472,13 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     padding-bottom: 10px;
     border-bottom: 1px solid var(--ink);
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
     letter-spacing: 0.08em;
     color: var(--muted);
   }
   .post-body :global(h3) {
     margin: 44px 0 14px;
-    font-size: 22px;
+    font-size: 1.375rem;
     line-height: 1.25;
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -488,7 +488,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   .post-body :global(h4) {
     margin: 32px 0 12px;
     font-family: var(--mono);
-    font-size: 14px;
+    font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--ink);
@@ -518,7 +518,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     filter: drop-shadow(0 12px 18px rgba(31, 29, 43, 0.14));
     font-family: var(--serif);
     font-style: italic;
-    font-size: clamp(26px, 2.4vw, 34px);
+    font-size: clamp(1.625rem, 2.4vw, 2.125rem);
     line-height: 1.22;
     color: var(--ink);
   }
@@ -547,7 +547,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   .post-body :global(hr::after) {
     content: '✳  ✳  ✳';
     white-space: pre;
-    font-size: 18px;
+    font-size: 1.125rem;
     color: var(--blue);
   }
   .post-body :global(a) {
@@ -582,7 +582,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     width: 100%;
     margin: 0 0 28px;
     border-collapse: collapse;
-    font-size: 16px;
+    font-size: 1rem;
     display: block;
     overflow-x: auto;
   }
@@ -594,7 +594,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   }
   .post-body :global(th) {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-bottom: 1px solid var(--ink);
@@ -642,13 +642,13 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   }
   .thanks__h {
     font-family: var(--serif);
-    font-size: clamp(30px, 2.6vw, 40px);
+    font-size: clamp(1.875rem, 2.6vw, 2.5rem);
     line-height: 1;
   }
   .thanks__p {
     margin-top: 12px;
     max-width: 48ch;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.6;
     color: var(--body);
     text-wrap: pretty;
@@ -662,7 +662,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
     transition:
       translate 0.5s var(--ease),
@@ -688,7 +688,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   .rel__h2 {
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(40px, 5vw, 76px);
+    font-size: clamp(2.5rem, 5vw, 4.75rem);
     line-height: 0.96;
     letter-spacing: -0.02em;
     text-wrap: balance;
@@ -699,7 +699,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     gap: 10px;
     min-height: 44px;
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -746,7 +746,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     align-items: center;
     justify-content: center;
     font-family: var(--serif);
-    font-size: clamp(56px, 6vw, 88px);
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
     color: var(--ink);
   }
   .rcard__img img {
@@ -761,7 +761,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     align-items: center;
     gap: 10px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
@@ -773,7 +773,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
   }
   .rcard__title {
     font-family: var(--serif);
-    font-size: clamp(26px, 2.1vw, 32px);
+    font-size: clamp(1.625rem, 2.1vw, 2rem);
     line-height: 1.05;
     text-wrap: balance;
   }
@@ -796,7 +796,7 @@ const TILT = ['-1.4deg', '1.1deg', '-.7deg'];
     max-width: 23ch;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(40px, 5.4vw, 84px);
+    font-size: clamp(2.5rem, 5.4vw, 5.25rem);
     line-height: 0.96;
     letter-spacing: -0.02em;
     text-wrap: balance;

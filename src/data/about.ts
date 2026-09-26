@@ -30,7 +30,7 @@ export const ROLES = [
     years: '2014 – 2021',
     title: 'Senior Marketing Projects and Operations Manager',
     story:
-      'Started as the director’s assistant. Grew into connecting eight departments across twelve markets, then built and led Payments Operations.',
+      'Started as the director’s assistant. Grew into connecting eight departments across twelve markets, then built and led the MSOps payments division.',
   },
   {
     org: 'DTC Newsletter · Pilothouse',

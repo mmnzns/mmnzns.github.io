@@ -27,7 +27,7 @@ export const LEDGER = [
     fig: 'Fig. A — Sportserve + Mogo',
     label: 'Markets delivered in: 12 across LATAM, Asia and Europe, plus Canada and the US',
     href: '/work/sportserve-payments-division/',
-    cta: 'The payments division',
+    cta: 'The MSOps payments division',
   },
   {
     value: '1.5M+',
@@ -113,7 +113,7 @@ export const HOME_CASES = [
     slug: 'sportserve-payments-division',
     client: 'Sportserve · MSOps',
     metric: '0 → 5',
-    title: 'Building the payments division from a blank brief',
+    title: 'Building the MSOps payments division from a blank brief',
     note: 'Person division across 12 markets. Throughput doubled; errors down ~40%.',
   },
   {
