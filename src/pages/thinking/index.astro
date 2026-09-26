@@ -178,7 +178,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     text-align: center;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(64px, 12vw, 210px);
+    font-size: clamp(4rem, 12vw, 13.125rem);
     line-height: 0.86;
     letter-spacing: -0.03em;
   }
@@ -193,7 +193,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   .mast__band p {
     margin-top: 6px;
     max-width: 62ch;
-    font-size: clamp(17px, 1.4vw, 20px);
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
     line-height: 1.5;
     text-wrap: balance;
   }
@@ -253,7 +253,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     align-items: center;
     justify-content: center;
     font-family: var(--serif);
-    font-size: clamp(56px, 6vw, 88px);
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
     color: var(--ink);
   }
   .feat__tape {
@@ -267,7 +267,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     align-items: center;
     gap: 10px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -279,20 +279,20 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   }
   .feat__title {
     font-family: var(--serif);
-    font-size: clamp(36px, 3.8vw, 62px);
+    font-size: clamp(2.25rem, 3.8vw, 3.875rem);
     line-height: 1;
     letter-spacing: -0.015em;
     text-wrap: balance;
   }
   .feat__dek {
-    font-size: clamp(17px, 1.3vw, 19px);
+    font-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
     line-height: 1.55;
     color: var(--body);
     max-width: 56ch;
     text-wrap: pretty;
   }
   .feat__cta {
-    font-size: 16px;
+    font-size: 1rem;
   }
 
   .side {
@@ -312,7 +312,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--ink);
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -347,19 +347,19 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   .side__meta,
   .arow__meta {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
   }
   .side__title {
     font-family: var(--serif);
-    font-size: clamp(24px, 2vw, 32px);
+    font-size: clamp(1.5rem, 2vw, 2rem);
     line-height: 1.05;
     text-wrap: balance;
   }
   .side__dek {
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.5;
     color: var(--body);
     text-wrap: pretty;
@@ -426,7 +426,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     background: transparent;
     color: var(--ink);
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     white-space: nowrap;
@@ -457,7 +457,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     border-radius: 999px;
     background: var(--card);
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--muted);
   }
   .asearch input {
@@ -467,9 +467,15 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     border: 0;
     background: transparent;
     font-family: var(--mono);
-    font-size: 14px;
+    font-size: 0.875rem;
     color: var(--ink);
     outline: none;
+  }
+  /* iOS zooms the page into any field under 16px when it's tapped. */
+  @media (hover: none), (max-width: 899px) {
+    .asearch input {
+      font-size: 1rem;
+    }
   }
   .asearch:focus-within {
     outline: 3px solid var(--blue);
@@ -478,7 +484,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   .showing {
     padding: 16px 0 0;
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--muted);
   }
 
@@ -499,7 +505,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     top: 84px;
     display: block;
     font-family: var(--serif);
-    font-size: clamp(44px, 5vw, 84px);
+    font-size: clamp(2.75rem, 5vw, 5.25rem);
     line-height: 0.9;
     letter-spacing: -0.02em;
     color: var(--blue);
@@ -531,7 +537,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   .arow__thumb {
     display: none;
     width: 100%;
-    max-width: 520px;
+    max-width: 32.5rem;
     height: auto;
     aspect-ratio: 3 / 2;
     object-fit: cover;
@@ -556,12 +562,12 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   }
   .arow__title {
     font-family: var(--serif);
-    font-size: clamp(24px, 2.3vw, 36px);
+    font-size: clamp(1.5rem, 2.3vw, 2.25rem);
     line-height: 1.06;
     text-wrap: balance;
   }
   .arow__dek {
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.5;
     color: var(--body);
     max-width: 70ch;
@@ -569,7 +575,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   }
   .arow__read {
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
     white-space: nowrap;
   }
   @media (max-width: 899px) {
@@ -596,7 +602,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
   .empty p {
     font-family: var(--serif);
     font-style: italic;
-    font-size: clamp(28px, 3vw, 40px);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
   }
   .empty button {
     margin-top: 18px;
@@ -605,7 +611,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     border-radius: 999px;
     background: transparent;
     color: var(--ink);
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
   }
 
@@ -627,7 +633,7 @@ const span = `${years[years.length - 1]} – ${years[0]}`;
     max-width: 23ch;
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(40px, 5.4vw, 84px);
+    font-size: clamp(2.5rem, 5.4vw, 5.25rem);
     line-height: 0.96;
     letter-spacing: -0.02em;
     text-wrap: balance;

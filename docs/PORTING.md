@@ -163,12 +163,12 @@ doesn't have, so the lead titles pair across different posts). The many MED
 `line-height: normal` where the site's body sets 1.5; they don't move anything. It cannot
 see images or anything behind an interaction.
 
-### check-design baseline (v19, 2026-09-25)
+### check-design baseline (v19 + fluid type, 2026-09-25)
 
 | Page | 375 | 1440 | Notes |
 | --- | --- | --- | --- |
-| home | 10 | 10 | all pairing: the method steps' "01–03" circles caught at different rotation states |
-| about | 0 | 0 | — |
+| home | 13 | 14 | all pairing: the method steps' "01–03" circles caught at different rotation states, and the pill's email (split by `<wbr>`) pairing with the footer's |
+| about | 2 | 2 | pairing: the coffee note's email (split by `<wbr>`) pairs with the footer's |
 | work | 0 | 0 | — |
 | thinking | 2 | 4 | the lead slot is a newer post than the export's; chip colour pairs with a different button |
 | privacy | 0 | 0 | — |

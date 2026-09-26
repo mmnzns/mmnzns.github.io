@@ -31,6 +31,9 @@ import aboutPoster from '../assets/brand/about-poster.webp';
 import ccdCream from '../assets/brand/ccd-logo-cream.png';
 import miguel from '../assets/brand/miguel.webp';
 
+/** Lets a narrow pill break the address after the @ instead of mid-word. */
+const [emailUser, emailDomain] = CONTACT.email.split('@');
+
 const posts = (await getPosts()).slice(0, 3);
 const project = (slug: string) => {
   const p = PROJECTS.find((x) => x.slug === slug);
@@ -386,7 +389,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
         </div>
         <div class="contact__pills" data-rv>
           <a class="pill" href={`mailto:${CONTACT.email}`}>
-            <span class="pill__text"><span class="pill__k">Email</span><span class="pill__v">{CONTACT.email}</span></span>
+            <span class="pill__text"><span class="pill__k">Email</span><span class="pill__v">{emailUser}@<wbr />{emailDomain}</span></span>
             <span aria-hidden="true">→</span>
           </a>
           <a class="pill" href={phoneHref}>
@@ -519,7 +522,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     margin: clamp(40px, 6vh, 84px) 0 clamp(28px, 3vw, 40px);
     font-family: var(--serif);
     font-weight: 400;
-    font-size: clamp(52px, 7.2vw, 128px);
+    font-size: clamp(3.25rem, 7.2vw, 8rem);
     line-height: 0.98;
     letter-spacing: -0.02em;
     text-wrap: balance;
@@ -537,7 +540,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     transform: rotate(-2deg);
   }
   .hero__lede {
-    font-size: clamp(18px, 1.5vw, 23px);
+    font-size: clamp(1.125rem, 1.5vw, 1.4375rem);
     line-height: 1.42;
     max-width: 36ch;
     text-wrap: pretty;
@@ -555,7 +558,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     align-items: center;
     gap: 12px;
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .hero__dot {
     flex: none;
@@ -587,7 +590,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     position: relative;
     justify-self: end;
     width: 100%;
-    max-width: 520px;
+    max-width: 32.5rem;
     padding: 24px 16px 24px 8px;
   }
   .hero__frame {
@@ -631,7 +634,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     justify-content: space-between;
     gap: 12px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
@@ -655,7 +658,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     gap: 8px 20px;
     padding: 16px 0 10px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -693,14 +696,14 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   }
   .ledger__fig {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
   }
   .ledger__value {
     font-family: var(--serif);
-    font-size: clamp(52px, 5vw, 84px);
+    font-size: clamp(3.25rem, 5vw, 5.25rem);
     line-height: 0.92;
     letter-spacing: -0.02em;
     white-space: nowrap;
@@ -710,7 +713,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     color: var(--blue);
   }
   .ledger__label {
-    font-size: clamp(16px, 1.2vw, 18px);
+    font-size: clamp(1rem, 1.2vw, 1.125rem);
     line-height: 1.4;
     max-width: 28ch;
     text-wrap: pretty;
@@ -721,7 +724,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--blue);
     transition: gap 0.35s var(--ease);
@@ -784,7 +787,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     display: flex;
     justify-content: space-between;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     letter-spacing: 0.06em;
   }
   .teams__kind {
@@ -813,7 +816,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   .teams__name {
     min-width: 0;
     font-weight: 700;
-    font-size: clamp(17px, 1.3vw, 21px);
+    font-size: clamp(1.0625rem, 1.3vw, 1.3125rem);
     letter-spacing: -0.02em;
     text-transform: uppercase;
     line-height: 1.1;
@@ -831,7 +834,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
       gap: 10px;
     }
     .teams__name {
-      font-size: clamp(13px, 4vw, 17px);
+      font-size: clamp(0.8125rem, 4vw, 1.0625rem);
     }
   }
 
@@ -863,7 +866,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     position: relative;
     justify-self: end;
     width: 100%;
-    max-width: 560px;
+    max-width: 35rem;
     transform: rotate(1.5deg);
     filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.35));
   }
@@ -934,7 +937,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   }
   .note__label {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
@@ -953,18 +956,18 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   }
   .note__heard {
     font-family: var(--serif);
-    font-size: clamp(28px, 2.4vw, 38px);
+    font-size: clamp(1.75rem, 2.4vw, 2.375rem);
     line-height: 1.08;
     letter-spacing: -0.01em;
   }
   .note__under {
-    font-size: clamp(18px, 1.5vw, 22px);
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
     line-height: 1.34;
     font-weight: 500;
   }
   .note__cue {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--grey);
@@ -1012,7 +1015,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border-radius: 50%;
     background: transparent;
     color: var(--ink);
-    font-size: 18px;
+    font-size: 1.125rem;
     transition:
       background 0.3s,
       color 0.3s;
@@ -1094,26 +1097,26 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     justify-content: space-between;
     gap: 12px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
   }
   .tcard__metric {
     font-family: var(--serif);
-    font-size: clamp(46px, 4.2vw, 72px);
+    font-size: clamp(2.875rem, 4.2vw, 4.5rem);
     line-height: 0.95;
     letter-spacing: -0.02em;
   }
   .tcard__title {
-    font-size: clamp(19px, 1.5vw, 23px);
+    font-size: clamp(1.1875rem, 1.5vw, 1.4375rem);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.15;
     text-wrap: pretty;
   }
   .tcard__note {
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.45;
     color: var(--body);
     text-wrap: pretty;
@@ -1221,7 +1224,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border-radius: 50%;
     border: 1.5px solid var(--ink);
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .step.is-on .step__num {
     background: var(--ink);
@@ -1234,11 +1237,11 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   }
   .step__name {
     font-family: var(--serif);
-    font-size: clamp(26px, 2.4vw, 38px);
+    font-size: clamp(1.625rem, 2.4vw, 2.375rem);
     line-height: 1.05;
   }
   .step__line {
-    font-size: clamp(16px, 1.25vw, 19px);
+    font-size: clamp(1rem, 1.25vw, 1.1875rem);
     line-height: 1.45;
     color: var(--body);
     max-width: 46ch;
@@ -1287,7 +1290,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   .wrow__num {
     flex: 0 0 auto;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     opacity: 0.8;
   }
   .wrow__thumb {
@@ -1314,7 +1317,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   .wrow__title {
     flex: 1 1 360px;
     font-family: var(--serif);
-    font-size: clamp(24px, 2.2vw, 36px);
+    font-size: clamp(1.5rem, 2.2vw, 2.25rem);
     line-height: 1.1;
   }
   .wrow__tag {
@@ -1323,7 +1326,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border: 1px solid currentColor;
     border-radius: 999px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
@@ -1395,14 +1398,14 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   .more__eyebrow,
   .studio__eyebrow {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
   }
   .more__about-h {
     font-family: var(--serif);
-    font-size: clamp(28px, 2.6vw, 42px);
+    font-size: clamp(1.75rem, 2.6vw, 2.625rem);
     line-height: 1.02;
     text-wrap: balance;
   }
@@ -1410,7 +1413,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 600;
   }
   .studio {
@@ -1446,7 +1449,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     gap: 16px;
   }
   .studio__line {
-    font-size: clamp(17px, 1.4vw, 21px);
+    font-size: clamp(1.0625rem, 1.4vw, 1.3125rem);
     line-height: 1.42;
     max-width: 30ch;
     text-wrap: pretty;
@@ -1458,7 +1461,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     padding: 13px 20px;
     border: 1.5px solid var(--paper);
     border-radius: 999px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
   }
 
@@ -1496,7 +1499,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     font-family: var(--serif);
     font-weight: 400;
     font-style: italic;
-    font-size: clamp(56px, 8vw, 132px);
+    font-size: clamp(3.5rem, 8vw, 8.25rem);
     line-height: 0.9;
     letter-spacing: -0.02em;
   }
@@ -1559,14 +1562,14 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     background: var(--ink);
     color: var(--paper);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     white-space: nowrap;
   }
   .contact__lede {
     margin-top: 22px;
-    font-size: clamp(18px, 1.5vw, 22px);
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
     line-height: 1.45;
     max-width: 36ch;
     text-wrap: pretty;
@@ -1575,7 +1578,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-width: 460px;
+    max-width: 28.75rem;
   }
   .pill {
     display: flex;
@@ -1602,15 +1605,15 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   }
   .pill__k {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     opacity: 0.75;
   }
   .pill__v {
-    font-size: clamp(16px, 1.3vw, 19px);
+    font-size: clamp(1rem, 1.3vw, 1.1875rem);
     font-weight: 600;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
   /* A phone can't fit the label and the email address on one line, so the
      label goes on top instead of splitting the address. */
@@ -1662,7 +1665,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     gap: 2px;
   }
   .chat__name {
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
   }
   .chat__status {
@@ -1670,7 +1673,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     align-items: center;
     gap: 6px;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.75rem;
     color: var(--lav);
   }
   .chat__online {
@@ -1693,7 +1696,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border-radius: 16px 16px 16px 4px;
     background: var(--paper);
     color: var(--ink);
-    font-size: clamp(16px, 1.25vw, 18px);
+    font-size: clamp(1rem, 1.25vw, 1.125rem);
     line-height: 1.4;
     animation: bubble 0.5s var(--ease) var(--d, 0s) both;
   }
@@ -1729,7 +1732,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
   }
   .chat__hint {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--muted);
   }
   .chat__topics {
@@ -1748,7 +1751,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border-radius: 22px;
     background: transparent;
     color: var(--blue);
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
     transition:
       background 0.3s,
@@ -1792,7 +1795,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border-radius: 10px;
     background: var(--card);
     color: var(--ink);
-    font-size: 16px;
+    font-size: 1rem;
   }
   .chat__form textarea {
     resize: vertical;
@@ -1821,7 +1824,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border: 0;
     background: transparent;
     color: var(--muted);
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
   }
   .chat__back:hover {
@@ -1837,7 +1840,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     border-radius: 999px;
     background: var(--ink);
     color: var(--paper);
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
     transition:
       background 0.3s,
@@ -1909,7 +1912,7 @@ const linkedinHandle = CONTACT.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.c
     background: var(--ink);
     color: var(--paper);
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 0.8125rem;
     white-space: nowrap;
     opacity: 0;
     scale: 0.6;

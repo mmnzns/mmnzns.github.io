@@ -70,8 +70,8 @@ for (const c of cases) {
 /*
  * The Sportserve division sat inside MSOps (Marketing Services Operations) —
  * commit 4c7f62f named it that everywhere, matching Professional History. v19
- * went back to calling it a standalone "Payments Operations Division", so the
- * repo's wording is restored here until Miguel decides otherwise.
+ * went back to calling it a standalone "Payments Operations Division"; Miguel
+ * confirmed the MSOps wording on 2026-09-25, so it is restored here.
  */
 const SPORTSERVE_FIXES = [
   ['Building the Payments Operations Division', 'Building the MSOps payments division'],
