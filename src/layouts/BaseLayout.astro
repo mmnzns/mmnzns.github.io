@@ -1,5 +1,5 @@
 ---
-import { SITE, CONTACT } from '../config';
+import { SITE, CONTACT, STUDIO } from '../config';
 import { CATEGORY_ORDER } from '../data/site';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -82,10 +82,11 @@ const person = {
   url: origin.href,
   address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' },
   sameAs: [CONTACT.linkedin],
-  /* The consulting entity, and the four categories the work is filed under —
+  /* The studio (the public brand, linked so search engines can join the two
+     sites into one entity), and the four categories the work is filed under —
      both read from data rather than described here, so neither can claim
      something the site doesn't. */
-  worksFor: { '@type': 'Organization', name: CONTACT.entity, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' } },
+  worksFor: { '@type': 'Organization', name: STUDIO.name, url: STUDIO.url, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' } },
   knowsAbout: CATEGORY_ORDER,
   image: ogImageUrl.href,
 };

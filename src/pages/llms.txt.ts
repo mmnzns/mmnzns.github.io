@@ -32,7 +32,7 @@ export async function GET(context: APIContext) {
     '',
     `> ${SITE.description}`,
     '',
-    `Based in ${SITE.location}. The site is run through ${CONTACT.entity}`,
+    `Based in ${SITE.location}. The site is run through ${STUDIO.name}.`,
     `Contact: ${CONTACT.email} · ${CONTACT.linkedin}`,
     /* The home page's own line about the studio, where the services now live. */
     `Studio: ${STUDIO.name} (${STUDIO.url}) — websites, lifecycle and automation, the hands-on version.`,

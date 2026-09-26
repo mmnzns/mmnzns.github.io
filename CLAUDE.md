@@ -81,9 +81,13 @@ invoke `node ./node_modules/astro/bin/astro.mjs check|build` directly.)
   from those maps rather than picking one by eye. The category strings are display copy,
   so renaming one is a design decision, not a refactor.
 - **Public copy never names a currency and never says "GitHub Pages"** — hosting is
-  described as "hosted by me". The footer's entity line ("MNM Alaminos Consulting Ltd. —
-  lifecycle and GTM, Vancouver.") stays exactly as it is. Both rules come from the v19
-  launch handoff.
+  described as "hosted by me". Both rules come from the v19 launch handoff.
+- **The public brand is Craft Concepts Digital** (`STUDIO.name`); the legal name, MNM
+  Alaminos Consulting Ltd. (`CONTACT.entity`), is not used publicly. The footer reads
+  "Craft Concepts Digital — lifecycle and GTM, Vancouver." (Miguel, 2026-09-26), and the
+  Person JSON-LD's `worksFor` and llms.txt name the studio with its URL. The one
+  exception is the privacy page's §01, which names the legal entity as the organisation
+  accountable for personal information.
 - **A scoped rule beats a global one, so restate what it cancels.** Astro compiles component
   styles with an attribute selector, so `.thing { color }` inside a component scores higher
   than a bare `a:hover { color }` in global.css. Any component that sets its own link colour

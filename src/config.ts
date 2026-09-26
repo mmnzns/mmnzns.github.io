@@ -61,6 +61,7 @@ export const CONTACT = {
   email: 'miguel@mnmonzones.com',
   phone: '+1 778 829 6453',
   linkedin: 'https://www.linkedin.com/in/mmonzones/',
+  /** The legal name. Not the public brand (that's STUDIO.name) — the privacy page only. */
   entity: 'MNM Alaminos Consulting Ltd.',
   city: 'Vancouver, BC',
 } as const;

@@ -2,18 +2,18 @@
 /**
  * The v19 footer, identical on every page.
  *
- * The entity line is the design's wording and is left exactly as it is — the
- * launch handoff notes new wording is pending from Miguel, since the legal
- * name isn't meant to be the public brand.
+ * The line names the public brand, Craft Concepts Digital — Miguel's call on
+ * 2026-09-26. The legal name (CONTACT.entity) is not the public brand and
+ * only appears where the law wants it, on the privacy page.
  */
-import { CONTACT } from '../config';
+import { CONTACT, STUDIO } from '../config';
 
 const onPrivacy = Astro.url.pathname.startsWith('/privacy');
 ---
 
 <footer class="ft">
   <div class="ft__row">
-    <p class="ft__line">{CONTACT.entity} — lifecycle and GTM, Vancouver.</p>
+    <p class="ft__line">{STUDIO.name} — lifecycle and GTM, Vancouver.</p>
     <div class="ft__links">
       <a href="/privacy/" class="ft__muted" aria-current={onPrivacy ? 'page' : undefined}>Privacy</a>
       {/* Reopens the consent banner — ConsentBanner.astro binds every [data-cookie-settings]. */}
